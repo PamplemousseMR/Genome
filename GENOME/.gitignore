@@ -1,0 +1,8 @@
+# Fichier eclipse
+/bin/
+.project
+.classpath
+
+# Fichier projet
+log.txt
+options.ini
