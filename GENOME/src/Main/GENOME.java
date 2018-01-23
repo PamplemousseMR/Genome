@@ -33,7 +33,7 @@ public final class GENOME {
 		
 		// Write main under this comment 
 		Logs.info("Begin");
-		MainFrame mainframe = new MainFrame();
+		new MainFrame();
 		Logs.info("End");
 	}
 

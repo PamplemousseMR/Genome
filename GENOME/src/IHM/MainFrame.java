@@ -34,7 +34,6 @@ public class MainFrame extends JFrame
 		swagComponents();
 	}
 
-
 	private void initFrame() 
 	{
 		//Sans doute possible de détecter la taille de l'écran et d'adapter à la taille de la fenetre en fonction
@@ -44,7 +43,6 @@ public class MainFrame extends JFrame
 		this.setResizable(true); 
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
 	}
-
 
 	private void initComponents() 
 	{
@@ -60,16 +58,13 @@ public class MainFrame extends JFrame
 		m_jpb = new JProgressBar();
 	}
 
-	/**
-	 * Adapter les Layout des différents Panel si besoin. 
-	 */
+	// Adapter les Layout des différents Panel si besoin. 
 	private void initLayout()
 	{
 		this.setLayout(new BorderLayout());
 		m_north.setLayout(new BorderLayout());
 		m_south.setLayout(new BorderLayout());
 	}
-
 
 	private void addComponents() 
 	{
@@ -82,12 +77,9 @@ public class MainFrame extends JFrame
 		m_north.add(m_titleLabel2,BorderLayout.CENTER);
 		m_north.add(m_launchDL,BorderLayout.EAST);
 		m_south.add(m_jpb,BorderLayout.CENTER);
-
 	}
 
-	/**
-	 * Apparence des composantes de l'interface
-	 */
+	// Apparence des composantes de l'interface
 	private void swagComponents() 
 	{
 		m_titleLabel.setFont(new Font("Serif", Font.PLAIN, 28));
