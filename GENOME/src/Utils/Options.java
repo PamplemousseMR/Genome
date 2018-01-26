@@ -11,12 +11,21 @@ import java.util.Set;
 
 public final class Options {
 
+	/**
+	 * File's name
+	 */
 	public static final String s_OPTIONS_FILE_NAME = "options.ini";
 
+	/**
+	 * Option's properties
+	 */
 	private static Properties m_properties = null;
 
 	private static String s_OVERVIEW_LINK = "ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt";
 
+	/**
+	 * Open the options's file in order to read options and fill the static fields with it
+	 */
 	public static void initializeOptions() {
 		File file = new File(s_OPTIONS_FILE_NAME);
 
@@ -70,6 +79,9 @@ public final class Options {
 		}
 	}
 
+	/**
+	 * Write the option's file
+	 */
 	public static void finalizeOptions() {
 		if(m_properties != null) {
 			File file = new File(s_OPTIONS_FILE_NAME);
@@ -125,8 +137,8 @@ public final class Options {
 		return s_OVERVIEW_LINK;
 	}
 
-	public static void setOverviewLink(String overviewLink) {
-		m_properties.put("s_OVERVIEW_LINK", overviewLink);
+	public static void setOverviewLink(String _overviewLink) {
+		m_properties.put("s_OVERVIEW_LINK", _overviewLink);
 	}
 
 }
