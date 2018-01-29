@@ -13,7 +13,7 @@ import javax.swing.JProgressBar;
 public class MainFrame extends JFrame
 {
 	private static final long serialVersionUID = -6768656055410219611L;
-	private static String s_TITLE="BIOINFORMATIQUE ILC. Réalisé par Arthur D. -- Adèle M. -- Florian H. -- Romain M. -- Romain T. -- Sami . -- Vincent H.";
+	private static String s_TITLE="BIOINFORMATIQUE ILC. Realise par Arthur D. -- Adele M. -- Florian H. -- Romain M. -- Romain T. -- Sami . -- Vincent H.";
 	private JPanel m_north;
 	private JPanel m_center;
 	private JPanel m_south;
@@ -36,7 +36,7 @@ public class MainFrame extends JFrame
 
 	private void initFrame() 
 	{
-		//Sans doute possible de détecter la taille de l'écran et d'adapter à la taille de la fenetre en fonction
+		//Sans doute possible de detecter la taille de l'ecran et d'adapter e la taille de la fenetre en fonction
 		this.setVisible(true);
 		this.setSize(1000,800); 
 		this.setLocationRelativeTo(null);
@@ -46,19 +46,19 @@ public class MainFrame extends JFrame
 
 	private void initComponents() 
 	{
-		//Création d'un Panel par area
+		//Creation d'un Panel par area
 		m_north= new JPanel();
 		m_center= new JPanel();
 		m_south= new JPanel();
 		m_east= new JPanel();
 		m_west= new JPanel();
 		m_titleLabel=new JLabel("BIG DATA EN BIOINFORMATIQUE");
-		m_titleLabel2=new JLabel("Statistiques sur les trinucléotides dans les gènes de la base GenBank");
+		m_titleLabel2=new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
 		m_launchDL= new JButton("Download");
 		m_jpb = new JProgressBar();
 	}
 
-	// Adapter les Layout des différents Panel si besoin. 
+	// Adapter les Layout des differents Panel si besoin.
 	private void initLayout()
 	{
 		this.setLayout(new BorderLayout());

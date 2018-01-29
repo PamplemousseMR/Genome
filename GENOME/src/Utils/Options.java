@@ -21,7 +21,7 @@ public final class Options {
 	 */
 	private static Properties m_properties = null;
 
-	private static String s_OVERVIEW_LINK = "ftp://ftp.ncbi.nlm.nih.gov/genomes/GENOME_REPORTS/overview.txt";
+	private static String s_BASE_LINK = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
 
 	/**
 	 * Open the options's file in order to read options and fill the static fields with it
@@ -133,11 +133,11 @@ public final class Options {
 		}
 	}
 
-	public static String getOverviewLink() {
-		return s_OVERVIEW_LINK;
+	public static String getBaseLink() {
+		return s_BASE_LINK;
 	}
 
-	public static void setOverviewLink(String _overviewLink) {
+	public static void setBaseLink(String _overviewLink) {
 		m_properties.put("s_OVERVIEW_LINK", _overviewLink);
 	}
 

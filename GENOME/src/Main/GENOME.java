@@ -6,7 +6,9 @@ import Utils.Options;
 
 public final class GENOME {
 	
-	//  Function call at the begin of the program
+	/**
+	 * Function call at the begin of the program
+	 */
 	public static void initializeProgram() {
 		Logs.initializeLog();
 		Logs.info("Log initialized");
@@ -14,7 +16,9 @@ public final class GENOME {
 		Logs.info("Options initialized");
 	}
 	
-	// Function call at the end of the program
+	/**
+	 * Function call at the end of the program
+	 */
 	public static void finalizeProgram() {
 		Logs.info("Options finalized");
 		Options.finalizeOptions();

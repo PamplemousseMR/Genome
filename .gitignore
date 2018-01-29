@@ -1,2 +1,7 @@
 /.metadata/
 /.recommenders/
+/.idea/
+/out/
+options\.ini
+log\.txt
+GENOME/GENOME\.iml
