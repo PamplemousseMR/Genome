@@ -33,7 +33,7 @@ public class Organism {
 	 */
 	private EnumMap<Replicon.Type,Long> m_genomeNumber;
 	/**
-	 * Array of this organism NCs
+	 * Array of this organism's replicon
 	 */
 	private ArrayList<Replicon> m_replicon;
 	
@@ -55,13 +55,13 @@ public class Organism {
 	}
 	
 	/**
-	 * Add NC to m_ncs
-	 * @param _nc the NC to add
+	 * Add Replicon to m_replicon
+	 * @param _replicon the Replicon to add
 	 * @return the insertion success
 	 */
-	public boolean addNC(Replicon _nc) {
-		if(m_replicon.add(_nc)) {
-			m_genomeNumber.put(_nc.getType(), m_genomeNumber.get(_nc.getType())+1);
+	public boolean addReplicon(Replicon _replicon) {
+		if(m_replicon.add(_replicon)) {
+			m_genomeNumber.put(_replicon.getType(), m_genomeNumber.get(_replicon.getType())+1);
 			return true;
 		}else {
 			return false;
@@ -120,7 +120,7 @@ public class Organism {
 	}
 	
 	/**
-	 * @return the m_ncs
+	 * @return the m_replicon
 	 */
 	public ArrayList<Replicon> getReplicon(){
 		return m_replicon;
