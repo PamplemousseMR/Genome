@@ -1,9 +1,10 @@
-package IHM;
+package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Font;
 
+import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -13,7 +14,7 @@ import javax.swing.JProgressBar;
 public class MainFrame extends JFrame
 {
 	private static final long serialVersionUID = -6768656055410219611L;
-	private static String s_TITLE="BIOINFORMATIQUE ILC. Realise par Arthur D. -- Adele M. -- Florian H. -- Romain M. -- Romain T. -- Sami . -- Vincent H.";
+	private static String s_TITLE="BIOINFORMATIQUE ILC. Realise par Arthur D. -- Adele M. -- Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.";
 	private JPanel m_north;
 	private JPanel m_center;
 	private JPanel m_south;
@@ -36,12 +37,12 @@ public class MainFrame extends JFrame
 
 	private void initFrame() 
 	{
-		//Sans doute possible de detecter la taille de l'ecran et d'adapter e la taille de la fenetre en fonction
+		//Sans doute possible de detecter la taille de l'ecran et d'adapter la taille de la fenetre en fonction
 		this.setVisible(true);
 		this.setSize(1000,800); 
 		this.setLocationRelativeTo(null);
-		this.setResizable(true); 
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE); 
+		this.setResizable(true);
+		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
 	}
 
 	private void initComponents() 
@@ -52,9 +53,11 @@ public class MainFrame extends JFrame
 		m_south= new JPanel();
 		m_east= new JPanel();
 		m_west= new JPanel();
-		m_titleLabel=new JLabel("BIG DATA EN BIOINFORMATIQUE");
-		m_titleLabel2=new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
-		m_launchDL= new JButton("Download");
+		
+		// Components
+		m_titleLabel = new JLabel("Projet de Bio-Informatique");
+		m_titleLabel2 = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
+		m_launchDL= new JButton("Demarrer le telechargement");
 		m_jpb = new JProgressBar();
 	}
 
@@ -73,25 +76,49 @@ public class MainFrame extends JFrame
 		this.add(m_center,BorderLayout.CENTER);
 		this.add(m_east,BorderLayout.EAST);
 		this.add(m_west,BorderLayout.WEST);
+		
+		// North panel
 		m_north.add(m_titleLabel,BorderLayout.NORTH);
 		m_north.add(m_titleLabel2,BorderLayout.CENTER);
-		m_north.add(m_launchDL,BorderLayout.EAST);
+		
+		// West panel
+		m_west.add(m_launchDL,BorderLayout.WEST);
+		
+		// South panel
 		m_south.add(m_jpb,BorderLayout.CENTER);
 	}
 
 	// Apparence des composantes de l'interface
 	private void swagComponents() 
 	{
-		m_titleLabel.setFont(new Font("Serif", Font.PLAIN, 28));
-		m_titleLabel2.setFont(new Font("Serif", Font.PLAIN, 18));
-		m_titleLabel.setForeground(Color.DARK_GRAY);
+		// Panels backgrounds
+		m_north.setBackground(new Color(32, 34, 37)); 		// Dark gray
+		m_south.setBackground(new Color(54, 57, 62)); 		// Gray
+		m_center.setBackground(new Color(54, 57, 62)); 		// Gray
+		m_west.setBackground(new Color(54, 57, 62)); 		// Gray
+		m_east.setBackground(new Color(54, 57, 62)); 		// Gray
+		
+		// Panels margin (top, left, bottom, right)
+		m_north.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		m_east.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		m_west.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+	
+		// Labels
+		m_titleLabel.setFont(new Font("Helvetica", Font.PLAIN, 28));
+		m_titleLabel2.setFont(new Font("Helvetica", Font.PLAIN, 18));
+		m_titleLabel.setForeground(Color.WHITE);
 		m_titleLabel2.setForeground(Color.LIGHT_GRAY);
+
+		// Progress bar
 		m_jpb.setStringPainted(true);
 		m_jpb.setString("ProgressBar");
 		m_jpb.setSize(m_south.getWidth(),( m_south.getHeight()));
-		m_jpb.setBackground(Color.CYAN);
-		m_east.setBackground(Color.LIGHT_GRAY);
-		m_south.setBackground(Color.GRAY);
+		m_jpb.setBackground(new Color(46, 184, 46)); 		// Green
+		
+		// Buttons
+		m_launchDL.setBackground(Color.LIGHT_GRAY);
+		m_launchDL.setForeground(new Color(32, 34, 37));	// Light gray
+		m_launchDL.setBorderPainted(false);
 	}
 }
 

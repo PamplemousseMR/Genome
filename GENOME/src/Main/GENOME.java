@@ -1,6 +1,6 @@
 package Main;
 
-import IHM.MainFrame;
+import GUI.MainFrame;
 import Utils.Logs;
 import Utils.Options;
 
