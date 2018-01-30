@@ -1,5 +1,6 @@
 package Main;
 
+import Data.*;
 import GUI.MainFrame;
 import Utils.Logs;
 import Utils.Options;

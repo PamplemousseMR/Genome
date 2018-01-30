@@ -1,12 +1,11 @@
 package Data;
 
-import java.util.ArrayList;
-import java.util.EnumMap;
+import java.util.LinkedList;
 
-public class Replicon {
+public class Replicon extends IDataBase{
 	
 	/**
-	 * This enumeration represent the type of an NC
+	 * This enumeration represent the type of a Replicon
 	 */
 	public enum Type{
 		
@@ -16,129 +15,33 @@ public class Replicon {
 		DNA,
 		CHLOROPLAST
 	}
-	
+
+    /**
+     * Reference to the parent
+     */
+    private Organism m_parent;
 	/**
-	 * List of the 64 trinucleotide
-	 */
-	public enum Trinucleotide{
-		AAA,
-		AAC,
-		AAG,
-		AAT,
-		ACA,
-		ACC,
-		ACG,
-		ACT,
-		AGA,
-		AGC,
-		AGG,
-		AGT,
-		ATA,
-		ATC,
-		ATG,
-		ATT,
-		CAA,
-		CAC,
-		CAG,
-		CAT,
-		CCA,
-		CCC,
-		CCG,
-		CCT,
-		CGA,
-		CGC,
-		CGG,
-		CGT,
-		CTA,
-		CTC,
-		CTG,
-		CTT,
-		GAA,
-		GAC,
-		GAG,
-		GAT,
-		GCA,
-		GCC,
-		GCG,
-		GCT,
-		GGA,
-		GGC,
-		GGG,
-		GGT,
-		GTA,
-		GTC,
-		GTG,
-		GTT,
-		TAA,
-		TAC,
-		TAG,
-		TAT,
-		TCA,
-		TCC,
-		TCG,
-		TCT,
-		TGA,
-		TGC,
-		TGG,
-		TGT,
-		TTA,
-		TTC,
-		TTG,
-		TTT
-	}
-	
-	/**
-	 * List of statistics
-	 */
-	public enum Stat{
-		PHASE0,
-		PHASE1,
-		PHASE2
-	}
-	
-	/**
-	 * Type of this NC
+	 * Type of this Replicon
 	 */
 	private Type m_type;
 	/**
-	 * Name of this NC
+	 * Array of all the sequences of this Replicon
 	 */
-	private String m_name;
-	/**
-	 * Array of all the sequences of this NC 
-	 */
-	private ArrayList<StringBuffer> m_sequences;
-	/**
-	 * Array to store statistics
-	 */
-	private EnumMap<Trinucleotide, EnumMap<Stat,Float>> m_statitics;
-	/**
-	 * Number of valid sequence
-	 */
-	private long m_validSequence;
-	/**
-	 * Number of invalid sequence
-	 */
-	private long m_invalidSequences;
+	private LinkedList<StringBuffer> m_sequences;
 	
 	/**
 	 * Class constructor
-	 * @param _type, the type of this NC
-	 */
-	public Replicon(Type _type, String _name) {
+     * @param _parent, the reference to the parent
+	 * @param _type, the type of this Replicon
+     * @param _name, the name of the organism
+     */
+	public Replicon(Organism _parent, Type _type, String _name) {
+		super(_name);
+		m_statistics.setTypeNumber(_type,1l);
+        m_parent = _parent;
 		m_type = _type;
-		m_name = _name;
-		m_sequences = new ArrayList<>();
-		m_statitics = new EnumMap<>(Trinucleotide.class);
-		for(Trinucleotide tri : Trinucleotide.values()) {
-			EnumMap<Stat,Float> arr = new EnumMap<>(Stat.class);
-			for(Stat stat :  Stat.values()) {
-				arr.put(stat, 0f);
-			}
-			m_statitics.put(tri,arr);
-		}
-		m_validSequence = 0;
-		m_invalidSequences = 0;
+		m_sequences = new LinkedList<>();
+		m_parent.addReplicon(this);
 	}
 	
 	/**
@@ -151,70 +54,26 @@ public class Replicon {
 	}
 	
 	/**
-	 * Set a value to a statistic of a trinucleotide 
-	 * @param _tri, the trinucleotide to set
-	 * @param _stat, the statistic to set
-	 * @param _val, the value to set
-	 * @return the element previously at the specified position
-	 */
-	public Float setStat(Trinucleotide _tri, Stat _stat, Float _val) {
-		return m_statitics.get(_tri).put(_stat, _val);
-	}
-	
-	/**
-	 * Get the statistic of a trinucleotide  
-	 * @param _tri, the trinucleotide to get
-	 * @param _stat, the statistic to get
-	 * @return the statistic
-	 */
-	public Float getStat(Trinucleotide _tri, Stat _stat) {
-		return m_statitics.get(_tri).get(_stat);
-	}
-	
-	/**
-	 * Get the type of this NC
+	 * Get the type of this Replicon
 	 * @return the type
 	 */
 	public Type getType() {
 		return m_type;
 	}
-	
-	/**
-	 * Get the name of this NC
-	 * @return the name
-	 */
-	public String getName() {
-		return m_name;
-	}
-	
-	/**
-	 * Get sequences of this NC
-	 * @return the sequences
-	 */
-	public ArrayList<StringBuffer> getSequences(){
-		return m_sequences;
-	}
-	
-	/**
-	 * Get statistic of this NC
-	 * @return the statistic
-	 */
-	public EnumMap<Trinucleotide, EnumMap<Stat, Float>> getStat(){
-		return m_statitics;
-	}
-	
-	/**
-	 * @return the m_validSequence
-	 */
-	public long getValidSequence() {
-		return m_validSequence;
-	}
 
 	/**
-	 * @return the m_invalidSequences
+	 * Get sequences of this Replicon
+	 * @return the sequences
 	 */
-	public long getInvalidSequences() {
-		return m_invalidSequences;
+	public LinkedList<StringBuffer> getSequences(){
+		return m_sequences;
 	}
-	
+
+    /**
+     * Update m_parent and remove this from the parent's list
+     */
+	public void update(){
+	    m_parent.getReplicons().remove(this);
+	    m_parent.update(m_statistics);
+    }
 }
