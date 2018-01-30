@@ -1,9 +1,13 @@
 package Data;
 
 import java.util.Date;
-import java.util.EnumMap;
 
 public class IDataBase {
+
+    public enum State{
+        START,
+        STOP
+    }
 
     /**
      * The name
@@ -14,9 +18,13 @@ public class IDataBase {
      */
     private Date m_modificationDate;
     /**
-     * Array of values of each Replicon's type
+     * Actual state of this IDataBase
      */
-    private EnumMap<Replicon.Type,Long> m_genomeNumber;
+    private State m_state;
+    /**
+     * Statistics of this IDataBase
+     */
+    private Statistics m_statistics;
 
     /**
      * Class constructor
@@ -24,10 +32,15 @@ public class IDataBase {
     protected IDataBase(String _name){
         m_name = _name;
         m_modificationDate = new Date();
-        m_genomeNumber = new EnumMap<>(Replicon.Type.class);
-        for(Replicon.Type field : Replicon.Type.values()) {
-            m_genomeNumber.put(field,0l);
-        }
+        m_state = State.START;
+        m_statistics = new Statistics();
+    }
+
+    /**
+     * Specified to this IDataBase that all this children are created
+     */
+    public void finish(){
+        m_state = State.STOP;
     }
 
     /**
@@ -46,20 +59,7 @@ public class IDataBase {
         return m_name;
     }
 
-    /**
-     * Get the number of a genome's specified type
-     * @param _type, the Type of the genomes's number to get
-     * @return the number of genomes
-     */
-    public Long getTypeNumber(Replicon.Type _type) {
-        return m_genomeNumber.get(_type);
-    }
-
-    /**
-     * Get the map of each genome's Type
-     * @return the m_genomeNumber
-     */
-    public EnumMap<Replicon.Type,Long> getGenomeNumber(){
-        return m_genomeNumber;
+    public void update(Statistics _stats){
+        m_statistics.update(_stats);
     }
 }

@@ -32,10 +32,4 @@ public class Organism extends IDataBase{
 		return m_replicons;
 	}
 
-	/**
-	 * Add a Replicon to this Organism
-	 * @param _replicon, the Replicon to add
-	 * @return the insertion success
-	 */
-	public boolean addReplicon(Replicon _replicon){ return m_replicons.add(_replicon);}
 }
