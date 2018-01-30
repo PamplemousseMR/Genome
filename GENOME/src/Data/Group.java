@@ -6,12 +6,12 @@ import java.util.EnumMap;
 
 import Data.Replicon.Type;
 
-public class Organism {
+public class Group {
 
 	/**
 	 * Reference to the parent
 	 */
-	private SubGroup m_parent;
+	private Kingdom m_parent;
 	/**
 	 * Name of the organism
 	 */
@@ -21,14 +21,6 @@ public class Organism {
 	 */
 	private String m_kingdom;
 	/**
-	 * Group of the organism
-	 */
-	private String m_group;
-	/**
-	 * Subgroup of the organism
-	 */
-	private String m_subgroup;
-	/**
 	 * Last modification date of the organism
 	 */
 	private Date m_modificationDate;
@@ -37,47 +29,42 @@ public class Organism {
 	 */
 	private EnumMap<Replicon.Type,Long> m_genomeNumber;
 	/**
-	 * Array of this organism's replicons
+	 * Array of this group's subGroups
 	 */
-	private ArrayList<Replicon> m_replicons;
+	private ArrayList<SubGroup> m_subGroups;
 	
 	/**
 	 * Class constructor
-	 * @param _parent, the reference to the parent
 	 * @param _name, the name of the organism
 	 * @param _kingdom, the name of the kingdom
 	 * @param _group, the name of the group
-	 * @param _subgroup, the name of the subgroup
 	 */
-	public Organism(SubGroup _parent, String _name, String _kingdom, String _group, String _subgroup) {
+	public Group(Kingdom _parent, String _name, String _kingdom) {
 		m_parent = _parent;
 		m_name = _name;
 		m_kingdom = _kingdom;
-		m_group = _group;
-		m_subgroup = _subgroup; 
 		m_modificationDate = new Date();
 		m_genomeNumber = new EnumMap<>(Replicon.Type.class);
 		for(Type field : Replicon.Type.values()) {
 			m_genomeNumber.put(field,0l);
 		}
-		m_replicons = new ArrayList<>();
+		m_subGroups = new ArrayList<>();
 	}
 	
 	/**
-	 * Add Replicon to m_replicon
-	 * @param _replicon the Replicon to add
+	 * Add a organism to the subGroup
+	 * @param _organisme, the organism to insert
 	 * @return the insertion success
 	 */
-	public boolean addReplicon(Replicon _replicon) {
-		if(m_replicons.add(_replicon)) {
-			m_genomeNumber.put(_replicon.getType(), m_genomeNumber.get(_replicon.getType())+1);
-			m_parent.addReplicon(_replicon.getType());
-			return true;
-		}else {
-			return false;
-		}
+	public boolean addSubGroup(SubGroup _subGroup) {
+		return m_subGroups.add(_subGroup);
 	}
 	
+	public void addReplicon(Replicon.Type _type) {
+		m_genomeNumber.put(_type, m_genomeNumber.get(_type)+1);
+		m_parent.addReplicon(_type);
+	}
+
 	/**
 	 * Get the number of a genome's specified type
 	 * @param _type, the type of the genomes to get
@@ -100,21 +87,7 @@ public class Organism {
 	public String getKingdom() {
 		return m_kingdom;
 	}
-	
-	/**
-	 * @return the group
-	 */
-	public String getGroup() {
-		return m_group;
-	}
-	
-	/**
-	 * @return the subgroup
-	 */
-	public String getSubgroup() {
-		return m_subgroup;
-	}
-
+		
 	/**
 	 * @return the m_modificationDate
 	 */
@@ -132,7 +105,8 @@ public class Organism {
 	/**
 	 * @return the m_replicons
 	 */
-	public ArrayList<Replicon> getReplicons(){
-		return m_replicons;
+	public ArrayList<SubGroup> getSubGroups(){
+		return m_subGroups;
 	}
+	
 }
