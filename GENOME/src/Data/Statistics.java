@@ -136,6 +136,16 @@ public class Statistics {
     }
 
     /**
+     * Set the number of a genome's specified type
+     * @param _type, the Type of the genomes's number to get
+     * @param _val, the val to set
+     * @return the number of genomes
+     */
+    public void setTypeNumber(Replicon.Type _type, Long _val) {
+        m_genomeNumber.put(_type,_val);
+    }
+
+    /**
      * Set a value to a statistic of a Trinucleotide
      * @param _tri, the Trinucleotide to set
      * @param _stat, the statistic to set
@@ -172,7 +182,13 @@ public class Statistics {
         return m_invalidSequences;
     }
 
-    public boolean update(Statistics _stats){
-        return true;
+    /**
+     * Update statistics
+     * @param _stats, the stats use to update
+     */
+    public void update(Statistics _stats){
+        for(Replicon.Type field : Replicon.Type.values()) {
+            m_genomeNumber.put(field,m_genomeNumber.get(field) + _stats.getTypeNumber(field));
+        }
     }
 }

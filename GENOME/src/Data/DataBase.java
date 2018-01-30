@@ -1,6 +1,6 @@
 package Data;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class DataBase extends IDataBase{
 
@@ -11,7 +11,7 @@ public class DataBase extends IDataBase{
 	/**
 	 * Array of this Database's Kingdom
 	 */
-	private ArrayList<Kingdom> m_kingdoms;
+	private LinkedList<Kingdom> m_kingdoms;
 	
 	/**
 	 * Class constructor
@@ -19,7 +19,7 @@ public class DataBase extends IDataBase{
 	 */
 	private DataBase(String _name) {
 		super(_name);
-		m_kingdoms = new ArrayList<>();
+		m_kingdoms = new LinkedList<>();
 	}
 	
 	/**
@@ -47,8 +47,15 @@ public class DataBase extends IDataBase{
 	 * Get the Kingdoms of this DataBase
 	 * @return the m_kingdoms
 	 */
-	public ArrayList<Kingdom> getKingdoms(){
+	public LinkedList<Kingdom> getKingdoms(){
 		return m_kingdoms;
 	}
 
+	/**
+	 * Update the statistics
+	 * @param _stats, the stats to update
+	 */
+	public void update(Statistics _stats) {
+		m_statistics.update(_stats);
+	}
 }

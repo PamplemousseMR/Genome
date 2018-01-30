@@ -1,6 +1,6 @@
 package Data;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class Replicon extends IDataBase{
 	
@@ -27,7 +27,7 @@ public class Replicon extends IDataBase{
 	/**
 	 * Array of all the sequences of this Replicon
 	 */
-	private ArrayList<StringBuffer> m_sequences;
+	private LinkedList<StringBuffer> m_sequences;
 	
 	/**
 	 * Class constructor
@@ -37,9 +37,11 @@ public class Replicon extends IDataBase{
      */
 	public Replicon(Organism _parent, Type _type, String _name) {
 		super(_name);
+		m_statistics.setTypeNumber(_type,1l);
         m_parent = _parent;
 		m_type = _type;
-		m_sequences = new ArrayList<>();
+		m_sequences = new LinkedList<>();
+		m_parent.addReplicon(this);
 	}
 	
 	/**
@@ -63,8 +65,15 @@ public class Replicon extends IDataBase{
 	 * Get sequences of this Replicon
 	 * @return the sequences
 	 */
-	public ArrayList<StringBuffer> getSequences(){
+	public LinkedList<StringBuffer> getSequences(){
 		return m_sequences;
 	}
-	
+
+    /**
+     * Update m_parent and remove this from the parent's list
+     */
+	public void update(){
+	    m_parent.getReplicons().remove(this);
+	    m_parent.update(m_statistics);
+    }
 }

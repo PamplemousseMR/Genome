@@ -1,6 +1,6 @@
 package Data;
 
-import java.util.ArrayList;
+import java.util.LinkedList;
 
 public class SubGroup extends IDataBase{
 
@@ -11,7 +11,7 @@ public class SubGroup extends IDataBase{
 	/**
 	 * Array of this SubGroup's Organisms
 	 */
-	private ArrayList<Organism> m_organisms;
+	private LinkedList<Organism> m_organisms;
 	
 	/**
 	 * Class constructor
@@ -21,7 +21,8 @@ public class SubGroup extends IDataBase{
 	public SubGroup(Group _parent, String _name) {
 		super(_name);
 		m_parent = _parent;
-		m_organisms = new ArrayList<>();
+		m_organisms = new LinkedList<>();
+		m_parent.addSubGroup(this);
 	}
 	
 	/**
@@ -37,8 +38,19 @@ public class SubGroup extends IDataBase{
 	 * Get the Organism of this SubGroup
 	 * @return the m_groups
 	 */
-	public ArrayList<Organism> getOrganisms(){
+	public LinkedList<Organism> getOrganisms(){
 		return m_organisms;
 	}
-	
+
+    /**
+     * Update the statistics
+     * @param _stats, the stats to update
+     */
+    public void update(Statistics _stats) {
+        m_statistics.update(_stats);
+        if(getState()== State.DONE && m_organisms.size()==0){
+            m_parent.getSubGroups().remove(this);
+            m_parent.update(m_statistics);
+        }
+    }
 }
