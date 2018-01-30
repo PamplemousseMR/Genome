@@ -3,10 +3,10 @@ package Data;
 import java.util.ArrayList;
 import java.util.EnumMap;
 
-public class Replicon {
+public class Replicon extends IDataBase{
 	
 	/**
-	 * This enumeration represent the type of an NC
+	 * This enumeration represent the type of a Replicon
 	 */
 	public enum Type{
 		
@@ -97,15 +97,11 @@ public class Replicon {
 	}
 	
 	/**
-	 * Type of this NC
+	 * Type of this Replicon
 	 */
 	private Type m_type;
 	/**
-	 * Name of this NC
-	 */
-	private String m_name;
-	/**
-	 * Array of all the sequences of this NC 
+	 * Array of all the sequences of this Replicon
 	 */
 	private ArrayList<StringBuffer> m_sequences;
 	/**
@@ -123,11 +119,11 @@ public class Replicon {
 	
 	/**
 	 * Class constructor
-	 * @param _type, the type of this NC
+	 * @param _type, the type of this Replicon
 	 */
 	public Replicon(Type _type, String _name) {
+		super(_name);
 		m_type = _type;
-		m_name = _name;
 		m_sequences = new ArrayList<>();
 		m_statitics = new EnumMap<>(Trinucleotide.class);
 		for(Trinucleotide tri : Trinucleotide.values()) {
@@ -151,8 +147,8 @@ public class Replicon {
 	}
 	
 	/**
-	 * Set a value to a statistic of a trinucleotide 
-	 * @param _tri, the trinucleotide to set
+	 * Set a value to a statistic of a Trinucleotide
+	 * @param _tri, the Trinucleotide to set
 	 * @param _stat, the statistic to set
 	 * @param _val, the value to set
 	 * @return the element previously at the specified position
@@ -172,7 +168,7 @@ public class Replicon {
 	}
 	
 	/**
-	 * Get the type of this NC
+	 * Get the type of this Replicon
 	 * @return the type
 	 */
 	public Type getType() {
@@ -180,15 +176,7 @@ public class Replicon {
 	}
 	
 	/**
-	 * Get the name of this NC
-	 * @return the name
-	 */
-	public String getName() {
-		return m_name;
-	}
-	
-	/**
-	 * Get sequences of this NC
+	 * Get sequences of this Replicon
 	 * @return the sequences
 	 */
 	public ArrayList<StringBuffer> getSequences(){
