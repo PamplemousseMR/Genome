@@ -2,7 +2,11 @@ package GUI;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
+import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Toolkit;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -12,11 +16,19 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.UIManager;
+import javax.swing.border.Border;
 
-public class MainFrame extends JFrame
+import Utils.Logs;
+
+public class MainFrame extends JFrame implements ActionListener
 {
 	private static final long serialVersionUID = -6768656055410219611L;
-	private static String s_TITLE="BIOINFORMATIQUE ILC. Realise par Arthur D. -- Adele M. -- Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.";
+	private static final String s_TITLE="BIOINFORMATIQUE ILC. Realise par Adele M. -- Arthur D. --  Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.";
+	private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
+	private static Border s_basicEmptyBorder=BorderFactory.createEmptyBorder(20, 20, 20, 20);
+	private static final Color s_DARKGRAY =new Color(32, 34, 37);
+	private static final Color s_LIGHTGRAY= new Color(54, 57, 62);
 	private JPanel m_north;
 	private JPanel m_center;
 	private JPanel m_south;
@@ -25,12 +37,15 @@ public class MainFrame extends JFrame
 	private JButton m_launchDL;
 	private JLabel m_titleLabel;
 	private JLabel m_titleLabel2;
-	private JProgressBar m_jpb; //Vector de progress bar si on veut en mettre plusieurs
+	private JProgressBar m_jpb; 
 	private JMenuBar m_menuBar;
 	private JMenu m_exit;
 	private JMenu m_fullScreen;
 	private JMenu m_reduce;
 
+	/**
+	 * ctor
+	 */
 	public MainFrame()
 	{
 		super(s_TITLE);
@@ -39,22 +54,28 @@ public class MainFrame extends JFrame
 		initLayout();
 		addComponents();
 		swagComponents();
+		addListener();
 	}
 
+	/**
+	 * Basic frame inits
+	 */
 	private void initFrame()
 	{
-		//Sans doute possible de detecter la taille de l'ecran et d'adapter la taille de la fenetre en fonction
-		this.setUndecorated(true);
+		this.setUndecorated(true); // Vincent : Vraiment pas fan, ça vire aussi les fonctionnalités de resize etç 
 		this.setVisible(true);
-		this.setSize(1000,800);
+		this.setSize((s_DIM.width/2),(s_DIM.height/2));
 		this.setLocationRelativeTo(null);
 		this.setResizable(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 	}
 
+	/**
+	 * Initialize the components
+	 */
 	private void initComponents()
 	{
-		//Creation d'un Panel par area
+		//Creation of one panel per area
 		m_north= new JPanel();
 		m_center= new JPanel();
 		m_south= new JPanel();
@@ -69,10 +90,12 @@ public class MainFrame extends JFrame
 		m_menuBar = new JMenuBar();
 		m_exit = new JMenu("X");
 		m_fullScreen = new JMenu("[]");
-		m_reduce = new JMenu("-");
+		m_reduce = new JMenu("-");		
 	}
 
-	// Adapter les Layout des differents Panel si besoin.
+	/**
+	 * Initialize layout types
+	 */
 	private void initLayout()
 	{
 		this.setLayout(new BorderLayout());
@@ -80,6 +103,9 @@ public class MainFrame extends JFrame
 		m_south.setLayout(new BorderLayout());
 	}
 
+	/**
+	 * Add components into layouts
+	 */
 	private void addComponents()
 	{
 		this.add(m_north,BorderLayout.NORTH);
@@ -105,20 +131,24 @@ public class MainFrame extends JFrame
 		m_south.add(m_jpb,BorderLayout.CENTER);
 	}
 
-	// Apparence des composantes de l'interface
+	/**
+	 * Swag the interface
+	 */
 	private void swagComponents()
 	{
+		//to modify window swag,check the LookAndFeel thing
+
 		// Panels backgrounds
-		m_north.setBackground(new Color(32, 34, 37));     // Dark gray
-		m_south.setBackground(new Color(54, 57, 62));     // Gray
-		m_center.setBackground(new Color(54, 57, 62));     // Gray
-		m_west.setBackground(new Color(54, 57, 62));     // Gray
-		m_east.setBackground(new Color(54, 57, 62));     // Gray
+		m_north.setBackground(s_DARKGRAY);     // Dark gray
+		m_south.setBackground(s_LIGHTGRAY);     // Gray
+		m_center.setBackground(s_LIGHTGRAY);     // Gray
+		m_west.setBackground(s_LIGHTGRAY);     // Gray
+		m_east.setBackground(s_LIGHTGRAY);     // Gray
 
 		// Panels margin (top, left, bottom, right)
-		m_north.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		m_east.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		m_west.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
+		m_north.setBorder(s_basicEmptyBorder);
+		m_east.setBorder(s_basicEmptyBorder);
+		m_west.setBorder(s_basicEmptyBorder);
 
 		// Labels
 		m_titleLabel.setFont(new Font("Helvetica", Font.PLAIN, 28));
@@ -134,10 +164,39 @@ public class MainFrame extends JFrame
 
 		// Buttons
 		m_launchDL.setBackground(Color.LIGHT_GRAY);
-		m_launchDL.setForeground(new Color(32, 34, 37));  // Light gray
+		m_launchDL.setForeground(s_LIGHTGRAY);  // Light gray
 		m_launchDL.setBorderPainted(false);
 
 		// Menu Bar
-		m_menuBar.setBackground(new Color(32, 34, 37));
+		m_menuBar.setBackground(s_DARKGRAY);		
+
+		//ugly atm, but just to know it does exist and we can modify it easily
+		UIManager.put("Button.select", Color.BLUE);
 	}
+
+	/**
+	 * Add listener on components
+	 */
+	private void addListener()
+	{
+		m_launchDL.addActionListener(this);
+
+	}
+
+
+	/**
+	 * Manage the action to do when a listener is triggered
+	 */
+	@Override
+	public void actionPerformed(ActionEvent e) 
+	{
+		Object source = e.getSource();
+		if(source==this.m_launchDL)
+		{
+			Logs.info("Bouton cliqué");
+		}
+
+	}
+
 }
+
