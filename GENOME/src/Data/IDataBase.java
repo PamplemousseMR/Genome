@@ -4,10 +4,6 @@ import java.util.Date;
 
 public class IDataBase {
 
-    public enum State{
-        WIP,
-        DONE
-    }
     /**
      * The name
      */
@@ -17,13 +13,9 @@ public class IDataBase {
      */
     private Date m_modificationDate;
     /**
-     * Actual state of this IDataBase
-     */
-    private State m_state;
-    /**
      * Statistics of this IDataBase
      */
-    protected Statistics m_statistics;
+    private Statistics m_statistics;
 
     /**
      * Class constructor
@@ -31,23 +23,7 @@ public class IDataBase {
     protected IDataBase(String _name){
         m_name = _name;
         m_modificationDate = new Date();
-        m_state = State.WIP;
         m_statistics = new Statistics();
-    }
-
-    /**
-     * Specified to this IDataBase that all this children are created
-     */
-    public void finish(){
-        m_state = State.DONE;
-    }
-
-    /**
-     * Get the state
-     * @return the state
-     */
-    public State getState() {
-        return m_state;
     }
 
     /**
@@ -66,4 +42,7 @@ public class IDataBase {
         return m_name;
     }
 
+    public Statistics getStatistics() {
+        return m_statistics;
+    }
 }

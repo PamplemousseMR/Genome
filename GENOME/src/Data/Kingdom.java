@@ -2,7 +2,7 @@ package Data;
 
 import java.util.LinkedList;
 
-public class Kingdom extends IDataBase{
+public class Kingdom extends IState {
 
 	/**
 	 * Reference to the parent
@@ -15,14 +15,12 @@ public class Kingdom extends IDataBase{
 	
 	/**
 	 * Class constructor
-	 * @param _parent, this Kingdom's parent
 	 * @param _name, the name of this Kingdom
 	 */
-	public Kingdom(DataBase _parent, String _name) {
+	public Kingdom(String _name) {
 		super(_name);
-		m_parent = _parent;
 		m_groups = new LinkedList<>();
-		m_parent.addKingdom(this);
+		m_parent = null;
 	}
 	
 	/**
@@ -31,8 +29,11 @@ public class Kingdom extends IDataBase{
 	 * @return the insertion success
 	 */
 	public boolean addGroup(Group _group) {
-		return m_groups.add(_group);
-	}
+        if(getState()==State.STARTED) {
+            _group.setParent(this);
+            return m_groups.add(_group);
+        }else return false;
+    }
 	
 	/**
 	 * Get the Group of this Kingdom
@@ -42,15 +43,46 @@ public class Kingdom extends IDataBase{
 		return m_groups;
 	}
 
+    /**
+     * In case of all Group are already finished
+     */
+    @Override
+    public void stop() throws Exception{
+        super.stop();
+        if(m_groups.size()==0){
+            m_parent.finish(this);
+			super.finish();
+        }
+    }
+
+	// Do not use
+
 	/**
-	 * Update the statistics
-	 * @param _stats, the stats to update
+	 * Finish this Kingdom if it can
+	 * @param _group, the Group to finish
 	 */
-	public void update(Statistics _stats) {
-		m_statistics.update(_stats);
-		if(getState()== State.DONE && m_groups.size()==0){
-			m_parent.getKingdoms().remove(this);
-			m_parent.update(m_statistics);
+	protected boolean finish(Group _group) throws Exception {
+		if(m_groups.contains(_group)){
+			getStatistics().update(_group.getStatistics());
+			m_groups.remove(_group);
+			if(getState()== State.STOPPED && m_groups.size()==0){
+				m_parent.finish(this);
+				super.finish();
+				return true;
+			}else{
+				return false;
+			}
+		}else {
+			return false;
 		}
 	}
+
+	/**
+	 * Set the parent
+	 * @param _dataBase, the parent to set
+	 */
+	protected void setParent(DataBase _dataBase){
+		m_parent = _dataBase;
+	}
+
 }

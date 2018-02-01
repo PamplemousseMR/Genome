@@ -2,7 +2,7 @@ package Data;
 
 import java.util.LinkedList;
 
-public class Group extends IDataBase{
+public class Group extends IState {
 
 	/**
 	 * Reference to the parent
@@ -15,14 +15,12 @@ public class Group extends IDataBase{
 	
 	/**
 	 * Class constructor
-	 * @param _parent, this Group's parent
 	 * @param _name, the name of this Group
 	 */
-	public Group(Kingdom _parent, String _name) {
+	public Group(String _name) {
 		super(_name);
-		m_parent = _parent;
 		m_subGroups = new LinkedList<>();
-		m_parent.addGroup(this);
+		m_parent = null;
 	}
 	
 	/**
@@ -31,7 +29,10 @@ public class Group extends IDataBase{
 	 * @return the insertion success
 	 */
 	public boolean addSubGroup(SubGroup _subGroup) {
-		return m_subGroups.add(_subGroup);
+		if(getState()==State.STARTED) {
+			_subGroup.setParent(this);
+			return m_subGroups.add(_subGroup);
+		}else return false;
 	}
 	
 	/**
@@ -43,14 +44,53 @@ public class Group extends IDataBase{
 	}
 
 	/**
-	 * Update the statistics
-	 * @param _stats, the stats to update
+	 * In case of all SubGroup are already finished
 	 */
-	public void update(Statistics _stats) {
-		m_statistics.update(_stats);
-		if(getState()== State.DONE && m_subGroups.size()==0){
-			m_parent.getGroups().remove(this);
-			m_parent.update(m_statistics);
+	@Override
+	public void stop() throws Exception{
+		super.stop();
+		if(m_subGroups.size()==0){
+			m_parent.finish(this);
+			super.finish();
 		}
 	}
+
+	public String getKingdomName(){
+		return m_parent.getName();
+	}
+
+	// Do not use
+
+	/**
+	 * Finish this Group if it can
+	 * @param _subGroup, the SubGroup to finish
+	 */
+	protected boolean finish(SubGroup _subGroup) throws Exception {
+		if(m_subGroups.contains(_subGroup)){
+			getStatistics().update(_subGroup.getStatistics());
+			m_subGroups.remove(_subGroup);
+			if(getState()== State.STOPPED && m_subGroups.size()==0){
+				m_parent.finish(this);
+				super.finish();
+				return true;
+			}else{
+				return false;
+			}
+		}else {
+			return false;
+		}
+	}
+
+	/**
+	 * Set the parent
+	 * @param _kingdom, the parent to set
+	 */
+	protected void setParent(Kingdom _kingdom){
+		m_parent = _kingdom;
+	}
+
+	protected Kingdom getParent(){
+		return m_parent;
+	}
+
 }
