@@ -53,7 +53,7 @@ public class SubGroup extends IState{
     	super.stop();
 		if(m_organisms.size()==0){
 			m_parent.finish(this);
-			finish();
+			super.finish();
 		}
 	}
 
@@ -64,13 +64,12 @@ public class SubGroup extends IState{
 	 * @param _organism, the Organism to finish
 	 */
 	protected boolean finish(Organism _organism) throws Exception {
-		System.out.println("Remove "+_organism.getName());
 		if(m_organisms.contains(_organism)){
 			getStatistics().update(_organism.getStatistics());
 			m_organisms.remove(_organism);
 			if(getState() == State.STOPPED && m_organisms.size()==0){
 				m_parent.finish(this);
-				finish();
+				super.finish();
 				return true;
 			}else{
 				return false;

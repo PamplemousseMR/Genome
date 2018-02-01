@@ -51,32 +51,23 @@ public class Kingdom extends IState {
         super.stop();
         if(m_groups.size()==0){
             m_parent.finish(this);
-            finish();
+			super.finish();
         }
     }
 
 	// Do not use
 
 	/**
-	 * Set the parent
-	 * @param _dataBase, the parent to set
-	 */
-	protected void setParent(DataBase _dataBase){
-		m_parent = _dataBase;
-	}
-
-	/**
 	 * Finish this Kingdom if it can
 	 * @param _group, the Group to finish
 	 */
 	protected boolean finish(Group _group) throws Exception {
-		System.out.println("Kingdom");
 		if(m_groups.contains(_group)){
 			getStatistics().update(_group.getStatistics());
 			m_groups.remove(_group);
 			if(getState()== State.STOPPED && m_groups.size()==0){
 				m_parent.finish(this);
-				finish();
+				super.finish();
 				return true;
 			}else{
 				return false;
@@ -84,6 +75,14 @@ public class Kingdom extends IState {
 		}else {
 			return false;
 		}
+	}
+
+	/**
+	 * Set the parent
+	 * @param _dataBase, the parent to set
+	 */
+	protected void setParent(DataBase _dataBase){
+		m_parent = _dataBase;
 	}
 
 }

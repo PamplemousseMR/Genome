@@ -51,19 +51,11 @@ public class Group extends IState {
 		super.stop();
 		if(m_subGroups.size()==0){
 			m_parent.finish(this);
-			finish();
+			super.finish();
 		}
 	}
 
 	// Do not use
-
-	/**
-	 * Set the parent
-	 * @param _kingdom, the parent to set
-	 */
-	protected void setParent(Kingdom _kingdom){
-		m_parent = _kingdom;
-	}
 
 	/**
 	 * Finish this Group if it can
@@ -75,7 +67,7 @@ public class Group extends IState {
 			m_subGroups.remove(_subGroup);
 			if(getState()== State.STOPPED && m_subGroups.size()==0){
 				m_parent.finish(this);
-				finish();
+				super.finish();
 				return true;
 			}else{
 				return false;
@@ -83,6 +75,14 @@ public class Group extends IState {
 		}else {
 			return false;
 		}
+	}
+
+	/**
+	 * Set the parent
+	 * @param _kingdom, the parent to set
+	 */
+	protected void setParent(Kingdom _kingdom){
+		m_parent = _kingdom;
 	}
 
 }

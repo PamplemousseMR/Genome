@@ -62,7 +62,7 @@ public class DataBase extends IState {
 	public void stop() throws Exception{
 		super.stop();
 		if(m_kingdoms.size()==0){
-			finish();
+			super.finish();
 		}
 	}
 
@@ -73,12 +73,11 @@ public class DataBase extends IState {
 	 * @param _kingdom, the Kingdom to finish
 	 */
 	protected boolean finish(Kingdom _kingdom) throws Exception {
-		System.out.println("DataBase");
 		if(m_kingdoms.contains(_kingdom)){
 			getStatistics().update(_kingdom.getStatistics());
 			m_kingdoms.remove(_kingdom);
 			if(getState()== IState.State.STOPPED && m_kingdoms.size()==0){
-				finish();
+				super.finish();
 				return true;
 			}else{
 				return false;
