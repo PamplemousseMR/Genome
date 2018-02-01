@@ -55,6 +55,10 @@ public class Group extends IState {
 		}
 	}
 
+	public String getKingdomName(){
+		return m_parent.getName();
+	}
+
 	// Do not use
 
 	/**
@@ -83,6 +87,10 @@ public class Group extends IState {
 	 */
 	protected void setParent(Kingdom _kingdom){
 		m_parent = _kingdom;
+	}
+
+	protected Kingdom getParent(){
+		return m_parent;
 	}
 
 }

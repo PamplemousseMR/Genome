@@ -135,4 +135,35 @@ class GlobalTest {
         }
     }
 
+    @org.junit.jupiter.api.Test
+    void nameTest() throws Exception{
+
+        Kingdom k = new Kingdom("KINGDOM");
+        k.start();
+
+        Group g = new Group("GROUP");
+        g.start();
+        k.addGroup(g);
+
+        SubGroup s = new SubGroup("SUBGROUP");
+        s.start();
+        g.addSubGroup(s);
+
+        Organism o = new Organism("ORGANISM");
+        s.addOrganism(o);
+
+        assertEquals("KINGDOM",o.getKingdomName());
+        assertEquals("GROUP",o.getGroupName());
+        assertEquals("SUBGROUP",o.getSubGroupName());
+
+        assertEquals("KINGDOM",s.getKingdomName());
+        assertEquals("GROUP",s.getGroupName());
+
+        assertEquals("KINGDOM",g.getKingdomName());
+
+        s.stop();
+        g.stop();
+        k.stop();
+    }
+
 }

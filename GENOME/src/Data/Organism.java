@@ -55,6 +55,18 @@ public class Organism extends IDataBase {
 		return true;
     }
 
+    public String getSubGroupName(){
+		return m_parent.getName();
+	}
+
+	public String getGroupName(){
+		return m_parent.getParent().getName();
+	}
+
+	public String getKingdomName(){
+		return m_parent.getParent().getParent().getName();
+	}
+
     // Do not use
 
 	/**

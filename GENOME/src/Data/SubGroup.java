@@ -57,6 +57,14 @@ public class SubGroup extends IState{
 		}
 	}
 
+	public String getGroupName(){
+		return m_parent.getName();
+	}
+
+	public String getKingdomName(){
+		return m_parent.getParent().getName();
+	}
+
 	// Do not use
 
 	/**
@@ -85,6 +93,10 @@ public class SubGroup extends IState{
 	 */
 	protected void setParent(Group _group){
 		m_parent = _group;
+	}
+
+	protected Group getParent(){
+		return m_parent;
 	}
 
 }
