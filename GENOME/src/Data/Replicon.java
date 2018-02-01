@@ -8,7 +8,6 @@ public class Replicon extends IDataBase{
 	 * This enumeration represent the type of a Replicon
 	 */
 	public enum Type{
-		
 		CHROMOSOME,
 		MITOCHONDRION,
 		PLASMID,
@@ -31,17 +30,15 @@ public class Replicon extends IDataBase{
 	
 	/**
 	 * Class constructor
-     * @param _parent, the reference to the parent
 	 * @param _type, the type of this Replicon
      * @param _name, the name of the organism
      */
-	public Replicon(Organism _parent, Type _type, String _name) {
+	public Replicon(Type _type, String _name) {
 		super(_name);
-		m_statistics.setTypeNumber(_type,1l);
-        m_parent = _parent;
 		m_type = _type;
+		getStatistics().setTypeNumber(_type,1l);
 		m_sequences = new LinkedList<>();
-		m_parent.addReplicon(this);
+		m_parent = null;
 	}
 	
 	/**
@@ -69,11 +66,14 @@ public class Replicon extends IDataBase{
 		return m_sequences;
 	}
 
-    /**
-     * Update m_parent and remove this from the parent's list
-     */
-	public void update(){
-	    m_parent.getReplicons().remove(this);
-	    m_parent.update(m_statistics);
-    }
+	// Do not use
+
+	/**
+	 * Set the parent
+	 * @param _organism, the parent to set
+	 */
+	protected void setParent(Organism _organism){
+		m_parent = _organism;
+	}
+
 }

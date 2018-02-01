@@ -2,7 +2,7 @@ package Data;
 
 import java.util.LinkedList;
 
-public class Organism extends IDataBase{
+public class Organism extends IDataBase {
 
 	/**
 	 * Reference to the parent
@@ -15,14 +15,12 @@ public class Organism extends IDataBase{
 	
 	/**
 	 * Class constructor
-	 * @param _parent, the reference to the parent
 	 * @param _name, the name of the organism
 	 */
-	public Organism(SubGroup _parent, String _name) {
+	public Organism(String _name) {
 		super(_name);
-		m_parent = _parent;
 		m_replicons = new LinkedList<>();
-		m_parent.addOrganism(this);
+		m_parent = null;
 	}
 
     /**
@@ -30,8 +28,11 @@ public class Organism extends IDataBase{
      * @param _replicon, the Replicon to insert
      * @return the insertion success
      */
-    public boolean addReplicon(Replicon _replicon) {
-        return m_replicons.add(_replicon);
+    public boolean addReplicon(Replicon _replicon) throws Exception{
+    	if(m_replicons.contains(_replicon))
+    		throw new Exception("Replicon already added");
+		_replicon.setParent(this);
+		return m_replicons.add(_replicon);
     }
 	
 	/**
@@ -44,13 +45,23 @@ public class Organism extends IDataBase{
 
     /**
      * Update the statistics
-     * @param _stats, the stats to update
      */
-    public void update(Statistics _stats) {
-        m_statistics.update(_stats);
-        if(getState()== State.DONE && m_replicons.size()==0){
-            m_parent.getOrganisms().remove(this);
-            m_parent.update(m_statistics);
-        }
+	public boolean finish() throws Exception{
+		for(Replicon rep : m_replicons) {
+			getStatistics().update(rep.getStatistics());
+		}
+		m_replicons.clear();
+		m_parent.finish(this);
+		return true;
     }
+
+    // Do not use
+
+	/**
+	 * Set the parent
+	 * @param _subGroup, the parent to set
+	 */
+	protected void setParent(SubGroup _subGroup){
+		m_parent = _subGroup;
+	}
 }
