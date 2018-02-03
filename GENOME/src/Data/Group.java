@@ -76,7 +76,13 @@ public final class Group extends IState {
 	 */
 	protected void finish(SubGroup _subGroup) throws Exception {
 		if(m_subGroups.contains(_subGroup)){
-			getStatistics().update(_subGroup.getStatistics());
+			for(Statistics.Type type : Statistics.Type.values()){
+				if(_subGroup.getTypeNumber(type) != 0L){
+					//todo crée ligne si pas deja fait
+					getStatistics(type).update(_subGroup.getStatistics(type));
+					incrType(type,_subGroup.getTypeNumber(type));
+				}
+			}
 			m_subGroups.remove(_subGroup);
 			if(getState()== State.STOPPED && m_subGroups.size()==0){
 				m_parent.finish(this);

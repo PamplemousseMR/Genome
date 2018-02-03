@@ -1,6 +1,7 @@
 package Data;
 
 import java.util.Date;
+import java.util.EnumMap;
 
 public class IDataBase {
 
@@ -15,7 +16,11 @@ public class IDataBase {
     /**
      * Statistics of this IDataBase
      */
-    private Statistics m_statistics;
+    private EnumMap<Statistics.Type,Statistics> m_statistics;
+    /**
+     * Array of values of each Replicon's type
+     */
+    private EnumMap<Statistics.Type,Long> m_genomeNumber;
 
     /**
      * Class constructor
@@ -23,7 +28,12 @@ public class IDataBase {
     IDataBase(String _name){
         m_name = _name;
         m_modificationDate = new Date();
-        m_statistics = new Statistics();
+        m_statistics = new EnumMap<>(Statistics.Type.class);
+        m_genomeNumber = new EnumMap<>(Statistics.Type.class);
+        for(Statistics.Type field : Statistics.Type.values()) {
+            m_genomeNumber.put(field, 0L);
+            m_statistics.put(field,new Statistics(field));
+        }
     }
 
     /**
@@ -46,7 +56,42 @@ public class IDataBase {
      * Get the statistics
      * @return the statistics
      */
-    public Statistics getStatistics() {
-        return m_statistics;
+    public EnumMap<Statistics.Type,Statistics> getStatistics() {
+         return m_statistics;
+     }
+
+    /**
+     * Get the statistics of the specific type
+     * @param _type, the type of the statistics
+     * @return the statistics
+     */
+     public Statistics getStatistics(Statistics.Type _type){
+        return m_statistics.get(_type);
+     }
+
+    /**
+     * Get the number of a genome's specified type
+     * @param _type, the Type of the genomes's number to get
+     * @return the number of genomes
+     */
+    Long getTypeNumber(Statistics.Type _type) {
+        return m_genomeNumber.get(_type);
     }
+
+    /**
+     * Increment by 1 the number of genome to a type
+     * @param _type, the Type of the genomes to increment
+     */
+    void incrType(Statistics.Type _type) {
+        m_genomeNumber.put(_type,m_genomeNumber.get(_type)+1L);
+    }
+
+    /**
+     * Increment by _incr the number of genome of a type
+     * @param _type, the Type of the genomes to increment
+     * @param _incr, the value of the increment
+     */
+    void incrType(Statistics.Type _type,long _incr){ m_genomeNumber.put(_type,m_genomeNumber.get(_type)+_incr); }
+
 }
+

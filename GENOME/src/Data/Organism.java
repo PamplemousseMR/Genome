@@ -23,17 +23,17 @@ public final class Organism extends IDataBase {
 		m_parent = null;
 	}
 
-    /**
-     * Add a Replicon to this Organisme
-     * @param _replicon, the Replicon to insert
-     * @return the insertion success
+	/**
+	 * Add a Replicon to this Organism
+	 * @param _replicon, the Replicon to insert
+	 * @return the insertion success
 	 * @throws Exception if it _replicon are already added
 	 */
-    public boolean addReplicon(Replicon _replicon) throws Exception{
-    	if(m_replicons.contains(_replicon))
-    		throw new Exception("Replicon already added");
+	public boolean addReplicon(Replicon _replicon) throws Exception{
+		if(m_replicons.contains(_replicon))
+			throw new Exception("Replicon already added");
 		return m_replicons.add(_replicon);
-    }
+	}
 	
 	/**
 	 * Get this Organims's Replicons
@@ -43,18 +43,20 @@ public final class Organism extends IDataBase {
 		return m_replicons;
 	}
 
-    /**
-     * Update the statistics
+	/**
+	 * Update the statistics
 	 * @throws Exception if it can't be finished
 	 */
 	public boolean finish() throws Exception{
 		for(Replicon rep : m_replicons) {
-			getStatistics().update(rep.getStatistics());
+			rep.compute();
+			getStatistics(rep.getType()).update(rep);
+			incrType(rep.getType());
 		}
 		m_replicons.clear();
 		m_parent.finish(this);
 		return true;
-    }
+	}
 
 	/**
 	 * Get the SubGroup's name
@@ -80,8 +82,7 @@ public final class Organism extends IDataBase {
 		return m_parent.getParent().getParent().getName();
 	}
 
-    // Do not use
-
+	// Do not use
 	/**
 	 * Set the parent
 	 * @param _subGroup, the parent to set

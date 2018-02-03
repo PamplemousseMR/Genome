@@ -68,7 +68,13 @@ public final class Kingdom extends IState {
 	 */
 	protected void finish(Group _group) throws Exception {
 		if(m_groups.contains(_group)){
-			getStatistics().update(_group.getStatistics());
+			for(Statistics.Type type : Statistics.Type.values()){
+				if(_group.getTypeNumber(type) != 0L){
+					//todo crée ligne si pas deja fait
+					getStatistics(type).update(_group.getStatistics(type));
+					incrType(type,_group.getTypeNumber(type));
+				}
+			}
 			m_groups.remove(_group);
 			if(getState()== State.STOPPED && m_groups.size()==0){
 				m_parent.finish(this);

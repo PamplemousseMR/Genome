@@ -84,7 +84,13 @@ public final class SubGroup extends IState{
 	 */
 	protected void finish(Organism _organism) throws Exception {
 		if(m_organisms.contains(_organism)){
-			getStatistics().update(_organism.getStatistics());
+			for(Statistics.Type type : Statistics.Type.values()){
+				if(_organism.getTypeNumber(type) != 0L){
+					//todo crée ligne si pas deja fait
+					getStatistics(type).update(_organism.getStatistics(type));
+					incrType(type,_organism.getTypeNumber(type));
+				}
+			}
 			m_organisms.remove(_organism);
 			if(getState() == State.STOPPED && m_organisms.size()==0){
 				m_parent.finish(this);

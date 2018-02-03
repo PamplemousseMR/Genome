@@ -1,39 +1,49 @@
 package Data;
 
+import java.util.Date;
 import java.util.LinkedList;
 
-public final class Replicon extends IDataBase{
-	
-	/**
-	 * This enumeration represent the type of a Replicon
-	 */
-	public enum Type{
-		CHROMOSOME,
-		MITOCHONDRION,
-		PLASMID,
-		DNA,
-		CHLOROPLAST
-	}
+public final class Replicon extends Statistics{
 
 	/**
-	 * Type of this Replicon
+	 * The name
 	 */
-	private Type m_type;
+	private String m_name;
+	/**
+	 * Last modification's date
+	 */
+	private Date m_modificationDate;
 	/**
 	 * Array of all the sequences of this Replicon
 	 */
 	private LinkedList<StringBuffer> m_sequences;
-	
+
 	/**
 	 * Class constructor
 	 * @param _type, the type of this Replicon
      * @param _name, the name of the organism
      */
 	public Replicon(Type _type, String _name) {
-		super(_name);
-		m_type = _type;
-		getStatistics().setType(_type);
+		super(_type);
+		m_name = _name;
+		m_modificationDate = new Date();
 		m_sequences = new LinkedList<>();
+	}
+
+	/**
+	 * Get the last modification's date
+	 * @return the m_modificationDate
+	 */
+	public Date getModificationDate() {
+		return m_modificationDate;
+	}
+
+	/**
+	 * Get the name
+	 * @return the m_name
+	 */
+	public String getName(){
+		return m_name;
 	}
 	
 	/**
@@ -47,21 +57,28 @@ public final class Replicon extends IDataBase{
 			throw new Exception("Sequence already added");
 		return m_sequences.add(_sequence);
 	}
-	
-	/**
-	 * Get the type of this Replicon
-	 * @return the type
-	 */
-	public Type getType() {
-		return m_type;
-	}
 
-	/**
-	 * Get sequences of this Replicon
-	 * @return the sequences
-	 */
-	public LinkedList<StringBuffer> getSequences(){
-		return m_sequences;
-	}
+	// Do not use
 
+	@Override
+	protected void compute() {
+		int idx,length;
+		for( StringBuffer sequence : m_sequences) {
+				idx = 0;
+				length = sequence.length();
+				while(idx+5 <= length){
+                    incrStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
+                    incrStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
+                    incrStat(Trinucleotide.valueOf(sequence.substring(idx+2,idx+5)),Stat.PHASE2);
+                    idx+=3;
+				}
+				if(idx+4 <= length){
+                    incrStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
+                    if(idx+4 == length){
+                        incrStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
+                    }
+                }
+		}
+		super.compute();
+	}
 }
