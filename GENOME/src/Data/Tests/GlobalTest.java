@@ -120,8 +120,6 @@ class GlobalTest {
                         for(Replicon r : o.getReplicons()){
                             StringBuffer sb = new StringBuffer("AAATTTCCCGGG");
                             assertTrue(r.addSequence(sb));
-                            assertEquals("AAATTTCCCGGG", r.getSequences().get(0).toString());
-                            assertSame(sb, r.getSequences().get(0));
                             assertThrows(Exception.class, () -> r.addSequence(sb));
                         }
                     }

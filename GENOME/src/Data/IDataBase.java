@@ -58,31 +58,41 @@ public class IDataBase {
      */
     public EnumMap<Statistics.Type,Statistics> getStatistics() {
          return m_statistics;
-     }
+    }
 
     /**
-     * Get the statistics of the specific type
-     * @param _type, the type of the statistics
-     * @return the statistics
+     * Get number of each Genome's Type
+     * @return the number of each Genome's Type
      */
-     public Statistics getStatistics(Statistics.Type _type){
-        return m_statistics.get(_type);
-     }
+    public EnumMap<Statistics.Type, Long> getGenomeNumber() {
+        return m_genomeNumber;
+    }
+
+    // Do not used
 
     /**
      * Get the number of a genome's specified type
      * @param _type, the Type of the genomes's number to get
      * @return the number of genomes
      */
-    Long getTypeNumber(Statistics.Type _type) {
+    protected Long getTypeNumber(Statistics.Type _type) {
         return m_genomeNumber.get(_type);
+    }
+
+    /**
+     * Get the statistics of the specific type
+     * @param _type, the type of the statistics
+     * @return the statistics
+     */
+    protected Statistics getStatistics(Statistics.Type _type){
+        return m_statistics.get(_type);
     }
 
     /**
      * Increment by 1 the number of genome to a type
      * @param _type, the Type of the genomes to increment
      */
-    void incrType(Statistics.Type _type) {
+    protected void incrementGenomeNumber(Statistics.Type _type) {
         m_genomeNumber.put(_type,m_genomeNumber.get(_type)+1L);
     }
 
@@ -91,7 +101,7 @@ public class IDataBase {
      * @param _type, the Type of the genomes to increment
      * @param _incr, the value of the increment
      */
-    void incrType(Statistics.Type _type,long _incr){ m_genomeNumber.put(_type,m_genomeNumber.get(_type)+_incr); }
+    protected void incrementGenomeNumber(Statistics.Type _type,long _incr){ m_genomeNumber.put(_type,m_genomeNumber.get(_type)+_incr); }
 
 }
 

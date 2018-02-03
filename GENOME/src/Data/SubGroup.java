@@ -39,14 +39,6 @@ public final class SubGroup extends IState{
 	}
 
 	/**
-	 * Get the Organism of this SubGroup
-	 * @return the m_groups
-	 */
-	public LinkedList<Organism> getOrganisms(){
-		return m_organisms;
-	}
-
-	/**
 	 * In case of all Organisme are already finished
 	 * @throws Exception if it can't be sopped
 	 */
@@ -57,6 +49,14 @@ public final class SubGroup extends IState{
 			m_parent.finish(this);
 			super.finish();
 		}
+	}
+
+	/**
+	 * Get the Organism of this SubGroup
+	 * @return the m_groups
+	 */
+	public LinkedList<Organism> getOrganisms(){
+		return m_organisms;
 	}
 
 	/**
@@ -88,7 +88,7 @@ public final class SubGroup extends IState{
 				if(_organism.getTypeNumber(type) != 0L){
 					//todo crée ligne si pas deja fait
 					getStatistics(type).update(_organism.getStatistics(type));
-					incrType(type,_organism.getTypeNumber(type));
+					incrementGenomeNumber(type,_organism.getTypeNumber(type));
 				}
 			}
 			m_organisms.remove(_organism);

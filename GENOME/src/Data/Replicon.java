@@ -3,7 +3,7 @@ package Data;
 import java.util.Date;
 import java.util.LinkedList;
 
-public final class Replicon extends Statistics{
+public final class Replicon extends Statistics {
 
 	/**
 	 * The name
@@ -60,22 +60,21 @@ public final class Replicon extends Statistics{
 
 	// Do not use
 
-	@Override
-	protected void compute() {
+	protected void computeStatistic() {
 		int idx,length;
 		for( StringBuffer sequence : m_sequences) {
 				idx = 0;
 				length = sequence.length();
 				while(idx+5 <= length){
-                    incrStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
-                    incrStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
-                    incrStat(Trinucleotide.valueOf(sequence.substring(idx+2,idx+5)),Stat.PHASE2);
+					incrementStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
+					incrementStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
+					incrementStat(Trinucleotide.valueOf(sequence.substring(idx+2,idx+5)),Stat.PHASE2);
                     idx+=3;
 				}
 				if(idx+4 <= length){
-                    incrStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
+					incrementStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
                     if(idx+4 == length){
-                        incrStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
+						incrementStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
                     }
                 }
 		}

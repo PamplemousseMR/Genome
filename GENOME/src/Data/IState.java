@@ -60,6 +60,8 @@ public class IState extends IDataBase{
         return m_state;
     }
 
+    // Do not used
+
     /**
      * Finish
      * @throws Exception if it can't be finished

@@ -37,14 +37,6 @@ public final class Group extends IState {
 			return m_subGroups.add(_subGroup);
 		}else return false;
 	}
-	
-	/**
-	 * Get the Subgroups of this Group
-	 * @return the m_subGroups
-	 */
-	public LinkedList<SubGroup> getSubGroups(){
-		return m_subGroups;
-	}
 
 	/**
 	 * In case of all SubGroup are already finished
@@ -57,6 +49,14 @@ public final class Group extends IState {
 			m_parent.finish(this);
 			super.finish();
 		}
+	}
+
+	/**
+	 * Get the Subgroups of this Group
+	 * @return the m_subGroups
+	 */
+	public LinkedList<SubGroup> getSubGroups(){
+		return m_subGroups;
 	}
 
 	/**
@@ -80,7 +80,7 @@ public final class Group extends IState {
 				if(_subGroup.getTypeNumber(type) != 0L){
 					//todo crée ligne si pas deja fait
 					getStatistics(type).update(_subGroup.getStatistics(type));
-					incrType(type,_subGroup.getTypeNumber(type));
+                    incrementGenomeNumber(type,_subGroup.getTypeNumber(type));
 				}
 			}
 			m_subGroups.remove(_subGroup);

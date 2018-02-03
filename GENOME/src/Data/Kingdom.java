@@ -37,6 +37,19 @@ public final class Kingdom extends IState {
             return m_groups.add(_group);
         }else return false;
     }
+
+	/**
+	 * In case of all Group are already finished
+	 * @throws Exception if it can't be stopped
+	 */
+	@Override
+	public void stop() throws Exception{
+		super.stop();
+		if(m_groups.size()==0){
+			m_parent.finish(this);
+			super.finish();
+		}
+	}
 	
 	/**
 	 * Get the Group of this Kingdom
@@ -45,19 +58,6 @@ public final class Kingdom extends IState {
 	public LinkedList<Group> getGroups(){
 		return m_groups;
 	}
-
-    /**
-     * In case of all Group are already finished
-	 * @throws Exception if it can't be stopped
-	 */
-    @Override
-    public void stop() throws Exception{
-        super.stop();
-        if(m_groups.size()==0){
-            m_parent.finish(this);
-			super.finish();
-        }
-    }
 
 	// Do not use
 
@@ -72,7 +72,7 @@ public final class Kingdom extends IState {
 				if(_group.getTypeNumber(type) != 0L){
 					//todo crée ligne si pas deja fait
 					getStatistics(type).update(_group.getStatistics(type));
-					incrType(type,_group.getTypeNumber(type));
+					incrementGenomeNumber(type,_group.getTypeNumber(type));
 				}
 			}
 			m_groups.remove(_group);

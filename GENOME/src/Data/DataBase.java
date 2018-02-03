@@ -83,7 +83,7 @@ public final class DataBase extends IState {
 				if(_kingdom.getTypeNumber(type) != 0L){
 					//todo crée ligne si pas deja fait
 					getStatistics(type).update(_kingdom.getStatistics(type));
-					incrType(type,_kingdom.getTypeNumber(type));
+					incrementGenomeNumber(type,_kingdom.getTypeNumber(type));
 				}
 			}
 			m_kingdoms.remove(_kingdom);

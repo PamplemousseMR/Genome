@@ -49,9 +49,9 @@ public final class Organism extends IDataBase {
 	 */
 	public boolean finish() throws Exception{
 		for(Replicon rep : m_replicons) {
-			rep.compute();
+			rep.computeStatistic();
 			getStatistics(rep.getType()).update(rep);
-			incrType(rep.getType());
+			incrementGenomeNumber(rep.getType());
 		}
 		m_replicons.clear();
 		m_parent.finish(this);
@@ -83,6 +83,7 @@ public final class Organism extends IDataBase {
 	}
 
 	// Do not use
+
 	/**
 	 * Set the parent
 	 * @param _subGroup, the parent to set

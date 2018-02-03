@@ -90,7 +90,7 @@ public class Statistics {
     }
 
     /**
-     * This enumeration represent the type of a Replicon
+     * This enumeration represent the type of a Statistic
      */
     public enum Type{
         CHROMOSOME,
@@ -101,21 +101,13 @@ public class Statistics {
     }
 
     /**
-     * Type of this Replicon
+     * Type of this Statistic
      */
     private Type m_type;
     /**
      * Array to store statistics
      */
     private EnumMap<Trinucleotide, EnumMap<Stat,Float>> m_trinucleaotideTable;
-    /**
-     * Number of valid sequence
-     */
-    private long m_validSequence;
-    /**
-     * Number of invalid sequence
-     */
-    private long m_invalidSequences;
     /**
      * Number total of trinucleotide on phase 0
      */
@@ -132,7 +124,7 @@ public class Statistics {
     /**
      * Class constructor
      */
-    public Statistics(Type _type){
+    protected Statistics(Type _type){
         m_type = _type;
         m_trinucleaotideTable = new EnumMap<>(Trinucleotide.class);
         for(Trinucleotide tri : Trinucleotide.values()) {
@@ -142,41 +134,9 @@ public class Statistics {
             }
             m_trinucleaotideTable.put(tri,arr);
         }
-        m_validSequence = 0;
-        m_invalidSequences = 0;
         m_TotalTriPhase0 = 0;
         m_TotalTriPhase1 = 0;
         m_TotalTriPhase2 = 0;
-    }
-
-    /**
-     * Set a value to a statistic of a Trinucleotide
-     * @param _tri, the Trinucleotide to set
-     * @param _stat, the statistic to set
-     * @param _val, the value to set
-     * @return the element previously at the specified position
-     */
-    protected Float setStat(Trinucleotide _tri, Stat _stat, Float _val) {
-        return m_trinucleaotideTable.get(_tri).put(_stat, _val);
-    }
-
-    /**
-     * Increment the value of a trinucleotide for a stat
-     * @param _tri, the Trinucleotide to set
-     * @param _stat, the statistic to set
-     */
-    protected void incrStat(Trinucleotide _tri, Stat _stat){
-        m_trinucleaotideTable.get(_tri).put(_stat,m_trinucleaotideTable.get(_tri).get(_stat));
-    }
-
-    /**
-     * Get the statistic of a trinucleotide
-     * @param _tri, the trinucleotide to get
-     * @param _stat, the statistic to get
-     * @return the statistic
-     */
-    public Float getStat(Trinucleotide _tri, Stat _stat) {
-        return m_trinucleaotideTable.get(_tri).get(_stat);
     }
 
     /**
@@ -188,44 +148,30 @@ public class Statistics {
     }
 
     /**
-     * Get the valid sequences number
-     * @return the m_validSequence
-     */
-    public long getValidSequence() {
-        return m_validSequence;
-    }
-
-    /**
-     * Get the invalid sequences number
-     * @return the m_invalidSequences
-     */
-    public long getInvalidSequences() {
-        return m_invalidSequences;
-    }
-
-    /**
      * get the total trinucleotide of the phase 0 number
      * @return the m_TotalTriPhase0
      */
-    public long getTotalTinucleotidePhase0() { return m_TotalTriPhase0; }
+    public long getTotalTrinucleotidePhase0() { return m_TotalTriPhase0; }
 
     /**
      * get the total trinucleotide of the phase 1 number
      * @return the m_TotalTriPhase1
      */
-    public long getTotalTinucleotidePhase1() { return m_TotalTriPhase1; }
+    public long getTotalTrinucleotidePhase1() { return m_TotalTriPhase1; }
 
     /**
      * get the total trinucleotide of the phase 2 number
      * @return the m_TotalTriPhase2
      */
-    public long getTotalTinucleotidePhase2() { return m_TotalTriPhase2; }
+    public long getTotalTrinucleotidePhase2() { return m_TotalTriPhase2; }
+
+    // Do not use
 
     /**
      * Update statistics
      * @param _stats, the stats use to update
      */
-    void update(Statistics _stats) {
+    protected void update(Statistics _stats) {
         EnumMap row, inputRow;
         for (Trinucleotide tri : Trinucleotide.values()) {
             row = m_trinucleaotideTable.get(tri);
@@ -239,7 +185,7 @@ public class Statistics {
     /**
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
-    void compute(){
+    protected void compute(){
         EnumMap row;
         for(Trinucleotide tri : Trinucleotide.values()){
             row = m_trinucleaotideTable.get(tri);
@@ -247,5 +193,14 @@ public class Statistics {
             row.put(Stat.FREQ0, (Float)row.get(Stat.PHASE1)/(float)m_TotalTriPhase1);
             row.put(Stat.FREQ0, (Float)row.get(Stat.PHASE2)/(float)m_TotalTriPhase2);
         }
+    }
+
+    /**
+     * Increment the value of a trinucleotide for a stat
+     * @param _tri, the Trinucleotide to set
+     * @param _stat, the statistic to set
+     */
+    protected void incrementStat(Trinucleotide _tri, Stat _stat){
+        m_trinucleaotideTable.get(_tri).put(_stat,m_trinucleaotideTable.get(_tri).get(_stat)+1);
     }
 }
