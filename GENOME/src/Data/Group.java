@@ -2,7 +2,7 @@ package Data;
 
 import java.util.LinkedList;
 
-public class Group extends IState {
+public final class Group extends IState {
 
 	/**
 	 * Reference to the parent
@@ -27,9 +27,12 @@ public class Group extends IState {
 	 * Add a SubGroup to this Group
 	 * @param _subGroup, the Subgroup to insert
 	 * @return the insertion success
+	 * @throws Exception if _subGroup are already added
 	 */
-	public boolean addSubGroup(SubGroup _subGroup) {
+	public boolean addSubGroup(SubGroup _subGroup) throws Exception {
 		if(getState()==State.STARTED) {
+			if(m_subGroups.contains(_subGroup))
+				throw new Exception("Sequence already added");
 			_subGroup.setParent(this);
 			return m_subGroups.add(_subGroup);
 		}else return false;
@@ -45,6 +48,7 @@ public class Group extends IState {
 
 	/**
 	 * In case of all SubGroup are already finished
+	 * @throws Exception if it can't be stopped
 	 */
 	@Override
 	public void stop() throws Exception{
@@ -55,6 +59,10 @@ public class Group extends IState {
 		}
 	}
 
+	/**
+	 * Get the Kingdom's name
+	 * @return the Kingdom's name
+	 */
 	public String getKingdomName(){
 		return m_parent.getName();
 	}
@@ -64,20 +72,16 @@ public class Group extends IState {
 	/**
 	 * Finish this Group if it can
 	 * @param _subGroup, the SubGroup to finish
+	 * @throws Exception if it can't be finished
 	 */
-	protected boolean finish(SubGroup _subGroup) throws Exception {
+	protected void finish(SubGroup _subGroup) throws Exception {
 		if(m_subGroups.contains(_subGroup)){
 			getStatistics().update(_subGroup.getStatistics());
 			m_subGroups.remove(_subGroup);
 			if(getState()== State.STOPPED && m_subGroups.size()==0){
 				m_parent.finish(this);
 				super.finish();
-				return true;
-			}else{
-				return false;
 			}
-		}else {
-			return false;
 		}
 	}
 
@@ -89,6 +93,10 @@ public class Group extends IState {
 		m_parent = _kingdom;
 	}
 
+	/**
+	 * Get the Kingdom
+	 * @return the Kingdom
+	 */
 	protected Kingdom getParent(){
 		return m_parent;
 	}

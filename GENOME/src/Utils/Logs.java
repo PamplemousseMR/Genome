@@ -12,7 +12,7 @@ public final class Logs {
 	/**
 	 * File's name
 	 */
-	public static final String s_LOGS_FILE_NAME = "log.txt";
+	private static final String s_LOGS_FILE_NAME = "log.txt";
 
 	/**
 	 * Buffer to write in file
@@ -26,7 +26,9 @@ public final class Logs {
 		if(s_file == null) {
 			File file = new File(s_LOGS_FILE_NAME);
 			try {
-				file.createNewFile();
+				if(!file.createNewFile()){
+					throw new IOException("Can't create new file");
+				}
 				s_file = new BufferedWriter(new FileWriter(file));
 			}catch(IOException e) {
 				e.printStackTrace();
@@ -48,7 +50,7 @@ public final class Logs {
 	
 	/**
 	 * Print a message in the log file
-	 * @param message the message to print
+	 * @param _message the message to print
 	 */
 	public static void info(String _message) {
 		if(s_file != null) {
@@ -58,14 +60,13 @@ public final class Logs {
 				s_file.write(header + " " + _message + "\n");
 			} catch (IOException e) {
 				e.printStackTrace();
-				return;
 			}
 		}
 	}
 	
 	/**
 	 * Print a message in the log file
-	 * @param message the message to print
+	 * @param _message the message to print
 	 */
 	public static void warning(String _message) {
 		if(s_file != null) {
@@ -75,14 +76,13 @@ public final class Logs {
 				s_file.write(header + " " + _message + "\n");
 			} catch (IOException e) {
 				e.printStackTrace();
-				return;
 			}
 		}
 	}
 	
 	/**
 	 * Print a exception in the log file
-	 * @param message the message to print
+	 * @param _exception the message to print
 	 */
 	public static void exception(Exception _exception) {
 		if(s_file != null) {

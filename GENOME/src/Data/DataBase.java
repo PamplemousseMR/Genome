@@ -2,7 +2,7 @@ package Data;
 
 import java.util.LinkedList;
 
-public class DataBase extends IState {
+public final class DataBase extends IState {
 
 	public static final String s_NAME = "GENOME";
 	/**
@@ -39,9 +39,12 @@ public class DataBase extends IState {
 	 * Add a Kingdom to the Database
 	 * @param _kingdom, the Kingdom to insert
 	 * @return the insertion success
+	 * @throws Exception if _kingdom are already added
 	 */
-	public boolean addKingdom(Kingdom _kingdom) {
+	public boolean addKingdom(Kingdom _kingdom) throws Exception {
 		if(getState()==State.STARTED) {
+			if(m_kingdoms.contains(_kingdom))
+				throw new Exception("Sequence already added");
 			_kingdom.setParent(this);
 			return m_kingdoms.add(_kingdom);
 		}else return false;
@@ -57,6 +60,7 @@ public class DataBase extends IState {
 
 	/**
 	 * In case of all Kingdom are already finished
+	 * @throws Exception if it can't be stopped
 	 */
 	@Override
 	public void stop() throws Exception{
@@ -71,19 +75,15 @@ public class DataBase extends IState {
 	/**
 	 * Finish this DataBase if it can
 	 * @param _kingdom, the Kingdom to finish
+	 * @throws Exception if it can't be finished
 	 */
-	protected boolean finish(Kingdom _kingdom) throws Exception {
+	protected void finish(Kingdom _kingdom) throws Exception {
 		if(m_kingdoms.contains(_kingdom)){
 			getStatistics().update(_kingdom.getStatistics());
 			m_kingdoms.remove(_kingdom);
 			if(getState()== IState.State.STOPPED && m_kingdoms.size()==0){
 				super.finish();
-				return true;
-			}else{
-				return false;
 			}
-		}else {
-			return false;
 		}
 	}
 

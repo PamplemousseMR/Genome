@@ -4,17 +4,9 @@ import Data.*;
 
 import java.util.LinkedList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GlobalTest {
-
-    public String printStat(Statistics _stat){
-        String res = "";
-        for(Replicon.Type field : Replicon.Type.values()) {
-            res += field+" : "+_stat.getTypeNumber(field)+", ";
-        }
-        return res;
-    }
 
     @org.junit.jupiter.api.Test
     void dataBaseTest() throws Exception{
@@ -29,6 +21,8 @@ class GlobalTest {
 
         Kingdom k2 = new Kingdom("k2");
         assertEquals(true,dataBase.addKingdom(k2));
+
+        assertThrows(Exception.class, () -> dataBase.addKingdom(k2));
         dataBase.stop();
 
         Kingdom k3 = new Kingdom("k3");
@@ -46,6 +40,7 @@ class GlobalTest {
             Group g2 = new Group("g2_"+k.getName());
             g2.start();
             assertEquals(true,k.addGroup(g2));
+            assertThrows(Exception.class, () -> k.addGroup(g2));
             k.stop();
 
             Group g3 = new Group("g3_"+k.getName());
@@ -62,6 +57,7 @@ class GlobalTest {
 
                 SubGroup s2 = new SubGroup("s2_"+g.getName());
                 assertEquals(true,g.addSubGroup(s2));
+                assertThrows(Exception.class, () -> g.addSubGroup(s2));
 
                 g.stop();
                 SubGroup s3 = new SubGroup("s3_"+g.getName());
@@ -84,6 +80,7 @@ class GlobalTest {
 
                     Organism o2 = new Organism("o2_"+s.getName());
                     assertEquals(true,s.addOrganism(o2));
+                    assertThrows(Exception.class, () -> s.addOrganism(o2));
                     s.stop();
                     list.add(o2);
 
@@ -109,29 +106,31 @@ class GlobalTest {
                         Replicon r3 = new Replicon(Replicon.Type.MITOCHONDRION,"r3_"+o.getName());
                         assertEquals(true, o.addReplicon(r3));
                         assertEquals(Replicon.Type.MITOCHONDRION, r3.getType());
+
+                        assertThrows(Exception.class, () -> o.addReplicon(r3));
+                    }
+                }
+            }
+        }
+
+        for(Kingdom k : dataBase.getKingdoms()) {
+            for(Group g : k.getGroups()) {
+                for(SubGroup s : g.getSubGroups()) {
+                    for(Organism o : s.getOrganisms()) {
+                        for(Replicon r : o.getReplicons()){
+                            StringBuffer sb = new StringBuffer("AAATTTCCCGGG");
+                            assertTrue(r.addSequence(sb));
+                            assertEquals("AAATTTCCCGGG", r.getSequences().get(0).toString());
+                            assertSame(sb, r.getSequences().get(0));
+                            assertThrows(Exception.class, () -> r.addSequence(sb));
+                        }
                     }
                 }
             }
         }
 
         for(Organism o : list) {
-            o.finish();
-        }
-
-        for(Kingdom k : dataBase.getKingdoms()) {
-            System.out.println(k.getName() + " : "+printStat(k.getStatistics()));
-            for (Group g : k.getGroups()) {
-                System.out.println("\t" + g.getName() + " : "+printStat(g.getStatistics()));
-                for(SubGroup s : g.getSubGroups()) {
-                    System.out.println("\t\t" + s.getName() + " : "+printStat(s.getStatistics()));
-                    for(Organism o : s.getOrganisms()) {
-                        System.out.println("\t\t\t" + o.getName() + " : "+printStat(o.getStatistics()));
-                        for(Replicon r : o.getReplicons()) {
-                            System.out.println("\t\t\t\t" + r.getName() + " : " + printStat(r.getStatistics()));
-                        }
-                    }
-                }
-            }
+            assertTrue(o.finish());
         }
     }
 

@@ -2,7 +2,7 @@ package Data;
 
 import java.util.LinkedList;
 
-public class Kingdom extends IState {
+public final class Kingdom extends IState {
 
 	/**
 	 * Reference to the parent
@@ -27,9 +27,12 @@ public class Kingdom extends IState {
 	 * Add a Group to this Kingdom
 	 * @param _group, the Group to insert
 	 * @return the insertion success
+	 * @throws Exception if _group are already added
 	 */
-	public boolean addGroup(Group _group) {
+	public boolean addGroup(Group _group) throws Exception {
         if(getState()==State.STARTED) {
+			if(m_groups.contains(_group))
+				throw new Exception("Sequence already added");
             _group.setParent(this);
             return m_groups.add(_group);
         }else return false;
@@ -45,7 +48,8 @@ public class Kingdom extends IState {
 
     /**
      * In case of all Group are already finished
-     */
+	 * @throws Exception if it can't be stopped
+	 */
     @Override
     public void stop() throws Exception{
         super.stop();
@@ -60,20 +64,16 @@ public class Kingdom extends IState {
 	/**
 	 * Finish this Kingdom if it can
 	 * @param _group, the Group to finish
+	 * @throws Exception if it can't be finished
 	 */
-	protected boolean finish(Group _group) throws Exception {
+	protected void finish(Group _group) throws Exception {
 		if(m_groups.contains(_group)){
 			getStatistics().update(_group.getStatistics());
 			m_groups.remove(_group);
 			if(getState()== State.STOPPED && m_groups.size()==0){
 				m_parent.finish(this);
 				super.finish();
-				return true;
-			}else{
-				return false;
 			}
-		}else {
-			return false;
 		}
 	}
 

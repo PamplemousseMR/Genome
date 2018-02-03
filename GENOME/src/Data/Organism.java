@@ -2,20 +2,20 @@ package Data;
 
 import java.util.LinkedList;
 
-public class Organism extends IDataBase {
+public final class Organism extends IDataBase {
 
 	/**
 	 * Reference to the parent
 	 */
 	private SubGroup m_parent;
 	/**
-	 * Array of this organism's replicons
+	 * Array of this organism's Replicon
 	 */
 	private LinkedList<Replicon> m_replicons;
 	
 	/**
 	 * Class constructor
-	 * @param _name, the name of the organism
+	 * @param _name, the name of the Organism
 	 */
 	public Organism(String _name) {
 		super(_name);
@@ -27,11 +27,11 @@ public class Organism extends IDataBase {
      * Add a Replicon to this Organisme
      * @param _replicon, the Replicon to insert
      * @return the insertion success
-     */
+	 * @throws Exception if it _replicon are already added
+	 */
     public boolean addReplicon(Replicon _replicon) throws Exception{
     	if(m_replicons.contains(_replicon))
     		throw new Exception("Replicon already added");
-		_replicon.setParent(this);
 		return m_replicons.add(_replicon);
     }
 	
@@ -45,7 +45,8 @@ public class Organism extends IDataBase {
 
     /**
      * Update the statistics
-     */
+	 * @throws Exception if it can't be finished
+	 */
 	public boolean finish() throws Exception{
 		for(Replicon rep : m_replicons) {
 			getStatistics().update(rep.getStatistics());
@@ -55,14 +56,26 @@ public class Organism extends IDataBase {
 		return true;
     }
 
-    public String getSubGroupName(){
+	/**
+	 * Get the SubGroup's name
+	 * @return the SubGroup's name
+	 */
+	public String getSubGroupName(){
 		return m_parent.getName();
 	}
 
+	/**
+	 * Get the Group's name
+	 * @return the Group's name
+	 */
 	public String getGroupName(){
 		return m_parent.getParent().getName();
 	}
 
+	/**
+	 * Get the Kingdom's name
+	 * @return the Kingdom's name
+	 */
 	public String getKingdomName(){
 		return m_parent.getParent().getParent().getName();
 	}

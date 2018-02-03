@@ -1,6 +1,5 @@
 package Main;
 
-import Data.*;
 import GUI.MainFrame;
 import Utils.Logs;
 import Utils.Options;
@@ -10,7 +9,7 @@ public final class GENOME {
 	/**
 	 * Function call at the begin of the program
 	 */
-	public static void initializeProgram() {
+	private static void initializeProgram() {
 		Logs.initializeLog();
 		Logs.info("Log initialized");
 		Options.initializeOptions();
@@ -20,7 +19,7 @@ public final class GENOME {
 	/**
 	 * Function call at the end of the program
 	 */
-	public static void finalizeProgram() {
+	private static void finalizeProgram() {
 		Logs.info("Options finalized");
 		Options.finalizeOptions();
 		Logs.info("Log finalized");
@@ -29,12 +28,7 @@ public final class GENOME {
 
 	public static void main(String[] args) {
 		initializeProgram();
-		Runtime.getRuntime().addShutdownHook(new Thread() {
-			@Override
-			public void run() {
-				finalizeProgram();
-			}
-		});
+		Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
 		
 		// Write main under this comment 
 		Logs.info("Begin");

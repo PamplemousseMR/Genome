@@ -2,7 +2,7 @@ package Data;
 
 import java.util.LinkedList;
 
-public class Replicon extends IDataBase{
+public final class Replicon extends IDataBase{
 	
 	/**
 	 * This enumeration represent the type of a Replicon
@@ -15,10 +15,6 @@ public class Replicon extends IDataBase{
 		CHLOROPLAST
 	}
 
-    /**
-     * Reference to the parent
-     */
-    private Organism m_parent;
 	/**
 	 * Type of this Replicon
 	 */
@@ -36,17 +32,19 @@ public class Replicon extends IDataBase{
 	public Replicon(Type _type, String _name) {
 		super(_name);
 		m_type = _type;
-		getStatistics().setTypeNumber(_type,1l);
+		getStatistics().setType(_type);
 		m_sequences = new LinkedList<>();
-		m_parent = null;
 	}
 	
 	/**
 	 * Add a sequence 
 	 * @param _sequence, the sequence to add
 	 * @return the insertion success
+	 * @throws Exception if the _sequence are already added
 	 */
-	public boolean addSequence(StringBuffer _sequence) {
+	public boolean addSequence(StringBuffer _sequence) throws Exception {
+		if(m_sequences.contains(_sequence))
+			throw new Exception("Sequence already added");
 		return m_sequences.add(_sequence);
 	}
 	
@@ -64,16 +62,6 @@ public class Replicon extends IDataBase{
 	 */
 	public LinkedList<StringBuffer> getSequences(){
 		return m_sequences;
-	}
-
-	// Do not use
-
-	/**
-	 * Set the parent
-	 * @param _organism, the parent to set
-	 */
-	protected void setParent(Organism _organism){
-		m_parent = _organism;
 	}
 
 }

@@ -2,7 +2,7 @@ package Data;
 
 import java.util.LinkedList;
 
-public class SubGroup extends IState{
+public final class SubGroup extends IState{
 
 	/**
 	 * Reference to the parent
@@ -27,6 +27,7 @@ public class SubGroup extends IState{
 	 * Add an Organism to this SubGroup
 	 * @param _organism, the Organism to insert
 	 * @return the insertion success
+	 * @throws Exception if _organism are already added
 	 */
 	public boolean addOrganism(Organism _organism) throws Exception{
 		if(getState()==State.STARTED) {
@@ -47,6 +48,7 @@ public class SubGroup extends IState{
 
 	/**
 	 * In case of all Organisme are already finished
+	 * @throws Exception if it can't be sopped
 	 */
 	@Override
 	public void stop() throws Exception{
@@ -57,10 +59,18 @@ public class SubGroup extends IState{
 		}
 	}
 
+	/**
+	 * Get the Group's name
+	 * @return the Group's name
+	 */
 	public String getGroupName(){
 		return m_parent.getName();
 	}
 
+	/**
+	 * Get the Kingdom's name
+	 * @return the Kingdom's name
+	 */
 	public String getKingdomName(){
 		return m_parent.getParent().getName();
 	}
@@ -70,20 +80,16 @@ public class SubGroup extends IState{
 	/**
 	 * Finish this Subgroup if it can
 	 * @param _organism, the Organism to finish
+	 * @throws Exception if it can't be finished
 	 */
-	protected boolean finish(Organism _organism) throws Exception {
+	protected void finish(Organism _organism) throws Exception {
 		if(m_organisms.contains(_organism)){
 			getStatistics().update(_organism.getStatistics());
 			m_organisms.remove(_organism);
 			if(getState() == State.STOPPED && m_organisms.size()==0){
 				m_parent.finish(this);
 				super.finish();
-				return true;
-			}else{
-				return false;
 			}
-		}else {
-			return false;
 		}
 	}
 
@@ -95,6 +101,10 @@ public class SubGroup extends IState{
 		m_parent = _group;
 	}
 
+	/**
+	 * Get the Group
+	 * @return the Group
+	 */
 	protected Group getParent(){
 		return m_parent;
 	}

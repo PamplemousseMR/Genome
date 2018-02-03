@@ -9,38 +9,30 @@ import java.util.Calendar;
 import java.util.Date;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertSame;
 
 class DataBaseTest {
 
     static private DataBase db;
 
     @BeforeAll
-    static void setUpTest() {
+    static void setUpTest() throws Exception {
         db = DataBase.getInstance();
-        try {
-            db.start();
-        }catch (Exception e){
-            assertNull(e);
-        }
+        db.start();
     }
 
     @AfterAll
-    static void tearDown() {
-        try {
-            db.stop();
-        }catch (Exception e){
-            assertNull(e);
-        }
+    static void tearDown() throws Exception {
+        db.stop();
     }
 
     @org.junit.jupiter.api.Test
     void getInstanceTest() {
-        assertEquals(db, DataBase.getInstance());
+        assertSame(db, DataBase.getInstance());
     }
 
     @org.junit.jupiter.api.Test
-    void addKingdomTest() {
+    void addKingdomTest() throws Exception {
         db.addKingdom(new Kingdom(""));
         assertEquals(1, db.getKingdoms().size());
         db.addKingdom(new Kingdom(""));
@@ -48,7 +40,7 @@ class DataBaseTest {
     }
 
     @org.junit.jupiter.api.Test
-    void getKingdomsTest() {
+    void getKingdomsTest() throws Exception {
         Kingdom k1 = new Kingdom("one");
         Kingdom k2 = new Kingdom("two");
         db.addKingdom(k1);
@@ -76,7 +68,4 @@ class DataBaseTest {
         assertEquals(DataBase.s_NAME, db.getName());
     }
 
-    @org.junit.jupiter.api.Test
-    void getStatisticsTest() {
-    }
 }
