@@ -2,7 +2,7 @@ package Data;
 
 import java.util.EnumMap;
 
-public class Statistics {
+public final class Statistics {
 
     /**
      * List of the 64 trinucleotide
@@ -109,10 +109,10 @@ public class Statistics {
     /**
      * Class constructor
      */
-    public Statistics(){
+    Statistics(){
         m_genomeNumber = new EnumMap<>(Replicon.Type.class);
         for(Replicon.Type field : Replicon.Type.values()) {
-            m_genomeNumber.put(field,0l);
+            m_genomeNumber.put(field, 0L);
         }
         m_statitics = new EnumMap<>(Trinucleotide.class);
         for(Trinucleotide tri : Trinucleotide.values()) {
@@ -131,18 +131,16 @@ public class Statistics {
      * @param _type, the Type of the genomes's number to get
      * @return the number of genomes
      */
-    public Long getTypeNumber(Replicon.Type _type) {
+    Long getTypeNumber(Replicon.Type _type) {
         return m_genomeNumber.get(_type);
     }
 
     /**
-     * Set the number of a genome's specified type
+     * Set 1 to the specified type
      * @param _type, the Type of the genomes's number to get
-     * @param _val, the val to set
-     * @return the number of genomes
      */
-    public void setTypeNumber(Replicon.Type _type, Long _val) {
-        m_genomeNumber.put(_type,_val);
+    void setType(Replicon.Type _type) {
+        m_genomeNumber.put(_type,1L);
     }
 
     /**
@@ -152,7 +150,7 @@ public class Statistics {
      * @param _val, the value to set
      * @return the element previously at the specified position
      */
-    public Float setStat(Trinucleotide _tri, Stat _stat, Float _val) {
+    Float setStat(Trinucleotide _tri, Stat _stat, Float _val) {
         return m_statitics.get(_tri).put(_stat, _val);
     }
 
@@ -162,7 +160,7 @@ public class Statistics {
      * @param _stat, the statistic to get
      * @return the statistic
      */
-    public Float getStat(Trinucleotide _tri, Stat _stat) {
+    Float getStat(Trinucleotide _tri, Stat _stat) {
         return m_statitics.get(_tri).get(_stat);
     }
 
@@ -170,7 +168,7 @@ public class Statistics {
      * Get the valid sequences number
      * @return the m_validSequence
      */
-    public long getValidSequence() {
+    long getValidSequence() {
         return m_validSequence;
     }
 
@@ -178,7 +176,7 @@ public class Statistics {
      * Get the invalid sequences number
      * @return the m_invalidSequences
      */
-    public long getInvalidSequences() {
+    long getInvalidSequences() {
         return m_invalidSequences;
     }
 
@@ -186,7 +184,7 @@ public class Statistics {
      * Update statistics
      * @param _stats, the stats use to update
      */
-    public void update(Statistics _stats){
+    void update(Statistics _stats){
         for(Replicon.Type field : Replicon.Type.values()) {
             m_genomeNumber.put(field,m_genomeNumber.get(field) + _stats.getTypeNumber(field));
         }

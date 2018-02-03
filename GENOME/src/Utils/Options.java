@@ -14,7 +14,7 @@ public final class Options {
 	/**
 	 * File's name
 	 */
-	public static final String s_OPTIONS_FILE_NAME = "options.ini";
+	private static final String s_OPTIONS_FILE_NAME = "options.ini";
 
 	/**
 	 * Option's properties
@@ -31,7 +31,9 @@ public final class Options {
 
 		// Create file if it's not exist 
 		try {
-			file.createNewFile();
+			if(!file.createNewFile()){
+				throw new IOException("Can't create new file");
+			}
 		}catch(IOException e) {
 			Logs.exception(e);
 			return;
@@ -47,14 +49,10 @@ public final class Options {
 		} 
 
 		try {
-			m_properties.load(fr);
-		} catch (IOException e) {
-			Logs.exception(e);
-			return;
-		}
-		
-		try {
-			fr.close();
+			if (fr != null) {
+				m_properties.load(fr);
+				fr.close();
+			}
 		} catch (IOException e) {
 			Logs.exception(e);
 			return;
@@ -68,12 +66,8 @@ public final class Options {
 					Options.class.getDeclaredField(key).set(Options.class,m_properties.getProperty(key));
 				} catch (NoSuchFieldException e) {
 					Logs.exception(e);
-				} catch (SecurityException e) {
-					Logs.exception(e);
-				} catch (IllegalArgumentException e) {
-					Logs.exception(e);
 				} catch (IllegalAccessException e) {
-					Logs.exception(e);
+					e.printStackTrace();
 				}
 			}
 		}
@@ -88,7 +82,9 @@ public final class Options {
 
 			// Create file if it's not exist 
 			try {
-				file.createNewFile();
+				if(!file.createNewFile()){
+					throw new IOException("Can't create new file");
+				}
 			}catch(IOException e) {
 				Logs.exception(e);
 				return;
@@ -98,11 +94,11 @@ public final class Options {
 			for(Field field : Options.class.getDeclaredFields()) {
 				if(field.getName().compareTo("s_OPTIONS_FILE_NAME")!=0 && field.getName().compareTo("m_properties")!=0 && m_properties.getProperty(field.getName()) == null) {
 					try {
-						m_properties.put(field.getName(), field.get(new String("")));
+						m_properties.put(field.getName(), field.get(""));
 					} catch (IllegalArgumentException e) {
 						Logs.exception(e);
 					} catch (IllegalAccessException e) {
-						Logs.exception(e);
+						e.printStackTrace();
 					}
 				}
 			}
@@ -128,7 +124,6 @@ public final class Options {
 				out.close();
 			} catch (IOException e) {
 				Logs.exception(e);
-				return;
 			}
 		}
 	}

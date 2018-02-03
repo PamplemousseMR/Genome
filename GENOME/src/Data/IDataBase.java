@@ -20,7 +20,7 @@ public class IDataBase {
     /**
      * Class constructor
      */
-    protected IDataBase(String _name){
+    IDataBase(String _name){
         m_name = _name;
         m_modificationDate = new Date();
         m_statistics = new Statistics();
@@ -42,6 +42,10 @@ public class IDataBase {
         return m_name;
     }
 
+    /**
+     * Get the statistics
+     * @return the statistics
+     */
     public Statistics getStatistics() {
         return m_statistics;
     }
