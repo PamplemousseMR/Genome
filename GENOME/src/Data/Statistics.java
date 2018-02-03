@@ -107,7 +107,7 @@ public class Statistics {
     /**
      * Array to store statistics
      */
-    private EnumMap<Trinucleotide, EnumMap<Stat,Float>> m_trinucleaotideTable;
+    private EnumMap<Trinucleotide, EnumMap<Stat,Float>> m_trinucleotideTable;
     /**
      * Number total of trinucleotide on phase 0
      */
@@ -126,13 +126,13 @@ public class Statistics {
      */
     protected Statistics(Type _type){
         m_type = _type;
-        m_trinucleaotideTable = new EnumMap<>(Trinucleotide.class);
+        m_trinucleotideTable = new EnumMap<>(Trinucleotide.class);
         for(Trinucleotide tri : Trinucleotide.values()) {
             EnumMap<Stat,Float> arr = new EnumMap<>(Stat.class);
             for(Stat stat :  Stat.values()) {
                 arr.put(stat, 0f);
             }
-            m_trinucleaotideTable.put(tri,arr);
+            m_trinucleotideTable.put(tri,arr);
         }
         m_TotalTriPhase0 = 0;
         m_TotalTriPhase1 = 0;
@@ -165,6 +165,14 @@ public class Statistics {
      */
     public long getTotalTrinucleotidePhase2() { return m_TotalTriPhase2; }
 
+    /**
+     * 
+     * @return the m_trinucleotideTable
+     */
+    public EnumMap<Trinucleotide, EnumMap<Stat, Float>> getTable() {
+        return m_trinucleotideTable;
+    }
+
     // Do not use
 
     /**
@@ -174,11 +182,11 @@ public class Statistics {
     protected void update(Statistics _stats) {
         EnumMap row, inputRow;
         for (Trinucleotide tri : Trinucleotide.values()) {
-            row = m_trinucleaotideTable.get(tri);
-            inputRow = _stats.m_trinucleaotideTable.get(tri);
-            row.put(Stat.PHASE0, (Float)row.get(Stat.PHASE0)+(Float)inputRow.get(Stat.PHASE0));
-            row.put(Stat.PHASE1, (Float)row.get(Stat.PHASE1)+(Float)inputRow.get(Stat.PHASE1));
-            row.put(Stat.PHASE2, (Float)row.get(Stat.PHASE2)+(Float)inputRow.get(Stat.PHASE2));
+            row = m_trinucleotideTable.get(tri);
+            inputRow = _stats.m_trinucleotideTable.get(tri);
+            incrementStat(tri, Stat.PHASE0,(Float)inputRow.get(Stat.PHASE0));
+            incrementStat(tri, Stat.PHASE1,(Float)inputRow.get(Stat.PHASE1));
+            incrementStat(tri, Stat.PHASE2,(Float)inputRow.get(Stat.PHASE2));
         }
     }
 
@@ -188,19 +196,39 @@ public class Statistics {
     protected void compute(){
         EnumMap row;
         for(Trinucleotide tri : Trinucleotide.values()){
-            row = m_trinucleaotideTable.get(tri);
+            row = m_trinucleotideTable.get(tri);
             row.put(Stat.FREQ0, (Float)row.get(Stat.PHASE0)/(float)m_TotalTriPhase0);
-            row.put(Stat.FREQ0, (Float)row.get(Stat.PHASE1)/(float)m_TotalTriPhase1);
-            row.put(Stat.FREQ0, (Float)row.get(Stat.PHASE2)/(float)m_TotalTriPhase2);
+            row.put(Stat.FREQ1, (Float)row.get(Stat.PHASE1)/(float)m_TotalTriPhase1);
+            row.put(Stat.FREQ2, (Float)row.get(Stat.PHASE2)/(float)m_TotalTriPhase2);
         }
     }
 
     /**
-     * Increment the value of a trinucleotide for a stat
+     * Increment by 1 the value of a trinucleotide for a stat
      * @param _tri, the Trinucleotide to set
      * @param _stat, the statistic to set
      */
     protected void incrementStat(Trinucleotide _tri, Stat _stat){
-        m_trinucleaotideTable.get(_tri).put(_stat,m_trinucleaotideTable.get(_tri).get(_stat)+1);
+        m_trinucleotideTable.get(_tri).put(_stat,m_trinucleotideTable.get(_tri).get(_stat)+1);
+        switch(_stat){
+            case PHASE0: m_TotalTriPhase0++; break;
+            case PHASE1: m_TotalTriPhase1++; break;
+            case PHASE2: m_TotalTriPhase2++; break;
+        }
+    }
+
+    /**
+     * Increment by _incr the value of a trinucleotide for a stat
+     * @param _tri, the Trinucleotide to set
+     * @param _stat, the statistic to set
+     * @param _incr, the value to increment
+     */
+    private void incrementStat(Trinucleotide _tri, Stat _stat, float _incr){
+        m_trinucleotideTable.get(_tri).put(_stat,m_trinucleotideTable.get(_tri).get(_stat)+_incr);
+        switch(_stat){
+            case PHASE0: m_TotalTriPhase0+=_incr; break;
+            case PHASE1: m_TotalTriPhase1+=_incr; break;
+            case PHASE2: m_TotalTriPhase2+=_incr; break;
+        }
     }
 }

@@ -54,6 +54,9 @@ public final class Organism extends IDataBase {
 			incrementGenomeNumber(rep.getType());
 		}
 		m_replicons.clear();
+		for(Statistics.Type type : Statistics.Type.values()){
+			getStatistics(type).compute();
+		}
 		m_parent.finish(this);
 		return true;
 	}
