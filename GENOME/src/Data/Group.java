@@ -76,14 +76,12 @@ public final class Group extends IState {
 	 */
 	protected void finish(SubGroup _subGroup) throws Exception {
 		if(m_subGroups.contains(_subGroup)){
-			for(Statistics.Type type : Statistics.Type.values()){
-				if(_subGroup.getTypeNumber(type) != 0L){
-					//todo crée ligne si pas deja fait
-					getStatistics(type).update(_subGroup.getStatistics(type));
-                    incrementGenomeNumber(type,_subGroup.getTypeNumber(type));
-				}
-			}
+            for(Statistics stat : _subGroup.getStatistics().values()){
+                updateStatistics(stat);
+                incrementGenomeNumber(stat.getType(),_subGroup.getTypeNumber(stat.getType()));
+            }
 			m_subGroups.remove(_subGroup);
+            computeStatistics();
 			if(getState()== State.STOPPED && m_subGroups.size()==0){
 				m_parent.finish(this);
 				super.finish();

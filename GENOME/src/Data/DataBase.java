@@ -79,14 +79,12 @@ public final class DataBase extends IState {
 	 */
 	protected void finish(Kingdom _kingdom) throws Exception {
 		if(m_kingdoms.contains(_kingdom)){
-			for(Statistics.Type type : Statistics.Type.values()){
-				if(_kingdom.getTypeNumber(type) != 0L){
-					//todo crée ligne si pas deja fait
-					getStatistics(type).update(_kingdom.getStatistics(type));
-					incrementGenomeNumber(type,_kingdom.getTypeNumber(type));
-				}
-			}
+            for(Statistics stat : _kingdom.getStatistics().values()){
+                updateStatistics(stat);
+                incrementGenomeNumber(stat.getType(),_kingdom.getTypeNumber(stat.getType()));
+            }
 			m_kingdoms.remove(_kingdom);
+            computeStatistics();
 			if(getState()== IState.State.STOPPED && m_kingdoms.size()==0){
 				super.finish();
 			}

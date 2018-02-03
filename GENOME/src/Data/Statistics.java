@@ -180,9 +180,8 @@ public class Statistics {
      * @param _stats, the stats use to update
      */
     protected void update(Statistics _stats) {
-        EnumMap row, inputRow;
+        EnumMap inputRow;
         for (Trinucleotide tri : Trinucleotide.values()) {
-            row = m_trinucleotideTable.get(tri);
             inputRow = _stats.m_trinucleotideTable.get(tri);
             incrementStat(tri, Stat.PHASE0,(Float)inputRow.get(Stat.PHASE0));
             incrementStat(tri, Stat.PHASE1,(Float)inputRow.get(Stat.PHASE1));

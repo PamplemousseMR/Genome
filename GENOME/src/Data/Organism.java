@@ -50,13 +50,11 @@ public final class Organism extends IDataBase {
 	public boolean finish() throws Exception{
 		for(Replicon rep : m_replicons) {
 			rep.computeStatistic();
-			getStatistics(rep.getType()).update(rep);
+			updateStatistics(rep);
 			incrementGenomeNumber(rep.getType());
 		}
 		m_replicons.clear();
-		for(Statistics.Type type : Statistics.Type.values()){
-			getStatistics(type).compute();
-		}
+		computeStatistics();
 		m_parent.finish(this);
 		return true;
 	}

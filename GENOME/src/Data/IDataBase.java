@@ -30,10 +30,6 @@ public class IDataBase {
         m_modificationDate = new Date();
         m_statistics = new EnumMap<>(Statistics.Type.class);
         m_genomeNumber = new EnumMap<>(Statistics.Type.class);
-        for(Statistics.Type field : Statistics.Type.values()) {
-            m_genomeNumber.put(field, 0L);
-            m_statistics.put(field,new Statistics(field));
-        }
     }
 
     /**
@@ -75,25 +71,20 @@ public class IDataBase {
      * @param _type, the Type of the genomes's number to get
      * @return the number of genomes
      */
-    protected Long getTypeNumber(Statistics.Type _type) {
+    Long getTypeNumber(Statistics.Type _type) {
         return m_genomeNumber.get(_type);
-    }
-
-    /**
-     * Get the statistics of the specific type
-     * @param _type, the type of the statistics
-     * @return the statistics
-     */
-    protected Statistics getStatistics(Statistics.Type _type){
-        return m_statistics.get(_type);
     }
 
     /**
      * Increment by 1 the number of genome to a type
      * @param _type, the Type of the genomes to increment
      */
-    protected void incrementGenomeNumber(Statistics.Type _type) {
-        m_genomeNumber.put(_type,m_genomeNumber.get(_type)+1L);
+    void incrementGenomeNumber(Statistics.Type _type) {
+        if(m_genomeNumber.get(_type) == null){
+            m_genomeNumber.put(_type, 1L);
+        }else {
+            m_genomeNumber.put(_type, m_genomeNumber.get(_type) + 1L);
+        }
     }
 
     /**
@@ -101,7 +92,26 @@ public class IDataBase {
      * @param _type, the Type of the genomes to increment
      * @param _incr, the value of the increment
      */
-    protected void incrementGenomeNumber(Statistics.Type _type,long _incr){ m_genomeNumber.put(_type,m_genomeNumber.get(_type)+_incr); }
+    void incrementGenomeNumber(Statistics.Type _type,long _incr){
+        if(m_genomeNumber.get(_type) == null){
+            m_genomeNumber.put(_type, _incr);
+        }else{
+            m_genomeNumber.put(_type,m_genomeNumber.get(_type)+_incr);
+        }
+    }
+
+    void updateStatistics(Statistics _statistics){
+        if(m_statistics.get(_statistics.getType()) == null){
+            m_statistics.put(_statistics.getType(), new Statistics(_statistics.getType()));
+        }
+            m_statistics.get(_statistics.getType()).update(_statistics);
+    }
+
+    void computeStatistics(){
+        for(Statistics stat : m_statistics.values()){
+            stat.compute();
+        }
+    }
 
 }
 

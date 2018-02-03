@@ -60,6 +60,9 @@ public final class Replicon extends Statistics {
 
 	// Do not use
 
+	/**
+	 * Compute statistics of this Replicon
+	 */
 	protected void computeStatistic() {
 		int idx,length;
 		for( StringBuffer sequence : m_sequences) {
