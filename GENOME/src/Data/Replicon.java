@@ -68,18 +68,12 @@ public final class Replicon extends Statistics {
 		for( StringBuffer sequence : m_sequences) {
 				idx = 0;
 				length = sequence.length();
-				while(idx+5 <= length){
+				while(length-idx >= 5){
 					incrementStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
 					incrementStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
 					incrementStat(Trinucleotide.valueOf(sequence.substring(idx+2,idx+5)),Stat.PHASE2);
                     idx+=3;
 				}
-				if(idx+4 <= length){
-					incrementStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
-                    if(idx+4 == length){
-						incrementStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
-                    }
-                }
 		}
 		super.compute();
 	}

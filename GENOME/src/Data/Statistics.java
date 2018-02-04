@@ -180,9 +180,8 @@ public class Statistics {
      * @param _stats, the stats use to update
      */
     protected void update(Statistics _stats) {
-        EnumMap inputRow;
         for (Trinucleotide tri : Trinucleotide.values()) {
-            inputRow = _stats.m_trinucleotideTable.get(tri);
+            EnumMap inputRow = _stats.m_trinucleotideTable.get(tri);
             incrementStat(tri, Stat.PHASE0,(Float)inputRow.get(Stat.PHASE0));
             incrementStat(tri, Stat.PHASE1,(Float)inputRow.get(Stat.PHASE1));
             incrementStat(tri, Stat.PHASE2,(Float)inputRow.get(Stat.PHASE2));
@@ -193,12 +192,11 @@ public class Statistics {
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
     protected void compute(){
-        EnumMap row;
         for(Trinucleotide tri : Trinucleotide.values()){
-            row = m_trinucleotideTable.get(tri);
-            row.put(Stat.FREQ0, (Float)row.get(Stat.PHASE0)/(float)m_TotalTriPhase0);
-            row.put(Stat.FREQ1, (Float)row.get(Stat.PHASE1)/(float)m_TotalTriPhase1);
-            row.put(Stat.FREQ2, (Float)row.get(Stat.PHASE2)/(float)m_TotalTriPhase2);
+            EnumMap<Stat,Float> row = m_trinucleotideTable.get(tri);
+            row.put(Stat.FREQ0, row.get(Stat.PHASE0)/(float)m_TotalTriPhase0);
+            row.put(Stat.FREQ1, row.get(Stat.PHASE1)/(float)m_TotalTriPhase1);
+            row.put(Stat.FREQ2, row.get(Stat.PHASE2)/(float)m_TotalTriPhase2);
         }
     }
 

@@ -8,7 +8,7 @@ public final class DataBase extends IState {
 	/**
 	 * Instance of the singleton
 	 */
-	private static DataBase m_dataBase;
+	private static DataBase s_DataBase;
 	/**
 	 * Array of this Database's Kingdom
 	 */
@@ -28,10 +28,10 @@ public final class DataBase extends IState {
 	 * @return the instance of the singleton
 	 */
 	public static DataBase getInstance() {
-		if(m_dataBase == null){
-			return (m_dataBase = new DataBase(s_NAME));
+		if(s_DataBase == null){
+			return (s_DataBase = new DataBase(s_NAME));
 		}else {
-			return m_dataBase;
+			return s_DataBase;
 		}
 	}
 	

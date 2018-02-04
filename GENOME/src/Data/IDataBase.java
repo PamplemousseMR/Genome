@@ -25,7 +25,7 @@ public class IDataBase {
     /**
      * Class constructor
      */
-    IDataBase(String _name){
+    protected IDataBase(String _name){
         m_name = _name;
         m_modificationDate = new Date();
         m_statistics = new EnumMap<>(Statistics.Type.class);
@@ -71,7 +71,7 @@ public class IDataBase {
      * @param _type, the Type of the genomes's number to get
      * @return the number of genomes
      */
-    Long getTypeNumber(Statistics.Type _type) {
+    protected Long getTypeNumber(Statistics.Type _type) {
         return m_genomeNumber.get(_type);
     }
 
@@ -79,12 +79,8 @@ public class IDataBase {
      * Increment by 1 the number of genome to a type
      * @param _type, the Type of the genomes to increment
      */
-    void incrementGenomeNumber(Statistics.Type _type) {
-        if(m_genomeNumber.get(_type) == null){
-            m_genomeNumber.put(_type, 1L);
-        }else {
-            m_genomeNumber.put(_type, m_genomeNumber.get(_type) + 1L);
-        }
+    protected void incrementGenomeNumber(Statistics.Type _type) {
+        m_genomeNumber.merge(_type, 1L, (v1,v2) -> v1 + v2);
     }
 
     /**
@@ -92,22 +88,18 @@ public class IDataBase {
      * @param _type, the Type of the genomes to increment
      * @param _incr, the value of the increment
      */
-    void incrementGenomeNumber(Statistics.Type _type,long _incr){
-        if(m_genomeNumber.get(_type) == null){
-            m_genomeNumber.put(_type, _incr);
-        }else{
-            m_genomeNumber.put(_type,m_genomeNumber.get(_type)+_incr);
-        }
+    protected void incrementGenomeNumber(Statistics.Type _type,long _incr){
+        m_genomeNumber.merge(_type, _incr, (v1,v2) -> v1 + v2);
     }
 
-    void updateStatistics(Statistics _statistics){
+    protected void updateStatistics(Statistics _statistics){
         if(m_statistics.get(_statistics.getType()) == null){
             m_statistics.put(_statistics.getType(), new Statistics(_statistics.getType()));
         }
-            m_statistics.get(_statistics.getType()).update(_statistics);
+        m_statistics.get(_statistics.getType()).update(_statistics);
     }
 
-    void computeStatistics(){
+    protected void computeStatistics(){
         for(Statistics stat : m_statistics.values()){
             stat.compute();
         }
