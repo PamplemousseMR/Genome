@@ -1,6 +1,6 @@
 package Data;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public final class SubGroup extends IState{
 
@@ -11,18 +11,18 @@ public final class SubGroup extends IState{
 	/**
 	 * Array of this SubGroup's Organisms
 	 */
-	private LinkedList<Organism> m_organisms;
-	
+	private ArrayList<Organism> m_organisms;
+
 	/**
 	 * Class constructor
 	 * @param _name, the name of this SubGroup
 	 */
 	public SubGroup(String _name) {
 		super(_name);
-		m_organisms = new LinkedList<>();
+		m_organisms = new ArrayList<>();
 		m_parent = null;
 	}
-	
+
 	/**
 	 * Add an Organism to this SubGroup
 	 * @param _organism, the Organism to insert
@@ -31,8 +31,9 @@ public final class SubGroup extends IState{
 	 */
 	public boolean addOrganism(Organism _organism) throws Exception{
 		if(getState()==State.STARTED) {
-			if(m_organisms.contains(_organism))
+			if(contains(m_organisms,_organism))
 				throw new Exception("Organims already added");
+			_organism.setID(m_organisms.size());
 			_organism.setParent(this);
 			return m_organisms.add(_organism);
 		}else return false;
@@ -45,7 +46,8 @@ public final class SubGroup extends IState{
 	@Override
 	public void stop() throws Exception{
     	super.stop();
-		if(m_organisms.size()==0){
+		if(getFinishedChildrens() == m_organisms.size()){
+            m_organisms.clear();
 			m_parent.finish(this);
 			super.finish();
 		}
@@ -55,7 +57,7 @@ public final class SubGroup extends IState{
 	 * Get the Organism of this SubGroup
 	 * @return the m_groups
 	 */
-	public LinkedList<Organism> getOrganisms(){
+	public ArrayList<Organism> getOrganisms(){
 		return m_organisms;
 	}
 
@@ -83,14 +85,15 @@ public final class SubGroup extends IState{
 	 * @throws Exception if it can't be finished
 	 */
 	protected void finish(Organism _organism) throws Exception {
-		if(m_organisms.contains(_organism)){
+		if(contains(m_organisms, _organism) && _organism.getState()!=State.FINISHED){
 			for(Statistics stat : _organism.getStatistics().values()){
 				updateStatistics(stat);
 				incrementGenomeNumber(stat.getType(),_organism.getTypeNumber(stat.getType()));
 			}
-			m_organisms.remove(_organism);
+            incrementFinishedChildrens();
 			computeStatistics();
-			if(getState() == State.STOPPED && m_organisms.size()==0){
+			if(getState() == State.STOPPED && getFinishedChildrens() == m_organisms.size()){
+			    m_organisms.clear();
 				m_parent.finish(this);
 				super.finish();
 			}

@@ -1,6 +1,6 @@
 package Data;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public final class DataBase extends IState {
 
@@ -12,17 +12,17 @@ public final class DataBase extends IState {
 	/**
 	 * Array of this Database's Kingdom
 	 */
-	private LinkedList<Kingdom> m_kingdoms;
-	
+	private ArrayList<Kingdom> m_kingdoms;
+
 	/**
 	 * Class constructor
 	 * @param _name, the name of this database
 	 */
 	private DataBase(String _name) {
 		super(_name);
-		m_kingdoms = new LinkedList<>();
+		m_kingdoms = new ArrayList<>();
 	}
-	
+
 	/**
 	 * Accessor to the singleton
 	 * @return the instance of the singleton
@@ -34,7 +34,7 @@ public final class DataBase extends IState {
 			return s_DataBase;
 		}
 	}
-	
+
 	/**
 	 * Add a Kingdom to the Database
 	 * @param _kingdom, the Kingdom to insert
@@ -43,8 +43,9 @@ public final class DataBase extends IState {
 	 */
 	public boolean addKingdom(Kingdom _kingdom) throws Exception {
 		if(getState()==State.STARTED) {
-			if(m_kingdoms.contains(_kingdom))
+			if(contains(m_kingdoms, _kingdom))
 				throw new Exception("Sequence already added");
+			_kingdom.setID(m_kingdoms.size());
 			_kingdom.setParent(this);
 			return m_kingdoms.add(_kingdom);
 		}else return false;
@@ -54,7 +55,7 @@ public final class DataBase extends IState {
 	 * Get the Kingdoms of this DataBase
 	 * @return the m_kingdoms
 	 */
-	public LinkedList<Kingdom> getKingdoms(){
+	public ArrayList<Kingdom> getKingdoms(){
 		return m_kingdoms;
 	}
 
@@ -65,7 +66,8 @@ public final class DataBase extends IState {
 	@Override
 	public void stop() throws Exception{
 		super.stop();
-		if(m_kingdoms.size()==0){
+		if(getFinishedChildrens() == m_kingdoms.size()){
+			m_kingdoms.clear();
 			super.finish();
 		}
 	}
@@ -78,14 +80,15 @@ public final class DataBase extends IState {
 	 * @throws Exception if it can't be finished
 	 */
 	protected void finish(Kingdom _kingdom) throws Exception {
-		if(m_kingdoms.contains(_kingdom)){
+		if(contains(m_kingdoms, _kingdom) && _kingdom.getState()!=State.FINISHED){
             for(Statistics stat : _kingdom.getStatistics().values()){
                 updateStatistics(stat);
                 incrementGenomeNumber(stat.getType(),_kingdom.getTypeNumber(stat.getType()));
             }
-			m_kingdoms.remove(_kingdom);
+			incrementFinishedChildrens();
             computeStatistics();
-			if(getState()== IState.State.STOPPED && m_kingdoms.size()==0){
+			if(getState()== IState.State.STOPPED && getFinishedChildrens() == m_kingdoms.size()){
+				m_kingdoms.clear();
 				super.finish();
 			}
 		}

@@ -1,8 +1,8 @@
 package Data;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
-public final class Organism extends IDataBase {
+public final class Organism extends IState {
 
 	/**
 	 * Reference to the parent
@@ -11,15 +11,15 @@ public final class Organism extends IDataBase {
 	/**
 	 * Array of this organism's Replicon
 	 */
-	private LinkedList<Replicon> m_replicons;
-	
+	private ArrayList<Replicon> m_replicons;
+
 	/**
 	 * Class constructor
 	 * @param _name, the name of the Organism
 	 */
 	public Organism(String _name) {
 		super(_name);
-		m_replicons = new LinkedList<>();
+		m_replicons = new ArrayList<>();
 		m_parent = null;
 	}
 
@@ -30,34 +30,40 @@ public final class Organism extends IDataBase {
 	 * @throws Exception if it _replicon are already added
 	 */
 	public boolean addReplicon(Replicon _replicon) throws Exception{
-		if(m_replicons.contains(_replicon))
-			throw new Exception("Replicon already added");
-		return m_replicons.add(_replicon);
-	}
-	
-	/**
-	 * Get this Organims's Replicons
-	 * @return the m_replicons
-	 */
-	public LinkedList<Replicon> getReplicons(){
-		return m_replicons;
+        if(getState()==State.STARTED) {
+            try{
+                if(m_replicons.get(_replicon.getID()) != null)
+                    throw new Exception("Replicon already added");
+            }catch (IndexOutOfBoundsException e){}
+            _replicon.setID(m_replicons.size());
+            return m_replicons.add(_replicon);
+        }else return false;
 	}
 
 	/**
 	 * Update the statistics
 	 * @throws Exception if it can't be finished
 	 */
-	public boolean finish() throws Exception{
+	@Override
+	public void finish() throws Exception{
+	    m_replicons.parallelStream().forEach(rep -> rep.computeStatistic());
 		for(Replicon rep : m_replicons) {
-			rep.computeStatistic();
-			updateStatistics(rep);
+ 			updateStatistics(rep);
 			incrementGenomeNumber(rep.getType());
 		}
-		m_replicons.clear();
 		computeStatistics();
+		m_replicons.clear();
 		m_parent.finish(this);
-		return true;
+		super.finish();
 	}
+
+    /**
+     * Get this Organims's Replicons
+     * @return the m_replicons
+     */
+    public ArrayList<Replicon> getReplicons(){
+        return m_replicons;
+    }
 
 	/**
 	 * Get the SubGroup's name

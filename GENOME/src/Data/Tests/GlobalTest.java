@@ -128,7 +128,7 @@ class GlobalTest {
         }
 
         for(Organism o : list) {
-            assertTrue(o.finish());
+            o.finish();
         }
     }
 

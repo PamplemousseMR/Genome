@@ -1,5 +1,7 @@
 package Data;
 
+import java.util.ArrayList;
+
 public class IState extends IDataBase{
 
     /**
@@ -16,6 +18,14 @@ public class IState extends IDataBase{
      * Actual State
      */
     private State m_state;
+    /**
+     * ID
+     */
+    private int m_id;
+    /**
+     * Total of finished children
+     */
+    private int m_finished;
 
     /**
      * Class constructor
@@ -24,6 +34,8 @@ public class IState extends IDataBase{
     protected IState(String _name){
         super(_name);
         m_state = State.CREATED;
+        m_id = -1;
+        m_finished = 0;
     }
 
     /**
@@ -72,6 +84,31 @@ public class IState extends IDataBase{
         if(m_state == State.FINISHED)
             throw new Exception("Already finished");
         m_state = State.FINISHED;
+    }
+
+    protected void setID(int _id){
+        m_id = _id;
+    }
+
+    protected int getID(){
+        return m_id;
+    }
+
+    protected <E> boolean contains(ArrayList<E> _arr, IState _stat){
+        try{
+            if(_arr.get(_stat.getID()) != null) {
+                return true;
+            }
+        }catch (IndexOutOfBoundsException e){}
+        return false;
+    }
+
+    protected void incrementFinishedChildrens(){
+        ++m_finished;
+    }
+
+    protected int getFinishedChildrens(){
+        return m_finished;
     }
 
 }

@@ -100,9 +100,7 @@ public class IDataBase {
     }
 
     protected void computeStatistics(){
-        for(Statistics stat : m_statistics.values()){
-            stat.compute();
-        }
+        m_statistics.values().parallelStream().forEach( stat -> stat.compute());
     }
 
 }

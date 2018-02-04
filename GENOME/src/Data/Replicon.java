@@ -1,7 +1,7 @@
 package Data;
 
 import java.util.Date;
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public final class Replicon extends Statistics {
 
@@ -10,13 +10,17 @@ public final class Replicon extends Statistics {
 	 */
 	private String m_name;
 	/**
+	 * ID
+	 */
+	private int m_id;
+	/**
 	 * Last modification's date
 	 */
 	private Date m_modificationDate;
 	/**
 	 * Array of all the sequences of this Replicon
 	 */
-	private LinkedList<StringBuffer> m_sequences;
+	private ArrayList<StringBuffer> m_sequences;
 
 	/**
 	 * Class constructor
@@ -27,7 +31,8 @@ public final class Replicon extends Statistics {
 		super(_type);
 		m_name = _name;
 		m_modificationDate = new Date();
-		m_sequences = new LinkedList<>();
+		m_sequences = new ArrayList<>();
+		m_id = -1;
 	}
 
 	/**
@@ -76,5 +81,13 @@ public final class Replicon extends Statistics {
 				}
 		}
 		super.compute();
+	}
+
+	protected void setID(int _id){
+		m_id = _id;
+	}
+
+	protected int getID(){
+		return m_id;
 	}
 }

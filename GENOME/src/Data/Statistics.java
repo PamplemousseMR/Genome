@@ -1,6 +1,7 @@
 package Data;
 
 import java.util.EnumMap;
+import java.util.stream.IntStream;
 
 public class Statistics {
 
@@ -127,13 +128,13 @@ public class Statistics {
     protected Statistics(Type _type){
         m_type = _type;
         m_trinucleotideTable = new EnumMap<>(Trinucleotide.class);
-        for(Trinucleotide tri : Trinucleotide.values()) {
+        IntStream.range(0,Trinucleotide.values().length).forEach(i -> {
             EnumMap<Stat,Float> arr = new EnumMap<>(Stat.class);
             for(Stat stat :  Stat.values()) {
                 arr.put(stat, 0f);
             }
-            m_trinucleotideTable.put(tri,arr);
-        }
+            m_trinucleotideTable.put(Trinucleotide.values()[i],arr);
+        });
         m_TotalTriPhase0 = 0;
         m_TotalTriPhase1 = 0;
         m_TotalTriPhase2 = 0;
@@ -192,12 +193,11 @@ public class Statistics {
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
     protected void compute(){
-        for(Trinucleotide tri : Trinucleotide.values()){
-            EnumMap<Stat,Float> row = m_trinucleotideTable.get(tri);
-            row.put(Stat.FREQ0, row.get(Stat.PHASE0)/(float)m_TotalTriPhase0);
-            row.put(Stat.FREQ1, row.get(Stat.PHASE1)/(float)m_TotalTriPhase1);
-            row.put(Stat.FREQ2, row.get(Stat.PHASE2)/(float)m_TotalTriPhase2);
-        }
+        m_trinucleotideTable.values().parallelStream().forEach(row -> {
+            row.put(Stat.FREQ0, row.get(Stat.PHASE0) / (float) m_TotalTriPhase0);
+            row.put(Stat.FREQ1, row.get(Stat.PHASE1) / (float) m_TotalTriPhase1);
+            row.put(Stat.FREQ2, row.get(Stat.PHASE2) / (float) m_TotalTriPhase2);
+        });
     }
 
     /**
