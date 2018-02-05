@@ -33,7 +33,7 @@ public final class SubGroup extends IState{
 		if(getState()==State.STARTED) {
 			if(contains(m_organisms,_organism))
 				throw new Exception("Organims already added");
-			_organism.setID(m_organisms.size());
+			_organism.setIndex(m_organisms.size());
 			_organism.setParent(this);
 			return m_organisms.add(_organism);
 		}else return false;
@@ -47,7 +47,8 @@ public final class SubGroup extends IState{
 	public void stop() throws Exception{
     	super.stop();
 		if(getFinishedChildrens() == m_organisms.size()){
-            m_organisms.clear();
+			m_organisms.clear();
+			computeStatistics();
 			m_parent.finish(this);
 			super.finish();
 		}
@@ -91,9 +92,9 @@ public final class SubGroup extends IState{
 				incrementGenomeNumber(stat.getType(),_organism.getTypeNumber(stat.getType()));
 			}
             incrementFinishedChildrens();
-			computeStatistics();
 			if(getState() == State.STOPPED && getFinishedChildrens() == m_organisms.size()){
-			    m_organisms.clear();
+				m_organisms.clear();
+				computeStatistics();
 				m_parent.finish(this);
 				super.finish();
 			}

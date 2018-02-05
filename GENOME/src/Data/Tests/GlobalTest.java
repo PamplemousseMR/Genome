@@ -95,6 +95,7 @@ class GlobalTest {
             for(Group g : k.getGroups()) {
                 for(SubGroup s : g.getSubGroups()) {
                     for(Organism o : s.getOrganisms()) {
+                        o.start();
                         Replicon r1 = new Replicon(Replicon.Type.CHLOROPLAST,"r1_"+o.getName());
                         assertEquals(true, o.addReplicon(r1));
                         assertEquals(Replicon.Type.CHLOROPLAST, r1.getType());
@@ -108,6 +109,7 @@ class GlobalTest {
                         assertEquals(Replicon.Type.MITOCHONDRION, r3.getType());
 
                         assertThrows(Exception.class, () -> o.addReplicon(r3));
+                        o.stop();
                     }
                 }
             }

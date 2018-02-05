@@ -33,7 +33,7 @@ public final class Kingdom extends IState {
         if(getState()==State.STARTED) {
 			if(contains(m_groups,_group))
 				throw new Exception("Sequence already added");
-			_group.setID(m_groups.size());
+			_group.setIndex(m_groups.size());
 			_group.setParent(this);
             return m_groups.add(_group);
         }else return false;
@@ -48,6 +48,7 @@ public final class Kingdom extends IState {
 		super.stop();
 		if(getFinishedChildrens() == m_groups.size()){
 			m_groups.clear();
+			computeStatistics();
 			m_parent.finish(this);
 			super.finish();
 		}
@@ -75,9 +76,9 @@ public final class Kingdom extends IState {
                 incrementGenomeNumber(stat.getType(),_group.getTypeNumber(stat.getType()));
             }
 			incrementFinishedChildrens();
-            computeStatistics();
 			if(getState()== State.STOPPED && getFinishedChildrens() == m_groups.size()){
 				m_groups.clear();
+				computeStatistics();
 				m_parent.finish(this);
 				super.finish();
 			}

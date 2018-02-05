@@ -33,7 +33,7 @@ public final class Group extends IState {
 		if(getState()==State.STARTED) {
 			if(contains(m_subGroups,_subGroup))
 				throw new Exception("Sequence already added");
-			_subGroup.setID(m_subGroups.size());
+			_subGroup.setIndex(m_subGroups.size());
 			_subGroup.setParent(this);
 			return m_subGroups.add(_subGroup);
 		}else return false;
@@ -47,7 +47,8 @@ public final class Group extends IState {
 	public void stop() throws Exception{
 		super.stop();
 		if(getFinishedChildrens() == m_subGroups.size()){
-            m_subGroups.clear();
+			m_subGroups.clear();
+			computeStatistics();
 			m_parent.finish(this);
 			super.finish();
 		}
@@ -83,9 +84,9 @@ public final class Group extends IState {
                 incrementGenomeNumber(stat.getType(),_subGroup.getTypeNumber(stat.getType()));
             }
 			incrementFinishedChildrens();
-            computeStatistics();
 			if(getState()== State.STOPPED && getFinishedChildrens() == m_subGroups.size()){
-                m_subGroups.clear();
+				m_subGroups.clear();
+				computeStatistics();
 				m_parent.finish(this);
 				super.finish();
 			}

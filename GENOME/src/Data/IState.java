@@ -19,9 +19,9 @@ public class IState extends IDataBase{
      */
     private State m_state;
     /**
-     * ID
+     * Local index
      */
-    private int m_id;
+    private int m_index;
     /**
      * Total of finished children
      */
@@ -34,7 +34,7 @@ public class IState extends IDataBase{
     protected IState(String _name){
         super(_name);
         m_state = State.CREATED;
-        m_id = -1;
+        m_index = -1;
         m_finished = 0;
     }
 
@@ -86,27 +86,49 @@ public class IState extends IDataBase{
         m_state = State.FINISHED;
     }
 
-    protected void setID(int _id){
-        m_id = _id;
+    /**
+     * Set the local index
+     * @param _id, the index to set
+     */
+    protected void setIndex(int _id){
+        m_index = _id;
     }
 
-    protected int getID(){
-        return m_id;
+    /**
+     * Get the local index
+     * @return the local index
+     */
+    protected int getIndex(){
+        return m_index;
     }
 
+    /**
+     * Return true if the array contains the IState
+     * @param _arr, the array to search
+     * @param _stat, the IStat =e to find
+     * @param <E>, the class of the array
+     * @return the find success
+     */
     protected <E> boolean contains(ArrayList<E> _arr, IState _stat){
         try{
-            if(_arr.get(_stat.getID()) != null) {
+            if(_arr.get(_stat.getIndex()) != null) {
                 return true;
             }
         }catch (IndexOutOfBoundsException e){}
         return false;
     }
 
+    /**
+     * Increment the number of finish children
+     */
     protected void incrementFinishedChildrens(){
         ++m_finished;
     }
 
+    /**
+     * Get the number of finish children
+     * @return
+     */
     protected int getFinishedChildrens(){
         return m_finished;
     }

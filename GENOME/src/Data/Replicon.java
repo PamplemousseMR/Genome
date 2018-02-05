@@ -10,9 +10,9 @@ public final class Replicon extends Statistics {
 	 */
 	private String m_name;
 	/**
-	 * ID
+	 * Local index
 	 */
-	private int m_id;
+	private int m_index;
 	/**
 	 * Last modification's date
 	 */
@@ -32,7 +32,7 @@ public final class Replicon extends Statistics {
 		m_name = _name;
 		m_modificationDate = new Date();
 		m_sequences = new ArrayList<>();
-		m_id = -1;
+		m_index = -1;
 	}
 
 	/**
@@ -70,24 +70,35 @@ public final class Replicon extends Statistics {
 	 */
 	protected void computeStatistic() {
 		int idx,length;
+		long total = 0;
 		for( StringBuffer sequence : m_sequences) {
-				idx = 0;
-				length = sequence.length();
-				while(length-idx >= 5){
-					incrementStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
-					incrementStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
-					incrementStat(Trinucleotide.valueOf(sequence.substring(idx+2,idx+5)),Stat.PHASE2);
-                    idx+=3;
-				}
+			idx = 0;
+			length = sequence.length();
+			while(length-idx > 5){
+				incrementStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
+				incrementStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
+				incrementStat(Trinucleotide.valueOf(sequence.substring(idx+2,idx+5)),Stat.PHASE2);
+                   idx+=3;
+			}
+			m_totalTrinucleotide += idx/3;
 		}
 		super.compute();
 	}
 
-	protected void setID(int _id){
-		m_id = _id;
+	/**
+	 * Set the local index
+	 * @param _id, the index to set
+	 */
+	protected void setIndex(int _id){
+		m_index = _id;
 	}
 
-	protected int getID(){
-		return m_id;
+	/**
+	 * Get the local index
+	 * @return the local index
+	 */
+	protected int getIndex(){
+		return m_index;
 	}
+
 }

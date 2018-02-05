@@ -5,45 +5,50 @@ import Data.*;
 
 import java.util.EnumMap;
 
+import static org.junit.jupiter.api.Assertions.assertEquals;
+
 class StatisticsTest {
 
     public static void printTriTable(Statistics _stat){
         System.out.print("TRI\tPhase0\tFreq0\tPhase1\tFreq1\tPhase2\tFreq2\t");
         for(Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()){
+            EnumMap<Statistics.Stat,Float> row = _stat.getTable().get(tri);
             System.out.print("\n"+tri+"\t");
-            System.out.print(_stat.getTable().get(tri).get(Statistics.Stat.PHASE0).intValue()+"\t");
-            System.out.print(String.format("%.4f\t",_stat.getTable().get(tri).get(Statistics.Stat.FREQ0)));
-            System.out.print(_stat.getTable().get(tri).get(Statistics.Stat.PHASE1).intValue()+"\t");
-            System.out.print(String.format("%.4f\t",_stat.getTable().get(tri).get(Statistics.Stat.FREQ1)));
-            System.out.print(_stat.getTable().get(tri).get(Statistics.Stat.PHASE2).intValue()+"\t");
-            System.out.print(String.format("%.4f\t",_stat.getTable().get(tri).get(Statistics.Stat.FREQ2)));
+            System.out.print(row.get(Statistics.Stat.PHASE0).intValue()+"\t");
+            System.out.print(String.format("%.4f\t",row.get(Statistics.Stat.FREQ0)));
+            System.out.print(row.get(Statistics.Stat.PHASE1).intValue()+"\t");
+            System.out.print(String.format("%.4f\t",row.get(Statistics.Stat.FREQ1)));
+            System.out.print(row.get(Statistics.Stat.PHASE2).intValue()+"\t");
+            System.out.print(String.format("%.4f\t",row.get(Statistics.Stat.FREQ2)));
         }
-        System.out.println("\nTOTAL\t"+_stat.getTotalTrinucleotidePhase0()+"\t\t"
-                +_stat.getTotalTrinucleotidePhase1()+"\t\t"
-                +_stat.getTotalTrinucleotidePhase2()+"\n");
+
+        System.out.println("\nTOTAL\t"+_stat.getTotalTrinucleotide()+"\t\t"
+                +_stat.getTotalTrinucleotide()+"\t\t"
+                +_stat.getTotalTrinucleotide()+"\n");
     }
 
     @Test
     void statisticsTest() throws Exception{
         DataBase db = DataBase.getInstance();
+        int nb = 5,nbrep = 200;
         db.start();
-        for(int k=0 ; k<5 ; ++k){
+        for(int k=0 ; k<nb ; ++k){
             Kingdom ki = new Kingdom("Kingdom_"+k);
             ki.start();
             db.addKingdom(ki);
-            for(int g=0 ; g<5 ; ++g){
+            for(int g=0 ; g<nb ; ++g){
                 Group gr = new Group("Group_"+g);
                 gr.start();
                 ki.addGroup(gr);
-                for(int s=0 ; s<5 ; ++s){
+                for(int s=0 ; s<nb ; ++s){
                     SubGroup su = new SubGroup("SubGroup"+s);
                     su.start();
                     gr.addSubGroup(su);
-                    for(int o=0 ; o<5 ; ++o){
+                    for(int o=0 ; o<nb ; ++o){
                         Organism or = new Organism("Organism"+o);
                         or.start();
                         su.addOrganism(or);
-                        for(int r=0 ; r<200 ; ++r){
+                        for(int r=0 ; r<nbrep ; ++r){
                             Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1");
                             StringBuffer strBuf = new StringBuffer("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("TATAATCCTTTTCTTTTTAATTAAAAAAATCTCTAATAATATTTTTTTTA");
@@ -393,22 +398,31 @@ class StatisticsTest {
             }
             ki.stop();
         }
-
+        db.stop();
 
         for(Statistics stat : db.getStatistics().values()){
-            System.out.println("Table sum_"+stat.getType()+" nbElements "+db.getGenomeNumber().get(stat.getType()));
-            printTriTable(stat);
 
-            float total0 = 0;
-            float total1 = 0;
-            float total2 = 0;
+            int totalPhase0 = 0;
+            int totalPhase1 = 0;
+            int totalPhase2 = 0;
+            float totalFreq0 = 0;
+            float totalFreq1 = 0;
+            float totalFreq2 = 0;
             for(EnumMap<Statistics.Stat, Float> en : stat.getTable().values()){
-                total0+=en.get(Statistics.Stat.FREQ0);
-                total1+=en.get(Statistics.Stat.FREQ1);
-                total2+=en.get(Statistics.Stat.FREQ2);
+                totalPhase0+=en.get(Statistics.Stat.PHASE0).intValue();
+                totalPhase1+=en.get(Statistics.Stat.PHASE1).intValue();
+                totalPhase2+=en.get(Statistics.Stat.PHASE2).intValue();
+                totalFreq0+=en.get(Statistics.Stat.FREQ0);
+                totalFreq1+=en.get(Statistics.Stat.FREQ1);
+                totalFreq2+=en.get(Statistics.Stat.FREQ2);
             }
-
-            System.out.println(String.format("%.20f %.20f %.20f", total0, total1, total2));
+            assertEquals(1.0F, totalFreq0, 0.000001F);
+            assertEquals(1.0F, totalFreq1, 0.000001F);
+            assertEquals(1.0F, totalFreq2, 0.000001F);
+           assertEquals(totalPhase0, stat.getTotalTrinucleotide());
+           assertEquals(totalPhase1, stat.getTotalTrinucleotide());
+           assertEquals(totalPhase2, stat.getTotalTrinucleotide());
+            printTriTable(stat);
         }
     }
 

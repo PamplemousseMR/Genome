@@ -112,15 +112,7 @@ public class Statistics {
     /**
      * Number total of trinucleotide on phase 0
      */
-    private long m_TotalTriPhase0;
-    /**
-     * Number total of trinucleotide on phase 1
-     */
-    private long m_TotalTriPhase1;
-    /**
-     * Number total of trinucleotide on phase 2
-     */
-    private long m_TotalTriPhase2;
+    protected long m_totalTrinucleotide;
 
     /**
      * Class constructor
@@ -135,9 +127,7 @@ public class Statistics {
             }
             m_trinucleotideTable.put(Trinucleotide.values()[i],arr);
         });
-        m_TotalTriPhase0 = 0;
-        m_TotalTriPhase1 = 0;
-        m_TotalTriPhase2 = 0;
+        m_totalTrinucleotide = 0;
     }
 
     /**
@@ -152,19 +142,8 @@ public class Statistics {
      * get the total trinucleotide of the phase 0 number
      * @return the m_TotalTriPhase0
      */
-    public long getTotalTrinucleotidePhase0() { return m_TotalTriPhase0; }
+    public long getTotalTrinucleotide() { return m_totalTrinucleotide; }
 
-    /**
-     * get the total trinucleotide of the phase 1 number
-     * @return the m_TotalTriPhase1
-     */
-    public long getTotalTrinucleotidePhase1() { return m_TotalTriPhase1; }
-
-    /**
-     * get the total trinucleotide of the phase 2 number
-     * @return the m_TotalTriPhase2
-     */
-    public long getTotalTrinucleotidePhase2() { return m_TotalTriPhase2; }
 
     /**
      * 
@@ -187,6 +166,7 @@ public class Statistics {
             incrementStat(tri, Stat.PHASE1,(Float)inputRow.get(Stat.PHASE1));
             incrementStat(tri, Stat.PHASE2,(Float)inputRow.get(Stat.PHASE2));
         }
+        m_totalTrinucleotide += _stats.m_totalTrinucleotide;
     }
 
     /**
@@ -194,9 +174,9 @@ public class Statistics {
      */
     protected void compute(){
         m_trinucleotideTable.values().parallelStream().forEach(row -> {
-            row.put(Stat.FREQ0, row.get(Stat.PHASE0) / (float) m_TotalTriPhase0);
-            row.put(Stat.FREQ1, row.get(Stat.PHASE1) / (float) m_TotalTriPhase1);
-            row.put(Stat.FREQ2, row.get(Stat.PHASE2) / (float) m_TotalTriPhase2);
+            row.put(Stat.FREQ0, row.get(Stat.PHASE0) / (float) m_totalTrinucleotide);
+            row.put(Stat.FREQ1, row.get(Stat.PHASE1) / (float) m_totalTrinucleotide);
+            row.put(Stat.FREQ2, row.get(Stat.PHASE2) / (float) m_totalTrinucleotide);
         });
     }
 
@@ -207,11 +187,6 @@ public class Statistics {
      */
     protected void incrementStat(Trinucleotide _tri, Stat _stat){
         m_trinucleotideTable.get(_tri).put(_stat,m_trinucleotideTable.get(_tri).get(_stat)+1);
-        switch(_stat){
-            case PHASE0: m_TotalTriPhase0++; break;
-            case PHASE1: m_TotalTriPhase1++; break;
-            case PHASE2: m_TotalTriPhase2++; break;
-        }
     }
 
     /**
@@ -222,10 +197,5 @@ public class Statistics {
      */
     private void incrementStat(Trinucleotide _tri, Stat _stat, float _incr){
         m_trinucleotideTable.get(_tri).put(_stat,m_trinucleotideTable.get(_tri).get(_stat)+_incr);
-        switch(_stat){
-            case PHASE0: m_TotalTriPhase0+=_incr; break;
-            case PHASE1: m_TotalTriPhase1+=_incr; break;
-            case PHASE2: m_TotalTriPhase2+=_incr; break;
-        }
     }
 }

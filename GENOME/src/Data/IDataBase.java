@@ -100,7 +100,7 @@ public class IDataBase {
     }
 
     protected void computeStatistics(){
-        m_statistics.values().parallelStream().forEach( stat -> stat.compute());
+        m_statistics.values().parallelStream().forEach(Statistics::compute);
     }
 
 }

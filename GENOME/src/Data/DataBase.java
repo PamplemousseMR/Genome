@@ -4,6 +4,9 @@ import java.util.ArrayList;
 
 public final class DataBase extends IState {
 
+	/**
+	 * Name of the database
+	 */
 	public static final String s_NAME = "GENOME";
 	/**
 	 * Instance of the singleton
@@ -45,7 +48,7 @@ public final class DataBase extends IState {
 		if(getState()==State.STARTED) {
 			if(contains(m_kingdoms, _kingdom))
 				throw new Exception("Sequence already added");
-			_kingdom.setID(m_kingdoms.size());
+			_kingdom.setIndex(m_kingdoms.size());
 			_kingdom.setParent(this);
 			return m_kingdoms.add(_kingdom);
 		}else return false;
@@ -67,7 +70,8 @@ public final class DataBase extends IState {
 	public void stop() throws Exception{
 		super.stop();
 		if(getFinishedChildrens() == m_kingdoms.size()){
-			m_kingdoms.clear();
+            m_kingdoms.clear();
+            computeStatistics();
 			super.finish();
 		}
 	}
@@ -85,10 +89,10 @@ public final class DataBase extends IState {
                 updateStatistics(stat);
                 incrementGenomeNumber(stat.getType(),_kingdom.getTypeNumber(stat.getType()));
             }
-			incrementFinishedChildrens();
-            computeStatistics();
-			if(getState()== IState.State.STOPPED && getFinishedChildrens() == m_kingdoms.size()){
-				m_kingdoms.clear();
+            incrementFinishedChildrens();
+            if(getState()== IState.State.STOPPED && getFinishedChildrens() == m_kingdoms.size()){
+                m_kingdoms.clear();
+                computeStatistics();
 				super.finish();
 			}
 		}

@@ -32,10 +32,10 @@ public final class Organism extends IState {
 	public boolean addReplicon(Replicon _replicon) throws Exception{
         if(getState()==State.STARTED) {
             try{
-                if(m_replicons.get(_replicon.getID()) != null)
+                if(m_replicons.get(_replicon.getIndex()) != null)
                     throw new Exception("Replicon already added");
             }catch (IndexOutOfBoundsException e){}
-            _replicon.setID(m_replicons.size());
+            _replicon.setIndex(m_replicons.size());
             return m_replicons.add(_replicon);
         }else return false;
 	}
@@ -51,8 +51,8 @@ public final class Organism extends IState {
  			updateStatistics(rep);
 			incrementGenomeNumber(rep.getType());
 		}
-		computeStatistics();
 		m_replicons.clear();
+		computeStatistics();
 		m_parent.finish(this);
 		super.finish();
 	}
