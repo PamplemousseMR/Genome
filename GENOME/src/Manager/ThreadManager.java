@@ -41,16 +41,16 @@ public final class ThreadManager {
                     // Choose a data
                     if (!m_downloads.isEmpty() && m_actualIDownloadRun < m_iDownloadMax) {
                         ++m_actualIDownloadRun;
-                        todo = m_downloads.removeLast();
+                        todo = m_downloads.removeFirst();
                     } else if (!m_computes.isEmpty() && m_actualIComputeRun < m_iComputeMax) {
                         ++m_actualIComputeRun;
-                        todo = m_computes.removeLast();
+                        todo = m_computes.removeFirst();
                     } else if (!m_downloads.isEmpty()) {
                         ++m_actualIDownloadRun;
-                        todo = m_downloads.removeLast();
+                        todo = m_downloads.removeFirst();
                     } else if (!m_computes.isEmpty()){
                         ++m_actualIComputeRun;
-                        todo = m_computes.removeLast();
+                        todo = m_computes.removeFirst();
                     } else {
                         Logs.warning("Concurrency error");
                     }
