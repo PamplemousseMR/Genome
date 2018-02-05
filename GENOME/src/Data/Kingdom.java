@@ -1,6 +1,6 @@
 package Data;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 public final class Kingdom extends IState {
 
@@ -11,18 +11,18 @@ public final class Kingdom extends IState {
 	/**
 	 * Array of this Kingdom's Group
 	 */
-	private LinkedList<Group> m_groups;
-	
+	private ArrayList<Group> m_groups;
+
 	/**
 	 * Class constructor
 	 * @param _name, the name of this Kingdom
 	 */
 	public Kingdom(String _name) {
 		super(_name);
-		m_groups = new LinkedList<>();
+		m_groups = new ArrayList<>();
 		m_parent = null;
 	}
-	
+
 	/**
 	 * Add a Group to this Kingdom
 	 * @param _group, the Group to insert
@@ -31,33 +31,36 @@ public final class Kingdom extends IState {
 	 */
 	public boolean addGroup(Group _group) throws Exception {
         if(getState()==State.STARTED) {
-			if(m_groups.contains(_group))
+			if(contains(m_groups,_group))
 				throw new Exception("Sequence already added");
-            _group.setParent(this);
+			_group.setIndex(m_groups.size());
+			_group.setParent(this);
             return m_groups.add(_group);
         }else return false;
     }
-	
+
+	/**
+	 * In case of all Group are already finished
+	 * @throws Exception if it can't be stopped
+	 */
+	@Override
+	public void stop() throws Exception{
+		super.stop();
+		if(getFinishedChildrens() == m_groups.size()){
+			m_groups.clear();
+			computeStatistics();
+			m_parent.finish(this);
+			super.finish();
+		}
+	}
+
 	/**
 	 * Get the Group of this Kingdom
 	 * @return the m_groups
 	 */
-	public LinkedList<Group> getGroups(){
+	public ArrayList<Group> getGroups(){
 		return m_groups;
 	}
-
-    /**
-     * In case of all Group are already finished
-	 * @throws Exception if it can't be stopped
-	 */
-    @Override
-    public void stop() throws Exception{
-        super.stop();
-        if(m_groups.size()==0){
-            m_parent.finish(this);
-			super.finish();
-        }
-    }
 
 	// Do not use
 
@@ -67,10 +70,15 @@ public final class Kingdom extends IState {
 	 * @throws Exception if it can't be finished
 	 */
 	protected void finish(Group _group) throws Exception {
-		if(m_groups.contains(_group)){
-			getStatistics().update(_group.getStatistics());
-			m_groups.remove(_group);
-			if(getState()== State.STOPPED && m_groups.size()==0){
+		if(contains(m_groups, _group) && _group.getState()!=State.FINISHED){
+            for(Statistics stat : _group.getStatistics().values()){
+                updateStatistics(stat);
+                incrementGenomeNumber(stat.getType(),_group.getTypeNumber(stat.getType()));
+            }
+			incrementFinishedChildrens();
+			if(getState()== State.STOPPED && getFinishedChildrens() == m_groups.size()){
+				m_groups.clear();
+				computeStatistics();
 				m_parent.finish(this);
 				super.finish();
 			}

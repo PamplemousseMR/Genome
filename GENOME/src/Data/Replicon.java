@@ -1,39 +1,54 @@
 package Data;
 
-import java.util.LinkedList;
+import java.util.Date;
+import java.util.ArrayList;
 
-public final class Replicon extends IDataBase{
-	
-	/**
-	 * This enumeration represent the type of a Replicon
-	 */
-	public enum Type{
-		CHROMOSOME,
-		MITOCHONDRION,
-		PLASMID,
-		DNA,
-		CHLOROPLAST
-	}
+public final class Replicon extends Statistics {
 
 	/**
-	 * Type of this Replicon
+	 * The name
 	 */
-	private Type m_type;
+	private String m_name;
+	/**
+	 * Local index
+	 */
+	private int m_index;
+	/**
+	 * Last modification's date
+	 */
+	private Date m_modificationDate;
 	/**
 	 * Array of all the sequences of this Replicon
 	 */
-	private LinkedList<StringBuffer> m_sequences;
-	
+	private ArrayList<StringBuffer> m_sequences;
+
 	/**
 	 * Class constructor
 	 * @param _type, the type of this Replicon
      * @param _name, the name of the organism
      */
 	public Replicon(Type _type, String _name) {
-		super(_name);
-		m_type = _type;
-		getStatistics().setType(_type);
-		m_sequences = new LinkedList<>();
+		super(_type);
+		m_name = _name;
+		m_modificationDate = new Date();
+		m_sequences = new ArrayList<>();
+		m_index = -1;
+	}
+
+	/**
+	 * Get the last modification's date
+	 * @return the m_modificationDate
+	 */
+	public Date getModificationDate() {
+		return m_modificationDate;
+	}
+
+	/**
+	 * Get the name
+	 * @return the m_name
+	 */
+	public String getName(){
+		return m_name;
 	}
 	
 	/**
@@ -47,21 +62,43 @@ public final class Replicon extends IDataBase{
 			throw new Exception("Sequence already added");
 		return m_sequences.add(_sequence);
 	}
-	
+
+	// Do not use
+
 	/**
-	 * Get the type of this Replicon
-	 * @return the type
+	 * Compute statistics of this Replicon
 	 */
-	public Type getType() {
-		return m_type;
+	protected void computeStatistic() {
+		int idx,length;
+		long total = 0;
+		for( StringBuffer sequence : m_sequences) {
+			idx = 0;
+			length = sequence.length();
+			while(length-idx > 5){
+				incrementStat(Trinucleotide.valueOf(sequence.substring(idx,idx+3)),Stat.PHASE0);
+				incrementStat(Trinucleotide.valueOf(sequence.substring(idx+1,idx+4)),Stat.PHASE1);
+				incrementStat(Trinucleotide.valueOf(sequence.substring(idx+2,idx+5)),Stat.PHASE2);
+                   idx+=3;
+			}
+			m_totalTrinucleotide += idx/3;
+		}
+		super.compute();
 	}
 
 	/**
-	 * Get sequences of this Replicon
-	 * @return the sequences
+	 * Set the local index
+	 * @param _id, the index to set
 	 */
-	public LinkedList<StringBuffer> getSequences(){
-		return m_sequences;
+	protected void setIndex(int _id){
+		m_index = _id;
+	}
+
+	/**
+	 * Get the local index
+	 * @return the local index
+	 */
+	protected int getIndex(){
+		return m_index;
 	}
 
 }

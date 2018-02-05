@@ -1,8 +1,9 @@
 package Data;
 
 import java.util.EnumMap;
+import java.util.stream.IntStream;
 
-public final class Statistics {
+public class Statistics {
 
     /**
      * List of the 64 trinucleotide
@@ -90,103 +91,111 @@ public final class Statistics {
     }
 
     /**
-     * Array of values of each Replicon's type
+     * This enumeration represent the type of a Statistic
      */
-    private EnumMap<Replicon.Type,Long> m_genomeNumber;
+    public enum Type{
+        CHROMOSOME,
+        MITOCHONDRION,
+        PLASMID,
+        DNA,
+        CHLOROPLAST
+    }
+
+    /**
+     * Type of this Statistic
+     */
+    private Type m_type;
     /**
      * Array to store statistics
      */
-    private EnumMap<Trinucleotide, EnumMap<Stat,Float>> m_statitics;
+    private EnumMap<Trinucleotide, EnumMap<Stat,Float>> m_trinucleotideTable;
     /**
-     * Number of valid sequence
+     * Number total of trinucleotide on phase 0
      */
-    private long m_validSequence;
-    /**
-     * Number of invalid sequence
-     */
-    private long m_invalidSequences;
+    protected long m_totalTrinucleotide;
 
     /**
      * Class constructor
      */
-    Statistics(){
-        m_genomeNumber = new EnumMap<>(Replicon.Type.class);
-        for(Replicon.Type field : Replicon.Type.values()) {
-            m_genomeNumber.put(field, 0L);
-        }
-        m_statitics = new EnumMap<>(Trinucleotide.class);
-        for(Trinucleotide tri : Trinucleotide.values()) {
+    protected Statistics(Type _type){
+        m_type = _type;
+        m_trinucleotideTable = new EnumMap<>(Trinucleotide.class);
+        IntStream.range(0,Trinucleotide.values().length).forEach(i -> {
             EnumMap<Stat,Float> arr = new EnumMap<>(Stat.class);
             for(Stat stat :  Stat.values()) {
                 arr.put(stat, 0f);
             }
-            m_statitics.put(tri,arr);
-        }
-        m_validSequence = 0;
-        m_invalidSequences = 0;
+            m_trinucleotideTable.put(Trinucleotide.values()[i],arr);
+        });
+        m_totalTrinucleotide = 0;
     }
 
     /**
-     * Get the number of a genome's specified type
-     * @param _type, the Type of the genomes's number to get
-     * @return the number of genomes
+     * Get the type of this Replicon
+     * @return the type
      */
-    Long getTypeNumber(Replicon.Type _type) {
-        return m_genomeNumber.get(_type);
+    public Type getType() {
+        return m_type;
     }
 
     /**
-     * Set 1 to the specified type
-     * @param _type, the Type of the genomes's number to get
+     * get the total trinucleotide of the phase 0 number
+     * @return the m_TotalTriPhase0
      */
-    void setType(Replicon.Type _type) {
-        m_genomeNumber.put(_type,1L);
-    }
+    public long getTotalTrinucleotide() { return m_totalTrinucleotide; }
+
 
     /**
-     * Set a value to a statistic of a Trinucleotide
-     * @param _tri, the Trinucleotide to set
-     * @param _stat, the statistic to set
-     * @param _val, the value to set
-     * @return the element previously at the specified position
+     * 
+     * @return the m_trinucleotideTable
      */
-    Float setStat(Trinucleotide _tri, Stat _stat, Float _val) {
-        return m_statitics.get(_tri).put(_stat, _val);
+    public EnumMap<Trinucleotide, EnumMap<Stat, Float>> getTable() {
+        return m_trinucleotideTable;
     }
 
-    /**
-     * Get the statistic of a trinucleotide
-     * @param _tri, the trinucleotide to get
-     * @param _stat, the statistic to get
-     * @return the statistic
-     */
-    Float getStat(Trinucleotide _tri, Stat _stat) {
-        return m_statitics.get(_tri).get(_stat);
-    }
-
-    /**
-     * Get the valid sequences number
-     * @return the m_validSequence
-     */
-    long getValidSequence() {
-        return m_validSequence;
-    }
-
-    /**
-     * Get the invalid sequences number
-     * @return the m_invalidSequences
-     */
-    long getInvalidSequences() {
-        return m_invalidSequences;
-    }
+    // Do not use
 
     /**
      * Update statistics
      * @param _stats, the stats use to update
      */
-    void update(Statistics _stats){
-        for(Replicon.Type field : Replicon.Type.values()) {
-            m_genomeNumber.put(field,m_genomeNumber.get(field) + _stats.getTypeNumber(field));
+    protected void update(Statistics _stats) {
+        for (Trinucleotide tri : Trinucleotide.values()) {
+            EnumMap inputRow = _stats.m_trinucleotideTable.get(tri);
+            incrementStat(tri, Stat.PHASE0,(Float)inputRow.get(Stat.PHASE0));
+            incrementStat(tri, Stat.PHASE1,(Float)inputRow.get(Stat.PHASE1));
+            incrementStat(tri, Stat.PHASE2,(Float)inputRow.get(Stat.PHASE2));
         }
+        m_totalTrinucleotide += _stats.m_totalTrinucleotide;
+    }
+
+    /**
+     * Compute the frequencies and the preferences of each trinucleotide for each phases
+     */
+    protected void compute(){
+        m_trinucleotideTable.values().parallelStream().forEach(row -> {
+            row.put(Stat.FREQ0, row.get(Stat.PHASE0) / (float) m_totalTrinucleotide);
+            row.put(Stat.FREQ1, row.get(Stat.PHASE1) / (float) m_totalTrinucleotide);
+            row.put(Stat.FREQ2, row.get(Stat.PHASE2) / (float) m_totalTrinucleotide);
+        });
+    }
+
+    /**
+     * Increment by 1 the value of a trinucleotide for a stat
+     * @param _tri, the Trinucleotide to set
+     * @param _stat, the statistic to set
+     */
+    protected void incrementStat(Trinucleotide _tri, Stat _stat){
+        m_trinucleotideTable.get(_tri).put(_stat,m_trinucleotideTable.get(_tri).get(_stat)+1);
+    }
+
+    /**
+     * Increment by _incr the value of a trinucleotide for a stat
+     * @param _tri, the Trinucleotide to set
+     * @param _stat, the statistic to set
+     * @param _incr, the value to increment
+     */
+    private void incrementStat(Trinucleotide _tri, Stat _stat, float _incr){
+        m_trinucleotideTable.get(_tri).put(_stat,m_trinucleotideTable.get(_tri).get(_stat)+_incr);
     }
 }

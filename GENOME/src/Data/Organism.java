@@ -1,8 +1,8 @@
 package Data;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
-public final class Organism extends IDataBase {
+public final class Organism extends IState {
 
 	/**
 	 * Reference to the parent
@@ -11,49 +11,58 @@ public final class Organism extends IDataBase {
 	/**
 	 * Array of this organism's Replicon
 	 */
-	private LinkedList<Replicon> m_replicons;
-	
+	private ArrayList<Replicon> m_replicons;
+
 	/**
 	 * Class constructor
 	 * @param _name, the name of the Organism
 	 */
 	public Organism(String _name) {
 		super(_name);
-		m_replicons = new LinkedList<>();
+		m_replicons = new ArrayList<>();
 		m_parent = null;
 	}
 
-    /**
-     * Add a Replicon to this Organisme
-     * @param _replicon, the Replicon to insert
-     * @return the insertion success
+	/**
+	 * Add a Replicon to this Organism
+	 * @param _replicon, the Replicon to insert
+	 * @return the insertion success
 	 * @throws Exception if it _replicon are already added
 	 */
-    public boolean addReplicon(Replicon _replicon) throws Exception{
-    	if(m_replicons.contains(_replicon))
-    		throw new Exception("Replicon already added");
-		return m_replicons.add(_replicon);
-    }
-	
+	public boolean addReplicon(Replicon _replicon) throws Exception{
+        if(getState()==State.STARTED) {
+            try{
+                if(m_replicons.get(_replicon.getIndex()) != null)
+                    throw new Exception("Replicon already added");
+            }catch (IndexOutOfBoundsException e){}
+            _replicon.setIndex(m_replicons.size());
+            return m_replicons.add(_replicon);
+        }else return false;
+	}
+
 	/**
-	 * Get this Organims's Replicons
-	 * @return the m_replicons
+	 * Update the statistics
+	 * @throws Exception if it can't be finished
 	 */
-	public LinkedList<Replicon> getReplicons(){
-		return m_replicons;
+	@Override
+	public void finish() throws Exception{
+	    m_replicons.parallelStream().forEach(rep -> rep.computeStatistic());
+		for(Replicon rep : m_replicons) {
+ 			updateStatistics(rep);
+			incrementGenomeNumber(rep.getType());
+		}
+		m_replicons.clear();
+		computeStatistics();
+		m_parent.finish(this);
+		super.finish();
 	}
 
     /**
-     * Update the statistics
-	 * @throws Exception if it can't be finished
-	 */
-	public boolean finish() throws Exception{
-		for(Replicon rep : m_replicons) {
-			getStatistics().update(rep.getStatistics());
-		}
-		m_replicons.clear();
-		m_parent.finish(this);
-		return true;
+     * Get this Organims's Replicons
+     * @return the m_replicons
+     */
+    public ArrayList<Replicon> getReplicons(){
+        return m_replicons;
     }
 
 	/**
@@ -80,7 +89,7 @@ public final class Organism extends IDataBase {
 		return m_parent.getParent().getParent().getName();
 	}
 
-    // Do not use
+	// Do not use
 
 	/**
 	 * Set the parent

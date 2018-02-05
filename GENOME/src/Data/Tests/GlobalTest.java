@@ -95,6 +95,7 @@ class GlobalTest {
             for(Group g : k.getGroups()) {
                 for(SubGroup s : g.getSubGroups()) {
                     for(Organism o : s.getOrganisms()) {
+                        o.start();
                         Replicon r1 = new Replicon(Replicon.Type.CHLOROPLAST,"r1_"+o.getName());
                         assertEquals(true, o.addReplicon(r1));
                         assertEquals(Replicon.Type.CHLOROPLAST, r1.getType());
@@ -108,6 +109,7 @@ class GlobalTest {
                         assertEquals(Replicon.Type.MITOCHONDRION, r3.getType());
 
                         assertThrows(Exception.class, () -> o.addReplicon(r3));
+                        o.stop();
                     }
                 }
             }
@@ -120,8 +122,6 @@ class GlobalTest {
                         for(Replicon r : o.getReplicons()){
                             StringBuffer sb = new StringBuffer("AAATTTCCCGGG");
                             assertTrue(r.addSequence(sb));
-                            assertEquals("AAATTTCCCGGG", r.getSequences().get(0).toString());
-                            assertSame(sb, r.getSequences().get(0));
                             assertThrows(Exception.class, () -> r.addSequence(sb));
                         }
                     }
@@ -130,7 +130,7 @@ class GlobalTest {
         }
 
         for(Organism o : list) {
-            assertTrue(o.finish());
+            o.finish();
         }
     }
 
