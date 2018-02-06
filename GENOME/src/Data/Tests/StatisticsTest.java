@@ -9,17 +9,17 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StatisticsTest {
 
-    public static void printTriTable(Statistics _stat){
+    private static void printTriTable(Statistics _stat){
         System.out.print("TRI\tPhase0\tFreq0\tPhase1\tFreq1\tPhase2\tFreq2\t");
         for(Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()){
-            EnumMap<Statistics.Stat,Float> row = _stat.getTable().get(tri);
+            Tuple row = _stat.getTable().get(tri);
             System.out.print("\n"+tri+"\t");
-            System.out.print(row.get(Statistics.Stat.PHASE0).intValue()+"\t");
-            System.out.print(String.format("%.4f\t",row.get(Statistics.Stat.FREQ0)));
-            System.out.print(row.get(Statistics.Stat.PHASE1).intValue()+"\t");
-            System.out.print(String.format("%.4f\t",row.get(Statistics.Stat.FREQ1)));
-            System.out.print(row.get(Statistics.Stat.PHASE2).intValue()+"\t");
-            System.out.print(String.format("%.4f\t",row.get(Statistics.Stat.FREQ2)));
+            System.out.print(row.get(Statistics.StatLong.PHASE0).intValue()+"\t");
+            System.out.print(String.format("%.4f\t",row.get(Statistics.StatFloat.FREQ0)));
+            System.out.print(row.get(Statistics.StatLong.PHASE1).intValue()+"\t");
+            System.out.print(String.format("%.4f\t",row.get(Statistics.StatFloat.FREQ1)));
+            System.out.print(row.get(Statistics.StatLong.PHASE2).intValue()+"\t");
+            System.out.print(String.format("%.4f\t",row.get(Statistics.StatFloat.FREQ2)));
         }
 
         System.out.println("\nTOTAL\t"+_stat.getTotalTrinucleotide()+"\t\t"
@@ -387,6 +387,7 @@ class StatisticsTest {
                             strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
                             strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTAT");
                             re.addSequence(strBuf);
+                            assertEquals("CR1", re.getName());
                             or.addReplicon(re);
                         }
                         or.stop();
@@ -401,27 +402,26 @@ class StatisticsTest {
         db.stop();
 
         for(Statistics stat : db.getStatistics().values()){
-
-            int totalPhase0 = 0;
-            int totalPhase1 = 0;
-            int totalPhase2 = 0;
+            long totalPhase0 = 0;
+            long totalPhase1 = 0;
+            long totalPhase2 = 0;
             float totalFreq0 = 0;
             float totalFreq1 = 0;
             float totalFreq2 = 0;
-            for(EnumMap<Statistics.Stat, Float> en : stat.getTable().values()){
-                totalPhase0+=en.get(Statistics.Stat.PHASE0).intValue();
-                totalPhase1+=en.get(Statistics.Stat.PHASE1).intValue();
-                totalPhase2+=en.get(Statistics.Stat.PHASE2).intValue();
-                totalFreq0+=en.get(Statistics.Stat.FREQ0);
-                totalFreq1+=en.get(Statistics.Stat.FREQ1);
-                totalFreq2+=en.get(Statistics.Stat.FREQ2);
+            for(Tuple en : stat.getTable().values()){
+                totalPhase0+=en.get(Statistics.StatLong.PHASE0).intValue();
+                totalPhase1+=en.get(Statistics.StatLong.PHASE1).intValue();
+                totalPhase2+=en.get(Statistics.StatLong.PHASE2).intValue();
+                totalFreq0+=en.get(Statistics.StatFloat.FREQ0);
+                totalFreq1+=en.get(Statistics.StatFloat.FREQ1);
+                totalFreq2+=en.get(Statistics.StatFloat.FREQ2);
             }
             assertEquals(1.0F, totalFreq0, 0.000001F);
             assertEquals(1.0F, totalFreq1, 0.000001F);
             assertEquals(1.0F, totalFreq2, 0.000001F);
-           assertEquals(totalPhase0, stat.getTotalTrinucleotide());
-           assertEquals(totalPhase1, stat.getTotalTrinucleotide());
-           assertEquals(totalPhase2, stat.getTotalTrinucleotide());
+            assertEquals(totalPhase0, stat.getTotalTrinucleotide());
+            assertEquals(totalPhase1, stat.getTotalTrinucleotide());
+            assertEquals(totalPhase2, stat.getTotalTrinucleotide());
             printTriTable(stat);
         }
     }

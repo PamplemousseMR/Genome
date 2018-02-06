@@ -76,18 +76,24 @@ public class Statistics {
     }
 
     /**
-     * List of statistics
+     * List of statistics (float)
      */
-    public enum Stat{
-        PHASE0,
-        PHASE1,
-        PHASE2,
+    public enum StatFloat {
         FREQ0,
         FREQ1,
         FREQ2,
         PREF0,
         PREF1,
         PREF2
+    }
+
+    /**
+     * List of statistics (long)
+     */
+    public enum StatLong {
+        PHASE0,
+        PHASE1,
+        PHASE2
     }
 
     /**
@@ -108,24 +114,28 @@ public class Statistics {
     /**
      * Array to store statistics
      */
-    private EnumMap<Trinucleotide, EnumMap<Stat,Float>> m_trinucleotideTable;
+    private EnumMap<Trinucleotide, Tuple> m_trinucleotideTable;
     /**
      * Number total of trinucleotide on phase 0
      */
-    protected long m_totalTrinucleotide;
+    private long m_totalTrinucleotide;
 
     /**
      * Class constructor
      */
-    protected Statistics(Type _type){
+    Statistics(Type _type){
         m_type = _type;
         m_trinucleotideTable = new EnumMap<>(Trinucleotide.class);
-        IntStream.range(0,Trinucleotide.values().length).forEach(i -> {
-            EnumMap<Stat,Float> arr = new EnumMap<>(Stat.class);
-            for(Stat stat :  Stat.values()) {
-                arr.put(stat, 0f);
+        IntStream.range(0,Trinucleotide.values().length).parallel().forEach(i -> {
+            EnumMap<StatFloat,Float> arrf = new EnumMap<>(StatFloat.class);
+            for(StatFloat stat :  StatFloat.values()) {
+                arrf.put(stat, 0F);
             }
-            m_trinucleotideTable.put(Trinucleotide.values()[i],arr);
+            EnumMap<StatLong,Long> arrl = new EnumMap<>(StatLong.class);
+            for(StatLong stat :  StatLong.values()) {
+                arrl.put(stat, 0L);
+            }
+            m_trinucleotideTable.put(Trinucleotide.values()[i],new Tuple(arrf, arrl));
         });
         m_totalTrinucleotide = 0;
     }
@@ -134,7 +144,7 @@ public class Statistics {
      * Get the type of this Replicon
      * @return the type
      */
-    public Type getType() {
+    public final Type getType() {
         return m_type;
     }
 
@@ -142,14 +152,15 @@ public class Statistics {
      * get the total trinucleotide of the phase 0 number
      * @return the m_TotalTriPhase0
      */
-    public long getTotalTrinucleotide() { return m_totalTrinucleotide; }
-
+    public final long getTotalTrinucleotide() {
+        return m_totalTrinucleotide;
+    }
 
     /**
      * 
      * @return the m_trinucleotideTable
      */
-    public EnumMap<Trinucleotide, EnumMap<Stat, Float>> getTable() {
+    public final EnumMap<Trinucleotide, Tuple> getTable() {
         return m_trinucleotideTable;
     }
 
@@ -159,24 +170,25 @@ public class Statistics {
      * Update statistics
      * @param _stats, the stats use to update
      */
-    protected void update(Statistics _stats) {
-        for (Trinucleotide tri : Trinucleotide.values()) {
-            EnumMap inputRow = _stats.m_trinucleotideTable.get(tri);
-            incrementStat(tri, Stat.PHASE0,(Float)inputRow.get(Stat.PHASE0));
-            incrementStat(tri, Stat.PHASE1,(Float)inputRow.get(Stat.PHASE1));
-            incrementStat(tri, Stat.PHASE2,(Float)inputRow.get(Stat.PHASE2));
-        }
+    protected final void update(Statistics _stats) {
+        IntStream.range(0,Trinucleotide.values().length).parallel().forEach(i -> {
+            Trinucleotide tri = Trinucleotide.values()[i];
+            Tuple inputRow = _stats.m_trinucleotideTable.get(tri);
+            incrementStat(tri, StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
+            incrementStat(tri, StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
+            incrementStat(tri, StatLong.PHASE2, inputRow.get(StatLong.PHASE2));
+        });
         m_totalTrinucleotide += _stats.m_totalTrinucleotide;
     }
 
     /**
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
-    protected void compute(){
+    protected final void compute(){
         m_trinucleotideTable.values().parallelStream().forEach(row -> {
-            row.put(Stat.FREQ0, row.get(Stat.PHASE0) / (float) m_totalTrinucleotide);
-            row.put(Stat.FREQ1, row.get(Stat.PHASE1) / (float) m_totalTrinucleotide);
-            row.put(Stat.FREQ2, row.get(Stat.PHASE2) / (float) m_totalTrinucleotide);
+            row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalTrinucleotide);
+            row.set(StatFloat.FREQ1, row.get(StatLong.PHASE1) / (float) m_totalTrinucleotide);
+            row.set(StatFloat.FREQ2, row.get(StatLong.PHASE2) / (float) m_totalTrinucleotide);
         });
     }
 
@@ -185,8 +197,16 @@ public class Statistics {
      * @param _tri, the Trinucleotide to set
      * @param _stat, the statistic to set
      */
-    protected void incrementStat(Trinucleotide _tri, Stat _stat){
-        m_trinucleotideTable.get(_tri).put(_stat,m_trinucleotideTable.get(_tri).get(_stat)+1);
+    protected final void incrementStat(Trinucleotide _tri, StatLong _stat){
+        m_trinucleotideTable.get(_tri).set(_stat,m_trinucleotideTable.get(_tri).get(_stat)+1);
+    }
+
+    /**
+     * Increment by _incr the value of total trinucleotide
+     * @param _incr, the value to increment
+     */
+    protected final void incrementTotal(long _incr){
+        m_totalTrinucleotide += _incr;
     }
 
     /**
@@ -195,7 +215,7 @@ public class Statistics {
      * @param _stat, the statistic to set
      * @param _incr, the value to increment
      */
-    private void incrementStat(Trinucleotide _tri, Stat _stat, float _incr){
-        m_trinucleotideTable.get(_tri).put(_stat,m_trinucleotideTable.get(_tri).get(_stat)+_incr);
+    private void incrementStat(Trinucleotide _tri, StatLong _stat, long _incr){
+        m_trinucleotideTable.get(_tri).set(_stat,m_trinucleotideTable.get(_tri).get(_stat)+_incr);
     }
 }
