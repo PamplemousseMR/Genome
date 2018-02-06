@@ -185,11 +185,11 @@ public class Statistics {
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
     protected final void compute(){
-        m_trinucleotideTable.values().parallelStream().forEach(row -> {
+        for(Tuple row : m_trinucleotideTable.values()){
             row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalTrinucleotide);
             row.set(StatFloat.FREQ1, row.get(StatLong.PHASE1) / (float) m_totalTrinucleotide);
             row.set(StatFloat.FREQ2, row.get(StatLong.PHASE2) / (float) m_totalTrinucleotide);
-        });
+        }
     }
 
     /**
