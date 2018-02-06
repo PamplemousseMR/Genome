@@ -2,7 +2,7 @@ package Data;
 
 import java.util.ArrayList;
 
-public final class Organism extends IState {
+public final class Organism extends IDataBase {
 
 	/**
 	 * Reference to the parent
@@ -30,7 +30,7 @@ public final class Organism extends IState {
 	 * @throws Exception if it _replicon are already added
 	 */
 	public boolean addReplicon(Replicon _replicon) throws Exception{
-        if(getState()==State.STARTED) {
+        if(super.getState()==State.STARTED) {
             try{
                 if(m_replicons.get(_replicon.getIndex()) != null)
                     throw new Exception("Replicon already added");
@@ -46,13 +46,13 @@ public final class Organism extends IState {
 	 */
 	@Override
 	public void finish() throws Exception{
-	    m_replicons.parallelStream().forEach(rep -> rep.computeStatistic());
+	    m_replicons.parallelStream().forEach(Replicon::computeStatistic);
 		for(Replicon rep : m_replicons) {
- 			updateStatistics(rep);
-			incrementGenomeNumber(rep.getType());
+			super.updateStatistics(rep);
+			super.incrementGenomeNumber(rep.getType());
 		}
 		m_replicons.clear();
-		computeStatistics();
+		super.computeStatistics();
 		m_parent.finish(this);
 		super.finish();
 	}

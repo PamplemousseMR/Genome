@@ -2,7 +2,7 @@ package Data;
 
 import java.util.ArrayList;
 
-public final class Group extends IState {
+public final class Group extends IDataBase {
 
 	/**
 	 * Reference to the parent
@@ -30,8 +30,8 @@ public final class Group extends IState {
 	 * @throws Exception if _subGroup are already added
 	 */
 	public boolean addSubGroup(SubGroup _subGroup) throws Exception {
-		if(getState()==State.STARTED) {
-			if(contains(m_subGroups,_subGroup))
+		if(super.getState()==State.STARTED) {
+			if(super.contains(m_subGroups,_subGroup))
 				throw new Exception("Sequence already added");
 			_subGroup.setIndex(m_subGroups.size());
 			_subGroup.setParent(this);
@@ -48,7 +48,7 @@ public final class Group extends IState {
 		super.stop();
 		if(getFinishedChildrens() == m_subGroups.size()){
 			m_subGroups.clear();
-			computeStatistics();
+			super.computeStatistics();
 			m_parent.finish(this);
 			super.finish();
 		}
@@ -78,15 +78,15 @@ public final class Group extends IState {
 	 * @throws Exception if it can't be finished
 	 */
 	protected void finish(SubGroup _subGroup) throws Exception {
-		if(contains(m_subGroups,_subGroup) && _subGroup.getState()!=State.FINISHED){
+		if(super.contains(m_subGroups,_subGroup) && _subGroup.getState()!=State.FINISHED){
             for(Statistics stat : _subGroup.getStatistics().values()){
-                updateStatistics(stat);
-                incrementGenomeNumber(stat.getType(),_subGroup.getTypeNumber(stat.getType()));
+				super.updateStatistics(stat);
+				super.incrementGenomeNumber(stat.getType(),_subGroup.getTypeNumber(stat.getType()));
             }
-			incrementFinishedChildrens();
-			if(getState()== State.STOPPED && getFinishedChildrens() == m_subGroups.size()){
+			super.incrementFinishedChildrens();
+			if(super.getState()== State.STOPPED && super.getFinishedChildrens() == m_subGroups.size()){
 				m_subGroups.clear();
-				computeStatistics();
+				super.computeStatistics();
 				m_parent.finish(this);
 				super.finish();
 			}

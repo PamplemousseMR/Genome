@@ -2,7 +2,7 @@ package Data;
 
 import java.util.ArrayList;
 
-public final class Kingdom extends IState {
+public final class Kingdom extends IDataBase {
 
 	/**
 	 * Reference to the parent
@@ -30,8 +30,8 @@ public final class Kingdom extends IState {
 	 * @throws Exception if _group are already added
 	 */
 	public boolean addGroup(Group _group) throws Exception {
-        if(getState()==State.STARTED) {
-			if(contains(m_groups,_group))
+        if(super.getState()==State.STARTED) {
+			if(super.contains(m_groups,_group))
 				throw new Exception("Sequence already added");
 			_group.setIndex(m_groups.size());
 			_group.setParent(this);
@@ -46,9 +46,9 @@ public final class Kingdom extends IState {
 	@Override
 	public void stop() throws Exception{
 		super.stop();
-		if(getFinishedChildrens() == m_groups.size()){
+		if(super.getFinishedChildrens() == m_groups.size()){
 			m_groups.clear();
-			computeStatistics();
+			super.computeStatistics();
 			m_parent.finish(this);
 			super.finish();
 		}
@@ -70,15 +70,15 @@ public final class Kingdom extends IState {
 	 * @throws Exception if it can't be finished
 	 */
 	protected void finish(Group _group) throws Exception {
-		if(contains(m_groups, _group) && _group.getState()!=State.FINISHED){
+		if(super.contains(m_groups, _group) && _group.getState()!=State.FINISHED){
             for(Statistics stat : _group.getStatistics().values()){
-                updateStatistics(stat);
-                incrementGenomeNumber(stat.getType(),_group.getTypeNumber(stat.getType()));
+				super.updateStatistics(stat);
+				super.incrementGenomeNumber(stat.getType(),_group.getTypeNumber(stat.getType()));
             }
-			incrementFinishedChildrens();
-			if(getState()== State.STOPPED && getFinishedChildrens() == m_groups.size()){
+			super.incrementFinishedChildrens();
+			if(getState()== State.STOPPED && super.getFinishedChildrens() == m_groups.size()){
 				m_groups.clear();
-				computeStatistics();
+				super.computeStatistics();
 				m_parent.finish(this);
 				super.finish();
 			}

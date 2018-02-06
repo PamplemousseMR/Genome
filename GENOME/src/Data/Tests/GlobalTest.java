@@ -11,7 +11,7 @@ class GlobalTest {
     @org.junit.jupiter.api.Test
     void dataBaseTest() throws Exception{
         DataBase dataBase = DataBase.getInstance();
-        assertEquals(IState.State.CREATED,dataBase.getState());
+        assertEquals(IDataBase.State.CREATED,dataBase.getState());
 
         // Database start and stop
         Kingdom k1 = new Kingdom("k1");
@@ -27,7 +27,7 @@ class GlobalTest {
 
         Kingdom k3 = new Kingdom("k3");
         assertEquals(false,dataBase.addKingdom(k3));
-        assertEquals(IState.State.STOPPED,dataBase.getState());
+        assertEquals(IDataBase.State.STOPPED,dataBase.getState());
 
         // Group start and Kingdom start and stop
         for(Kingdom k : dataBase.getKingdoms()){
@@ -46,7 +46,7 @@ class GlobalTest {
             Group g3 = new Group("g3_"+k.getName());
             g3.start();
             assertEquals(false,k.addGroup(g3));
-            assertEquals(IState.State.STOPPED,k.getState());
+            assertEquals(IDataBase.State.STOPPED,k.getState());
         }
 
         // Group stop
@@ -62,7 +62,7 @@ class GlobalTest {
                 g.stop();
                 SubGroup s3 = new SubGroup("s3_"+g.getName());
                 assertEquals(false,g.addSubGroup(s3));
-                assertEquals(IState.State.STOPPED,g.getState());
+                assertEquals(IDataBase.State.STOPPED,g.getState());
             }
         }
 
@@ -86,7 +86,7 @@ class GlobalTest {
 
                     Organism o3 = new Organism("o3_"+s.getName());
                     assertEquals(false,s.addOrganism(o3));
-                    assertEquals(IState.State.STOPPED,s.getState());
+                    assertEquals(IDataBase.State.STOPPED,s.getState());
                 }
             }
         }
