@@ -1,14 +1,14 @@
 package Data.Tests;
 
-import Data.IState;
+import Data.IDataBase;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
-class IStateTest {
+class StateTest {
 
-    private final class StateTest extends IState{
-        StateTest(){
+    private final class IStateTest extends IDataBase{
+        IStateTest(){
             super("TEST");
         }
 
@@ -19,29 +19,29 @@ class IStateTest {
     }
 
     @org.junit.jupiter.api.Test
-    void iStateTest() throws Exception {
+    void stateTest() throws Exception {
 
-        StateTest db = new StateTest();
+        IStateTest db = new IStateTest();
 
-        assertEquals(IState.State.CREATED, db.getState());
+        assertEquals(IDataBase.State.CREATED, db.getState());
 
         assertThrows(Exception.class, db::stop);
         assertThrows(Exception.class, db::finish);
         db.start();
 
-        assertEquals(IState.State.STARTED, db.getState());
+        assertEquals(IDataBase.State.STARTED, db.getState());
 
         assertThrows(Exception.class, db::start);
         assertThrows(Exception.class, db::finish);
         db.stop();
 
-        assertEquals(IState.State.STOPPED, db.getState());
+        assertEquals(IDataBase.State.STOPPED, db.getState());
 
         assertThrows(Exception.class, db::start);
         assertThrows(Exception.class, db::stop);
         db.finish();
 
-        assertEquals(IState.State.FINISHED, db.getState());
+        assertEquals(IDataBase.State.FINISHED, db.getState());
 
         assertThrows(Exception.class, db::start);
         assertThrows(Exception.class, db::stop);

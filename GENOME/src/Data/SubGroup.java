@@ -2,7 +2,7 @@ package Data;
 
 import java.util.ArrayList;
 
-public final class SubGroup extends IState{
+public final class SubGroup extends IDataBase {
 
 	/**
 	 * Reference to the parent
@@ -30,8 +30,8 @@ public final class SubGroup extends IState{
 	 * @throws Exception if _organism are already added
 	 */
 	public boolean addOrganism(Organism _organism) throws Exception{
-		if(getState()==State.STARTED) {
-			if(contains(m_organisms,_organism))
+		if(super.getState()==State.STARTED) {
+			if(super.contains(m_organisms,_organism))
 				throw new Exception("Organims already added");
 			_organism.setIndex(m_organisms.size());
 			_organism.setParent(this);
@@ -46,9 +46,9 @@ public final class SubGroup extends IState{
 	@Override
 	public void stop() throws Exception{
     	super.stop();
-		if(getFinishedChildrens() == m_organisms.size()){
+		if(super.getFinishedChildrens() == m_organisms.size()){
 			m_organisms.clear();
-			computeStatistics();
+			super.computeStatistics();
 			m_parent.finish(this);
 			super.finish();
 		}
@@ -86,15 +86,15 @@ public final class SubGroup extends IState{
 	 * @throws Exception if it can't be finished
 	 */
 	protected void finish(Organism _organism) throws Exception {
-		if(contains(m_organisms, _organism) && _organism.getState()!=State.FINISHED){
+		if(super.contains(m_organisms, _organism) && _organism.getState()!=State.FINISHED){
 			for(Statistics stat : _organism.getStatistics().values()){
-				updateStatistics(stat);
-				incrementGenomeNumber(stat.getType(),_organism.getTypeNumber(stat.getType()));
+				super.updateStatistics(stat);
+				super.incrementGenomeNumber(stat.getType(),_organism.getTypeNumber(stat.getType()));
 			}
-            incrementFinishedChildrens();
-			if(getState() == State.STOPPED && getFinishedChildrens() == m_organisms.size()){
+			super.incrementFinishedChildrens();
+			if(super.getState() == State.STOPPED && super.getFinishedChildrens() == m_organisms.size()){
 				m_organisms.clear();
-				computeStatistics();
+				super.computeStatistics();
 				m_parent.finish(this);
 				super.finish();
 			}

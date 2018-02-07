@@ -2,7 +2,7 @@ package Data;
 
 import java.util.ArrayList;
 
-public final class DataBase extends IState {
+public final class DataBase extends IDataBase {
 
 	/**
 	 * Name of the database
@@ -45,8 +45,8 @@ public final class DataBase extends IState {
 	 * @throws Exception if _kingdom are already added
 	 */
 	public boolean addKingdom(Kingdom _kingdom) throws Exception {
-		if(getState()==State.STARTED) {
-			if(contains(m_kingdoms, _kingdom))
+		if(super.getState()==State.STARTED) {
+			if(super.contains(m_kingdoms, _kingdom))
 				throw new Exception("Sequence already added");
 			_kingdom.setIndex(m_kingdoms.size());
 			_kingdom.setParent(this);
@@ -69,9 +69,9 @@ public final class DataBase extends IState {
 	@Override
 	public void stop() throws Exception{
 		super.stop();
-		if(getFinishedChildrens() == m_kingdoms.size()){
+		if(super.getFinishedChildrens() == m_kingdoms.size()){
             m_kingdoms.clear();
-            computeStatistics();
+			super.computeStatistics();
 			super.finish();
 		}
 	}
@@ -84,15 +84,15 @@ public final class DataBase extends IState {
 	 * @throws Exception if it can't be finished
 	 */
 	protected void finish(Kingdom _kingdom) throws Exception {
-		if(contains(m_kingdoms, _kingdom) && _kingdom.getState()!=State.FINISHED){
+		if(super.contains(m_kingdoms, _kingdom) && _kingdom.getState()!=State.FINISHED){
             for(Statistics stat : _kingdom.getStatistics().values()){
-                updateStatistics(stat);
-                incrementGenomeNumber(stat.getType(),_kingdom.getTypeNumber(stat.getType()));
+				super.updateStatistics(stat);
+				super.incrementGenomeNumber(stat.getType(),_kingdom.getTypeNumber(stat.getType()));
             }
             incrementFinishedChildrens();
-            if(getState()== IState.State.STOPPED && getFinishedChildrens() == m_kingdoms.size()){
+            if(super.getState()== IDataBase.State.STOPPED && super.getFinishedChildrens() == m_kingdoms.size()){
                 m_kingdoms.clear();
-                computeStatistics();
+				super.computeStatistics();
 				super.finish();
 			}
 		}
