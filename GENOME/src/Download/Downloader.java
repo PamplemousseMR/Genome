@@ -14,21 +14,40 @@ public abstract class Downloader {
 
     private HttpURLConnection m_connection;
 
-    protected JSONObject getJSON(BufferedReader in) throws IOException, JSONException {
+    /**
+     * Make an HTTP GET request and parse result as json
+     * @param url The request URL to retrieve data from
+     * @return The JSONObject parsed from server response
+     * @throws IOException An error occurred while connecting to the server
+     * @throws JSONException Invalid JSON
+     * @throws HTTPException Invalid response code
+     */
+    protected JSONObject getJSON(URL url) throws IOException, JSONException, HTTPException {
+        // Response buffer
         StringBuilder responseText = new StringBuilder("");
+        // Line buffer
         String line;
-        try {
+
+        // Make request
+        try (BufferedReader in = get(url)) {
             while ((line = in.readLine()) != null)
                 responseText.append(line);
         } catch (IOException e) {
             Logs.exception(e);
             throw e;
-        } finally {
-            in.close();
         }
+
+        // Parse result and return it
         return new JSONObject(responseText.toString());
     }
 
+    /**
+     * Make an HTTP GET request
+     * @param url The request URL to retrieve data from
+     * @return The BufferedReader from which to read result
+     * @throws IOException An error occurred while connecting to the server
+     * @throws HTTPException Invalid response code
+     */
     protected BufferedReader get(URL url) throws HTTPException, IOException {
 
         BufferedReader in;
@@ -53,6 +72,7 @@ public abstract class Downloader {
         // Execute request
         int responseCode;
         try {
+            // Get response code (executes request)
             responseCode = m_connection.getResponseCode();
         } catch (java.net.SocketTimeoutException | java.net.UnknownHostException e) {
             Logs.info("Downloader: Unable to establish connection with server.");
@@ -62,6 +82,8 @@ public abstract class Downloader {
             Logs.exception(e);
             throw e;
         }
+
+        // Check response code
         if (responseCode == HttpURLConnection.HTTP_OK) {
             // Get response stream
             try {

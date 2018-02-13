@@ -96,7 +96,7 @@ public class GenbankOrganisms extends Downloader
         }
 
         try {
-            JSONObject json = getJSON(get(getURL())).getJSONObject("ngout").getJSONObject("data");
+            JSONObject json = getJSON(getURL()).getJSONObject("ngout").getJSONObject("data");
 
             // Get total number of organisms
             m_totalCount = json.getInt("totalCount");
