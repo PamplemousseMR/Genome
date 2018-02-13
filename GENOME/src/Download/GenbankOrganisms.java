@@ -41,32 +41,40 @@ public class GenbankOrganisms extends Downloader
      * @return A JAVA URL instance for the next chunk of data
      * @throws UnsupportedEncodingException If UTF-8 isn't supported by executing system
      */
-    private URL getURL() throws UnsupportedEncodingException {
+    private URL getURL() throws UnsupportedEncodingException, MalformedURLException {
 
         String request =
-                "[display(" +
+                        "[display(" +
                         "id,organism,kingdom,group,subgroup,replicons,release_date," +
                         "modify_date,_version_)," +
-                "hist(kingdom,group,subgroup)]" +
-                ".from(GenomeAssemblies)" +
-                ".usingschema(/schema/GenomeAssemblies)" +
-                ".sort(lineage,asc).sort(organism,asc)";
+                        "hist(kingdom,group,subgroup)]" +
+                        ".from(GenomeAssemblies)" +
+                        ".usingschema(/schema/GenomeAssemblies)" +
+                        ".sort(lineage,asc)";
 
         // Add query
-        String urlStr = String.format(
-                "%s?q=%s&start=%d&limit=%d",
-                Options.getBaseUrl(),
-                URLEncoder.encode(request, StandardCharsets.UTF_8.name()),
-                m_downloaded,
-                Options.getDownloadStep());
-
+        String urlStr;
         try {
-            return new URL(urlStr);
-        } catch (MalformedURLException e) {
+            urlStr = String.format(
+                        "%s?q=%s&start=%d&limit=%d",
+                        Options.getBaseUrl(),
+                        URLEncoder.encode(request, StandardCharsets.UTF_8.name()),
+                        m_downloaded,
+                        Options.getDownloadStep());
+        } catch (UnsupportedEncodingException e) {
             Logs.exception(e);
+            throw e;
         }
 
-        return null;
+        URL res;
+        try {
+            res = new URL(urlStr);
+        } catch (MalformedURLException e) {
+            Logs.exception(e);
+            throw e;
+        }
+
+        return res;
     }
 
     /**
@@ -98,11 +106,10 @@ public class GenbankOrganisms extends Downloader
 
             for (Object org: dataChunk) {
                 enqueueOrganism(new RawOrganism((JSONObject)org));
-                m_enqueued++;
+            }
 
-                if (m_enqueued == m_totalCount) {
-                    m_endOfStream = true;
-                }
+            if (m_enqueued == m_totalCount) {
+                m_endOfStream = true;
             }
 
             // Set chunk size
@@ -137,15 +144,9 @@ public class GenbankOrganisms extends Downloader
      * Get next m_downloaded organism
      *
      * @return Data retrieved from Genbank
-     * @throws InterruptedException Lock wait interruption
      */
-    public synchronized RawOrganism getNext() throws InterruptedException
+    public RawOrganism getNext()
     {
-        // Wait until their is some data
-        while(m_dataQueue.size() == 0) {
-            wait();
-        }
-
         // Dequeue
         return m_dataQueue.removeFirst();
     }
@@ -154,13 +155,10 @@ public class GenbankOrganisms extends Downloader
      * Add an organism to the queue
      * @param organism Organism data to enqueue
      */
-    private synchronized void enqueueOrganism(RawOrganism organism)
+    private void enqueueOrganism(RawOrganism organism)
     {
         m_dataQueue.add(organism);
-
-        if(m_dataQueue.size() == 1) {
-            notify();
-        }
+        m_enqueued++;
     }
 
     /**
@@ -169,7 +167,6 @@ public class GenbankOrganisms extends Downloader
      */
     public boolean hasNext()
     {
-        // TODO: Don't call size() for each iteration (poor performance)
         return !m_endOfStream || m_dataQueue.size() > 0;
     }
 

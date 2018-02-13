@@ -32,8 +32,7 @@ public class RawOrganism {
         // Replicons formatting
         if (obj.has("replicons")) {
             // Parse replicons
-            replicons = Arrays.asList(
-                    obj.getString("replicons").split("\\s*,\\s*"));
+            replicons = Arrays.asList(obj.getString("replicons").split("\\s*,\\s*"));
         } else {
             replicons = Collections.emptyList();
         }

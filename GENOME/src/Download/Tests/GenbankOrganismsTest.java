@@ -12,21 +12,14 @@ class GenbankOrganismsTest {
         GenbankOrganisms go = GenbankOrganisms.getInstance();
         go.downloadOrganisms();
 
-        new Thread(() -> {
-            int count = 0;
-            while (go.hasNext()) {
-                try {
-                    System.out.println(go.getNext().getOrganism());
-                    count++;
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+        int count = 0;
+        while (go.hasNext()) {
+            go.getNext().getOrganism();
+            count++;
+        }
 
-            assertEquals(count, go.getTotalCount());
-        }).start();
+        assertEquals(count, go.getTotalCount());
 
-        System.out.println(go.getTotalCount());
     }
 
 }
