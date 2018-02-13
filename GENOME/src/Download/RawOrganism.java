@@ -1,5 +1,6 @@
 package Download;
 
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.LocalDateTime;
@@ -39,8 +40,10 @@ public class RawOrganism {
 
         // Dates formatting
         DateTimeFormatter format = DateTimeFormatter.ISO_DATE_TIME;
-        releaseDate = LocalDateTime.parse(obj.getString("release_date"), format);
-        modificationDate = LocalDateTime.parse(obj.getString("modify_date"), format);
+        if (obj.has("release_date"))
+            releaseDate = LocalDateTime.parse(obj.getString("release_date"), format);
+        if (obj.has("modify_date"))
+            modificationDate = LocalDateTime.parse(obj.getString("modify_date"), format);
     }
 
     public int getId()
