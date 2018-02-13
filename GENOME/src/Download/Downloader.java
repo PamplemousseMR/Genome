@@ -28,7 +28,7 @@ public abstract class Downloader {
 
     public BufferedReader get(URL url) throws HTTPException, IOException {
 
-        BufferedReader in = null;
+        BufferedReader in;
 
         // Initialize request
         HttpURLConnection connection = (HttpURLConnection) url.openConnection();
