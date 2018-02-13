@@ -96,7 +96,7 @@ public class GenbankOrganisms extends Downloader
         }
 
         try {
-            JSONObject json = toJSON(get(getURL())).getJSONObject("ngout").getJSONObject("data");
+            JSONObject json = getJSON(get(getURL())).getJSONObject("ngout").getJSONObject("data");
 
             // Get total number of organisms
             m_totalCount = json.getInt("totalCount");
@@ -129,6 +129,9 @@ public class GenbankOrganisms extends Downloader
         while (!downloadCompleted()) {
             downloadNextChunk();
         }
+
+        // Disconnect from server
+        disconnect();
     }
 
     /**

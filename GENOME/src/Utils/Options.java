@@ -21,7 +21,11 @@ public final class Options {
 	 */
 	private static Properties m_properties = null;
 
+	// Connection timeout in ms
+	private static String s_DOWNLOAD_CONNECTION_TIMEOUT = "10000";
+	// Number of organisms to download by request
 	private static String s_DOWNLOAD_STEP_ORGANISM = "100000";
+	// Base URL of genbank REST API
 	private static String s_BASE_URL = "https://www.ncbi.nlm.nih.gov/Structure/ngram";
 
 	/**
@@ -127,6 +131,10 @@ public final class Options {
 
 	public static int getDownloadStep() {
 		return Integer.parseInt(s_DOWNLOAD_STEP_ORGANISM);
+	}
+
+	public static int getConnectionTimeout() {
+		return Integer.parseInt(s_DOWNLOAD_CONNECTION_TIMEOUT);
 	}
 
 	public static String getBaseUrl() {
