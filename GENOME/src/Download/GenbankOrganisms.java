@@ -24,6 +24,15 @@ public class GenbankOrganisms extends Downloader
     // Queue of retrieved organisms
     private LinkedList<RawOrganism> m_dataQueue;
 
+    private static final String s_REQUEST =
+            "[display(" +
+                "id,organism,kingdom,group,subgroup,replicons,release_date," +
+                "modify_date,_version_)," +
+            "hist(kingdom,group,subgroup)]" +
+            ".from(GenomeAssemblies)" +
+            ".usingschema(/schema/GenomeAssemblies)" +
+            ".sort(lineage,asc)";
+
     private GenbankOrganisms() {
         // Counters
         m_downloaded = 0;
@@ -43,22 +52,12 @@ public class GenbankOrganisms extends Downloader
      */
     private URL getURL() throws UnsupportedEncodingException, MalformedURLException {
 
-        String request =
-                        "[display(" +
-                        "id,organism,kingdom,group,subgroup,replicons,release_date," +
-                        "modify_date,_version_)," +
-                        "hist(kingdom,group,subgroup)]" +
-                        ".from(GenomeAssemblies)" +
-                        ".usingschema(/schema/GenomeAssemblies)" +
-                        ".sort(lineage,asc)";
-
-        // Add query
         String urlStr;
         try {
-            urlStr = String.format(
-                        "%s?q=%s&start=%d&limit=%d",
+            // Forge request
+            urlStr = String.format("%s?q=%s&start=%d&limit=%d",
                         Options.getBaseUrl(),
-                        URLEncoder.encode(request, StandardCharsets.UTF_8.name()),
+                        URLEncoder.encode(s_REQUEST, StandardCharsets.UTF_8.name()),
                         m_downloaded,
                         Options.getDownloadStep());
         } catch (UnsupportedEncodingException e) {
@@ -96,6 +95,10 @@ public class GenbankOrganisms extends Downloader
         }
 
         try {
+
+            // Request json
+            Logs.info(String.format("GenbankOrganisms: Requesting organisms [%d;%d]"
+                    , m_downloaded, m_downloaded + Options.getDownloadStep()));
             JSONObject json = getJSON(getURL()).getJSONObject("ngout").getJSONObject("data");
 
             // Get total number of organisms
@@ -108,15 +111,18 @@ public class GenbankOrganisms extends Downloader
                 enqueueOrganism(new RawOrganism((JSONObject)org));
             }
 
-            if (m_enqueued == m_totalCount) {
-                m_endOfStream = true;
-            }
-
             // Set chunk size
             int chunkLength = dataChunk.length();
+            Logs.info(String.format("GenbankOrganisms: %d organisms enqueued", chunkLength));
 
             // Increment number of retrieved objects
             m_downloaded += chunkLength;
+
+            // On end flag endOfStream
+            if (m_enqueued == m_totalCount) {
+                m_endOfStream = true;
+                Logs.info("GenbankOrganisms: Organisms download complete");
+            }
 
         } catch (Download.HTTPException|IOException e) {
             Logs.exception(e);
