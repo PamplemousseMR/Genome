@@ -23,16 +23,16 @@ public final class ThreadManager {
                 ITask todo = null;
 
                 // Get task to do
-                m_lock.lock();
+                m_lockArray.lock();
                 {
                     // Wait until they are data
                     while (m_downloads.isEmpty() && m_computes.isEmpty()) {
                         if(!isRunning()){
-                            m_lock.unlock();
+                            m_lockArray.unlock();
                             return;
                         }
                         try {
-                            m_cond.await();
+                            m_condArray.await();
                         } catch (InterruptedException e) {
                             Logs.exception(e);
                         }
@@ -57,11 +57,14 @@ public final class ThreadManager {
 
                     // Log
                     if(todo != null){
+                        if(m_computes.size() + m_downloads.size() < m_nbThreadMax){
+                            m_condPush.signalAll();
+                        }
                         Logs.info("Task '" + todo.getName() + "' of type " + todo.getTaskType() + " is chosen : remains " + m_downloads.size() + " downloading task and " + m_computes.size() + " computing task");
                     }
 
                 }
-                m_lock.unlock();
+                m_lockArray.unlock();
 
                 if (todo != null) {
 
@@ -73,7 +76,7 @@ public final class ThreadManager {
                     }
 
                     // Free
-                    m_lock.lock();
+                    m_lockArray.lock();
                     {
                         if (todo.getTaskType() == ITask.TaskType.DOWNLOAD) {
                             --m_actualIDownloadRun;
@@ -82,7 +85,7 @@ public final class ThreadManager {
                         }
                         Logs.info("Task '" + todo.getName() + "' of type " + todo.getTaskType() + "' is finished");
                     }
-                    m_lock.unlock();
+                    m_lockArray.unlock();
 
                 }else{
                     Logs.warning("No task to do");
@@ -121,6 +124,7 @@ public final class ThreadManager {
 
     private static ThreadManager s_instance;
 
+    private final int m_nbThreadMax;
     private final int m_iDownloadMax;
     private final int m_iComputeMax;
 
@@ -134,14 +138,16 @@ public final class ThreadManager {
     private volatile LinkedList<ICompute> m_computes;
     private volatile int m_actualIComputeRun;
 
-    private final Lock m_lock;
-    private final Condition m_cond;
+    private final Lock m_lockArray;
+    private final Condition m_condArray;
+    private final Condition m_condPush;
 
     /**
      * Instantiate all threads
      */
     private ThreadManager() {
 
+        m_nbThreadMax = s_nbThreadMax;
         m_iDownloadMax = s_iDownloadMax;
         m_iComputeMax = s_iComputeMax;
 
@@ -159,8 +165,9 @@ public final class ThreadManager {
         m_computes = new LinkedList<>();
         m_actualIComputeRun = 0;
 
-        m_lock = new ReentrantLock();
-        m_cond = m_lock.newCondition();
+        m_lockArray = new ReentrantLock();
+        m_condArray = m_lockArray.newCondition();
+        m_condPush = m_lockArray.newCondition();
 
         for(int i=0 ; i<s_nbThreadMax ; ++i){
             Thread thr = new Thread(new Executor());
@@ -204,11 +211,11 @@ public final class ThreadManager {
         }
         m_runningLock.unlock();
 
-        m_lock.lock();
+        m_lockArray.lock();
         {
-            m_cond.signalAll();
+            m_condArray.signalAll();
         }
-        m_lock.unlock();
+        m_lockArray.unlock();
 
         for(Thread thr : m_threads){
             try {
@@ -227,17 +234,20 @@ public final class ThreadManager {
      */
     public boolean pushDownloadTask(IDownload _iDownload){
         boolean res = false;
-        m_lock.lock();
+        m_lockArray.lock();
         try {
+            while(m_computes.size() + m_downloads.size() >= m_nbThreadMax){
+                m_condPush.await();
+            }
             res = m_downloads.add(_iDownload);
             if (res) {
-                m_cond.signal();
+                m_condArray.signal();
                 Logs.info("Add downloading task : " + _iDownload.getName());
             }
         } catch(Exception e){
             Logs.exception(e);
         } finally {
-            m_lock.unlock();
+            m_lockArray.unlock();
         }
         return res;
     }
@@ -249,17 +259,20 @@ public final class ThreadManager {
      */
     public boolean pushComputeTask(ICompute _iCompute){
         boolean res = false;
-        m_lock.lock();
+        m_lockArray.lock();
         try{
+            while(m_computes.size() + m_downloads.size() >= m_nbThreadMax){
+                m_condPush.await();
+            }
             res = m_computes.add(_iCompute);
             if(res) {
-                m_cond.signal();
+                m_condArray.signal();
                 Logs.info("Add computing task : " + _iCompute.getName());
             }
         } catch(Exception e){
             Logs.exception(e);
         } finally {
-            m_lock.unlock();
+            m_lockArray.unlock();
         }
         return res;
     }
