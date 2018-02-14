@@ -1,6 +1,5 @@
 package Download;
 
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.LocalDateTime;
@@ -10,78 +9,78 @@ import java.util.Collections;
 import java.util.List;
 
 public class RawOrganism {
-    private int id;
-    private String organism;
-    private String kingdom;
-    private String group;
-    private List<String> replicons;
+    private int m_id;
+    private String m_organism;
+    private String m_kingdom;
+    private String m_group;
+    private List<String> m_replicons;
 
-    private LocalDateTime releaseDate;
-    private LocalDateTime modificationDate;
+    private LocalDateTime m_releaseDate;
+    private LocalDateTime m_modificationDate;
 
-    private int version;
+    private int m_version;
 
     public RawOrganism(JSONObject obj)
     {
-        id = obj.getInt("id");
-        organism = obj.getString("organism");
-        kingdom = obj.getString("kingdom");
-        group = obj.getString("group");
-        version = obj.getInt("_version_");
+        m_id = obj.getInt("id");
+        m_organism = obj.getString("organism");
+        m_kingdom = obj.getString("kingdom");
+        m_group = obj.getString("group");
+        m_version = obj.getInt("_version_");
 
         // Replicons formatting
         if (obj.has("replicons")) {
-            // Parse replicons
-            replicons = Arrays.asList(obj.getString("replicons").split("\\s*,\\s*"));
+            // Parse m_replicons
+            m_replicons = Arrays.asList(obj.getString("replicons").split("\\s*,\\s*"));
         } else {
-            replicons = Collections.emptyList();
+            m_replicons = Collections.emptyList();
         }
 
         // Dates formatting
         DateTimeFormatter format = DateTimeFormatter.ISO_DATE_TIME;
         if (obj.has("release_date"))
-            releaseDate = LocalDateTime.parse(obj.getString("release_date"), format);
+            m_releaseDate = LocalDateTime.parse(obj.getString("release_date"), format);
         if (obj.has("modify_date"))
-            modificationDate = LocalDateTime.parse(obj.getString("modify_date"), format);
+            m_modificationDate = LocalDateTime.parse(obj.getString("modify_date"), format);
     }
 
     public int getId()
     {
-        return id;
+        return m_id;
     }
 
     public String getOrganism()
     {
-        return organism;
+        return m_organism;
     }
 
     public String getKingdom()
     {
-        return kingdom;
+        return m_kingdom;
     }
 
     public String getGroup()
     {
-        return group;
+        return m_group;
     }
 
     public List<String> getReplicons()
     {
-        return replicons;
+        return m_replicons;
     }
 
     public LocalDateTime getReleaseDate()
     {
-        return releaseDate;
+        return m_releaseDate;
     }
 
     public LocalDateTime getModificationDate()
     {
-        return modificationDate;
+        return m_modificationDate;
     }
 
     public int getVersion()
     {
-        return version;
+        return m_version;
     }
 }
