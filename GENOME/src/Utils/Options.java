@@ -21,7 +21,12 @@ public final class Options {
 	 */
 	private static Properties m_properties = null;
 
-	private static String s_BASE_LINK = "https://eutils.ncbi.nlm.nih.gov/entrez/eutils/";
+	// Connection timeout in ms
+	private static String s_DOWNLOAD_CONNECTION_TIMEOUT = "10000";
+	// Number of organisms to download by request
+	private static String s_DOWNLOAD_STEP_ORGANISM = "100000";
+	// Base URL of genbank REST API
+	private static String s_BASE_URL = "https://www.ncbi.nlm.nih.gov/Structure/ngram";
 
 	/**
 	 * Open the options's file in order to read options and fill the static fields with it
@@ -31,9 +36,7 @@ public final class Options {
 
 		// Create file if it's not exist 
 		try {
-			if(!file.createNewFile()){
-				throw new IOException("Can't create new file");
-			}
+			file.createNewFile();
 		}catch(IOException e) {
 			Logs.exception(e);
 			return;
@@ -82,9 +85,7 @@ public final class Options {
 
 			// Create file if it's not exist 
 			try {
-				if(!file.createNewFile()){
-					throw new IOException("Can't create new file");
-				}
+				file.createNewFile();
 			}catch(IOException e) {
 				Logs.exception(e);
 				return;
@@ -128,8 +129,16 @@ public final class Options {
 		}
 	}
 
-	public static String getBaseLink() {
-		return s_BASE_LINK;
+	public static int getDownloadStep() {
+		return Integer.parseInt(s_DOWNLOAD_STEP_ORGANISM);
+	}
+
+	public static int getConnectionTimeout() {
+		return Integer.parseInt(s_DOWNLOAD_CONNECTION_TIMEOUT);
+	}
+
+	public static String getBaseUrl() {
+		return s_BASE_URL;
 	}
 
 	public static void setBaseLink(String _overviewLink) {
