@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class GenbankOrganismsTest {
     @Test
-    void runTest() {
+    void runTest() throws Exception {
 
         GenbankOrganisms go = GenbankOrganisms.getInstance();
         go.downloadOrganisms();
@@ -16,6 +16,10 @@ class GenbankOrganismsTest {
         while (go.hasNext()) {
             go.getNext().getOrganism();
             count++;
+        }
+
+        while(go.hasFailedChunk()){
+            go.getNextFailedChunk();
         }
 
         assertEquals(count, go.getTotalCount());
