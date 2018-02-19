@@ -1,5 +1,7 @@
 package Download;
 
+import Utils.Logs;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.time.LocalDateTime;
@@ -20,17 +22,21 @@ public class RawOrganism {
 
     private int m_version;
 
-    public RawOrganism(JSONObject obj)
-    {
-        m_id = obj.getInt("id");
-        m_organism = obj.getString("organism");
-        m_kingdom = obj.getString("kingdom");
-        m_group = obj.getString("group");
-        m_version = obj.getInt("_version_");
+    public RawOrganism(JSONObject obj) throws JSONException{
+
+        try {
+            m_id = obj.getInt("id");
+            m_organism = obj.getString("organism");
+            m_kingdom = obj.getString("kingdom");
+            m_group = obj.getString("group");
+            m_version = obj.getInt("_version_");
+        }catch (JSONException e){
+            Logs.exception(e);
+            throw e;
+        }
 
         // Replicons formatting
         if (obj.has("replicons")) {
-            // Parse m_replicons
             m_replicons = Arrays.asList(obj.getString("replicons").split("\\s*,\\s*"));
         } else {
             m_replicons = Collections.emptyList();
@@ -44,43 +50,35 @@ public class RawOrganism {
             m_modificationDate = LocalDateTime.parse(obj.getString("modify_date"), format);
     }
 
-    public int getId()
-    {
+    public int getId() {
         return m_id;
     }
 
-    public String getOrganism()
-    {
+    public String getOrganism() {
         return m_organism;
     }
 
-    public String getKingdom()
-    {
+    public String getKingdom() {
         return m_kingdom;
     }
 
-    public String getGroup()
-    {
+    public String getGroup() {
         return m_group;
     }
 
-    public List<String> getReplicons()
-    {
+    public List<String> getReplicons() {
         return m_replicons;
     }
 
-    public LocalDateTime getReleaseDate()
-    {
+    public LocalDateTime getReleaseDate() {
         return m_releaseDate;
     }
 
-    public LocalDateTime getModificationDate()
-    {
+    public LocalDateTime getModificationDate() {
         return m_modificationDate;
     }
 
-    public int getVersion()
-    {
+    public int getVersion() {
         return m_version;
     }
 }
