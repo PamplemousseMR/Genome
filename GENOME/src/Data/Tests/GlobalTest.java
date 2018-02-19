@@ -1,12 +1,26 @@
 package Data.Tests;
 
 import Data.*;
-
+import Data.RawOrganism;
+import org.json.JSONObject;
 import java.util.LinkedList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalTest {
+
+    private static JSONObject s_JSON_ORG = new JSONObject("{\n" +
+            "\t\"id\": 152753,\n" +
+            "\t\"organism\": \"'Brassica napus' phytoplasma\",\n" +
+            "\t\"kingdom\": \"Bacteria\",\n" +
+            "\t\"group\": \"Terrabacteria group\",\n" +
+            "\t\"subgroup\": \"Tenericutes\",\n" +
+            "\t\"replicons\": \"pPABN1:NC_016583.1/HQ637382.1\",\n" +
+            "\t\"modify_date\": \"2014-12-18T00:00:00Z\",\n" +
+            "\t\"_version_\": 1592820474201505800\n" +
+            "}");
 
     @org.junit.jupiter.api.Test
     void dataBaseTest() throws Exception{
@@ -72,19 +86,19 @@ class GlobalTest {
         for(Kingdom k : dataBase.getKingdoms()) {
             for(Group g : k.getGroups()) {
                 for(SubGroup s : g.getSubGroups()) {
-                    Organism o1 = new Organism("o1_"+s.getName());
+                    Organism o1 = new Organism(new RawOrganism(s_JSON_ORG));
                     assertEquals(false,s.addOrganism(o1));
                     s.start();
                     assertEquals(true,s.addOrganism(o1));
                     list.add(o1);
 
-                    Organism o2 = new Organism("o2_"+s.getName());
+                    Organism o2 = new Organism(new RawOrganism(s_JSON_ORG));
                     assertEquals(true,s.addOrganism(o2));
                     assertThrows(Exception.class, () -> s.addOrganism(o2));
                     s.stop();
                     list.add(o2);
 
-                    Organism o3 = new Organism("o3_"+s.getName());
+                    Organism o3 = new Organism(new RawOrganism(s_JSON_ORG));
                     assertEquals(false,s.addOrganism(o3));
                     assertEquals(IDataBase.State.STOPPED,s.getState());
                 }
@@ -148,7 +162,7 @@ class GlobalTest {
         s.start();
         g.addSubGroup(s);
 
-        Organism o = new Organism("ORGANISM");
+        Organism o = new Organism(new RawOrganism(s_JSON_ORG));
         s.addOrganism(o);
 
         assertEquals("KINGDOM",o.getKingdomName());

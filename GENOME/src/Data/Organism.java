@@ -12,14 +12,30 @@ public final class Organism extends IDataBase {
 	 * Array of this organism's Replicon
 	 */
 	private ArrayList<Replicon> m_replicons;
+	/**
+	 * The id of this organism
+	 */
+	private int m_id;
+	/**
+	 * The version of the organism
+	 */
+	private int m_version;
+	/**
+	 * List of the replicon id
+	 */
+	private ArrayList<String> m_repliconId;
 
 	/**
 	 * Class constructor
-	 * @param _name, the name of the Organism
+	 * @param _orgRawOrganism, the Organism where get data
 	 */
-	public Organism(String _name) {
-		super(_name);
+	public Organism(RawOrganism _orgRawOrganism) {
+		super(new String(_orgRawOrganism.getName()));
+		super.setModificationDate(_orgRawOrganism.getModificationDate());
+		m_id = _orgRawOrganism.getId();
+		m_version = _orgRawOrganism.getVersion();
 		m_replicons = new ArrayList<>();
+		m_repliconId = new ArrayList<>(_orgRawOrganism.getReplicons());
 		m_parent = null;
 	}
 
@@ -88,6 +104,22 @@ public final class Organism extends IDataBase {
 	public String getKingdomName(){
 		return m_parent.getParent().getParent().getName();
 	}
+
+    /**
+     * Get the version of the organism
+     * @return the version's number
+     */
+    public int getVersion() {
+        return m_version;
+    }
+
+    /**
+     * Get the id of the organism
+     * @return the id's number
+     */
+    public int getId() {
+        return m_id;
+    }
 
 	// Do not use
 

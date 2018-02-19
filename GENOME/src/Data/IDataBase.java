@@ -223,5 +223,13 @@ public class IDataBase {
         return m_finished;
     }
 
+    /**
+     * Set the modification date
+     * @param _date, the date to set
+     */
+    protected void setModificationDate(Date _date){
+        m_modificationDate = _date;
+    }
+
 }
 
