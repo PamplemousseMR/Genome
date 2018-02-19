@@ -1,5 +1,6 @@
 package Download;
 
+import Data.RawOrganism;
 import Utils.Logs;
 import Utils.Options;
 import org.json.JSONArray;
@@ -12,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 import java.util.LinkedList;
 
 public class GenbankOrganisms extends Downloader {
@@ -40,7 +42,7 @@ public class GenbankOrganisms extends Downloader {
     /**
      * Queue of failed chunk's indexes
      */
-    private LinkedList<Integer> m_failedChunks;
+    private ArrayList<Integer> m_failedChunks;
 
     private static final String s_REQUEST =
             "[display( id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_)," +
@@ -58,7 +60,7 @@ public class GenbankOrganisms extends Downloader {
 
         // Initialize data
         m_dataQueue = new LinkedList<>();
-        m_failedChunks = new LinkedList<>();
+        m_failedChunks = new ArrayList<>();
     }
 
     /**
@@ -138,7 +140,7 @@ public class GenbankOrganisms extends Downloader {
      * @return thew number of organism downloaded
      * @throws Exception if an error occurred
      */
-    public int downloadChunk(int _index) throws Exception {
+    private int downloadChunk(int _index) throws Exception {
         Logs.info(String.format("Requesting organisms [%d;%d]", _index, _index + Options.getDownloadStep()));
 
         // Request json
@@ -202,6 +204,14 @@ public class GenbankOrganisms extends Downloader {
     }
 
     /**
+     * Returns true if there is more failed chunk
+     * @return The number of failed chunk
+     */
+    public int hasFailedChunk(){
+        return m_failedChunks.size();
+    }
+
+    /**
      * Retrieve the total number of organisms
      * @return Total count
      */
@@ -232,22 +242,6 @@ public class GenbankOrganisms extends Downloader {
      */
     public RawOrganism getNext() {
         return m_dataQueue.removeFirst();
-    }
-
-    /**
-     * Returns true if there is more failed chunk
-     * @return True if their is more failed chunk to be processed
-     */
-    public boolean hasFailedChunk(){
-        return m_failedChunks.size() > 0;
-    }
-
-    /**
-     * Get the next failed chunk
-     * @return the next failed chunk
-     */
-    public int getNextFailedChunk(){
-        return m_failedChunks.removeFirst();
     }
 
     /**

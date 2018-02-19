@@ -1,6 +1,7 @@
 package Download.Tests;
 
 import Download.GenbankOrganisms;
+import Utils.Options;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -14,12 +15,12 @@ class GenbankOrganismsTest {
 
         int count = 0;
         while (go.hasNext()) {
-            go.getNext().getOrganism();
+            go.getNext();
             count++;
         }
 
-        while(go.hasFailedChunk()){
-            go.getNextFailedChunk();
+        if(go.hasFailedChunk()>0){
+            count+=go.hasFailedChunk()* Options.getDownloadStep();
         }
 
         assertEquals(count, go.getTotalCount());
