@@ -1,8 +1,6 @@
 package Excel;
 
-import Data.Kingdom;
-import Data.Organism;
-import Data.Replicon;
+import Data.*;
 /*import Data.Kingdom;
 import Data.SubGroup;
 import Data.Group;*/
@@ -12,137 +10,322 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 
 /* external library import  */
+import Utils.Logs;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.json.JSONObject;
 
 public class ExcelWriter {
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
 
+		Kingdom k = new Kingdom("KINGDOM");
+		k.start();
+
+		Group g = new Group("GROUP");
+		g.start();
+		k.addGroup(g);
+
+		SubGroup s = new SubGroup("SUBGROUP");
+		s.start();
+		g.addSubGroup(s);
+
+		Organism o = new Organism(new RawOrganism(new JSONObject("{\n" +
+				"\t\"id\": 152753,\n" +
+				"\t\"organism\": \"'Brassica napus' phytoplasma\",\n" +
+				"\t\"kingdom\": \"Bacteria\",\n" +
+				"\t\"group\": \"Terrabacteria group\",\n" +
+				"\t\"subgroup\": \"Tenericutes\",\n" +
+				"\t\"replicons\": \"pPABN1:NC_016583.1/HQ637382.1\",\n" +
+				"\t\"modify_date\": \"2014-12-18T00:00:00Z\",\n" +
+				"\t\"_version_\": 1592820474201505800\n" +
+				"}")));
+
+		s.addOrganism(o);
+
+		writeOrganism(o);
+		
     }
-
-	public static void Test() throws InvalidFormatException, IOException {
-		    // Obtain a workbook from the excel file
-		    Workbook workbook = WorkbookFactory.create(new File("templateExemple.xlsx"));
-
-		    // Get Sheet at index 0
-		    Sheet sheet = workbook.getSheetAt(0);
-
-		    if (sheet == null)
-		    {
-		    	sheet= workbook.createSheet();
-		    }
-
-		    // Get Row at index 1
-		    Row row = sheet.getRow(1);
-		    if(row == null)
-		    {
-		    	row=sheet.createRow(1);
-		    }
-
-		    // Get the Cell at index 2 from the above row
-		    Cell cell = row.getCell(2);
-
-		    // Create the cell if it doesn't exist
-		    if (cell == null)
-		        cell = row.createCell(2);
-
-		    // Update the cell's value
-		    cell.setCellType(CellType.STRING);
-		    cell.setCellValue("Updated Value");
-
-		    // Write the output to the file
-		    FileOutputStream fileOut = new FileOutputStream("resultatExemple.xlsx");
-		    workbook.write(fileOut);
-		    fileOut.close();
-
-
-	}
-
-
 
 	/**
 	 * Function call to write kingdom summary in Excel workbook
 	 */
-	public void writeKingdom(Kingdom _kingdom)
-	{
-	    //get path from file manager
-        //String Path = FileManager.GetPathFor(_kingdom);
-        //check if file exist
+	public void writeKingdom(Kingdom _kingdom) throws IOException, InvalidFormatException {
 
-        //yes, delete it? Keep general info?
+	    //	Get path from file manager
 
-        //create proper file
+        String Path = FileManager.GetPathFor(_kingdom);
 
-        //LE fun qui commence
+		//	Check if file exist
 
-        //create workbook
+		File file = new File(Path + "\\" +  _kingdom.getName() + ".xls");
 
-        //create sheet summary
+		if (file.exists()) {
+			file.delete();
+		}
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
 
-		return;
+		//	Create workbook
+		Workbook workbook = new XSSFWorkbook();
+
+		//	Create sheet
+		Sheet sheet = workbook.createSheet();
+
+		// Fill the sheet
+
+		// NAIVE TEST
+		Row r  = sheet.createRow(0);
+		Cell c = r.createCell(0);
+		c.setCellType(CellType.STRING);
+		c.setCellValue("Hey");
+		// NAIVE TEST
+
+			// TODO
+
+		// Write the output to the file
+
+		FileOutputStream fileOut;
+		try {
+			fileOut = new FileOutputStream(file);
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+		try {
+			workbook.write(fileOut);
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+		try {
+			fileOut.close();
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+
 	}
 
 	/**
 	 * Function call to write group summary in Excel workbook
 	 */
-	public void writeGroup(/*Group _group*/)
-	{
-		return;
+	public void writeGroup(Group _group) throws IOException, InvalidFormatException {
+
+		//	Get path from file manager
+
+		String Path = FileManager.GetPathFor(_group);
+
+		//	Check if file exist
+
+		File file = new File(Path + "\\" +  _group.getName() + ".xls");
+
+		if (file.exists()) {
+			file.delete();
+		}
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+
+		//	Create workbook
+		Workbook workbook = new XSSFWorkbook();
+
+		//	Create sheet
+		Sheet sheet = workbook.createSheet();
+
+		// Fill the sheet
+
+		// NAIVE TEST
+		Row r  = sheet.createRow(0);
+		Cell c = r.createCell(0);
+		c.setCellType(CellType.STRING);
+		c.setCellValue("Hey");
+		// NAIVE TEST
+
+			// TODO
+
+		// Write the output to the file
+
+		FileOutputStream fileOut;
+		try {
+			fileOut = new FileOutputStream(file);
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+		try {
+			workbook.write(fileOut);
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+		try {
+			fileOut.close();
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
 	}
 
 	/**
 	 * Function call to write subgroup summary in Excel workbook
 	 */
-	public void writeSubGroup(/*SubGroup _subGroup*/)
-	{
-		return;
+	public void writeSubGroup(SubGroup _subGroup) throws IOException, InvalidFormatException {
+
+		//	Get path from file manager
+
+		String Path = FileManager.GetPathFor(_subGroup);
+
+		//	Check if file exist
+
+		File file = new File(Path + "\\" +  _subGroup.getName() + ".xls");
+
+		if (file.exists()) {
+			file.delete();
+		}
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+
+		//	Create workbook
+		Workbook workbook = new XSSFWorkbook();
+
+		//	Create general info sheet
+		Sheet sheet = workbook.createSheet();
+
+		// Fill the sheet
+
+		// NAIVE TEST
+		Row r  = sheet.createRow(0);
+		Cell c = r.createCell(0);
+		c.setCellType(CellType.STRING);
+		c.setCellValue("Hey");
+		// NAIVE TEST
+
+			// TODO
+
+		// Write the output to the file
+
+		FileOutputStream fileOut;
+		try {
+			fileOut = new FileOutputStream(file);
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+		try {
+			workbook.write(fileOut);
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+		try {
+			fileOut.close();
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
 	}
 
 	/**
 	 * Function call to write organism summary in Excel workbook
 	 */
-	public void writeOrganism(Organism _organism)
-	{
-		//get path from file manager
-        //String Path = FileManager.GetPathFor(_organism);
-        //check if file exist
+	public static void writeOrganism(Organism _organism) throws IOException {
 
-        //yes, delete it? Keep general info?
+		//	Get path from file manager
+        String Path = FileManager.GetPathFor(_organism);
 
-        //LE fun qui commence
+        //	Check if file exist
 
-        //create workbook
+		File file = new File(Path + "\\" +  _organism.getName() + ".xlsx");
 
-        //create general info
+		if (file.exists()) {
+			file.delete();
+		}
+		try {
+			file.createNewFile();
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
 
+        //	Create workbook
+		Workbook workbook = new XSSFWorkbook();
 
-        //Summary sheets
+		//	Create general info sheet
+		Sheet general_info_sheet = workbook.createSheet();
 
-            //for each Summary page, create sheet and fill it
+		// Fill it
 
-        //for each replicon
+		// NAIVE TEST
+		Row r  = general_info_sheet.createRow(0);
+		Cell c = r.createCell(0);
+		c.setCellType(CellType.STRING);
+		c.setCellValue("Hey");
+		// NAIVE TEST
 
-                //create sheet
+			// TODO
 
-                //create header
+		//	For each Summary page, create sheet and fill it
 
-                //for each trinucleotide
+				// TODO
 
-                    //fill statistics ( cf StatisticsTest)
+		// 	For each replicon
 
-                //for each dinucleotid
+                //	Create sheet
 
-                    //fill statistics ( cf StatisticsTest)
+					// TODO
 
-        //save with correct name
+				// 	Create header ( cf StatisticsTest)
 
+					// TODO
 
-        //Success?
+                //	For each trinucleotide
 
+                    // 	Fill statistics
 
-        return;
+						// TODO
+
+                //	For each dinucleotid
+
+                    //	Fill statistics ( cf StatisticsTest)
+
+						// TODO
+
+		// Write the output to the file
+
+		FileOutputStream fileOut;
+		try {
+			fileOut = new FileOutputStream(file);
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+		try {
+			workbook.write(fileOut);
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+		try {
+			fileOut.close();
+		} catch (IOException e) {
+			Logs.exception(e);
+			throw e;
+		}
+
 	}
 
 
