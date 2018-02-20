@@ -18,6 +18,9 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 public class ExcelWriter {
 
+    public static void main(String[] args) {
+
+    }
 
 	public static void Test() throws InvalidFormatException, IOException {
 		    // Obtain a workbook from the excel file
@@ -65,7 +68,7 @@ public class ExcelWriter {
 	public void writeKingdom(Kingdom _kingdom)
 	{
 	    //get path from file manager
-        String Path = FileManager.GetPathFor(_kingdom);
+        //String Path = FileManager.GetPathFor(_kingdom);
         //check if file exist
 
         //yes, delete it? Keep general info?
@@ -103,7 +106,7 @@ public class ExcelWriter {
 	public void writeOrganism(Organism _organism)
 	{
 		//get path from file manager
-        String Path = FileManager.GetPathFor(_organism);
+        //String Path = FileManager.GetPathFor(_organism);
         //check if file exist
 
         //yes, delete it? Keep general info?
