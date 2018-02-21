@@ -7,8 +7,8 @@ import java.awt.Font;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -16,6 +16,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
+import javax.swing.JSplitPane;
 import javax.swing.UIManager;
 import javax.swing.border.Border;
 
@@ -29,6 +30,7 @@ public class MainFrame extends JFrame implements ActionListener
 	private static Border s_basicEmptyBorder=BorderFactory.createEmptyBorder(20, 20, 20, 20);
 	private static final Color s_DARKGRAY =new Color(32, 34, 37);
 	private static final Color s_LIGHTGRAY= new Color(54, 57, 62);
+	private JSplitPane m_splitPanel;
 	private JPanel m_north;
 	private JPanel m_center;
 	private JPanel m_south;
@@ -81,6 +83,7 @@ public class MainFrame extends JFrame implements ActionListener
 		m_south= new JPanel();
 		m_east= new JPanel();
 		m_west= new JPanel();
+		m_splitPanel=new JSplitPane(JSplitPane.HORIZONTAL_SPLIT,m_west,m_east);
 
 		// Components
 		m_titleLabel = new JLabel("Projet de Bio-Informatique");
@@ -89,8 +92,8 @@ public class MainFrame extends JFrame implements ActionListener
 		m_jpb = new JProgressBar();
 		m_menuBar = new JMenuBar();
 		m_exit = new JMenu("X");
-		m_fullScreen = new JMenu("[]");
-		m_reduce = new JMenu("-");		
+		m_fullScreen = new JMenu("[¤]");
+		m_reduce = new JMenu("–");		
 	}
 
 	/**
@@ -99,6 +102,7 @@ public class MainFrame extends JFrame implements ActionListener
 	private void initLayout()
 	{
 		this.setLayout(new BorderLayout());
+		m_center.setLayout(new BorderLayout());
 		m_north.setLayout(new BorderLayout());
 		m_south.setLayout(new BorderLayout());
 	}
@@ -111,21 +115,25 @@ public class MainFrame extends JFrame implements ActionListener
 		this.add(m_north,BorderLayout.NORTH);
 		this.add(m_south,BorderLayout.SOUTH);
 		this.add(m_center,BorderLayout.CENTER);
-		this.add(m_east,BorderLayout.EAST);
-		this.add(m_west,BorderLayout.WEST);
+		//this.add(m_east,BorderLayout.EAST);
+		//this.add(m_west,BorderLayout.WEST);
 
 		// Menu Bar
+		m_menuBar.add(Box.createHorizontalGlue());
 		m_menuBar.add(m_reduce);
 		m_menuBar.add(m_fullScreen);
 		m_menuBar.add(m_exit);
 		this.setJMenuBar(m_menuBar);
-
+		
+		// Center Panel
+		m_center.add(m_splitPanel,BorderLayout.CENTER);
+		
 		// North panel
 		m_north.add(m_titleLabel,BorderLayout.NORTH);
 		m_north.add(m_titleLabel2,BorderLayout.CENTER);
 
 		// West panel
-		m_west.add(m_launchDL,BorderLayout.WEST);
+		m_east.add(m_launchDL,BorderLayout.NORTH);
 
 		// South panel
 		m_south.add(m_jpb,BorderLayout.CENTER);
@@ -137,7 +145,7 @@ public class MainFrame extends JFrame implements ActionListener
 	private void swagComponents()
 	{
 		//to modify window swag,check the LookAndFeel thing
-
+		
 		// Panels backgrounds
 		m_north.setBackground(s_DARKGRAY);     // Dark gray
 		m_south.setBackground(s_LIGHTGRAY);     // Gray
@@ -145,6 +153,8 @@ public class MainFrame extends JFrame implements ActionListener
 		m_west.setBackground(s_LIGHTGRAY);     // Gray
 		m_east.setBackground(s_LIGHTGRAY);     // Gray
 
+		// SplitPane
+		m_splitPanel.setDividerLocation(0.5);
 		// Panels margin (top, left, bottom, right)
 		m_north.setBorder(s_basicEmptyBorder);
 		m_east.setBorder(s_basicEmptyBorder);
@@ -168,10 +178,22 @@ public class MainFrame extends JFrame implements ActionListener
 		m_launchDL.setBorderPainted(false);
 
 		// Menu Bar
-		m_menuBar.setBackground(s_DARKGRAY);		
+		m_menuBar.setBackground(s_LIGHTGRAY);
+		Font font = new Font("Helvetica", Font.BOLD, 18);
+		m_reduce.setBackground(s_LIGHTGRAY);
+		m_fullScreen.setBackground(s_LIGHTGRAY);
+		m_exit.setForeground(Color.WHITE);
+		m_reduce.setForeground(Color.WHITE);
+		m_fullScreen.setForeground(Color.WHITE);
+		m_exit.setFont(font);
+		m_reduce.setFont(font);
+		m_fullScreen.setFont(font);
+		
+		m_menuBar.setPreferredSize(new Dimension(100,25));
+		m_menuBar.setBorderPainted(false);
 
 		//ugly atm, but just to know it does exist and we can modify it easily
-		UIManager.put("Button.select", Color.BLUE);
+		UIManager.put("Button.select", Color.WHITE);
 	}
 
 	/**
@@ -180,7 +202,6 @@ public class MainFrame extends JFrame implements ActionListener
 	private void addListener()
 	{
 		m_launchDL.addActionListener(this);
-
 	}
 
 
