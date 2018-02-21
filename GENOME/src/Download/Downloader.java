@@ -58,7 +58,7 @@ public abstract class Downloader {
      * @throws IOException An error occurred while connecting to the server
      * @throws HTTPException Invalid response code
      */
-    private BufferedReader get(URL _url) throws HTTPException, IOException {
+    protected BufferedReader get(URL _url) throws HTTPException, IOException {
 
         BufferedReader in;
 
