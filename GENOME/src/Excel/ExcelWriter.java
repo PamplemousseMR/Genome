@@ -1,9 +1,7 @@
 package Excel;
 
 import Data.*;
-/*import Data.Kingdom;
-import Data.SubGroup;
-import Data.Group;*/
+
 
 import java.io.File;
 import java.io.FileOutputStream;
@@ -11,7 +9,6 @@ import java.io.IOException;
 
 /* external library import  */
 import Utils.Logs;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
@@ -265,7 +262,7 @@ public class ExcelWriter {
 		Workbook workbook = new XSSFWorkbook();
 
 		//	Create general info sheet
-		Sheet general_info_sheet = workbook.createSheet();
+		Sheet general_info_sheet = workbook.createSheet(ExcelConstants.s_generalInfoSheet);
 
 		// Fill it
 
@@ -330,3 +327,4 @@ public class ExcelWriter {
 
 
 }
+
