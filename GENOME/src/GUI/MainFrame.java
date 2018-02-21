@@ -4,6 +4,7 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -22,7 +23,7 @@ import javax.swing.border.Border;
 
 import Utils.Logs;
 
-public class MainFrame extends JFrame implements ActionListener
+public class MainFrame extends ResizibleFrame implements ActionListener
 {
 	private static final long serialVersionUID = -6768656055410219611L;
 	private static final String s_TITLE="BIOINFORMATIQUE ILC. Realise par Adele M. -- Arthur D. --  Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.";
@@ -30,6 +31,12 @@ public class MainFrame extends JFrame implements ActionListener
 	private static Border s_basicEmptyBorder=BorderFactory.createEmptyBorder(20, 20, 20, 20);
 	private static final Color s_DARKGRAY =new Color(32, 34, 37);
 	private static final Color s_LIGHTGRAY= new Color(54, 57, 62);
+	private static Toolkit toolkit =  Toolkit.getDefaultToolkit ();
+	private static int s_defaultFrameWidth = 300;
+	private static int s_defaultFrameHeight = 300; 
+	private static Point m_initialLocation = new Point((int)toolkit.getScreenSize().getWidth()/2 - s_defaultFrameWidth/2, (int)toolkit.getScreenSize().getHeight()/2 - s_defaultFrameHeight/2);
+	private static Dimension m_initialDimension = new Dimension(s_defaultFrameWidth, s_defaultFrameHeight);
+    private JPanel m_menuPanel;
 	private JSplitPane m_splitPanel;
 	private JPanel m_north;
 	private JPanel m_center;
@@ -44,13 +51,22 @@ public class MainFrame extends JFrame implements ActionListener
 	private JMenu m_exit;
 	private JMenu m_fullScreen;
 	private JMenu m_reduce;
+	private JButton m_exitB;
+	private JButton m_fullScreenB;
+	private JButton m_reduceB;
 
 	/**
 	 * ctor
 	 */
 	public MainFrame()
 	{
-		super(s_TITLE);
+		super(m_initialDimension,m_initialLocation,s_TITLE);
+		//m_viewContainer=(JPanel)this.getContentPane(); 
+		m_menuPanel=new JPanel();     
+		m_menuPanel.setPreferredSize(new Dimension(s_defaultFrameWidth, 25));      //
+        m_menuPanel.setBackground(s_LIGHTGRAY);      
+        
+        this.add( m_menuPanel, BorderLayout.NORTH); 
 		initFrame();
 		initComponents();
 		initLayout();
@@ -145,6 +161,7 @@ public class MainFrame extends JFrame implements ActionListener
 	private void swagComponents()
 	{
 		//to modify window swag,check the LookAndFeel thing
+		this.getRootPane().setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
 		
 		// Panels backgrounds
 		m_north.setBackground(s_DARKGRAY);     // Dark gray
@@ -198,26 +215,48 @@ public class MainFrame extends JFrame implements ActionListener
 
 	/**
 	 * Add listener on components
+	 * Manage the action to do when a listener is triggered
 	 */
 	private void addListener()
 	{
+		m_menuPanel.addMouseListener(this);
+        m_menuPanel.addMouseMotionListener(this);
+        
+		m_launchDL.addActionListener(new CloseListener()); 
+		m_exit.addActionListener(new CloseListener()); 
+		
 		m_launchDL.addActionListener(this);
+				//new CloseListener()); 
+		
 	}
+
+	/**
+	 * @return the initialLocation
+	 */
+	public Point getInitialLocation() {
+		return m_initialLocation;
+	}
+
+	/**
 
 
 	/**
-	 * Manage the action to do when a listener is triggered
+	 * @return the s_initialDimension
 	 */
-	@Override
-	public void actionPerformed(ActionEvent e) 
-	{
-		Object source = e.getSource();
-		if(source==this.m_launchDL)
-		{
-			Logs.info("Bouton cliqué");
-		}
-
+	public Dimension getS_initialDimension() {
+		return m_initialDimension;
 	}
+
+
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
 
 }
 
