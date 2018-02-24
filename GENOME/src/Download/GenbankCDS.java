@@ -10,7 +10,7 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 
-public class GenbankRefseq extends Downloader {
+public class GenbankCDS extends Downloader {
 
     private static final String s_URL_BASE = "https://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi";
     private static final String s_URL_DEFAULT_PARAMS = "db=nuccore&retmode=raw";
@@ -19,7 +19,7 @@ public class GenbankRefseq extends Downloader {
     private String m_refseqId;
     private String m_data;
 
-    public GenbankRefseq(String refseqId) {
+    public GenbankCDS(String refseqId) {
         // Lazy instanciation
         // To get data you have to call getRepliconData
         m_refseqId = refseqId;
@@ -61,7 +61,7 @@ public class GenbankRefseq extends Downloader {
      * Downloads refseq file from genbank
      * Note: If you plan to use this data consider using getRefseqData() method instead of
      *       this one.
-     * @see GenbankRefseq::getRefseqData
+     * @see GenbankCDS ::getRefseqData
      * @return The refseq file as a string
      * @throws Exception If output is too big or on request error
      */
@@ -77,7 +77,7 @@ public class GenbankRefseq extends Downloader {
             for (int c; (c = reader.read()) != -1;) {
                 data.append((char) c);
             }
-        } catch (Download.HTTPException|IOException e) {
+        } catch (IOException e) {
             Logs.exception(e);
             throw e;
         }

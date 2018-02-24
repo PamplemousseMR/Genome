@@ -1,20 +1,15 @@
 package Download.Tests;
 
-import Download.GenbankRefseq;
+import Download.GenbankCDS;
 import org.junit.jupiter.api.Test;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
-class GenbankRefseqTest {
+class GenbankCDSTest {
     @Test
     void runTest() throws Exception {
-
-        GenbankRefseq gr = new GenbankRefseq("NC_007788.1");
-
-        System.out.println(gr.getRefseqData());
-
+        GenbankCDS gr = new GenbankCDS("NC_007788.1");
+        gr.getRefseqData();
         assertNotEquals(0, gr.getRefseqDataSize());
     }
-
 }

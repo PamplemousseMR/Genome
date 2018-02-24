@@ -67,7 +67,8 @@ public class GenbankOrganisms extends Downloader {
      * Get the url to download the next chunk of database
      * @param _index, the index to begin
      * @return A JAVA URL instance for the next chunk of data
-     * @throws Exception If UTF-8 isn't supported by executing system
+     * @throws UnsupportedEncodingException If UTF-8 isn't supported by executing system
+     * @throws MalformedURLException If the URL is malformed
      */
     private URL getURL(int _index) throws UnsupportedEncodingException, MalformedURLException {
 
@@ -147,7 +148,7 @@ public class GenbankOrganisms extends Downloader {
         JSONObject json;
         try {
             json = getJSON(getURL(_index)).getJSONObject(s_MAIN_DATA).getJSONObject(s_DATA);
-        } catch (Download.HTTPException|IOException|JSONException e) {
+        } catch (IOException|JSONException e) {
             Logs.exception(e);
             throw e;
         }
