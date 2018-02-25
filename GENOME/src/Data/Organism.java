@@ -20,22 +20,17 @@ public final class Organism extends IDataBase {
 	 * The version of the organism
 	 */
 	private int m_version;
-	/**
-	 * List of the replicon id
-	 */
-	private ArrayList<String> m_repliconId;
 
 	/**
 	 * Class constructor
 	 * @param _orgRawOrganism, the Organism where get data
 	 */
 	public Organism(RawOrganism _orgRawOrganism) {
-		super(new String(_orgRawOrganism.getName()));
+		super(_orgRawOrganism.getName());
 		super.setModificationDate(_orgRawOrganism.getModificationDate());
 		m_id = _orgRawOrganism.getId();
 		m_version = _orgRawOrganism.getVersion();
 		m_replicons = new ArrayList<>();
-		m_repliconId = new ArrayList<>(_orgRawOrganism.getReplicons());
 		m_parent = null;
 	}
 
