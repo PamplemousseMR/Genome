@@ -26,9 +26,7 @@ public final class Logs {
 		if(s_file == null) {
 			File file = new File(s_LOGS_FILE_NAME);
 			try {
-				if(file.createNewFile()){
-					s_file = new BufferedWriter(new FileWriter(file));
-				}
+				s_file = new BufferedWriter(new FileWriter(file));
 			}catch(IOException e) {
 				e.printStackTrace();
 			}

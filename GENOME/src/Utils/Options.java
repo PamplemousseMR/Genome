@@ -1,5 +1,6 @@
 package Utils;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -41,6 +42,7 @@ public final class Options {
 		// Create file if it's not exist 
 		try {
 			file.createNewFile();
+			new FileOutputStream(file, false);
 		}catch(IOException e) {
 			Logs.exception(e);
 			return;
@@ -87,7 +89,7 @@ public final class Options {
 		if(m_properties != null) {
 			File file = new File(s_OPTIONS_FILE_NAME);
 
-			// Create file if it's not exist 
+			// Create file if it's not exist
 			try {
 				file.createNewFile();
 			}catch(IOException e) {
