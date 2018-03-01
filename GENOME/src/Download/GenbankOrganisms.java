@@ -43,6 +43,10 @@ public class GenbankOrganisms extends Downloader {
      * Queue of failed chunk's indexes
      */
     private ArrayList<Integer> m_failedChunks;
+    /**
+     * Number of failed organism
+     */
+    private int m_failedOrganism;
 
     private static final String s_REQUEST =
             "[display( id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_)," +
@@ -57,6 +61,7 @@ public class GenbankOrganisms extends Downloader {
         m_downloaded = 0;
         m_totalCount = -1;
         m_enqueued = 0;
+        m_failedOrganism = 0;
 
         // Initialize data
         m_dataQueue = new LinkedList<>();
@@ -123,6 +128,7 @@ public class GenbankOrganisms extends Downloader {
             } else{
                 m_failedChunks.add(m_downloaded);
                 m_downloaded += Options.getDownloadStep();
+                m_failedOrganism += Options.getDownloadStep();
             }
             return;
         }
@@ -178,6 +184,10 @@ public class GenbankOrganisms extends Downloader {
                 ++currentEnqueue;
             }catch (JSONException e){
                 Logs.exception(e);
+                ++m_failedOrganism;
+            }catch (Exception e) {
+                Logs.exception(e);
+                ++m_failedOrganism;
             }
         }
 
@@ -205,11 +215,19 @@ public class GenbankOrganisms extends Downloader {
     }
 
     /**
-     * Returns true if there is more failed chunk
+     * Returns true if there is failed chunk
+     * @return if there is failed chunk
+     */
+    public boolean hasFailedChunk(){
+        return m_failedChunks.size() > 0;
+    }
+
+    /**
+     * Returns the number of failed organism
      * @return The number of failed chunk
      */
-    public int hasFailedChunk(){
-        return m_failedChunks.size();
+    public int getFailedOrganism(){
+        return m_failedOrganism;
     }
 
     /**
@@ -226,7 +244,7 @@ public class GenbankOrganisms extends Downloader {
      */
     private void enqueueOrganism(RawOrganism organism) {
         m_dataQueue.add(organism);
-        m_enqueued++;
+        ++m_enqueued;
     }
 
     /**

@@ -19,9 +19,7 @@ class GenbankOrganismsTest {
             count++;
         }
 
-        if(go.hasFailedChunk()>0){
-            count+=go.hasFailedChunk()* Options.getDownloadStep();
-        }
+        count+=go.getFailedOrganism();
 
         assertEquals(count, go.getTotalCount());
 
