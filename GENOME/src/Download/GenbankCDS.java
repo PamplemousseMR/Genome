@@ -15,9 +15,8 @@ public class GenbankCDS extends Downloader {
     private static final String s_URL_BASE = "https://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi";
     private static final String s_URL_DEFAULT_PARAMS = "db=nuccore&retmode=raw";
 
-
     private String m_refseqId;
-    private String m_data;
+    private StringBuffer m_data;
 
     public GenbankCDS(String refseqId) {
         // Lazy instanciation
@@ -59,16 +58,14 @@ public class GenbankCDS extends Downloader {
 
     /**
      * Downloads refseq file from genbank
-     * Note: If you plan to use this data consider using getRefseqData() method instead of
-     *       this one.
+     * Note: If you plan to use this data consider using getRefseqData() method instead of this one.
      * @see GenbankCDS ::getRefseqData
      * @return The refseq file as a string
      * @throws Exception If output is too big or on request error
      */
-    private String download () throws Exception {
-        // TODO: Inline parsing to stop download immediately on syntax/CDS error detection
+    private StringBuffer download () throws Exception {
         BufferedReader reader;
-        StringBuilder data = new StringBuilder();
+        StringBuffer data = new StringBuffer();
 
         // Send GET Request
         Logs.info(String.format("Requesting refseq file [%s]", m_refseqId));
@@ -81,27 +78,18 @@ public class GenbankCDS extends Downloader {
             Logs.exception(e);
             throw e;
         }
+        Logs.info(String.format("Refseq [%s] : Request ended successfully (%d Bytes)", m_refseqId, data.length() ));
 
-        // Handle data too big error thrown by server
-        if (data.toString().equals("OUTPUT_TOO_BIG")) {
-            // TODO: Throw a custom exception
-            throw new Exception(String.format("Refseq [%s] : Output too big", m_refseqId));
-        }
-
-        Logs.info(String.format("Refseq [%s] : Request ended successfully (%d Bytes)",
-                m_refseqId, data.length() ));
-
-        return data.toString();
+        return data;
     }
 
     /**
      * Get refseq data downloading it from genbank if necessary
-     * Note: If you plan to use this data, prefer using this method instead of download()
-     *       as it prevents downloading data multiple times.
+     * Note: If you plan to use this data, prefer using this method instead of download() as it prevents downloading data multiple times.
      * @return Refseq data as a string
      * @throws Exception See download method
      */
-    public String getRefseqData () throws Exception {
+    public StringBuffer getRefseqData () throws Exception {
         return m_data == null ? m_data = download() : m_data;
     }
 
