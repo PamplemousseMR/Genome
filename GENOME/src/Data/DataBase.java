@@ -2,6 +2,9 @@ package Data;
 
 import java.util.ArrayList;
 
+import Exception.InvalidStateException;
+import Exception.AddException;
+
 public final class DataBase extends IDataBase {
 
 	/**
@@ -15,14 +18,13 @@ public final class DataBase extends IDataBase {
 	/**
 	 * Array of this Database's Kingdom
 	 */
-	private ArrayList<Kingdom> m_kingdoms;
+	private final ArrayList<Kingdom> m_kingdoms;
 
 	/**
 	 * Class constructor
-	 * @param _name, the name of this database
 	 */
-	private DataBase(String _name) {
-		super(_name);
+	private DataBase() {
+		super(s_NAME);
 		m_kingdoms = new ArrayList<>();
 	}
 
@@ -32,7 +34,7 @@ public final class DataBase extends IDataBase {
 	 */
 	public static DataBase getInstance() {
 		if(s_DataBase == null){
-			return (s_DataBase = new DataBase(s_NAME));
+			return (s_DataBase = new DataBase());
 		}else {
 			return s_DataBase;
 		}
@@ -42,12 +44,12 @@ public final class DataBase extends IDataBase {
 	 * Add a Kingdom to the Database
 	 * @param _kingdom, the Kingdom to insert
 	 * @return the insertion success
-	 * @throws Exception if _kingdom are already added
+	 * @throws AddException if _kingdom are already added
 	 */
-	public boolean addKingdom(Kingdom _kingdom) throws Exception {
+	public boolean addKingdom(Kingdom _kingdom) throws AddException {
 		if(super.getState()==State.STARTED) {
 			if(super.contains(m_kingdoms, _kingdom))
-				throw new Exception("Sequence already added");
+				throw new AddException("Sequence already added");
 			_kingdom.setIndex(m_kingdoms.size());
 			_kingdom.setParent(this);
 			return m_kingdoms.add(_kingdom);
@@ -64,12 +66,12 @@ public final class DataBase extends IDataBase {
 
 	/**
 	 * In case of all Kingdom are already finished
-	 * @throws Exception if it can't be stopped
+	 * @throws InvalidStateException if it can't be stopped
 	 */
 	@Override
-	public void stop() throws Exception{
+	public void stop() throws InvalidStateException {
 		super.stop();
-		if(super.getFinishedChildrens() == m_kingdoms.size()){
+		if(super.getFinishedChildren() == m_kingdoms.size()){
             m_kingdoms.clear();
 			super.computeStatistics();
 			super.finish();
@@ -81,16 +83,16 @@ public final class DataBase extends IDataBase {
 	/**
 	 * Finish this DataBase if it can
 	 * @param _kingdom, the Kingdom to finish
-	 * @throws Exception if it can't be finished
+	 * @throws InvalidStateException if it can't be finished
 	 */
-	protected void finish(Kingdom _kingdom) throws Exception {
+	protected void finish(Kingdom _kingdom) throws InvalidStateException {
 		if(super.contains(m_kingdoms, _kingdom) && _kingdom.getState()!=State.FINISHED){
             for(Statistics stat : _kingdom.getStatistics().values()){
 				super.updateStatistics(stat);
 				super.incrementGenomeNumber(stat.getType(),_kingdom.getTypeNumber(stat.getType()));
             }
-            incrementFinishedChildrens();
-            if(super.getState()== IDataBase.State.STOPPED && super.getFinishedChildrens() == m_kingdoms.size()){
+            incrementFinishedChildren();
+            if(super.getState()== IDataBase.State.STOPPED && super.getFinishedChildren() == m_kingdoms.size()){
                 m_kingdoms.clear();
 				super.computeStatistics();
 				super.finish();

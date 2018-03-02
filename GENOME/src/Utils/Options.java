@@ -1,6 +1,5 @@
 package Utils;
 
-import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -23,15 +22,15 @@ public final class Options {
 	/**
 	 * 	Connection timeout in ms
 	 */
-	private static String s_DOWNLOAD_CONNECTION_TIMEOUT = "10000";
+	private static final String s_DOWNLOAD_CONNECTION_TIMEOUT = "10000";
 	/**
 	 * Number of organisms to download by request
 	 */
-	private static String s_DOWNLOAD_STEP_ORGANISM = "100000";
+	private static final String s_DOWNLOAD_STEP_ORGANISM = "100000";
 	/**
 	 * Base URL of genbank REST API
 	 */
-	private static String s_BASE_URL = "https://www.ncbi.nlm.nih.gov/Structure/ngram";
+	private static final String s_BASE_URL = "https://www.ncbi.nlm.nih.gov/Structure/ngram";
 
 	/**
 	 * Open the options's file in order to read options and fill the static fields with it

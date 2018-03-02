@@ -1,6 +1,8 @@
 package Data;
 
 import java.util.ArrayList;
+import Exception.AddException;
+import Exception.InvalidStateException;
 
 public final class Group extends IDataBase {
 
@@ -11,7 +13,7 @@ public final class Group extends IDataBase {
 	/**
 	 * Array of this Group's SubGroups
 	 */
-	private ArrayList<SubGroup> m_subGroups;
+	private final ArrayList<SubGroup> m_subGroups;
 
 	/**
 	 * Class constructor
@@ -27,12 +29,12 @@ public final class Group extends IDataBase {
 	 * Add a SubGroup to this Group
 	 * @param _subGroup, the Subgroup to insert
 	 * @return the insertion success
-	 * @throws Exception if _subGroup are already added
+	 * @throws AddException if _subGroup are already added
 	 */
-	public boolean addSubGroup(SubGroup _subGroup) throws Exception {
+	public boolean addSubGroup(SubGroup _subGroup) throws AddException {
 		if(super.getState()==State.STARTED) {
 			if(super.contains(m_subGroups,_subGroup))
-				throw new Exception("Sequence already added");
+				throw new AddException("Sequence already added");
 			_subGroup.setIndex(m_subGroups.size());
 			_subGroup.setParent(this);
 			return m_subGroups.add(_subGroup);
@@ -41,12 +43,12 @@ public final class Group extends IDataBase {
 
 	/**
 	 * In case of all SubGroup are already finished
-	 * @throws Exception if it can't be stopped
+	 * @throws InvalidStateException if it can't be stopped
 	 */
 	@Override
-	public void stop() throws Exception{
+	public void stop() throws InvalidStateException {
 		super.stop();
-		if(getFinishedChildrens() == m_subGroups.size()){
+		if(getFinishedChildren() == m_subGroups.size()){
 			m_subGroups.clear();
 			super.computeStatistics();
 			m_parent.finish(this);
@@ -75,16 +77,16 @@ public final class Group extends IDataBase {
 	/**
 	 * Finish this Group if it can
 	 * @param _subGroup, the SubGroup to finish
-	 * @throws Exception if it can't be finished
+	 * @throws InvalidStateException if it can't be finished
 	 */
-	protected void finish(SubGroup _subGroup) throws Exception {
+	protected void finish(SubGroup _subGroup) throws InvalidStateException {
 		if(super.contains(m_subGroups,_subGroup) && _subGroup.getState()!=State.FINISHED){
             for(Statistics stat : _subGroup.getStatistics().values()){
 				super.updateStatistics(stat);
 				super.incrementGenomeNumber(stat.getType(),_subGroup.getTypeNumber(stat.getType()));
             }
-			super.incrementFinishedChildrens();
-			if(super.getState()== State.STOPPED && super.getFinishedChildrens() == m_subGroups.size()){
+			super.incrementFinishedChildren();
+			if(super.getState()== State.STOPPED && super.getFinishedChildren() == m_subGroups.size()){
 				m_subGroups.clear();
 				super.computeStatistics();
 				m_parent.finish(this);

@@ -3,6 +3,7 @@ package Data;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
+import Exception.InvalidStateException;
 
 public class IDataBase {
 
@@ -31,7 +32,7 @@ public class IDataBase {
     /**
      * The name
      */
-    private String m_name;
+    private final String m_name;
     /**
      * Last modification's date
      */
@@ -39,11 +40,11 @@ public class IDataBase {
     /**
      * Statistics of this IDataBase
      */
-    private EnumMap<Statistics.Type,Statistics> m_statistics;
+    private final EnumMap<Statistics.Type,Statistics> m_statistics;
     /**
      * Array of values of each Replicon's type
      */
-    private EnumMap<Statistics.Type,Long> m_genomeNumber;
+    private final EnumMap<Statistics.Type,Long> m_genomeNumber;
 
     /**
      * Class constructor
@@ -60,35 +61,47 @@ public class IDataBase {
 
     /**
      * Start
-     * @throws Exception if it can't be started
+     * @throws InvalidStateException if it can't be started
      */
-    public void start() throws Exception{
+    public final void start() throws InvalidStateException{
         if(m_state == State.STARTED)
-            throw new Exception("Already started");
+            throw new InvalidStateException("Already started");
         if(m_state == State.STOPPED || m_state == State.FINISHED)
-            throw new Exception("Can't restart");
+            throw new InvalidStateException("Can't restart");
         m_state = State.STARTED;
     }
 
     /**
      * Stop
-     * @throws Exception if it can't be stopped
+     * @throws InvalidStateException if it can't be stopped
      */
-    public void stop() throws Exception{
+    public void stop() throws InvalidStateException{
         if(m_state == State.CREATED)
-            throw new Exception("Not started");
+            throw new InvalidStateException("Not started");
         if(m_state == State.STOPPED)
-            throw new Exception("Already stopped");
+            throw new InvalidStateException("Already stopped");
         if(m_state == State.FINISHED)
-            throw new Exception("Already finished");
+            throw new InvalidStateException("Already finished");
         m_state = State.STOPPED;
+    }
+
+    /**
+     * Finish
+     * @throws InvalidStateException if it can't be finished
+     */
+    protected void finish() throws InvalidStateException{
+        if(m_state == State.CREATED || m_state == State.STARTED)
+            throw new InvalidStateException("Not stopped");
+        if(m_state == State.FINISHED)
+            throw new InvalidStateException("Already finished");
+        m_state = State.FINISHED;
     }
 
     /**
      * Get actual State
      * @return the State
      */
-    public State getState(){
+    public final State getState(){
         return m_state;
     }
 
@@ -96,7 +109,7 @@ public class IDataBase {
      * Get the last modification's date
      * @return the m_modificationDate
      */
-    public Date getModificationDate() {
+    public final Date getModificationDate() {
         return m_modificationDate;
     }
 
@@ -104,7 +117,7 @@ public class IDataBase {
      * Get the name
      * @return the m_name
      */
-    public String getName(){
+    public final String getName(){
         return m_name;
     }
 
@@ -112,7 +125,7 @@ public class IDataBase {
      * Get the statistics
      * @return the statistics
      */
-    public EnumMap<Statistics.Type,Statistics> getStatistics() {
+    public final EnumMap<Statistics.Type,Statistics> getStatistics() {
          return m_statistics;
     }
 
@@ -120,7 +133,7 @@ public class IDataBase {
      * Get number of each Genome's Type
      * @return the number of each Genome's Type
      */
-    public EnumMap<Statistics.Type, Long> getGenomeNumber() {
+    public final EnumMap<Statistics.Type, Long> getGenomeNumber() {
         return m_genomeNumber;
     }
 
@@ -131,27 +144,15 @@ public class IDataBase {
      * @param _type, the Type of the genomes's number to get
      * @return the number of genomes
      */
-    protected Long getTypeNumber(Statistics.Type _type) {
+    protected final Long getTypeNumber(Statistics.Type _type) {
         return m_genomeNumber.get(_type);
-    }
-
-    /**
-     * Finish
-     * @throws Exception if it can't be finished
-     */
-    protected void finish() throws Exception{
-        if(m_state == State.CREATED || m_state == State.STARTED)
-            throw new Exception("Not stopped");
-        if(m_state == State.FINISHED)
-            throw new Exception("Already finished");
-        m_state = State.FINISHED;
     }
 
     /**
      * Set the local index
      * @param _id, the index to set
      */
-    protected void setIndex(int _id){
+    protected final void setIndex(int _id){
         m_index = _id;
     }
 
@@ -159,34 +160,32 @@ public class IDataBase {
      * Increment by 1 the number of genome to a type
      * @param _type, the Type of the genomes to increment
      */
-    protected void incrementGenomeNumber(Statistics.Type _type) {
+    protected final void incrementGenomeNumber(Statistics.Type _type) {
         m_genomeNumber.merge(_type, 1L, (v1,v2) -> v1 + v2);
     }
 
     /**
-     * Increment by _incr the number of genome of a type
+     * Increment the number of genome of a type by the parameter
      * @param _type, the Type of the genomes to increment
-     * @param _incr, the value of the increment
+     * @param _inc, the value of the increment
      */
-    protected void incrementGenomeNumber(Statistics.Type _type,long _incr){
-        m_genomeNumber.merge(_type, _incr, (v1,v2) -> v1 + v2);
+    protected final void incrementGenomeNumber(Statistics.Type _type,long _inc){
+        m_genomeNumber.merge(_type, _inc, (v1,v2) -> v1 + v2);
     }
 
     /**
      * Create statistic if it's not exist and update it
      * @param _statistics, the statistic to used for update
      */
-    protected void updateStatistics(Statistics _statistics){
-        if(m_statistics.get(_statistics.getType()) == null){
-            m_statistics.put(_statistics.getType(), new Statistics(_statistics.getType()));
-        }
+    protected final void updateStatistics(Statistics _statistics){
+        m_statistics.computeIfAbsent(_statistics.getType(), k -> new Statistics(_statistics.getType()));
         m_statistics.get(_statistics.getType()).update(_statistics);
     }
 
     /**
      * Compute statistics
      */
-    protected void computeStatistics(){
+    protected final void computeStatistics(){
         m_statistics.values().parallelStream().forEach(Statistics::compute);
     }
 
@@ -197,21 +196,21 @@ public class IDataBase {
      * @param <E>, the class of the array
      * @return the find success
      */
-    protected <E> boolean contains(ArrayList<E> _arr, IDataBase _stat){
+    protected final <E> boolean contains(ArrayList<E> _arr, IDataBase _stat){
         try{
-            if(_arr.get(_stat.m_index) != null) {
-                return true;
+            if(_arr.get(_stat.m_index) == null) {
+                return false;
             }
         }catch (IndexOutOfBoundsException e){
             return false;
         }
-        return false;
+        return true;
     }
 
     /**
      * Increment the number of finish children
      */
-    protected void incrementFinishedChildrens(){
+    protected final void incrementFinishedChildren(){
         ++m_finished;
     }
 
@@ -219,7 +218,7 @@ public class IDataBase {
      * Get the number of finish children
      * @return the number of children finished
      */
-    protected int getFinishedChildrens(){
+    protected final int getFinishedChildren(){
         return m_finished;
     }
 
@@ -227,7 +226,7 @@ public class IDataBase {
      * Set the modification date
      * @param _date, the date to set
      */
-    protected void setModificationDate(Date _date){
+    protected final void setModificationDate(Date _date){
         m_modificationDate = _date;
     }
 

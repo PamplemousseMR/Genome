@@ -7,11 +7,11 @@ public final class Tuple {
     /**
      * EnumMap to store float
      */
-    private EnumMap<Statistics.StatFloat, Float> m_floats;
+    private final EnumMap<Statistics.StatFloat, Float> m_floats;
     /**
      * EnumMap to store long
      */
-    private EnumMap<Statistics.StatLong, Long> m_longs;
+    private final EnumMap<Statistics.StatLong, Long> m_longs;
 
     /**
      * Class constructor

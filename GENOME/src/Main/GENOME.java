@@ -4,7 +4,7 @@ import GUI.MainFrame;
 import Utils.Logs;
 import Utils.Options;
 
-public final class GENOME {
+final class GENOME {
 	
 	/**
 	 * Function call at the begin of the program

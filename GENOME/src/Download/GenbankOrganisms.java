@@ -6,6 +6,8 @@ import Utils.Options;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import Exception.HTTPException;
+import Exception.MissException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -38,11 +40,11 @@ public class GenbankOrganisms extends Downloader {
     /**
      * Queue of retrieved organisms
      */
-    private LinkedList<RawOrganism> m_dataQueue;
+    private final LinkedList<RawOrganism> m_dataQueue;
     /**
      * Queue of failed chunk's indexes
      */
-    private ArrayList<Integer> m_failedChunks;
+    private final ArrayList<Integer> m_failedChunks;
     /**
      * Number of failed organism
      */
@@ -111,9 +113,9 @@ public class GenbankOrganisms extends Downloader {
 
     /**
      * Download and process next data chunk (page of step organisms)
-     * @throws Exception if the download can't be done
+     * @throws MissException if the download can't be done
      */
-    private void downloadNextChunk() throws Exception {
+    private void downloadNextChunk() throws MissException {
         if (downloadCompleted()) {
             return;
         }
@@ -124,7 +126,7 @@ public class GenbankOrganisms extends Downloader {
         } catch (Exception e){
             Logs.exception(e);
             if(m_totalCount == -1){
-                throw new Exception("can't get the total numbers of organism to download");
+                throw new MissException("can't get the total numbers of organism to download");
             } else{
                 m_failedChunks.add(m_downloaded);
                 m_downloaded += Options.getDownloadStep();
@@ -145,16 +147,18 @@ public class GenbankOrganisms extends Downloader {
      * Download a chunk
      * @param _index, the index to begin
      * @return thew number of organism downloaded
-     * @throws Exception if an error occurred
+     * @throws IOException if an IOException is throw
+     * @throws JSONException if an JSONException is throw
+     * @throws HTTPException if an HTTPException is throw
      */
-    private int downloadChunk(int _index) throws Exception {
+    private int downloadChunk(int _index) throws IOException, JSONException, HTTPException  {
         Logs.info(String.format("Requesting organisms [%d;%d]", _index, _index + Options.getDownloadStep()));
 
         // Request json
         JSONObject json;
         try {
             json = getJSON(getURL(_index)).getJSONObject(s_MAIN_DATA).getJSONObject(s_DATA);
-        } catch (IOException|JSONException e) {
+        } catch (IOException|JSONException|HTTPException e) {
             Logs.exception(e);
             throw e;
         }
@@ -185,9 +189,6 @@ public class GenbankOrganisms extends Downloader {
             }catch (JSONException e){
                 Logs.exception(e);
                 ++m_failedOrganism;
-            }catch (Exception e) {
-                Logs.exception(e);
-                ++m_failedOrganism;
             }
         }
 
@@ -198,13 +199,13 @@ public class GenbankOrganisms extends Downloader {
 
     /**
      * Download all organism
-     * @throws Exception if the total's number of organism can't be downloaded
+     * @throws MissException if the total's number of organism can't be downloaded
      */
-    public void downloadOrganisms() throws Exception {
+    public void downloadOrganisms() throws MissException {
         while (!downloadCompleted()) {
             try {
                 downloadNextChunk();
-            } catch (Exception e) {
+            } catch (MissException e) {
                 Logs.exception(e);
                 throw e;
             }

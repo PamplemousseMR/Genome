@@ -27,7 +27,7 @@ class GlobalTest {
             LinkedList<Boolean> res2 = new LinkedList<>();
             results.add(res2);
 
-            assertTrue(thr.pushDownloadTask(new IDownload("") {
+            assertTrue(thr.pushDownloadTask(new IDownload(""+i) {
                 @Override
                 public void run() {
                     for(long j=0 ; j<10 ; ++j) {
@@ -41,7 +41,7 @@ class GlobalTest {
                 }
             }));
 
-            assertTrue(thr.pushComputeTask(new ICompute("") {
+            assertTrue(thr.pushComputeTask(new ICompute(""+i) {
                 @Override
                 public void run() {
                     for (long j = 0; j < 10; ++j) {

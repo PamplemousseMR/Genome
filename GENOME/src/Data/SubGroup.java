@@ -2,6 +2,9 @@ package Data;
 
 import java.util.ArrayList;
 
+import Exception.InvalidStateException;
+import Exception.AddException;
+
 public final class SubGroup extends IDataBase {
 
 	/**
@@ -11,7 +14,7 @@ public final class SubGroup extends IDataBase {
 	/**
 	 * Array of this SubGroup's Organisms
 	 */
-	private ArrayList<Organism> m_organisms;
+	private final ArrayList<Organism> m_organisms;
 
 	/**
 	 * Class constructor
@@ -27,12 +30,12 @@ public final class SubGroup extends IDataBase {
 	 * Add an Organism to this SubGroup
 	 * @param _organism, the Organism to insert
 	 * @return the insertion success
-	 * @throws Exception if _organism are already added
+	 * @throws AddException if _organism are already added
 	 */
-	public boolean addOrganism(Organism _organism) throws Exception{
+	public boolean addOrganism(Organism _organism) throws AddException {
 		if(super.getState()==State.STARTED) {
 			if(super.contains(m_organisms,_organism))
-				throw new Exception("Organims already added");
+				throw new AddException("Organism already added");
 			_organism.setIndex(m_organisms.size());
 			_organism.setParent(this);
 			return m_organisms.add(_organism);
@@ -40,13 +43,13 @@ public final class SubGroup extends IDataBase {
 	}
 
 	/**
-	 * In case of all Organisme are already finished
-	 * @throws Exception if it can't be sopped
+	 * In case of all Organism are already finished
+	 * @throws InvalidStateException if it can't be sopped
 	 */
 	@Override
-	public void stop() throws Exception{
+	public void stop() throws InvalidStateException{
     	super.stop();
-		if(super.getFinishedChildrens() == m_organisms.size()){
+		if(super.getFinishedChildren() == m_organisms.size()){
 			m_organisms.clear();
 			super.computeStatistics();
 			m_parent.finish(this);
@@ -83,16 +86,16 @@ public final class SubGroup extends IDataBase {
 	/**
 	 * Finish this Subgroup if it can
 	 * @param _organism, the Organism to finish
-	 * @throws Exception if it can't be finished
+	 * @throws InvalidStateException if it can't be finished
 	 */
-	protected void finish(Organism _organism) throws Exception {
+	protected void finish(Organism _organism) throws InvalidStateException {
 		if(super.contains(m_organisms, _organism) && _organism.getState()!=State.FINISHED){
 			for(Statistics stat : _organism.getStatistics().values()){
 				super.updateStatistics(stat);
 				super.incrementGenomeNumber(stat.getType(),_organism.getTypeNumber(stat.getType()));
 			}
-			super.incrementFinishedChildrens();
-			if(super.getState() == State.STOPPED && super.getFinishedChildrens() == m_organisms.size()){
+			super.incrementFinishedChildren();
+			if(super.getState() == State.STOPPED && super.getFinishedChildren() == m_organisms.size()){
 				m_organisms.clear();
 				super.computeStatistics();
 				m_parent.finish(this);
