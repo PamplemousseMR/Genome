@@ -10,6 +10,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public final class RawOrganism {
 
@@ -22,6 +24,7 @@ public final class RawOrganism {
     private static final String s_MODIFICATION_DATE = "modify_date";
     private static final String s_RELEASE_DATE = "release_date";
     private static final String s_VERSION = "_version_";
+    private static final String s_REGEX = "NC_[^(\\/|;| |\\n)]*";
 
     /**
      * ID of this organism
@@ -77,7 +80,12 @@ public final class RawOrganism {
 
         // Replicons formatting
         if (obj.has(s_REPLICON)) {
-            m_replicons = new ArrayList<>(Arrays.asList(obj.getString(s_REPLICON).split("\\s*,\\s*")));
+            m_replicons = new ArrayList<>();
+            Pattern pattern = Pattern.compile(s_REGEX);
+            Matcher m = pattern.matcher(obj.getString(s_REPLICON));
+            while (m.find()) {
+                m_replicons.add(m.group(0));
+            }
         } else {
             m_replicons = new ArrayList<>();
         }
