@@ -5,6 +5,8 @@ import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import Data.*;
 
+import java.util.EnumMap;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StatisticsTest {
@@ -435,6 +437,16 @@ class StatisticsTest {
             assertEquals(totalPhase2, stat.getTotalTrinucleotide());
             printTriTable(stat);
         }
+
+        EnumMap<Statistics.Type, Long> genNumb = db.getGenomeNumber();
+        long totalGenom = 0L;
+        for(Statistics.Type t : Statistics.Type.values()){
+            if(genNumb.get(t) != null) {
+                System.out.println(t + " : " + genNumb.get(t));
+                totalGenom += genNumb.get(t);
+            }
+        }
+        assertEquals((long)(nb*nb*nb*nb*nbrep), totalGenom);
     }
 
 }

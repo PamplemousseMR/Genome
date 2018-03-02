@@ -1,5 +1,6 @@
 package Utils;
 
+import java.awt.*;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -15,17 +16,21 @@ public final class Options {
 	 * File's name
 	 */
 	private static final String s_OPTIONS_FILE_NAME = "options.ini";
-
 	/**
 	 * Option's properties
 	 */
 	private static Properties m_properties = null;
-
-	// Connection timeout in ms
+	/**
+	 * 	Connection timeout in ms
+	 */
 	private static String s_DOWNLOAD_CONNECTION_TIMEOUT = "10000";
-	// Number of organisms to download by request
+	/**
+	 * Number of organisms to download by request
+	 */
 	private static String s_DOWNLOAD_STEP_ORGANISM = "100000";
-	// Base URL of genbank REST API
+	/**
+	 * Base URL of genbank REST API
+	 */
 	private static String s_BASE_URL = "https://www.ncbi.nlm.nih.gov/Structure/ngram";
 
 	/**
@@ -37,6 +42,7 @@ public final class Options {
 		// Create file if it's not exist 
 		try {
 			file.createNewFile();
+			new FileOutputStream(file, false);
 		}catch(IOException e) {
 			Logs.exception(e);
 			return;
@@ -83,7 +89,7 @@ public final class Options {
 		if(m_properties != null) {
 			File file = new File(s_OPTIONS_FILE_NAME);
 
-			// Create file if it's not exist 
+			// Create file if it's not exist
 			try {
 				file.createNewFile();
 			}catch(IOException e) {
@@ -139,10 +145,6 @@ public final class Options {
 
 	public static String getBaseUrl() {
 		return s_BASE_URL;
-	}
-
-	public static void setBaseLink(String _overviewLink) {
-		m_properties.put("s_OVERVIEW_LINK", _overviewLink);
 	}
 
 }

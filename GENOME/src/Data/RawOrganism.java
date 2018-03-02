@@ -13,22 +13,51 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class RawOrganism {
+public final class RawOrganism {
 
     private static final String s_REPLICON = "replicons";
+    private static final String s_ID = "id";
+    private static final String s_NAME = "organism";
+    private static final String s_KINGDOM = "kingdom";
+    private static final String s_GROUP = "group";
+    private static final String s_SUBGROUP = "subgroup";
     private static final String s_MODIFICATION_DATE = "modify_date";
     private static final String s_RELEASE_DATE = "release_date";
     private static final String s_VERSION = "_version_";
     private static final String s_REGEX = "NC_[^(\\/|;| |\\n)]*";
 
+    /**
+     * ID of this organism
+     */
     private int m_id;
+    /**
+     * Name of this organism
+     */
     private String m_name;
+    /**
+     * Kingdom of this organism
+     */
     private String m_kingdom;
+    /**
+     * Group of this organism
+     */
     private String m_group;
+    /**
+     * Subgroup of this organism
+     */
     private String m_subGroup;
-    private ArrayList<String> m_replicons;
+    /**
+     * Modification date of this organism
+     */
     private Date m_modificationDate;
+    /**
+     * Version of this organism
+     */
     private int m_version;
+    /**
+     * List of replicon's ID of this organism
+     */
+    private ArrayList<String> m_replicons;
 
     /**
      * Class constructor
@@ -38,12 +67,12 @@ public class RawOrganism {
     public RawOrganism(JSONObject obj) throws JSONException{
 
         try {
-            m_id = obj.getInt("id");
-            m_name = obj.getString("organism");
-            m_kingdom = obj.getString("kingdom");
-            m_group = obj.getString("group");
-            m_subGroup = obj.getString("subgroup");
-            m_version = obj.getInt("_version_");
+            m_id = obj.getInt(s_ID);
+            m_name = obj.getString(s_NAME);
+            m_kingdom = obj.getString(s_KINGDOM);
+            m_group = obj.getString(s_GROUP);
+            m_subGroup = obj.getString(s_SUBGROUP);
+            m_version = obj.getInt(s_VERSION);
         }catch (JSONException e){
             Logs.exception(e);
             throw e;
