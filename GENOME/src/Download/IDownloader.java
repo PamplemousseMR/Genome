@@ -1,10 +1,10 @@
 package Download;
 
+import Exception.HTTPException;
 import Utils.Logs;
 import Utils.Options;
 import org.json.JSONException;
 import org.json.JSONObject;
-import Exception.HTTPException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -12,15 +12,19 @@ import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
 
-public abstract class Downloader {
+public abstract class IDownloader {
 
+    /**
+     * Connection
+     */
     private HttpURLConnection m_connection;
 
     /**
      * Make an HTTP GET request and parse result as json
+     *
      * @param _url The request URL to retrieve data from
      * @return The JSONObject parsed from server response
-     * @throws IOException An error occurred while connecting to the server
+     * @throws IOException   An error occurred while connecting to the server
      * @throws JSONException Invalid JSON
      */
     protected JSONObject getJSON(URL _url) throws IOException, JSONException, HTTPException {
@@ -33,16 +37,16 @@ public abstract class Downloader {
         try (BufferedReader in = get(_url)) {
             while ((line = in.readLine()) != null)
                 responseText.append(line);
-        } catch(IOException|HTTPException e){
+        } catch (IOException | HTTPException e) {
             Logs.exception(e);
             throw e;
         }
 
         // Parse result and return it
         JSONObject obj;
-        try{
+        try {
             obj = new JSONObject(responseText.toString());
-        }catch(JSONException e){
+        } catch (JSONException e) {
             Logs.exception(e);
             throw e;
         }
@@ -51,12 +55,12 @@ public abstract class Downloader {
 
     /**
      * Make an HTTP GET request
+     *
      * @param _url The request URL to retrieve data from
      * @return The BufferedReader from which to read result
      * @throws IOException An error occurred while connecting to the server
      */
     protected BufferedReader get(URL _url) throws IOException, HTTPException {
-
         BufferedReader in;
 
         // Close previous connection if any
@@ -79,7 +83,7 @@ public abstract class Downloader {
             // Get response code (executes request)
             statusCode = m_connection.getResponseCode();
         } catch (java.net.SocketTimeoutException | java.net.UnknownHostException e) {
-            Logs.info("Downloader: Unable to establish connection with server.");
+            Logs.info("IDownloader: Unable to establish connection with server.");
             Logs.exception(e);
             throw e;
         } catch (IOException e) {

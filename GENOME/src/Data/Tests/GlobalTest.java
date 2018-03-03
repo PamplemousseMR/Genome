@@ -1,6 +1,7 @@
 package Data.Tests;
 
 import Data.*;
+import Download.RawOrganism;
 import org.json.JSONObject;
 import java.util.LinkedList;
 

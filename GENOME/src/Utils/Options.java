@@ -28,9 +28,14 @@ public final class Options {
 	 */
 	private static final String s_DOWNLOAD_STEP_ORGANISM = "100000";
 	/**
-	 * Base URL of genbank REST API
+	 * Base URL of genbank REST API for organism
 	 */
-	private static final String s_BASE_URL = "https://www.ncbi.nlm.nih.gov/Structure/ngram";
+	private static final String s_ORGANISM_BASE_URL = "https://www.ncbi.nlm.nih.gov/Structure/ngram";
+	/**
+	 * Base URL of genbank REST API for CDS
+	 */
+	private static final String s_CDS_BASE_URL = "https://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi";
+
 
 	/**
 	 * Open the options's file in order to read options and fill the static fields with it
@@ -142,8 +147,12 @@ public final class Options {
 		return Integer.parseInt(s_DOWNLOAD_CONNECTION_TIMEOUT);
 	}
 
-	public static String getBaseUrl() {
-		return s_BASE_URL;
+	public static String getOrganismBaseUrl() {
+		return s_ORGANISM_BASE_URL;
+	}
+
+	public static String getCDSBaseUrl() {
+		return s_CDS_BASE_URL;
 	}
 
 }

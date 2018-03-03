@@ -1,4 +1,4 @@
-package Data;
+package Download;
 
 import Utils.Logs;
 import org.json.JSONException;

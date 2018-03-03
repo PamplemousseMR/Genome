@@ -1,5 +1,6 @@
 package Data.Tests;
 
+import Download.RawOrganism;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import Data.*;

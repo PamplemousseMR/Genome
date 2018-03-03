@@ -2,6 +2,7 @@ package Data;
 
 import java.util.ArrayList;
 
+import Download.RawOrganism;
 import Exception.InvalidStateException;
 import Exception.AddException;
 

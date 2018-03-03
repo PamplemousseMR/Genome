@@ -1,18 +1,20 @@
 package Download.Tests;
 
 import Download.GenbankCDS;
-import org.junit.jupiter.api.Test;
 import Exception.HTTPException;
+import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
 
-import static org.junit.jupiter.api.Assertions.assertNotEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GenbankCDSTest {
     @Test
     void runTest() throws HTTPException, IOException {
-        GenbankCDS gr = new GenbankCDS("NC_007788.1");
-        gr.getRefseqData();
-        assertNotEquals(0, gr.getRefseqDataSize());
+        for (int i = 0; i < 10; ++i) {
+            GenbankCDS gr = new GenbankCDS("NC_00778" + i);
+            gr.download();
+            assertTrue(gr.getRefseqData().indexOf("ORIGIN") != -1);
+        }
     }
 }

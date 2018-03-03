@@ -1,13 +1,12 @@
 package Download;
 
-import Data.RawOrganism;
+import Exception.HTTPException;
+import Exception.MissException;
 import Utils.Logs;
 import Utils.Options;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import Exception.HTTPException;
-import Exception.MissException;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -18,25 +17,28 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class GenbankOrganisms extends Downloader {
+public class GenbankOrganisms extends IDownloader {
 
+    /**
+     * Key to get main data
+     */
     private static final String s_MAIN_DATA = "ngout";
+    /**
+     * Key to get data
+     */
     private static final String s_DATA = "data";
+    /**
+     * Key to get total of organism
+     */
     private static final String s_TOTAL_COUNT = "totalCount";
+    /**
+     * Key to get content
+     */
     private static final String s_CONTENT = "content";
-
     /**
-     * Currently downloaded
+     * request
      */
-    private int m_downloaded;
-    /**
-     *Total on database
-     */
-    private int m_totalCount;
-    /**
-     * Total on the queue
-     */
-    private int m_enqueued;
+    private static final String s_REQUEST = "[display( id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_),hist(kingdom,group,subgroup)].from(GenomeAssemblies).usingschema(/schema/GenomeAssemblies).sort(lineage,asc)";
     /**
      * Queue of retrieved organisms
      */
@@ -46,47 +48,55 @@ public class GenbankOrganisms extends Downloader {
      */
     private final ArrayList<Integer> m_failedChunks;
     /**
+     * Currently downloaded
+     */
+    private int m_downloaded;
+    /**
+     * Total on database
+     */
+    private int m_totalCount;
+    /**
+     * Total on the queue
+     */
+    private int m_enqueued;
+    /**
      * Number of failed organism
      */
     private int m_failedOrganism;
-
-    private static final String s_REQUEST =
-            "[display( id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_)," +
-            "hist(kingdom,group,subgroup)].from(GenomeAssemblies)" +
-            ".usingschema(/schema/GenomeAssemblies).sort(lineage,asc)";
 
     /**
      * Class constructor
      */
     private GenbankOrganisms() {
-        // Counters
         m_downloaded = 0;
         m_totalCount = -1;
         m_enqueued = 0;
         m_failedOrganism = 0;
-
-        // Initialize data
         m_dataQueue = new LinkedList<>();
         m_failedChunks = new ArrayList<>();
     }
 
     /**
+     * Get singleton (only one thread for the moment)
+     *
+     * @return GenbankOrganism database instance
+     */
+    public static GenbankOrganisms getInstance() {
+        return GenbankOrganismsHolder.s_INSTANCE;
+    }
+
+    /**
      * Get the url to download the next chunk of database
-     * @param _index, the index to begin
+     *
+     * @param _index the index to begin
      * @return A JAVA URL instance for the next chunk of data
      * @throws UnsupportedEncodingException If UTF-8 isn't supported by executing system
-     * @throws MalformedURLException If the URL is malformed
+     * @throws MalformedURLException        If the URL is malformed
      */
     private URL getURL(int _index) throws UnsupportedEncodingException, MalformedURLException {
-
         String urlStr;
         try {
-            // Forge request
-            urlStr = String.format("%s?q=%s&start=%d&limit=%d",
-                        Options.getBaseUrl(),
-                        URLEncoder.encode(s_REQUEST, StandardCharsets.UTF_8.name()),
-                        _index,
-                        Options.getDownloadStep());
+            urlStr = String.format("%s?q=%s&start=%d&limit=%d", Options.getOrganismBaseUrl(), URLEncoder.encode(s_REQUEST, StandardCharsets.UTF_8.name()), _index, Options.getDownloadStep());
         } catch (UnsupportedEncodingException e) {
             Logs.exception(e);
             throw e;
@@ -105,6 +115,7 @@ public class GenbankOrganisms extends Downloader {
 
     /**
      * Get the status of the download
+     *
      * @return True if database has been completely m_downloaded (else false)
      */
     private boolean downloadCompleted() {
@@ -113,6 +124,7 @@ public class GenbankOrganisms extends Downloader {
 
     /**
      * Download and process next data chunk (page of step organisms)
+     *
      * @throws MissException if the download can't be done
      */
     private void downloadNextChunk() throws MissException {
@@ -121,13 +133,13 @@ public class GenbankOrganisms extends Downloader {
         }
 
         int chunkLength = 0;
-        try{
+        try {
             chunkLength = downloadChunk(m_downloaded);
-        } catch (Exception e){
+        } catch (Exception e) {
             Logs.exception(e);
-            if(m_totalCount == -1){
+            if (m_totalCount == -1) {
                 throw new MissException("can't get the total numbers of organism to download");
-            } else{
+            } else {
                 m_failedChunks.add(m_downloaded);
                 m_downloaded += Options.getDownloadStep();
                 m_failedOrganism += Options.getDownloadStep();
@@ -135,7 +147,6 @@ public class GenbankOrganisms extends Downloader {
             return;
         }
 
-        // Increment number of retrieved objects
         m_downloaded += chunkLength;
 
         if (m_enqueued == m_totalCount) {
@@ -145,48 +156,45 @@ public class GenbankOrganisms extends Downloader {
 
     /**
      * Download a chunk
-     * @param _index, the index to begin
+     *
+     * @param _index the index to begin
      * @return thew number of organism downloaded
-     * @throws IOException if an IOException is throw
+     * @throws IOException   if an IOException is throw
      * @throws JSONException if an JSONException is throw
      * @throws HTTPException if an HTTPException is throw
      */
-    private int downloadChunk(int _index) throws IOException, JSONException, HTTPException  {
+    private int downloadChunk(int _index) throws IOException, JSONException, HTTPException {
         Logs.info(String.format("Requesting organisms [%d;%d]", _index, _index + Options.getDownloadStep()));
 
-        // Request json
         JSONObject json;
         try {
             json = getJSON(getURL(_index)).getJSONObject(s_MAIN_DATA).getJSONObject(s_DATA);
-        } catch (IOException|JSONException|HTTPException e) {
+        } catch (IOException | JSONException | HTTPException e) {
             Logs.exception(e);
             throw e;
         }
 
-        // Get total number of organisms
         try {
             m_totalCount = json.getInt(s_TOTAL_COUNT);
-        }catch(JSONException e) {
+        } catch (JSONException e) {
             Logs.exception(e);
             throw e;
         }
 
-        // Get organism
         JSONArray dataChunk;
         try {
             dataChunk = json.getJSONArray(s_CONTENT);
-        }catch(JSONException e) {
+        } catch (JSONException e) {
             Logs.exception(e);
             throw e;
         }
 
-        // Enqueue organisms
         long currentEnqueue = 0;
-        for (Object org: dataChunk) {
+        for (Object org : dataChunk) {
             try {
                 enqueueOrganism(new RawOrganism((JSONObject) org));
                 ++currentEnqueue;
-            }catch (JSONException e){
+            } catch (JSONException e) {
                 Logs.exception(e);
                 ++m_failedOrganism;
             }
@@ -199,6 +207,7 @@ public class GenbankOrganisms extends Downloader {
 
     /**
      * Download all organism
+     *
      * @throws MissException if the total's number of organism can't be downloaded
      */
     public void downloadOrganisms() throws MissException {
@@ -210,29 +219,30 @@ public class GenbankOrganisms extends Downloader {
                 throw e;
             }
         }
-
-        // Disconnect from server
         disconnect();
     }
 
     /**
      * Returns true if there is failed chunk
+     *
      * @return if there is failed chunk
      */
-    public boolean hasFailedChunk(){
+    public boolean hasFailedChunk() {
         return m_failedChunks.size() > 0;
     }
 
     /**
      * Returns the number of failed organism
+     *
      * @return The number of failed chunk
      */
-    public int getFailedOrganism(){
+    public int getFailedOrganism() {
         return m_failedOrganism;
     }
 
     /**
      * Retrieve the total number of organisms
+     *
      * @return Total count
      */
     public int getTotalCount() {
@@ -241,15 +251,17 @@ public class GenbankOrganisms extends Downloader {
 
     /**
      * Add an organism to the queue
-     * @param organism Organism data to enqueue
+     *
+     * @param _organism Organism data to enqueue
      */
-    private void enqueueOrganism(RawOrganism organism) {
-        m_dataQueue.add(organism);
+    private void enqueueOrganism(RawOrganism _organism) {
+        m_dataQueue.add(_organism);
         ++m_enqueued;
     }
 
     /**
      * Returns true if there is more data
+     *
      * @return True if their is more data to be processed
      */
     public boolean hasNext() {
@@ -258,6 +270,7 @@ public class GenbankOrganisms extends Downloader {
 
     /**
      * Get next m_downloaded organism
+     *
      * @return Data retrieved from Genbank
      */
     public RawOrganism getNext() {
@@ -272,14 +285,6 @@ public class GenbankOrganisms extends Downloader {
      */
     private static class GenbankOrganismsHolder {
         private final static GenbankOrganisms s_INSTANCE = new GenbankOrganisms();
-    }
-
-    /**
-     * Get singleton (only one thread for the moment)
-     * @return GenbankOrganism database instance
-     */
-    public static GenbankOrganisms getInstance() {
-        return GenbankOrganismsHolder.s_INSTANCE;
     }
 
 }
