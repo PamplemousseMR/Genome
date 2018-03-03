@@ -19,11 +19,11 @@ public final class Organism extends IDataBase {
 	/**
 	 * The id of this organism
 	 */
-	private final int m_id;
+	private final long m_id;
 	/**
 	 * The version of the organism
 	 */
-	private final int m_version;
+	private final long m_version;
 
 	/**
 	 * Class constructor
@@ -108,7 +108,7 @@ public final class Organism extends IDataBase {
      * Get the version of the organism
      * @return the version's number
      */
-    public int getVersion() {
+    public long getVersion() {
         return m_version;
     }
 
@@ -116,7 +116,7 @@ public final class Organism extends IDataBase {
      * Get the id of the organism
      * @return the id's number
      */
-    public int getId() {
+    public long getId() {
         return m_id;
     }
 

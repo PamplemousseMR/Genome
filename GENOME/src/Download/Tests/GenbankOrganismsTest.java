@@ -1,6 +1,5 @@
 package Download.Tests;
 
-import Download.RawOrganism;
 import Download.GenbankOrganisms;
 import Exception.MissException;
 import org.junit.jupiter.api.Test;
@@ -15,10 +14,7 @@ class GenbankOrganismsTest {
 
         int count = 0;
         while (go.hasNext()) {
-            RawOrganism ro = go.getNext();
-            for (String s : ro.getReplicons()) {
-                System.out.println(s);
-            }
+            go.getNext();
             count++;
         }
 

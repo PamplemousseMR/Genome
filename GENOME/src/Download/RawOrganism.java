@@ -14,21 +14,51 @@ import java.util.regex.Pattern;
 
 public final class RawOrganism {
 
+    /**
+     * Key to get replicons
+     */
     private static final String s_REPLICON = "replicons";
+    /**
+     * Key to get the id
+     */
     private static final String s_ID = "id";
+    /**
+     * Key to get the name
+     */
     private static final String s_NAME = "organism";
+    /**
+     * Key to get the kingdom
+     */
     private static final String s_KINGDOM = "kingdom";
+    /**
+     * Key to get the group
+     */
     private static final String s_GROUP = "group";
+    /**
+     * Key to get the subgroup
+     */
     private static final String s_SUBGROUP = "subgroup";
+    /**
+     * Key to get the modification date
+     */
     private static final String s_MODIFICATION_DATE = "modify_date";
+    /**
+     * Key to get the release date
+     */
     private static final String s_RELEASE_DATE = "release_date";
+    /**
+     * Key to get the version
+     */
     private static final String s_VERSION = "_version_";
+    /**
+     * Regex used to get only replicon which contain NC_
+     */
     private static final String s_REGEX = "NC_[^(/|;| |\\n)]*";
 
     /**
      * ID of this organism
      */
-    private int m_id;
+    private long m_id;
     /**
      * Name of this organism
      */
@@ -52,7 +82,7 @@ public final class RawOrganism {
     /**
      * Version of this organism
      */
-    private int m_version;
+    private long m_version;
     /**
      * List of replicon's ID of this organism
      */
@@ -64,14 +94,13 @@ public final class RawOrganism {
      * @throws JSONException, if an error occurred
      */
     public RawOrganism(JSONObject obj) throws JSONException{
-
         try {
-            m_id = obj.getInt(s_ID);
+            m_id = obj.getLong(s_ID);
             m_name = obj.getString(s_NAME);
             m_kingdom = obj.getString(s_KINGDOM);
             m_group = obj.getString(s_GROUP);
             m_subGroup = obj.getString(s_SUBGROUP);
-            m_version = obj.getInt(s_VERSION);
+            m_version = obj.getLong(s_VERSION);
         }catch (JSONException e){
             Logs.exception(e);
             throw e;
@@ -100,7 +129,7 @@ public final class RawOrganism {
 
         if(dateTime != null) {
             Calendar cal = Calendar.getInstance();
-            cal.set(dateTime.getYear(),dateTime.getMonthValue() - 1, dateTime.getDayOfMonth(), 0, 0);
+            cal.set(dateTime.getYear(),dateTime.getMonthValue() - 1, dateTime.getDayOfMonth(), 0, 0, 0);
             m_modificationDate = cal.getTime();
         }
     }
@@ -109,7 +138,7 @@ public final class RawOrganism {
      * Get the id
      * @return the id
      */
-    public int getId() {
+    public long getId() {
         return m_id;
     }
 
@@ -165,7 +194,7 @@ public final class RawOrganism {
      * Get the version of the organism
      * @return the version's number
      */
-    public int getVersion() {
+    public long getVersion() {
         return m_version;
     }
 }
