@@ -13,11 +13,11 @@ public abstract class ITask implements Runnable{
     /**
      * ITask's name
      */
-    private String m_name;
+    private final String m_name;
     /**
      * ITask's type
      */
-    private TaskType m_type;
+    private final TaskType m_type;
 
     /**
      * Class constructor

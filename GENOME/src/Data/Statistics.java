@@ -202,20 +202,20 @@ public class Statistics {
     }
 
     /**
-     * Increment by _incr the value of total trinucleotide
-     * @param _incr, the value to increment
+     * Increment the value of total trinucleotide by the parameter
+     * @param _inc, the value to increment
      */
-    protected final void incrementTotal(long _incr){
-        m_totalTrinucleotide += _incr;
+    protected final void incrementTotal(long _inc){
+        m_totalTrinucleotide += _inc;
     }
 
     /**
-     * Increment by _incr the value of a trinucleotide for a stat
+     * Increment the value of a trinucleotide for a stat by the parameter
      * @param _tri, the Trinucleotide to set
      * @param _stat, the statistic to set
-     * @param _incr, the value to increment
+     * @param _inc, the value to increment
      */
-    private void incrementStat(Trinucleotide _tri, StatLong _stat, long _incr){
-        m_trinucleotideTable.get(_tri).set(_stat,m_trinucleotideTable.get(_tri).get(_stat)+_incr);
+    private void incrementStat(Trinucleotide _tri, StatLong _stat, long _inc){
+        m_trinucleotideTable.get(_tri).set(_stat,m_trinucleotideTable.get(_tri).get(_stat)+_inc);
     }
 }

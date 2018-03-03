@@ -2,6 +2,9 @@ package Data;
 
 import java.util.ArrayList;
 
+import Exception.InvalidStateException;
+import Exception.AddException;
+
 public final class Organism extends IDataBase {
 
 	/**
@@ -11,15 +14,15 @@ public final class Organism extends IDataBase {
 	/**
 	 * Array of this organism's Replicon
 	 */
-	private ArrayList<Replicon> m_replicons;
+	private final ArrayList<Replicon> m_replicons;
 	/**
 	 * The id of this organism
 	 */
-	private int m_id;
+	private final int m_id;
 	/**
 	 * The version of the organism
 	 */
-	private int m_version;
+	private final int m_version;
 
 	/**
 	 * Class constructor
@@ -38,13 +41,13 @@ public final class Organism extends IDataBase {
 	 * Add a Replicon to this Organism
 	 * @param _replicon, the Replicon to insert
 	 * @return the insertion success
-	 * @throws Exception if it _replicon are already added
+	 * @throws AddException if it _replicon are already added
 	 */
-	public boolean addReplicon(Replicon _replicon) throws Exception{
+	public boolean addReplicon(Replicon _replicon) throws AddException {
         if(super.getState()==State.STARTED) {
             try{
                 if(m_replicons.get(_replicon.getIndex()) != null)
-                    throw new Exception("Replicon already added");
+                    throw new AddException("Replicon already added");
             }catch (IndexOutOfBoundsException e){}
             _replicon.setIndex(m_replicons.size());
             return m_replicons.add(_replicon);
@@ -53,10 +56,10 @@ public final class Organism extends IDataBase {
 
 	/**
 	 * Update the statistics
-	 * @throws Exception if it can't be finished
+	 * @throws InvalidStateException if it can't be finished
 	 */
 	@Override
-	public void finish() throws Exception{
+	public void finish() throws InvalidStateException{
 	    m_replicons.parallelStream().forEach(Replicon::computeStatistic);
 		for(Replicon rep : m_replicons) {
 			super.updateStatistics(rep);
@@ -69,7 +72,7 @@ public final class Organism extends IDataBase {
 	}
 
     /**
-     * Get this Organims's Replicons
+     * Get the replicons Organism
      * @return the m_replicons
      */
     public ArrayList<Replicon> getReplicons(){

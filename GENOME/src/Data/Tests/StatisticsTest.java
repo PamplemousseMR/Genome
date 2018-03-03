@@ -1,17 +1,17 @@
 package Data.Tests;
 
-import Data.RawOrganism;
 import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 import Data.*;
-
+import Exception.InvalidStateException;
+import Exception.AddException;
 import java.util.EnumMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StatisticsTest {
 
-    private static JSONObject s_JSON_ORG = new JSONObject("{\n" +
+    private final static JSONObject s_JSON_ORG = new JSONObject("{\n" +
             "\t\"id\": 152753,\n" +
             "\t\"organism\": \"'Brassica napus' phytoplasma\",\n" +
             "\t\"kingdom\": \"Bacteria\",\n" +
@@ -41,7 +41,7 @@ class StatisticsTest {
     }
 
     @Test
-    void statisticsTest() throws Exception{
+    void statisticsTest() throws AddException, InvalidStateException {
         DataBase db = DataBase.getInstance();
         int nb = 5,nbrep = 200;
         db.start();

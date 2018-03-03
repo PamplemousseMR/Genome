@@ -7,7 +7,6 @@ import org.json.JSONObject;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.regex.Matcher;
@@ -24,7 +23,7 @@ public final class RawOrganism {
     private static final String s_MODIFICATION_DATE = "modify_date";
     private static final String s_RELEASE_DATE = "release_date";
     private static final String s_VERSION = "_version_";
-    private static final String s_REGEX = "NC_[^(\\/|;| |\\n)]*";
+    private static final String s_REGEX = "NC_[^(/|;| |\\n)]*";
 
     /**
      * ID of this organism

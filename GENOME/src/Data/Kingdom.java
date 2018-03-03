@@ -2,6 +2,9 @@ package Data;
 
 import java.util.ArrayList;
 
+import Exception.InvalidStateException;
+import Exception.AddException;
+
 public final class Kingdom extends IDataBase {
 
 	/**
@@ -11,7 +14,7 @@ public final class Kingdom extends IDataBase {
 	/**
 	 * Array of this Kingdom's Group
 	 */
-	private ArrayList<Group> m_groups;
+	private final ArrayList<Group> m_groups;
 
 	/**
 	 * Class constructor
@@ -27,12 +30,12 @@ public final class Kingdom extends IDataBase {
 	 * Add a Group to this Kingdom
 	 * @param _group, the Group to insert
 	 * @return the insertion success
-	 * @throws Exception if _group are already added
+	 * @throws AddException if _group are already added
 	 */
-	public boolean addGroup(Group _group) throws Exception {
+	public boolean addGroup(Group _group) throws AddException {
         if(super.getState()==State.STARTED) {
 			if(super.contains(m_groups,_group))
-				throw new Exception("Sequence already added");
+				throw new AddException("Sequence already added");
 			_group.setIndex(m_groups.size());
 			_group.setParent(this);
             return m_groups.add(_group);
@@ -41,12 +44,12 @@ public final class Kingdom extends IDataBase {
 
 	/**
 	 * In case of all Group are already finished
-	 * @throws Exception if it can't be stopped
+	 * @throws InvalidStateException if it can't be stopped
 	 */
 	@Override
-	public void stop() throws Exception{
+	public void stop() throws InvalidStateException{
 		super.stop();
-		if(super.getFinishedChildrens() == m_groups.size()){
+		if(super.getFinishedChildren() == m_groups.size()){
 			m_groups.clear();
 			super.computeStatistics();
 			m_parent.finish(this);
@@ -67,16 +70,16 @@ public final class Kingdom extends IDataBase {
 	/**
 	 * Finish this Kingdom if it can
 	 * @param _group, the Group to finish
-	 * @throws Exception if it can't be finished
+	 * @throws InvalidStateException if it can't be finished
 	 */
-	protected void finish(Group _group) throws Exception {
+	protected void finish(Group _group) throws InvalidStateException {
 		if(super.contains(m_groups, _group) && _group.getState()!=State.FINISHED){
             for(Statistics stat : _group.getStatistics().values()){
 				super.updateStatistics(stat);
 				super.incrementGenomeNumber(stat.getType(),_group.getTypeNumber(stat.getType()));
             }
-			super.incrementFinishedChildrens();
-			if(getState()== State.STOPPED && super.getFinishedChildrens() == m_groups.size()){
+			super.incrementFinishedChildren();
+			if(getState()== State.STOPPED && super.getFinishedChildren() == m_groups.size()){
 				m_groups.clear();
 				super.computeStatistics();
 				m_parent.finish(this);

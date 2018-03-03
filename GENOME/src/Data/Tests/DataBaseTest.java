@@ -7,6 +7,8 @@ import org.junit.jupiter.api.BeforeAll;
 
 import java.util.Calendar;
 import java.util.Date;
+import Exception.InvalidStateException;
+import Exception.AddException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertSame;
@@ -16,13 +18,13 @@ class DataBaseTest {
     static private DataBase db;
 
     @BeforeAll
-    static void setUpTest() throws Exception {
+    static void setUpTest() throws InvalidStateException {
         db = DataBase.getInstance();
         db.start();
     }
 
     @AfterAll
-    static void tearDown() throws Exception {
+    static void tearDown() throws InvalidStateException {
         db.stop();
     }
 
@@ -32,7 +34,7 @@ class DataBaseTest {
     }
 
     @org.junit.jupiter.api.Test
-    void addKingdomTest() throws Exception {
+    void addKingdomTest() throws AddException {
         db.addKingdom(new Kingdom(""));
         assertEquals(1, db.getKingdoms().size());
         db.addKingdom(new Kingdom(""));
@@ -40,7 +42,7 @@ class DataBaseTest {
     }
 
     @org.junit.jupiter.api.Test
-    void getKingdomsTest() throws Exception {
+    void getKingdomsTest() throws AddException {
         Kingdom k1 = new Kingdom("one");
         Kingdom k2 = new Kingdom("two");
         db.addKingdom(k1);

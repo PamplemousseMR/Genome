@@ -2,13 +2,14 @@ package Data;
 
 import java.util.Date;
 import java.util.ArrayList;
+import Exception.AddException;
 
 public final class Replicon extends Statistics {
 
 	/**
 	 * The name
 	 */
-	private String m_name;
+	private final String m_name;
 	/**
 	 * Local index
 	 */
@@ -16,11 +17,11 @@ public final class Replicon extends Statistics {
 	/**
 	 * Last modification's date
 	 */
-	private Date m_modificationDate;
+	private final Date m_modificationDate;
 	/**
 	 * Array of all the sequences of this Replicon
 	 */
-	private ArrayList<StringBuffer> m_sequences;
+	private final ArrayList<StringBuffer> m_sequences;
 
 	/**
 	 * Class constructor
@@ -55,11 +56,11 @@ public final class Replicon extends Statistics {
 	 * Add a sequence 
 	 * @param _sequence, the sequence to add
 	 * @return the insertion success
-	 * @throws Exception if the _sequence are already added
+	 * @throws AddException if the _sequence are already added
 	 */
-	public boolean addSequence(StringBuffer _sequence) throws Exception {
+	public boolean addSequence(StringBuffer _sequence) throws AddException {
 		if(m_sequences.contains(_sequence))
-			throw new Exception("Sequence already added");
+			throw new AddException("Sequence already added");
 		return m_sequences.add(_sequence);
 	}
 

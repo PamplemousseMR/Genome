@@ -4,6 +4,7 @@ import Utils.Logs;
 import Utils.Options;
 import org.json.JSONException;
 import org.json.JSONObject;
+import Exception.HTTPException;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -22,7 +23,7 @@ public abstract class Downloader {
      * @throws IOException An error occurred while connecting to the server
      * @throws JSONException Invalid JSON
      */
-    protected JSONObject getJSON(URL _url) throws IOException, JSONException {
+    protected JSONObject getJSON(URL _url) throws IOException, JSONException, HTTPException {
         // Response buffer
         StringBuilder responseText = new StringBuilder("");
         // Line buffer
@@ -32,7 +33,7 @@ public abstract class Downloader {
         try (BufferedReader in = get(_url)) {
             while ((line = in.readLine()) != null)
                 responseText.append(line);
-        } catch(IOException e){
+        } catch(IOException|HTTPException e){
             Logs.exception(e);
             throw e;
         }
@@ -54,7 +55,7 @@ public abstract class Downloader {
      * @return The BufferedReader from which to read result
      * @throws IOException An error occurred while connecting to the server
      */
-    protected BufferedReader get(URL _url) throws IOException {
+    protected BufferedReader get(URL _url) throws IOException, HTTPException {
 
         BufferedReader in;
 
@@ -65,10 +66,7 @@ public abstract class Downloader {
         // Initialize request
         try {
             m_connection = (HttpURLConnection) _url.openConnection();
-
-            // Set connection timeout
             m_connection.setConnectTimeout(Options.getConnectionTimeout());
-
             m_connection.setRequestMethod("GET");
         } catch (IOException e) {
             Logs.exception(e);
@@ -100,7 +98,7 @@ public abstract class Downloader {
             }
         } else {
             m_connection.disconnect();
-            throw new IOException(String.valueOf(statusCode));
+            throw new HTTPException(String.valueOf(statusCode));
         }
 
         return in;

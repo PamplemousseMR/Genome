@@ -1,9 +1,11 @@
 package Data.Tests;
 
 import Data.*;
-import Data.RawOrganism;
 import org.json.JSONObject;
 import java.util.LinkedList;
+
+import Exception.InvalidStateException;
+import Exception.AddException;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -11,7 +13,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GlobalTest {
 
-    private static JSONObject s_JSON_ORG = new JSONObject("{\n" +
+    private final static JSONObject s_JSON_ORG = new JSONObject("{\n" +
             "\t\"id\": 152753,\n" +
             "\t\"organism\": \"'Brassica napus' phytoplasma\",\n" +
             "\t\"kingdom\": \"Bacteria\",\n" +
@@ -23,7 +25,7 @@ class GlobalTest {
             "}");
 
     @org.junit.jupiter.api.Test
-    void dataBaseTest() throws Exception{
+    void dataBaseTest() throws AddException, InvalidStateException {
         DataBase dataBase = DataBase.getInstance();
         assertEquals(IDataBase.State.CREATED,dataBase.getState());
 
@@ -149,7 +151,7 @@ class GlobalTest {
     }
 
     @org.junit.jupiter.api.Test
-    void nameTest() throws Exception{
+    void nameTest() throws AddException, InvalidStateException {
 
         Kingdom k = new Kingdom("KINGDOM");
         k.start();
