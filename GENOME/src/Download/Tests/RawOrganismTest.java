@@ -71,7 +71,7 @@ class RawOrganismTest {
     @Test
     void getModificationDate() {
         Format formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        StringBuffer date = new StringBuffer(formatter.format(m_rawOrganism.getModificationDate()));
+        StringBuilder date = new StringBuilder(formatter.format(m_rawOrganism.getModificationDate()));
         date.replace(10,11,"T");
         date.replace(19,20,"Z");
         assertTrue(s_MODIFICATION.compareTo(date.toString()) == 0);

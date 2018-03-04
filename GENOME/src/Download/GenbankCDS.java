@@ -14,7 +14,7 @@ public class GenbankCDS extends IDownloader {
     /**
      * Request
      */
-    private static final String s_REQUEST = "db=nuccore&retmode=raw&withparts=on";
+    private static final String s_REQUEST = "db=nuccore&retmode=raw&withparts=on&basic_feat=on";
     /**
      * ID of the CDS
      */
@@ -22,7 +22,7 @@ public class GenbankCDS extends IDownloader {
     /**
      * String buffer used to store result
      */
-    private StringBuffer m_data;
+    private StringBuilder m_data;
 
     /**
      * Constructor
@@ -30,7 +30,7 @@ public class GenbankCDS extends IDownloader {
      */
     public GenbankCDS(String _refseqId) {
         m_refseqId = _refseqId;
-        m_data = new StringBuffer();
+        m_data = new StringBuilder();
     }
 
     /**
@@ -80,7 +80,7 @@ public class GenbankCDS extends IDownloader {
      *
      * @return Refseq data as a string
      */
-    public StringBuffer getRefseqData() {
+    public StringBuilder getRefseqData() {
         return m_data;
     }
 

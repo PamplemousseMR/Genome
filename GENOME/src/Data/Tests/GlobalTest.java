@@ -3,7 +3,8 @@ package Data.Tests;
 import Data.*;
 import Download.RawOrganism;
 import org.json.JSONObject;
-import java.util.LinkedList;
+
+import java.util.ArrayList;
 
 import Exception.InvalidStateException;
 import Exception.AddException;
@@ -83,7 +84,7 @@ class GlobalTest {
             }
         }
 
-        LinkedList<Organism> list = new LinkedList<>();
+        ArrayList<Organism> list = new ArrayList<>();
 
         // Subgroup start and stop
         for(Kingdom k : dataBase.getKingdoms()) {
@@ -137,7 +138,7 @@ class GlobalTest {
                 for(SubGroup s : g.getSubGroups()) {
                     for(Organism o : s.getOrganisms()) {
                         for(Replicon r : o.getReplicons()){
-                            StringBuffer sb = new StringBuffer("AAATTTCCCGGG");
+                            StringBuilder sb = new StringBuilder("AAATTTCCCGGG");
                             assertTrue(r.addSequence(sb));
                             assertThrows(Exception.class, () -> r.addSequence(sb));
                         }

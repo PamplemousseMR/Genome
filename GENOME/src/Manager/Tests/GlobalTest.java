@@ -5,7 +5,7 @@ import Manager.IDownload;
 import Manager.ThreadManager;
 import Utils.Logs;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -19,12 +19,12 @@ class GlobalTest {
         ThreadManager thr = ThreadManager.getInstance();
 
         // Store results of each threads
-        LinkedList<LinkedList<Boolean>> results = new LinkedList<>();
+        ArrayList<ArrayList<Boolean>> results = new ArrayList<>();
 
         for(int i=0 ; i<30 ; ++i) {
-            LinkedList<Boolean> res1 = new LinkedList<>();
+            ArrayList<Boolean> res1 = new ArrayList<>();
             results.add(res1);
-            LinkedList<Boolean> res2 = new LinkedList<>();
+            ArrayList<Boolean> res2 = new ArrayList<>();
             results.add(res2);
 
             assertTrue(thr.pushDownloadTask(new IDownload(""+i) {
@@ -59,7 +59,7 @@ class GlobalTest {
         // Blocked until all tasks are finished
         thr.finalizeThreadManager();
 
-        for(LinkedList<Boolean> li : results) {
+        for(ArrayList<Boolean> li : results) {
             assertEquals(10, li.size());
         }
     }

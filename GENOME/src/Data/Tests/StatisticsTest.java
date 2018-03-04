@@ -64,7 +64,7 @@ class StatisticsTest {
                         su.addOrganism(or);
                         for(int r=0 ; r<nbrep ; ++r){
                             Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1");
-                            StringBuffer strBuf = new StringBuffer("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
+                            StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("TATAATCCTTTTCTTTTTAATTAAAAAAATCTCTAATAATATTTTTTTTA");
                             strBuf.append("TTATATTAATTTCAGGAACTTTAATTACCATTTCATCTAATTCCTGATTA");
                             strBuf.append("GGAGCTTGAATAGGATTAGAAATTAATTTACTTTCATTTATCCCCTTAAT");

@@ -53,7 +53,7 @@ public final class RawOrganism {
     /**
      * Regex used to get only replicon which contain NC_
      */
-    private static final String s_REGEX = "NC_[^(/|;| |\\n)]*";
+    private static final String s_REGEX = "NC_[^(/|;| |\n)]*";
 
     /**
      * ID of this organism
@@ -107,15 +107,13 @@ public final class RawOrganism {
         }
 
         // Replicons formatting
+        m_replicons = new ArrayList<>();
         if (obj.has(s_REPLICON)) {
-            m_replicons = new ArrayList<>();
-            Pattern pattern = Pattern.compile(s_REGEX);
+            Pattern pattern = Pattern.compile(s_REGEX, Pattern.CASE_INSENSITIVE);
             Matcher m = pattern.matcher(obj.getString(s_REPLICON));
             while (m.find()) {
                 m_replicons.add(m.group(0));
             }
-        } else {
-            m_replicons = new ArrayList<>();
         }
 
         // Dates formatting

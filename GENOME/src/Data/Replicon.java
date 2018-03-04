@@ -21,7 +21,7 @@ public final class Replicon extends Statistics {
 	/**
 	 * Array of all the sequences of this Replicon
 	 */
-	private final ArrayList<StringBuffer> m_sequences;
+	private final ArrayList<StringBuilder> m_sequences;
 
 	/**
 	 * Class constructor
@@ -58,7 +58,7 @@ public final class Replicon extends Statistics {
 	 * @return the insertion success
 	 * @throws AddException if the _sequence are already added
 	 */
-	public boolean addSequence(StringBuffer _sequence) throws AddException {
+	public boolean addSequence(StringBuilder _sequence) throws AddException {
 		if(m_sequences.contains(_sequence))
 			throw new AddException("Sequence already added");
 		return m_sequences.add(_sequence);
@@ -71,7 +71,7 @@ public final class Replicon extends Statistics {
 	 */
 	protected void computeStatistic() {
 		int idx,length;
-		for(StringBuffer sequence : m_sequences) {
+		for(StringBuilder sequence : m_sequences) {
 			idx = 0;
 			length = sequence.length();
 			while(length-idx > 5){
