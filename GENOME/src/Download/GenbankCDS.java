@@ -9,7 +9,7 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class GenbankCDS extends IDownloader {
+public final class GenbankCDS extends IDownloader {
 
     /**
      * Request
@@ -22,10 +22,11 @@ public class GenbankCDS extends IDownloader {
     /**
      * String buffer used to store result
      */
-    private StringBuilder m_data;
+    private final StringBuilder m_data;
 
     /**
      * Constructor
+     *
      * @param _refseqId the id of the CDS
      */
     public GenbankCDS(String _refseqId) {
@@ -40,12 +41,13 @@ public class GenbankCDS extends IDownloader {
      * @throws MalformedURLException On malformed Url
      */
     private URL getURL() throws MalformedURLException {
-        String urlStr = String.format("%s?%s&id=%s", Options.getCDSBaseUrl(), s_REQUEST, m_refseqId);
+        final String urlStr = String.format("%s?%s&id=%s", Options.getCDSBaseUrl(), s_REQUEST, m_refseqId);
 
-        URL res;
+        final URL res;
         try {
             res = new URL(urlStr);
         } catch (MalformedURLException e) {
+            Logs.warning("Unable to create an url : " + urlStr);
             Logs.exception(e);
             throw e;
         }
@@ -61,13 +63,16 @@ public class GenbankCDS extends IDownloader {
      */
     public void download() throws HTTPException, IOException {
         Logs.info(String.format("Requesting sequence file [%s]", m_refseqId));
-        BufferedReader reader;
+        final BufferedReader reader;
+        URL url = null;
         try {
-            reader = get(getURL());
+            url = getURL();
+            reader = get(url);
             for (int c; (c = reader.read()) != -1; ) {
                 m_data.append((char) c);
             }
         } catch (HTTPException | IOException e) {
+            Logs.warning("Unable to get data : " + m_refseqId + " : " + url);
             Logs.exception(e);
             throw e;
         }

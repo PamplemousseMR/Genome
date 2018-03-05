@@ -1,8 +1,8 @@
 package Exception;
 
-public final class MissException extends IException{
+public final class MissException extends IException {
 
-    public MissException(String _message){
+    public MissException(String _message) {
         super(_message);
     }
 

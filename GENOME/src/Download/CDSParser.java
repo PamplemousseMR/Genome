@@ -2,7 +2,7 @@ package Download;
 
 public class CDSParser {
 
-    CDSParser(StringBuffer _buffer){
+    CDSParser(StringBuffer _buffer) {
 
     }
 

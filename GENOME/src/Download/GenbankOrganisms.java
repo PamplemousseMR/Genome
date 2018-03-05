@@ -8,6 +8,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
@@ -17,7 +18,7 @@ import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.LinkedList;
 
-public class GenbankOrganisms extends IDownloader {
+public final class GenbankOrganisms extends IDownloader {
 
     /**
      * Key to get main data
@@ -42,7 +43,7 @@ public class GenbankOrganisms extends IDownloader {
     /**
      * Queue of retrieved organisms
      */
-    private final LinkedList<RawOrganism> m_dataQueue;
+    private final LinkedList<OrganismParser> m_dataQueue;
     /**
      * Queue of failed chunk's indexes
      */
@@ -94,18 +95,20 @@ public class GenbankOrganisms extends IDownloader {
      * @throws MalformedURLException        If the URL is malformed
      */
     private URL getURL(int _index) throws UnsupportedEncodingException, MalformedURLException {
-        String urlStr;
+        String urlStr = "";
         try {
             urlStr = String.format("%s?q=%s&start=%d&limit=%d", Options.getOrganismBaseUrl(), URLEncoder.encode(s_REQUEST, StandardCharsets.UTF_8.name()), _index, Options.getDownloadStep());
         } catch (UnsupportedEncodingException e) {
+            Logs.warning("Unable to encode url : " + urlStr);
             Logs.exception(e);
             throw e;
         }
 
-        URL res;
+        final URL res;
         try {
             res = new URL(urlStr);
         } catch (MalformedURLException e) {
+            Logs.warning("Unable to create a malformed url : " + urlStr);
             Logs.exception(e);
             throw e;
         }
@@ -136,14 +139,15 @@ public class GenbankOrganisms extends IDownloader {
         try {
             chunkLength = downloadChunk(m_downloaded);
         } catch (Exception e) {
-            Logs.exception(e);
             if (m_totalCount == -1) {
-                throw new MissException("can't get the total numbers of organism to download");
+                Logs.warning("Unable to find the total number of organism");
+                throw new MissException("Unable to find the total number of organism");
             } else {
                 m_failedChunks.add(m_downloaded);
                 m_downloaded += Options.getDownloadStep();
                 m_failedOrganism += Options.getDownloadStep();
             }
+            Logs.exception(e);
             return;
         }
 
@@ -166,10 +170,11 @@ public class GenbankOrganisms extends IDownloader {
     private int downloadChunk(int _index) throws IOException, JSONException, HTTPException {
         Logs.info(String.format("Requesting organisms [%d;%d]", _index, _index + Options.getDownloadStep()));
 
-        JSONObject json;
+        final JSONObject json;
         try {
             json = getJSON(getURL(_index)).getJSONObject(s_MAIN_DATA).getJSONObject(s_DATA);
         } catch (IOException | JSONException | HTTPException e) {
+            Logs.warning("Unable to get data");
             Logs.exception(e);
             throw e;
         }
@@ -177,25 +182,31 @@ public class GenbankOrganisms extends IDownloader {
         try {
             m_totalCount = json.getInt(s_TOTAL_COUNT);
         } catch (JSONException e) {
-            Logs.exception(e);
+            final String message = "Unable to find the total number of organism : " + json.toString();
+            Logs.warning(message);
+            Logs.exception(new JSONException(message, e));
             throw e;
         }
 
-        JSONArray dataChunk;
+        final JSONArray dataChunk;
         try {
             dataChunk = json.getJSONArray(s_CONTENT);
         } catch (JSONException e) {
-            Logs.exception(e);
+            final String message = "Unable to find the content : " + json.toString();
+            Logs.warning(message);
+            Logs.exception(new JSONException(message, e));
             throw e;
         }
 
         long currentEnqueue = 0;
         for (Object org : dataChunk) {
             try {
-                enqueueOrganism(new RawOrganism((JSONObject) org));
+                enqueueOrganism(new OrganismParser((JSONObject) org));
                 ++currentEnqueue;
             } catch (JSONException e) {
-                Logs.exception(e);
+                final String message = "Unable create OrganismParser : " + org.toString();
+                Logs.warning(message);
+                Logs.exception(new JSONException(message, e));
                 ++m_failedOrganism;
             }
         }
@@ -203,6 +214,39 @@ public class GenbankOrganisms extends IDownloader {
         int chunkLength = dataChunk.length();
         Logs.info(String.format("%d/%d organisms enqueued of %d requested", currentEnqueue, chunkLength, Options.getDownloadStep()));
         return chunkLength;
+    }
+
+    /**
+     * Make an HTTP GET request and parse result as json
+     *
+     * @param _url The request URL to retrieve data from
+     * @return The JSONObject parsed from server response
+     * @throws IOException   An error occurred while connecting to the server
+     * @throws JSONException Invalid JSON
+     */
+    private JSONObject getJSON(URL _url) throws IOException, JSONException, HTTPException {
+        final StringBuilder responseText = new StringBuilder();
+        String line;
+
+        try (BufferedReader in = get(_url)) {
+            while ((line = in.readLine()) != null)
+                responseText.append(line);
+        } catch (IOException | HTTPException e) {
+            Logs.warning("Unable create data : " + responseText);
+            Logs.exception(e);
+            throw e;
+        }
+
+        final JSONObject obj;
+        try {
+            obj = new JSONObject(responseText.toString());
+        } catch (JSONException e) {
+            final String message = "Unable create json : " + responseText;
+            Logs.warning(message);
+            Logs.exception(new JSONException(message, e));
+            throw e;
+        }
+        return obj;
     }
 
     /**
@@ -254,7 +298,7 @@ public class GenbankOrganisms extends IDownloader {
      *
      * @param _organism Organism data to enqueue
      */
-    private void enqueueOrganism(RawOrganism _organism) {
+    private void enqueueOrganism(OrganismParser _organism) {
         m_dataQueue.add(_organism);
         ++m_enqueued;
     }
@@ -273,7 +317,7 @@ public class GenbankOrganisms extends IDownloader {
      *
      * @return Data retrieved from Genbank
      */
-    public RawOrganism getNext() {
+    public OrganismParser getNext() {
         return m_dataQueue.removeFirst();
     }
 

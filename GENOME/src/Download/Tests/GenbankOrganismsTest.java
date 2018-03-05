@@ -1,10 +1,12 @@
 package Download.Tests;
 
 import Download.GenbankOrganisms;
+import Download.OrganismParser;
 import Exception.MissException;
 import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class GenbankOrganismsTest {
     @Test
@@ -14,7 +16,10 @@ class GenbankOrganismsTest {
 
         int count = 0;
         while (go.hasNext()) {
-            go.getNext();
+            OrganismParser ro = go.getNext();
+            for (String CDS : ro.getReplicons()) {
+                assertTrue(CDS.indexOf("NC_") == 0);
+            }
             count++;
         }
 

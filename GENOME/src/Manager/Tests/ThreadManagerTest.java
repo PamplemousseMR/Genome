@@ -3,7 +3,9 @@ package Manager.Tests;
 import Manager.ICompute;
 import Manager.IDownload;
 import Manager.ThreadManager;
-import org.junit.jupiter.api.*;
+import org.junit.jupiter.api.AfterAll;
+import org.junit.jupiter.api.BeforeAll;
+import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
@@ -15,28 +17,28 @@ class ThreadManagerTest {
 
     @BeforeAll
     static void setUp() throws Exception {
-        ThreadManager.configure(Runtime.getRuntime().availableProcessors(),Runtime.getRuntime().availableProcessors()/2);
+        ThreadManager.configure(Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors() / 2);
         threadManager = ThreadManager.getInstance();
+    }
+
+    @AfterAll
+    static void finalizeThreadManager() {
+        assertTimeout(Duration.ofSeconds(1), () -> threadManager.finalizeThreadManager());
     }
 
     @Test
     void configure() {
-        assertThrows(Exception.class, () -> ThreadManager.configure(0,0));
-        assertThrows(Exception.class, () -> ThreadManager.configure(0,1));
-        assertThrows(Exception.class, () -> ThreadManager.configure(1,0));
-        assertThrows(Exception.class, () -> ThreadManager.configure(-1,1));
-        assertThrows(Exception.class, () -> ThreadManager.configure(1,-1));
-        assertThrows(Exception.class, () -> ThreadManager.configure(2,4));
+        assertThrows(Exception.class, () -> ThreadManager.configure(0, 0));
+        assertThrows(Exception.class, () -> ThreadManager.configure(0, 1));
+        assertThrows(Exception.class, () -> ThreadManager.configure(1, 0));
+        assertThrows(Exception.class, () -> ThreadManager.configure(-1, 1));
+        assertThrows(Exception.class, () -> ThreadManager.configure(1, -1));
+        assertThrows(Exception.class, () -> ThreadManager.configure(2, 4));
     }
 
     @Test
     void getInstance() {
         assertSame(threadManager, ThreadManager.getInstance());
-    }
-
-    @AfterAll
-    static void finalizeThreadManager() {
-        assertTimeout(Duration.ofSeconds(1),() -> threadManager.finalizeThreadManager());
     }
 
     @Test

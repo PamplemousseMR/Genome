@@ -12,7 +12,7 @@ import java.util.Date;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public final class RawOrganism {
+public final class OrganismParser {
 
     /**
      * Key to get replicons
@@ -53,47 +53,47 @@ public final class RawOrganism {
     /**
      * Regex used to get only replicon which contain NC_
      */
-    private static final String s_REGEX = "NC_[^(/|;| |\n)]*";
-
+    private static final String s_REGEX = "NC_[^(/|;| |\n|:)]*";
+    /**
+     * List of replicon's ID of this organism
+     */
+    private final ArrayList<String> m_replicons;
     /**
      * ID of this organism
      */
-    private long m_id;
+    private final long m_id;
     /**
      * Name of this organism
      */
-    private String m_name;
+    private final String m_name;
     /**
      * Kingdom of this organism
      */
-    private String m_kingdom;
+    private final String m_kingdom;
     /**
      * Group of this organism
      */
-    private String m_group;
+    private final String m_group;
     /**
      * Subgroup of this organism
      */
-    private String m_subGroup;
+    private final String m_subGroup;
+    /**
+     * Version of this organism
+     */
+    private final long m_version;
     /**
      * Modification date of this organism
      */
     private Date m_modificationDate;
-    /**
-     * Version of this organism
-     */
-    private long m_version;
-    /**
-     * List of replicon's ID of this organism
-     */
-    private ArrayList<String> m_replicons;
 
     /**
      * Class constructor
+     *
      * @param obj, the json object to parse
      * @throws JSONException, if an error occurred
      */
-    public RawOrganism(JSONObject obj) throws JSONException{
+    public OrganismParser(JSONObject obj) throws JSONException {
         try {
             m_id = obj.getLong(s_ID);
             m_name = obj.getString(s_NAME);
@@ -101,39 +101,49 @@ public final class RawOrganism {
             m_group = obj.getString(s_GROUP);
             m_subGroup = obj.getString(s_SUBGROUP);
             m_version = obj.getLong(s_VERSION);
-        }catch (JSONException e){
-            Logs.exception(e);
+        } catch (JSONException e) {
+            final String message = "Unable to get basic data : " + obj;
+            Logs.warning(message);
+            Logs.exception(new JSONException(message, e));
             throw e;
         }
 
-        // Replicons formatting
-        m_replicons = new ArrayList<>();
-        if (obj.has(s_REPLICON)) {
-            Pattern pattern = Pattern.compile(s_REGEX, Pattern.CASE_INSENSITIVE);
-            Matcher m = pattern.matcher(obj.getString(s_REPLICON));
-            while (m.find()) {
-                m_replicons.add(m.group(0));
-            }
-        }
-
-        // Dates formatting
-        DateTimeFormatter format = DateTimeFormatter.ISO_DATE_TIME;
         LocalDateTime dateTime = null;
-        if (obj.has(s_MODIFICATION_DATE)) {
-            dateTime = LocalDateTime.parse(obj.getString(s_MODIFICATION_DATE), format);
-        } else if (obj.has(s_RELEASE_DATE)) {
-            dateTime = LocalDateTime.parse(obj.getString(s_RELEASE_DATE), format);
+        try {
+            // Replicons formatting
+            m_replicons = new ArrayList<>();
+            if (obj.has(s_REPLICON)) {
+                final Pattern pattern = Pattern.compile(s_REGEX, Pattern.CASE_INSENSITIVE);
+                final Matcher m = pattern.matcher(obj.getString(s_REPLICON));
+                while (m.find()) {
+                    m_replicons.add(m.group(0));
+                }
+            }
+
+            // Dates formatting
+            final DateTimeFormatter format = DateTimeFormatter.ISO_DATE_TIME;
+            if (obj.has(s_MODIFICATION_DATE)) {
+                dateTime = LocalDateTime.parse(obj.getString(s_MODIFICATION_DATE), format);
+            } else if (obj.has(s_RELEASE_DATE)) {
+                dateTime = LocalDateTime.parse(obj.getString(s_RELEASE_DATE), format);
+            }
+        } catch (JSONException e) {
+            final String message = "Unable to get specifics data : " + obj;
+            Logs.warning(message);
+            Logs.exception(new JSONException(message, e));
+            throw e;
         }
 
-        if(dateTime != null) {
-            Calendar cal = Calendar.getInstance();
-            cal.set(dateTime.getYear(),dateTime.getMonthValue() - 1, dateTime.getDayOfMonth(), 0, 0, 0);
+        if (dateTime != null) {
+            final Calendar cal = Calendar.getInstance();
+            cal.set(dateTime.getYear(), dateTime.getMonthValue() - 1, dateTime.getDayOfMonth(), 0, 0, 0);
             m_modificationDate = cal.getTime();
         }
     }
 
     /**
      * Get the id
+     *
      * @return the id
      */
     public long getId() {
@@ -142,6 +152,7 @@ public final class RawOrganism {
 
     /**
      * Get the name
+     *
      * @return the name
      */
     public String getName() {
@@ -150,6 +161,7 @@ public final class RawOrganism {
 
     /**
      * Get the kingdom name
+     *
      * @return the kingdom name
      */
     public String getKingdom() {
@@ -158,6 +170,7 @@ public final class RawOrganism {
 
     /**
      * Get the group name
+     *
      * @return the group name
      */
     public String getGroup() {
@@ -166,6 +179,7 @@ public final class RawOrganism {
 
     /**
      * Get the subGroup name
+     *
      * @return the subGroup name
      */
     public String getSubGroup() {
@@ -174,6 +188,7 @@ public final class RawOrganism {
 
     /**
      * Get the replicon's id list
+     *
      * @return the replicon's id list
      */
     public ArrayList<String> getReplicons() {
@@ -182,6 +197,7 @@ public final class RawOrganism {
 
     /**
      * Get the modification date
+     *
      * @return the modification date
      */
     public Date getModificationDate() {
@@ -190,6 +206,7 @@ public final class RawOrganism {
 
     /**
      * Get the version of the organism
+     *
      * @return the version's number
      */
     public long getVersion() {

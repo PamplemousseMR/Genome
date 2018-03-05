@@ -1,14 +1,6 @@
 package Manager;
 
-public abstract class ITask implements Runnable{
-
-    /**
-     * ITask's type list
-     */
-    protected enum TaskType{
-        DOWNLOAD,
-        COMPUTING
-    }
+public abstract class ITask implements Runnable {
 
     /**
      * ITask's name
@@ -21,27 +13,30 @@ public abstract class ITask implements Runnable{
 
     /**
      * Class constructor
+     *
      * @param _name, the name
      * @param _type, the type
      */
-    ITask(String _name, TaskType _type){
+    ITask(String _name, TaskType _type) {
         m_name = _name;
         m_type = _type;
     }
 
     /**
      * Get the name of this ITask
+     *
      * @return the name
      */
-    public String getName(){
+    public String getName() {
         return m_name;
     }
 
     /**
      * Get the type of this ITask
+     *
      * @return the type
      */
-    public TaskType getTaskType(){
+    public TaskType getTaskType() {
         return m_type;
     }
 
@@ -50,5 +45,13 @@ public abstract class ITask implements Runnable{
      */
     @Override
     public abstract void run();
+
+    /**
+     * ITask's type list
+     */
+    protected enum TaskType {
+        DOWNLOAD,
+        COMPUTING
+    }
 
 }

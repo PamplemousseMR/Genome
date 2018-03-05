@@ -8,17 +8,6 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class StateTest {
 
-    private final class IStateTest extends IDataBase{
-        IStateTest(){
-            super("TEST");
-        }
-
-        @Override
-        protected void finish() throws InvalidStateException {
-            super.finish();
-        }
-    }
-
     @org.junit.jupiter.api.Test
     void stateTest() throws InvalidStateException {
 
@@ -47,6 +36,17 @@ class StateTest {
         assertThrows(InvalidStateException.class, db::start);
         assertThrows(InvalidStateException.class, db::stop);
         assertThrows(InvalidStateException.class, db::finish);
+    }
+
+    private final class IStateTest extends IDataBase {
+        IStateTest() {
+            super("TEST");
+        }
+
+        @Override
+        protected void finish() throws InvalidStateException {
+            super.finish();
+        }
     }
 
 }
