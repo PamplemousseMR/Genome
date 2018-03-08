@@ -3,37 +3,16 @@ package GUI;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-import javax.swing.event.MenuEvent;
-import javax.swing.event.MenuListener;
 
-public class CloseListener implements ActionListener, MenuListener {
+public class CloseListener implements ActionListener
+{
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		//super.dispose();
+	public void actionPerformed(ActionEvent e) 
+	{
 		System.exit(0);
 	}
 
-	@Override
-	public void menuSelected(MenuEvent e) {
-		System.exit(0);
-		
-	}
-
-	@Override
-	public void menuDeselected(MenuEvent e) {
-		System.exit(0);
-		
-	}
-
-	@Override
-	public void menuCanceled(MenuEvent e) {
-		System.exit(0);
-		
-	}
 
 }
 
-/*frame.setExtendedState(JFrame.MAXIMIZED_BOTH); 
-frame.setUndecorated(true);
-frame.setVisible(true);*/

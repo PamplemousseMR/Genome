@@ -1,30 +1,17 @@
 package GUI;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.FlowLayout;
-import java.awt.Font;
-import java.awt.Insets;
-import java.awt.Point;
-import java.awt.Toolkit;
+import Utils.Logs;
+
+import javax.swing.*;
+import javax.swing.border.Border;
+import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
-import javax.swing.JSplitPane;
-import javax.swing.border.Border;
-
-import Utils.Logs;
 
 public class MainFrame extends ResizibleFrame implements ActionListener
 {
 	private static final long serialVersionUID = -6768656055410219611L;
-	private static final String s_TITLE="BIOINFORMATIQUE ILC. Realise par Adele M. -- Arthur D. --  Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.";
+	private static final String s_TITLE="BioInformatique ILC";//. Realise par Adele M. -- Arthur D. --  Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H."
 	private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
 	private static Border s_basicEmptyBorder=BorderFactory.createEmptyBorder(0, 20, 20, 20);
 	private static Insets s_insets= new Insets(1,1,1,1);
@@ -57,6 +44,8 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	{
 		super(m_initialDimension,m_initialLocation,s_TITLE);
 		//m_viewContainer=(JPanel)this.getContentPane(); 
+
+
 		initFrame();
 		initComponents();
 		initLayout();
@@ -70,12 +59,28 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	 */
 	private void initFrame()
 	{
-		this.setUndecorated(true); // Vincent : Vraiment pas fan, ça vire aussi les fonctionnalités de resize etç 
+		this.initIcone();
+		this.setUndecorated(true); 
 		this.setVisible(true);
 		this.setSize((s_DIM.width/2),(s_DIM.height/2));
 		this.setLocationRelativeTo(null);
 		this.setResizable(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+	}
+
+	/**
+	 * Initialize the icon of the app
+	 */
+	private void initIcone() 
+	{
+		try 
+		{
+			this.setIconImage(Toolkit.getDefaultToolkit().getImage((getClass().getResource("Ressources/logo.bioinfo.png"))));
+		}
+		catch (Exception e)
+		{
+			Logs.exception(e);
+		}
 	}
 
 	/**
@@ -97,10 +102,10 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_titleLabel2 = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
 		m_launchDL= new JButton("Demarrer le telechargement");
 		m_jpb = new JProgressBar();
-		
+
 		m_exitB = new JButton(" X ");
-		m_fullScreenB= new JButton("[¤]"); //[¤]
-		m_reduceB = new JButton(" – ");
+		m_fullScreenB= new JButton("[=]"); //[-]
+		m_reduceB = new JButton(" - ");
 	}
 
 	/**
@@ -123,7 +128,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		this.add(m_north,BorderLayout.NORTH);
 		this.add(m_south,BorderLayout.SOUTH);
 		this.add(m_center,BorderLayout.CENTER);
-		
+
 		// Menu
 		m_menuPanel.add(m_reduceB);
 		m_menuPanel.add(m_fullScreenB);
@@ -142,10 +147,10 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 
 		// South panel
 		m_south.add(m_jpb,BorderLayout.CENTER);
-		
-		
-		
-		
+
+
+
+
 	}
 
 	/**
@@ -166,7 +171,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 
 		// SplitPane
 		m_splitPanel.setDividerLocation(0.5);
-		
+
 		// Panels margin (top, left, bottom, right)
 		m_east.setBorder(s_basicEmptyBorder);
 		m_west.setBorder(s_basicEmptyBorder);
@@ -207,10 +212,10 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_exitB.setFont(font);
 		m_fullScreenB.setFont(font);
 		m_reduceB.setFont(font);
-		
+
 		//could be useful
 		//UIManager.put("Button.select", Color.WHITE);
-		
+
 	}
 
 	/**
@@ -219,15 +224,46 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	 */
 	private void addListener()
 	{
+		//for resize and fullscreen by double-click
 		m_menuPanel.addMouseListener(this);
 		m_menuPanel.addMouseMotionListener(this);
 
 		m_launchDL.addActionListener(new CloseListener()); 
 		m_exitB.addActionListener(new CloseListener()); 
-		m_launchDL.addActionListener(this);
+
+		m_reduceB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				reduceActionPerformed(e) ;            
+			}});
+		m_fullScreenB.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) 
+			{
+				fullScreenActionPerformed(e) ;            
+			}});
 
 	}
 
+
+
+	protected void reduceActionPerformed(ActionEvent e) 
+	{
+		this.setState(Frame.ICONIFIED);
+	}
+	protected void fullScreenActionPerformed(ActionEvent e)
+	{
+		if(this.getExtendedState()== MAXIMIZED_BOTH)
+		{
+			this.setExtendedState(JFrame.NORMAL); 
+		}
+		else
+		{
+			this.setExtendedState(JFrame.MAXIMIZED_BOTH);
+		}
+		//frame.setUndecorated(true);
+		//frame.setVisible(true);*/
+
+	}
 	/**
 	 * @return the initialLocation
 	 */
@@ -237,7 +273,6 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 
 	/**
 
-
 	/**
 	 * @return the s_initialDimension
 	 */
@@ -245,13 +280,14 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		return m_initialDimension;
 	}
 
-
-
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
 
 	}
+
+
+
 
 
 
