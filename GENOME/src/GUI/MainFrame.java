@@ -3,6 +3,7 @@ package GUI;
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
+import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.Point;
 import java.awt.Toolkit;
@@ -36,7 +37,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	private static int s_defaultFrameHeight = 300; 
 	private static Point m_initialLocation = new Point((int)toolkit.getScreenSize().getWidth()/2 - s_defaultFrameWidth/2, (int)toolkit.getScreenSize().getHeight()/2 - s_defaultFrameHeight/2);
 	private static Dimension m_initialDimension = new Dimension(s_defaultFrameWidth, s_defaultFrameHeight);
-    private JPanel m_menuPanel;
+	private JPanel m_menuPanel;
 	private JSplitPane m_splitPanel;
 	private JPanel m_north;
 	private JPanel m_center;
@@ -62,17 +63,12 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	{
 		super(m_initialDimension,m_initialLocation,s_TITLE);
 		//m_viewContainer=(JPanel)this.getContentPane(); 
-		m_menuPanel=new JPanel();     
-		m_menuPanel.setPreferredSize(new Dimension(s_defaultFrameWidth, 25));      //
-        m_menuPanel.setBackground(s_LIGHTGRAY);      
-        
-        this.add( m_menuPanel, BorderLayout.NORTH); 
 		initFrame();
 		initComponents();
 		initLayout();
 		addComponents();
 		swagComponents();
-		addListener();
+		addListener();   
 	}
 
 	/**
@@ -94,6 +90,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	private void initComponents()
 	{
 		//Creation of one panel per area
+		m_menuPanel=new JPanel(); 
 		m_north= new JPanel();
 		m_center= new JPanel();
 		m_south= new JPanel();
@@ -109,7 +106,11 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_menuBar = new JMenuBar();
 		m_exit = new JMenu("X");
 		m_fullScreen = new JMenu("[¤]");
-		m_reduce = new JMenu("–");		
+		m_reduce = new JMenu("–");	
+		
+		m_exitB = new JButton("X");
+		m_fullScreenB= new JButton("[¤]");
+		m_reduceB = new JButton("–");
 	}
 
 	/**
@@ -118,6 +119,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	private void initLayout()
 	{
 		this.setLayout(new BorderLayout());
+		m_menuPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 		m_center.setLayout(new BorderLayout());
 		m_north.setLayout(new BorderLayout());
 		m_south.setLayout(new BorderLayout());
@@ -131,28 +133,33 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		this.add(m_north,BorderLayout.NORTH);
 		this.add(m_south,BorderLayout.SOUTH);
 		this.add(m_center,BorderLayout.CENTER);
-		//this.add(m_east,BorderLayout.EAST);
-		//this.add(m_west,BorderLayout.WEST);
 
 		// Menu Bar
 		m_menuBar.add(Box.createHorizontalGlue());
 		m_menuBar.add(m_reduce);
 		m_menuBar.add(m_fullScreen);
 		m_menuBar.add(m_exit);
-		this.setJMenuBar(m_menuBar);
-		
+		//this.setJMenuBar(m_menuBar);
+
 		// Center Panel
 		m_center.add(m_splitPanel,BorderLayout.CENTER);
-		
+
 		// North panel
-		m_north.add(m_titleLabel,BorderLayout.NORTH);
-		m_north.add(m_titleLabel2,BorderLayout.CENTER);
+		m_north.add( m_menuPanel, BorderLayout.NORTH); 
+		m_north.add(m_titleLabel,BorderLayout.CENTER);
+		m_north.add(m_titleLabel2,BorderLayout.SOUTH);
 
 		// West panel
 		m_east.add(m_launchDL,BorderLayout.NORTH);
 
 		// South panel
 		m_south.add(m_jpb,BorderLayout.CENTER);
+		
+		m_menuPanel.add(m_reduceB);
+		m_menuPanel.add(m_fullScreenB);
+		m_menuPanel.add(m_exitB);
+		
+		
 	}
 
 	/**
@@ -162,7 +169,8 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	{
 		//to modify window swag,check the LookAndFeel thing
 		this.getRootPane().setBorder(BorderFactory.createEmptyBorder(0,0,0,0));
-		
+
+		m_menuPanel.setBackground(s_DARKGRAY); 
 		// Panels backgrounds
 		m_north.setBackground(s_DARKGRAY);     // Dark gray
 		m_south.setBackground(s_LIGHTGRAY);     // Gray
@@ -172,8 +180,8 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 
 		// SplitPane
 		m_splitPanel.setDividerLocation(0.5);
+		
 		// Panels margin (top, left, bottom, right)
-		m_north.setBorder(s_basicEmptyBorder);
 		m_east.setBorder(s_basicEmptyBorder);
 		m_west.setBorder(s_basicEmptyBorder);
 
@@ -182,6 +190,8 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_titleLabel2.setFont(new Font("Helvetica", Font.PLAIN, 18));
 		m_titleLabel.setForeground(Color.WHITE);
 		m_titleLabel2.setForeground(Color.LIGHT_GRAY);
+		m_titleLabel.setBorder(s_basicEmptyBorder);
+		m_titleLabel2.setBorder(BorderFactory.createEmptyBorder(0,25,5,5));
 
 		// Progress bar
 		m_jpb.setStringPainted(true);
@@ -195,8 +205,10 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_launchDL.setBorderPainted(false);
 
 		// Menu Bar
+		m_menuPanel.setPreferredSize(new Dimension(s_defaultFrameWidth, 35)); 
+
 		m_menuBar.setBackground(s_LIGHTGRAY);
-		Font font = new Font("Helvetica", Font.BOLD, 18);
+		Font font = new Font("Helvetica", Font.BOLD, 14);
 		m_reduce.setBackground(s_LIGHTGRAY);
 		m_fullScreen.setBackground(s_LIGHTGRAY);
 		m_exit.setForeground(Color.WHITE);
@@ -206,8 +218,19 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_reduce.setFont(font);
 		m_fullScreen.setFont(font);
 		
-		m_menuBar.setPreferredSize(new Dimension(100,25));
-		m_menuBar.setBorderPainted(false);
+		//m_exitB.setIcon(defaultIcon);
+		m_exitB.setBackground(s_DARKGRAY);
+		m_fullScreenB.setBackground(s_DARKGRAY);
+		m_reduceB.setBackground(s_DARKGRAY);
+		m_exitB.setForeground(Color.WHITE);
+		m_fullScreenB.setForeground(Color.WHITE);
+		m_reduceB.setForeground(Color.WHITE);
+		m_exitB.setFont(font);
+		m_fullScreenB.setFont(font);
+		m_reduceB.setFont(font);
+		
+		
+
 
 		//ugly atm, but just to know it does exist and we can modify it easily
 		UIManager.put("Button.select", Color.WHITE);
@@ -220,14 +243,13 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	private void addListener()
 	{
 		m_menuPanel.addMouseListener(this);
-        m_menuPanel.addMouseMotionListener(this);
-        
+		m_menuPanel.addMouseMotionListener(this);
+
 		m_launchDL.addActionListener(new CloseListener()); 
 		m_exit.addActionListener(new CloseListener()); 
-		
+		m_exitB.addActionListener(new CloseListener()); 
 		m_launchDL.addActionListener(this);
-				//new CloseListener()); 
-		
+
 	}
 
 	/**
@@ -252,7 +274,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		// TODO Auto-generated method stub
-		
+
 	}
 
 
