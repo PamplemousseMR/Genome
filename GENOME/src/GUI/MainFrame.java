@@ -5,21 +5,18 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
+import java.awt.Insets;
 import java.awt.Point;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import javax.swing.BorderFactory;
-import javax.swing.Box;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JMenu;
-import javax.swing.JMenuBar;
 import javax.swing.JPanel;
 import javax.swing.JProgressBar;
 import javax.swing.JSplitPane;
-import javax.swing.UIManager;
 import javax.swing.border.Border;
 
 import Utils.Logs;
@@ -29,7 +26,8 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	private static final long serialVersionUID = -6768656055410219611L;
 	private static final String s_TITLE="BIOINFORMATIQUE ILC. Realise par Adele M. -- Arthur D. --  Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.";
 	private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
-	private static Border s_basicEmptyBorder=BorderFactory.createEmptyBorder(20, 20, 20, 20);
+	private static Border s_basicEmptyBorder=BorderFactory.createEmptyBorder(0, 20, 20, 20);
+	private static Insets s_insets= new Insets(1,1,1,1);
 	private static final Color s_DARKGRAY =new Color(32, 34, 37);
 	private static final Color s_LIGHTGRAY= new Color(54, 57, 62);
 	private static Toolkit toolkit =  Toolkit.getDefaultToolkit ();
@@ -48,10 +46,6 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 	private JLabel m_titleLabel;
 	private JLabel m_titleLabel2;
 	private JProgressBar m_jpb; 
-	private JMenuBar m_menuBar;
-	private JMenu m_exit;
-	private JMenu m_fullScreen;
-	private JMenu m_reduce;
 	private JButton m_exitB;
 	private JButton m_fullScreenB;
 	private JButton m_reduceB;
@@ -103,14 +97,10 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_titleLabel2 = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
 		m_launchDL= new JButton("Demarrer le telechargement");
 		m_jpb = new JProgressBar();
-		m_menuBar = new JMenuBar();
-		m_exit = new JMenu("X");
-		m_fullScreen = new JMenu("[¤]");
-		m_reduce = new JMenu("–");	
 		
-		m_exitB = new JButton("X");
-		m_fullScreenB= new JButton("[¤]");
-		m_reduceB = new JButton("–");
+		m_exitB = new JButton(" X ");
+		m_fullScreenB= new JButton("[¤]"); //[¤]
+		m_reduceB = new JButton(" – ");
 	}
 
 	/**
@@ -133,13 +123,11 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		this.add(m_north,BorderLayout.NORTH);
 		this.add(m_south,BorderLayout.SOUTH);
 		this.add(m_center,BorderLayout.CENTER);
-
-		// Menu Bar
-		m_menuBar.add(Box.createHorizontalGlue());
-		m_menuBar.add(m_reduce);
-		m_menuBar.add(m_fullScreen);
-		m_menuBar.add(m_exit);
-		//this.setJMenuBar(m_menuBar);
+		
+		// Menu
+		m_menuPanel.add(m_reduceB);
+		m_menuPanel.add(m_fullScreenB);
+		m_menuPanel.add(m_exitB);
 
 		// Center Panel
 		m_center.add(m_splitPanel,BorderLayout.CENTER);
@@ -155,9 +143,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		// South panel
 		m_south.add(m_jpb,BorderLayout.CENTER);
 		
-		m_menuPanel.add(m_reduceB);
-		m_menuPanel.add(m_fullScreenB);
-		m_menuPanel.add(m_exitB);
+		
 		
 		
 	}
@@ -207,18 +193,11 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		// Menu Bar
 		m_menuPanel.setPreferredSize(new Dimension(s_defaultFrameWidth, 35)); 
 
-		m_menuBar.setBackground(s_LIGHTGRAY);
-		Font font = new Font("Helvetica", Font.BOLD, 14);
-		m_reduce.setBackground(s_LIGHTGRAY);
-		m_fullScreen.setBackground(s_LIGHTGRAY);
-		m_exit.setForeground(Color.WHITE);
-		m_reduce.setForeground(Color.WHITE);
-		m_fullScreen.setForeground(Color.WHITE);
-		m_exit.setFont(font);
-		m_reduce.setFont(font);
-		m_fullScreen.setFont(font);
-		
-		//m_exitB.setIcon(defaultIcon);
+
+		Font font = new Font("Helvetica", Font.BOLD, 16);
+		m_exitB.setMargin(s_insets);
+		m_reduceB.setMargin(s_insets);
+		m_fullScreenB.setMargin(s_insets);
 		m_exitB.setBackground(s_DARKGRAY);
 		m_fullScreenB.setBackground(s_DARKGRAY);
 		m_reduceB.setBackground(s_DARKGRAY);
@@ -229,11 +208,9 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_fullScreenB.setFont(font);
 		m_reduceB.setFont(font);
 		
+		//could be useful
+		//UIManager.put("Button.select", Color.WHITE);
 		
-
-
-		//ugly atm, but just to know it does exist and we can modify it easily
-		UIManager.put("Button.select", Color.WHITE);
 	}
 
 	/**
@@ -246,7 +223,6 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_menuPanel.addMouseMotionListener(this);
 
 		m_launchDL.addActionListener(new CloseListener()); 
-		m_exit.addActionListener(new CloseListener()); 
 		m_exitB.addActionListener(new CloseListener()); 
 		m_launchDL.addActionListener(this);
 
