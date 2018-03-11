@@ -55,33 +55,37 @@ public final class OrganismParser {
      */
     private static final String s_REGEX = "NC_[^(/|;| |\n|:)]*";
     /**
+     * Object to parse
+     */
+    private final JSONObject m_object;
+    /**
      * List of replicon's ID of this organism
      */
     private final ArrayList<String> m_replicons;
     /**
      * ID of this organism
      */
-    private final long m_id;
+    private long m_id;
     /**
      * Name of this organism
      */
-    private final String m_name;
+    private String m_name;
     /**
      * Kingdom of this organism
      */
-    private final String m_kingdom;
+    private String m_kingdom;
     /**
      * Group of this organism
      */
-    private final String m_group;
+    private String m_group;
     /**
      * Subgroup of this organism
      */
-    private final String m_subGroup;
+    private String m_subGroup;
     /**
      * Version of this organism
      */
-    private final long m_version;
+    private long m_version;
     /**
      * Modification date of this organism
      */
@@ -90,19 +94,31 @@ public final class OrganismParser {
     /**
      * Class constructor
      *
-     * @param obj, the json object to parse
+     * @param _obj, the json object to parse
      * @throws JSONException, if an error occurred
      */
-    public OrganismParser(JSONObject obj) throws JSONException {
+    public OrganismParser(JSONObject _obj) {
+        m_object = _obj;
+        m_id = -1;
+        m_name = null;
+        m_kingdom = null;
+        m_group = null;
+        m_subGroup = null;
+        m_version = -1;
+        m_modificationDate = new Date();
+        m_replicons = new ArrayList<>();
+    }
+
+    public void parse() throws JSONException {
         try {
-            m_id = obj.getLong(s_ID);
-            m_name = obj.getString(s_NAME);
-            m_kingdom = obj.getString(s_KINGDOM);
-            m_group = obj.getString(s_GROUP);
-            m_subGroup = obj.getString(s_SUBGROUP);
-            m_version = obj.getLong(s_VERSION);
+            m_id = m_object.getLong(s_ID);
+            m_name = m_object.getString(s_NAME);
+            m_kingdom = m_object.getString(s_KINGDOM);
+            m_group = m_object.getString(s_GROUP);
+            m_subGroup = m_object.getString(s_SUBGROUP);
+            m_version = m_object.getLong(s_VERSION);
         } catch (JSONException e) {
-            final String message = "Unable to get basic data : " + obj;
+            final String message = "Unable to get basic data : " + m_object;
             Logs.warning(message);
             Logs.exception(new JSONException(message, e));
             throw e;
@@ -111,10 +127,9 @@ public final class OrganismParser {
         LocalDateTime dateTime = null;
         try {
             // Replicons formatting
-            m_replicons = new ArrayList<>();
-            if (obj.has(s_REPLICON)) {
+            if (m_object.has(s_REPLICON)) {
                 final Pattern pattern = Pattern.compile(s_REGEX, Pattern.CASE_INSENSITIVE);
-                final Matcher m = pattern.matcher(obj.getString(s_REPLICON));
+                final Matcher m = pattern.matcher(m_object.getString(s_REPLICON));
                 while (m.find()) {
                     m_replicons.add(m.group(0));
                 }
@@ -122,13 +137,13 @@ public final class OrganismParser {
 
             // Dates formatting
             final DateTimeFormatter format = DateTimeFormatter.ISO_DATE_TIME;
-            if (obj.has(s_MODIFICATION_DATE)) {
-                dateTime = LocalDateTime.parse(obj.getString(s_MODIFICATION_DATE), format);
-            } else if (obj.has(s_RELEASE_DATE)) {
-                dateTime = LocalDateTime.parse(obj.getString(s_RELEASE_DATE), format);
+            if (m_object.has(s_MODIFICATION_DATE)) {
+                dateTime = LocalDateTime.parse(m_object.getString(s_MODIFICATION_DATE), format);
+            } else if (m_object.has(s_RELEASE_DATE)) {
+                dateTime = LocalDateTime.parse(m_object.getString(s_RELEASE_DATE), format);
             }
         } catch (JSONException e) {
-            final String message = "Unable to get specifics data : " + obj;
+            final String message = "Unable to get specifics data : " + m_object;
             Logs.warning(message);
             Logs.exception(new JSONException(message, e));
             throw e;
