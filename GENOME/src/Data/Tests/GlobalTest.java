@@ -1,27 +1,14 @@
 package Data.Tests;
 
 import Data.*;
-import Download.OrganismParser;
 import Exception.AddException;
 import Exception.InvalidStateException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.*;
 
 class GlobalTest {
-
-    private final static JSONObject s_JSON_ORG = new JSONObject("{\n" +
-            "\t\"id\": 152753,\n" +
-            "\t\"organism\": \"'Brassica napus' phytoplasma\",\n" +
-            "\t\"kingdom\": \"Bacteria\",\n" +
-            "\t\"group\": \"Terrabacteria group\",\n" +
-            "\t\"subgroup\": \"Tenericutes\",\n" +
-            "\t\"replicons\": \"pPABN1:NC_016583.1/HQ637382.1\",\n" +
-            "\t\"modify_date\": \"2014-12-18T00:00:00Z\",\n" +
-            "\t\"_version_\": 1592820474201505800\n" +
-            "}");
 
     @org.junit.jupiter.api.Test
     void dataBaseTest() throws AddException, InvalidStateException {
@@ -87,19 +74,19 @@ class GlobalTest {
         for (Kingdom k : dataBase.getKingdoms()) {
             for (Group g : k.getGroups()) {
                 for (SubGroup s : g.getSubGroups()) {
-                    Organism o1 = new Organism(new OrganismParser(s_JSON_ORG));
+                    Organism o1 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
                     assertEquals(false, s.addOrganism(o1));
                     s.start();
                     assertEquals(true, s.addOrganism(o1));
                     list.add(o1);
 
-                    Organism o2 = new Organism(new OrganismParser(s_JSON_ORG));
+                    Organism o2 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
                     assertEquals(true, s.addOrganism(o2));
                     assertThrows(Exception.class, () -> s.addOrganism(o2));
                     s.stop();
                     list.add(o2);
 
-                    Organism o3 = new Organism(new OrganismParser(s_JSON_ORG));
+                    Organism o3 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
                     assertEquals(false, s.addOrganism(o3));
                     assertEquals(IDataBase.State.STOPPED, s.getState());
                 }
@@ -163,7 +150,7 @@ class GlobalTest {
         s.start();
         g.addSubGroup(s);
 
-        Organism o = new Organism(new OrganismParser(s_JSON_ORG));
+        Organism o = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
         s.addOrganism(o);
 
         assertEquals("KINGDOM", o.getKingdomName());

@@ -1,6 +1,5 @@
 package Data;
 
-import Download.OrganismParser;
 import Exception.AddException;
 import Exception.InvalidStateException;
 
@@ -28,12 +27,14 @@ public final class Organism extends IDataBase {
     /**
      * Class constructor
      *
-     * @param _organismParser, the Organism where get data
+     * @param _name    the name of the organism
+     * @param _id      the id of the organism
+     * @param _version the version of the organism
      */
-    public Organism(OrganismParser _organismParser) {
-        super(_organismParser.getName());
-        m_id = _organismParser.getId();
-        m_version = _organismParser.getVersion();
+    public Organism(String _name, long _id, long _version) {
+        super(_name);
+        m_id = _id;
+        m_version = _version;
         m_replicons = new ArrayList<>();
         m_parent = null;
     }

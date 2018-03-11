@@ -1,10 +1,8 @@
 package Data.Tests;
 
 import Data.*;
-import Download.OrganismParser;
 import Exception.AddException;
 import Exception.InvalidStateException;
-import org.json.JSONObject;
 import org.junit.jupiter.api.Test;
 
 import java.util.EnumMap;
@@ -12,17 +10,6 @@ import java.util.EnumMap;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StatisticsTest {
-
-    private final static JSONObject s_JSON_ORG = new JSONObject("{\n" +
-            "\t\"id\": 152753,\n" +
-            "\t\"organism\": \"'Brassica napus' phytoplasma\",\n" +
-            "\t\"kingdom\": \"Bacteria\",\n" +
-            "\t\"group\": \"Terrabacteria group\",\n" +
-            "\t\"subgroup\": \"Tenericutes\",\n" +
-            "\t\"replicons\": \"pPABN1:NC_016583.1/HQ637382.1\",\n" +
-            "\t\"modify_date\": \"2014-12-18T00:00:00Z\",\n" +
-            "\t\"_version_\": 1592820474201505800\n" +
-            "}");
 
     private static void printTriTable(Statistics _stat) {
         System.out.print("TRI\tPhase0\tFreq0\tPhase1\tFreq1\tPhase2\tFreq2\t");
@@ -60,7 +47,7 @@ class StatisticsTest {
                     su.start();
                     gr.addSubGroup(su);
                     for (int o = 0; o < nb; ++o) {
-                        Organism or = new Organism(new OrganismParser(s_JSON_ORG));
+                        Organism or = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
                         or.start();
                         su.addOrganism(or);
                         for (int r = 0; r < nbrep; ++r) {

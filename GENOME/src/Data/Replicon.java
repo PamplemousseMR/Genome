@@ -3,7 +3,6 @@ package Data;
 import Exception.AddException;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public final class Replicon extends Statistics {
 
@@ -11,10 +10,6 @@ public final class Replicon extends Statistics {
      * The name
      */
     private final String m_name;
-    /**
-     * Last modification's date
-     */
-    private final Date m_modificationDate;
     /**
      * Array of all the sequences of this Replicon
      */
@@ -33,18 +28,8 @@ public final class Replicon extends Statistics {
     public Replicon(Type _type, String _name) {
         super(_type);
         m_name = _name;
-        m_modificationDate = new Date();
         m_sequences = new ArrayList<>();
         m_index = -1;
-    }
-
-    /**
-     * Get the last modification's date
-     *
-     * @return the m_modificationDate
-     */
-    public Date getModificationDate() {
-        return m_modificationDate;
     }
 
     /**
