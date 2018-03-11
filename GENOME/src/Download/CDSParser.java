@@ -37,15 +37,19 @@ public class CDSParser {
     /**
      * Regex used to get interval descriptor
      */
-    private static final String s_INTERVAL_REGEX = " *<?[0-9]+\\.\\.>?[0-9]+( |\\))*";
+    private static final String s_INTERVAL_REGEX = " *<?[0-9]+\\.\\.>?[0-9]+[ )]*";
     /**
      * Regex used to get unique descriptor
      */
-    private static final String s_DESCRIPTOR_REGEX = " *(<|>)?[0-9]+(,| |\\))*";
+    private static final String s_DESCRIPTOR_REGEX = " *[<>]?[0-9]+[, )]*";
     /**
      * Regex used to get number
      */
     private static final String s_NUMBER_REGEX = "[0-9]+";
+    /**
+     * Sequences
+     */
+    private final ArrayList<StringBuilder> m_sequences;
     /**
      * Name
      */
@@ -83,6 +87,7 @@ public class CDSParser {
         m_valid = 0;
         m_cdsList = new ArrayList<>();
         m_origin = new StringBuilder();
+        m_sequences = new ArrayList<>();
     }
 
     /**
@@ -152,6 +157,15 @@ public class CDSParser {
     }
 
     /**
+     * Get all sequences computed
+     *
+     * @return the sequences
+     */
+    public ArrayList<StringBuilder> getSequences() {
+        return m_sequences;
+    }
+
+    /**
      * Parse the buffer
      */
     private void parseCDS() {
@@ -164,7 +178,7 @@ public class CDSParser {
             Operator operator = new Container();
             try {
 
-                for (String op : sb.toString().split("\\(|,")) {
+                for (String op : sb.toString().split("[(,]")) {
 
                     Matcher mDescriptor = interval.matcher(op);
                     if (mDescriptor.matches()) {
@@ -244,6 +258,7 @@ public class CDSParser {
                         StopTrinucleotide.valueOf(s.substring(s.length() - 3, s.length()));
                         if (s.codePoints().parallel().filter(c -> c != 'A' && c != 'T' && c != 'C' && c != 'G').count() == 0) {
                             ++m_valid;
+                            m_sequences.add(s);
                         }
                     } catch (IllegalArgumentException e) {
                     }
@@ -291,13 +306,13 @@ public class CDSParser {
             m_parent = _parent;
         }
 
-        public Operator getParent() {
+        protected Operator getParent() {
             return m_parent;
         }
 
-        public abstract void addOperator(Operator _op) throws OperatorException;
+        protected abstract void addOperator(Operator _op) throws OperatorException;
 
-        public abstract StringBuilder compute() throws OperatorException;
+        protected abstract StringBuilder compute() throws OperatorException;
     }
 
     /**
@@ -307,18 +322,18 @@ public class CDSParser {
 
         private Operator m_operator;
 
-        public Container() {
+        private Container() {
             super(null);
             m_operator = null;
         }
 
         @Override
-        public Operator getParent() {
+        protected Operator getParent() {
             return this;
         }
 
         @Override
-        public void addOperator(Operator _op) throws OperatorException {
+        protected void addOperator(Operator _op) throws OperatorException {
             if (m_operator == null) {
                 m_operator = _op;
             } else {
@@ -327,7 +342,7 @@ public class CDSParser {
         }
 
         @Override
-        public StringBuilder compute() throws OperatorException {
+        protected StringBuilder compute() throws OperatorException {
             if (m_operator == null) {
                 throw new OperatorException("Not enough data");
             }
@@ -343,19 +358,19 @@ public class CDSParser {
         private final int m_begin;
         private final int m_end;
 
-        public IntervalOperator(Operator _parent, int _begin, int _end) {
+        private IntervalOperator(Operator _parent, int _begin, int _end) {
             super(_parent);
             m_begin = _begin;
             m_end = _end;
         }
 
         @Override
-        public void addOperator(Operator _op) throws OperatorException {
+        protected void addOperator(Operator _op) throws OperatorException {
             throw new OperatorException("Can't add operator");
         }
 
         @Override
-        public StringBuilder compute() throws OperatorException {
+        protected StringBuilder compute() throws OperatorException {
             // TODO
             try {
                 return new StringBuilder(m_origin.substring(m_begin, m_end));
@@ -375,21 +390,21 @@ public class CDSParser {
 
         private final int m_index;
 
-        public DescriptorOperator(Operator _parent, int _index) {
+        private DescriptorOperator(Operator _parent, int _index) {
             super(_parent);
             m_index = _index;
         }
 
         @Override
-        public void addOperator(Operator _op) throws OperatorException {
+        protected void addOperator(Operator _op) throws OperatorException {
             throw new OperatorException("Can't add operator");
         }
 
         @Override
-        public StringBuilder compute() throws OperatorException {
+        protected StringBuilder compute() throws OperatorException {
             // TODO
             try {
-                return new StringBuilder(m_origin.charAt(m_index));
+                return new StringBuilder("" + m_origin.charAt(m_index));
             } catch (StringIndexOutOfBoundsException e) {
                 final String message = "Bad index : " + m_index;
                 Logs.warning(message);
@@ -406,13 +421,13 @@ public class CDSParser {
 
         private Operator m_operator;
 
-        public ComplementOperator(Operator _parent) {
+        private ComplementOperator(Operator _parent) {
             super(_parent);
             m_operator = null;
         }
 
         @Override
-        public void addOperator(Operator _op) throws OperatorException {
+        protected void addOperator(Operator _op) throws OperatorException {
             if (m_operator == null) {
                 m_operator = _op;
             } else {
@@ -421,7 +436,7 @@ public class CDSParser {
         }
 
         @Override
-        public StringBuilder compute() throws OperatorException {
+        protected StringBuilder compute() throws OperatorException {
             // TODO
             if (m_operator == null) {
                 throw new OperatorException("Not enough data");
@@ -460,18 +475,18 @@ public class CDSParser {
 
         private final ArrayList<Operator> m_operators;
 
-        public JoinOperator(Operator _parent) {
+        private JoinOperator(Operator _parent) {
             super(_parent);
             m_operators = new ArrayList<>();
         }
 
         @Override
-        public void addOperator(Operator _op) {
+        protected void addOperator(Operator _op) {
             m_operators.add(_op);
         }
 
         @Override
-        public StringBuilder compute() throws OperatorException {
+        protected StringBuilder compute() throws OperatorException {
             if (m_operators.size() == 0) {
                 throw new OperatorException("Not enough data");
             }
