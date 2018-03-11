@@ -12,16 +12,19 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class StatisticsTest {
 
     private static void printTriTable(Statistics _stat) {
-        System.out.print("TRI\tPhase0\tFreq0\tPhase1\tFreq1\tPhase2\tFreq2\t");
+        System.out.print("TRI\tPhase0\tFreq0\tPhase1\tFreq1\tPhase2\tFreq2\tPref0\tPref1\tPref2\t");
         for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
             Tuple row = _stat.getTable().get(tri);
             System.out.print("\n" + tri + "\t");
-            System.out.print(row.get(Statistics.StatLong.PHASE0).intValue() + "\t");
+            System.out.print(row.get(Statistics.StatLong.PHASE0) + "\t");
             System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ0)));
-            System.out.print(row.get(Statistics.StatLong.PHASE1).intValue() + "\t");
+            System.out.print(row.get(Statistics.StatLong.PHASE1) + "\t");
             System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ1)));
-            System.out.print(row.get(Statistics.StatLong.PHASE2).intValue() + "\t");
+            System.out.print(row.get(Statistics.StatLong.PHASE2) + "\t");
             System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ2)));
+            System.out.print(row.get(Statistics.StatLong.PREF0) + "\t");
+            System.out.print(row.get(Statistics.StatLong.PREF1) + "\t");
+            System.out.print(row.get(Statistics.StatLong.PREF2) + "\t");
         }
 
         System.out.println("\nTOTAL\t" + _stat.getTotalTrinucleotide() + "\t\t"

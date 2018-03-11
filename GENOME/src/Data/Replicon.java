@@ -62,17 +62,38 @@ public final class Replicon extends Statistics {
     protected void computeStatistic() {
         int idx, length;
         for (StringBuilder sequence : m_sequences) {
-            idx = 0;
+            final Statistics temp = new Statistics(getType());
             length = sequence.length();
+            idx = 0;
             while (length - idx > 5) {
-                super.incrementStat(Trinucleotide.valueOf(sequence.substring(idx, idx + 3)), StatLong.PHASE0);
-                super.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 1, idx + 4)), StatLong.PHASE1);
-                super.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 2, idx + 5)), StatLong.PHASE2);
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx, idx + 3)), StatLong.PHASE0);
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 2, idx + 5)), StatLong.PHASE2);
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 1, idx + 4)), StatLong.PHASE1);
                 idx += 3;
             }
             super.incrementTotal(idx / 3);
+
+            long val0, val1, val2;
+            for (Tuple tuple : temp.getTable().values()) {
+                val0 = tuple.get(Statistics.StatLong.PHASE0);
+                val1 = tuple.get(Statistics.StatLong.PHASE1);
+                val2 = tuple.get(Statistics.StatLong.PHASE2);
+                if (val0 < val1 || val0 < val2)
+                    val0 = 0;
+                if (val1 < val0 || val1 < val2)
+                    val1 = 0;
+                if (val2 < val0 || val2 < val1)
+                    val2 = 0;
+                if (val0 != 0)
+                    tuple.set(Statistics.StatLong.PREF0, 1);
+                if (val1 != 0)
+                    tuple.set(Statistics.StatLong.PREF1, 1);
+                if (val2 != 0)
+                    tuple.set(Statistics.StatLong.PREF2, 1);
+            }
+            update(temp);
+            super.compute();
         }
-        super.compute();
     }
 
     /**

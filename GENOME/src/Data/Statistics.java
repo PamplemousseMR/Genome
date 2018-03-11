@@ -75,6 +75,9 @@ public class Statistics {
             incrementStat(tri, StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
             incrementStat(tri, StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
             incrementStat(tri, StatLong.PHASE2, inputRow.get(StatLong.PHASE2));
+            incrementStat(tri, StatLong.PREF0, inputRow.get(StatLong.PREF0));
+            incrementStat(tri, StatLong.PREF1, inputRow.get(StatLong.PREF1));
+            incrementStat(tri, StatLong.PREF2, inputRow.get(StatLong.PREF2));
         });
         m_totalTrinucleotide += _stats.m_totalTrinucleotide;
     }
@@ -198,10 +201,7 @@ public class Statistics {
     public enum StatFloat {
         FREQ0,
         FREQ1,
-        FREQ2,
-        PREF0,
-        PREF1,
-        PREF2
+        FREQ2
     }
 
     /**
@@ -210,7 +210,10 @@ public class Statistics {
     public enum StatLong {
         PHASE0,
         PHASE1,
-        PHASE2
+        PHASE2,
+        PREF0,
+        PREF1,
+        PREF2
     }
 
     /**
