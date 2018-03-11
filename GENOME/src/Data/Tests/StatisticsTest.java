@@ -1,69 +1,58 @@
 package Data.Tests;
 
-import org.json.JSONObject;
-import org.junit.jupiter.api.Test;
 import Data.*;
-import Exception.InvalidStateException;
 import Exception.AddException;
+import Exception.InvalidStateException;
+import org.junit.jupiter.api.Test;
+
 import java.util.EnumMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class StatisticsTest {
 
-    private final static JSONObject s_JSON_ORG = new JSONObject("{\n" +
-            "\t\"id\": 152753,\n" +
-            "\t\"organism\": \"'Brassica napus' phytoplasma\",\n" +
-            "\t\"kingdom\": \"Bacteria\",\n" +
-            "\t\"group\": \"Terrabacteria group\",\n" +
-            "\t\"subgroup\": \"Tenericutes\",\n" +
-            "\t\"replicons\": \"pPABN1:NC_016583.1/HQ637382.1\",\n" +
-            "\t\"modify_date\": \"2014-12-18T00:00:00Z\",\n" +
-            "\t\"_version_\": 1592820474201505800\n" +
-            "}");
-
-    private static void printTriTable(Statistics _stat){
+    private static void printTriTable(Statistics _stat) {
         System.out.print("TRI\tPhase0\tFreq0\tPhase1\tFreq1\tPhase2\tFreq2\t");
-        for(Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()){
+        for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
             Tuple row = _stat.getTable().get(tri);
-            System.out.print("\n"+tri+"\t");
-            System.out.print(row.get(Statistics.StatLong.PHASE0).intValue()+"\t");
-            System.out.print(String.format("%.4f\t",row.get(Statistics.StatFloat.FREQ0)));
-            System.out.print(row.get(Statistics.StatLong.PHASE1).intValue()+"\t");
-            System.out.print(String.format("%.4f\t",row.get(Statistics.StatFloat.FREQ1)));
-            System.out.print(row.get(Statistics.StatLong.PHASE2).intValue()+"\t");
-            System.out.print(String.format("%.4f\t",row.get(Statistics.StatFloat.FREQ2)));
+            System.out.print("\n" + tri + "\t");
+            System.out.print(row.get(Statistics.StatLong.PHASE0).intValue() + "\t");
+            System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ0)));
+            System.out.print(row.get(Statistics.StatLong.PHASE1).intValue() + "\t");
+            System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ1)));
+            System.out.print(row.get(Statistics.StatLong.PHASE2).intValue() + "\t");
+            System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ2)));
         }
 
-        System.out.println("\nTOTAL\t"+_stat.getTotalTrinucleotide()+"\t\t"
-                +_stat.getTotalTrinucleotide()+"\t\t"
-                +_stat.getTotalTrinucleotide()+"\n");
+        System.out.println("\nTOTAL\t" + _stat.getTotalTrinucleotide() + "\t\t"
+                + _stat.getTotalTrinucleotide() + "\t\t"
+                + _stat.getTotalTrinucleotide() + "\n");
     }
 
     @Test
     void statisticsTest() throws AddException, InvalidStateException {
         DataBase db = DataBase.getInstance();
-        int nb = 5,nbrep = 200;
+        int nb = 5, nbrep = 200;
         db.start();
-        for(int k=0 ; k<nb ; ++k){
-            Kingdom ki = new Kingdom("Kingdom_"+k);
+        for (int k = 0; k < nb; ++k) {
+            Kingdom ki = new Kingdom("Kingdom_" + k);
             ki.start();
             db.addKingdom(ki);
-            for(int g=0 ; g<nb ; ++g){
-                Group gr = new Group("Group_"+g);
+            for (int g = 0; g < nb; ++g) {
+                Group gr = new Group("Group_" + g);
                 gr.start();
                 ki.addGroup(gr);
-                for(int s=0 ; s<nb ; ++s){
-                    SubGroup su = new SubGroup("SubGroup"+s);
+                for (int s = 0; s < nb; ++s) {
+                    SubGroup su = new SubGroup("SubGroup" + s);
                     su.start();
                     gr.addSubGroup(su);
-                    for(int o=0 ; o<nb ; ++o){
-                        Organism or = new Organism(new RawOrganism(s_JSON_ORG));
+                    for (int o = 0; o < nb; ++o) {
+                        Organism or = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
                         or.start();
                         su.addOrganism(or);
-                        for(int r=0 ; r<nbrep ; ++r){
+                        for (int r = 0; r < nbrep; ++r) {
                             Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1");
-                            StringBuffer strBuf = new StringBuffer("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
+                            StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("TATAATCCTTTTCTTTTTAATTAAAAAAATCTCTAATAATATTTTTTTTA");
                             strBuf.append("TTATATTAATTTCAGGAACTTTAATTACCATTTCATCTAATTCCTGATTA");
                             strBuf.append("GGAGCTTGAATAGGATTAGAAATTAATTTACTTTCATTTATCCCCTTAAT");
@@ -414,20 +403,20 @@ class StatisticsTest {
         }
         db.stop();
 
-        for(Statistics stat : db.getStatistics().values()){
+        for (Statistics stat : db.getStatistics().values()) {
             long totalPhase0 = 0;
             long totalPhase1 = 0;
             long totalPhase2 = 0;
             float totalFreq0 = 0;
             float totalFreq1 = 0;
             float totalFreq2 = 0;
-            for(Tuple en : stat.getTable().values()){
-                totalPhase0+=en.get(Statistics.StatLong.PHASE0).intValue();
-                totalPhase1+=en.get(Statistics.StatLong.PHASE1).intValue();
-                totalPhase2+=en.get(Statistics.StatLong.PHASE2).intValue();
-                totalFreq0+=en.get(Statistics.StatFloat.FREQ0);
-                totalFreq1+=en.get(Statistics.StatFloat.FREQ1);
-                totalFreq2+=en.get(Statistics.StatFloat.FREQ2);
+            for (Tuple en : stat.getTable().values()) {
+                totalPhase0 += en.get(Statistics.StatLong.PHASE0).intValue();
+                totalPhase1 += en.get(Statistics.StatLong.PHASE1).intValue();
+                totalPhase2 += en.get(Statistics.StatLong.PHASE2).intValue();
+                totalFreq0 += en.get(Statistics.StatFloat.FREQ0);
+                totalFreq1 += en.get(Statistics.StatFloat.FREQ1);
+                totalFreq2 += en.get(Statistics.StatFloat.FREQ2);
             }
             assertEquals(1.0F, totalFreq0, 0.000001F);
             assertEquals(1.0F, totalFreq1, 0.000001F);
@@ -440,13 +429,13 @@ class StatisticsTest {
 
         EnumMap<Statistics.Type, Long> genNumb = db.getGenomeNumber();
         long totalGenom = 0L;
-        for(Statistics.Type t : Statistics.Type.values()){
-            if(genNumb.get(t) != null) {
+        for (Statistics.Type t : Statistics.Type.values()) {
+            if (genNumb.get(t) != null) {
                 System.out.println(t + " : " + genNumb.get(t));
                 totalGenom += genNumb.get(t);
             }
         }
-        assertEquals((long)(nb*nb*nb*nb*nbrep), totalGenom);
+        assertEquals((long) (nb * nb * nb * nb * nbrep), totalGenom);
     }
 
 }
