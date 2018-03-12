@@ -16,36 +16,6 @@ import org.json.JSONObject;
 
 public class ExcelWriter {
 
-    public static void main(String[] args) throws Exception {
-
-		Kingdom k = new Kingdom("KINGDOM");
-		k.start();
-
-		Group g = new Group("GROUP");
-		g.start();
-		k.addGroup(g);
-
-		SubGroup s = new SubGroup("SUBGROUP");
-		s.start();
-		g.addSubGroup(s);
-
-		Organism o = new Organism(new RawOrganism(new JSONObject("{\n" +
-				"\t\"id\": 152753,\n" +
-				"\t\"organism\": \"'Brassica napus' phytoplasma\",\n" +
-				"\t\"kingdom\": \"Bacteria\",\n" +
-				"\t\"group\": \"Terrabacteria group\",\n" +
-				"\t\"subgroup\": \"Tenericutes\",\n" +
-				"\t\"replicons\": \"pPABN1:NC_016583.1/HQ637382.1\",\n" +
-				"\t\"modify_date\": \"2014-12-18T00:00:00Z\",\n" +
-				"\t\"_version_\": 1592820474201505800\n" +
-				"}")));
-
-		s.addOrganism(o);
-
-		writeOrganism(o);
-		
-    }
-
 	/**
 	 * Function call to write kingdom summary in Excel workbook
 	 */
@@ -57,7 +27,7 @@ public class ExcelWriter {
 
 		//	Check if file exist
 
-		File file = new File(Path + "\\" +  _kingdom.getName() + ".xls");
+		File file = new File(Path + "/" +  _kingdom.getName() + ".xls");
 
 		if (file.exists()) {
 			file.delete();
@@ -76,13 +46,6 @@ public class ExcelWriter {
 		Sheet sheet = workbook.createSheet();
 
 		// Fill the sheet
-
-		// NAIVE TEST
-		Row r  = sheet.createRow(0);
-		Cell c = r.createCell(0);
-		c.setCellType(CellType.STRING);
-		c.setCellValue("Hey");
-		// NAIVE TEST
 
 			// TODO
 
@@ -121,7 +84,7 @@ public class ExcelWriter {
 
 		//	Check if file exist
 
-		File file = new File(Path + "\\" +  _group.getName() + ".xls");
+		File file = new File(Path + "/" +  _group.getName() + ".xls");
 
 		if (file.exists()) {
 			file.delete();
@@ -140,13 +103,6 @@ public class ExcelWriter {
 		Sheet sheet = workbook.createSheet();
 
 		// Fill the sheet
-
-		// NAIVE TEST
-		Row r  = sheet.createRow(0);
-		Cell c = r.createCell(0);
-		c.setCellType(CellType.STRING);
-		c.setCellValue("Hey");
-		// NAIVE TEST
 
 			// TODO
 
@@ -184,7 +140,7 @@ public class ExcelWriter {
 
 		//	Check if file exist
 
-		File file = new File(Path + "\\" +  _subGroup.getName() + ".xls");
+		File file = new File(Path + "/" +  _subGroup.getName() + ".xlsx");
 
 		if (file.exists()) {
 			file.delete();
@@ -203,13 +159,6 @@ public class ExcelWriter {
 		Sheet sheet = workbook.createSheet();
 
 		// Fill the sheet
-
-		// NAIVE TEST
-		Row r  = sheet.createRow(0);
-		Cell c = r.createCell(0);
-		c.setCellType(CellType.STRING);
-		c.setCellValue("Hey");
-		// NAIVE TEST
 
 			// TODO
 
@@ -246,8 +195,7 @@ public class ExcelWriter {
 
         //	Check if file exist
 
-		File file = new File(Path + "\\" +  _organism.getName() + ".xlsx");
-
+		File file = new File(Path + "/" +  _organism.getName() + ".xlsx");
 		if (file.exists()) {
 			file.delete();
 		}
@@ -263,43 +211,10 @@ public class ExcelWriter {
 
 		//	Create general info sheet
 		Sheet general_info_sheet = workbook.createSheet(ExcelConstants.s_generalInfoSheet);
-
-		// Fill it
-
-		// NAIVE TEST
-		Row r  = general_info_sheet.createRow(0);
-		Cell c = r.createCell(0);
-		c.setCellType(CellType.STRING);
-		c.setCellValue("Hey");
-		// NAIVE TEST
-
-			// TODO
-
-		//	For each Summary page, create sheet and fill it
-
-				// TODO
-
-		// 	For each replicon
-
-                //	Create sheet
-
-					// TODO
-
-				// 	Create header ( cf StatisticsTest)
-
-					// TODO
-
-                //	For each trinucleotide
-
-                    // 	Fill statistics
-
-						// TODO
-
-                //	For each dinucleotid
-
-                    //	Fill statistics ( cf StatisticsTest)
-
-						// TODO
+		general_info_sheet.createRow(0).createCell(0).setCellValue("Allo");
+		// 	Create stats & replicons
+		createStatistics(workbook, _organism);
+		createReplicons(workbook, _organism);
 
 		// Write the output to the file
 
@@ -323,6 +238,90 @@ public class ExcelWriter {
 			throw e;
 		}
 
+	}
+
+	public static void createReplicons(Workbook _workbook, Organism _organism) throws IOException {
+        for (Replicon replicon : _organism.getReplicons()) {
+            createRepliconSheet(_workbook, replicon);
+        }
+    }
+
+    public static void createStatistics(Workbook _workbook, Organism _organism) throws IOException {
+        for (Statistics stat : _organism.getStatistics().values()) {
+            createStatisticSheet(_workbook, stat);
+        }
+    }
+
+	public static void createStatisticSheet(Workbook _workbook, Statistics _stat) throws IOException {
+		Sheet s = _workbook.createSheet("SUM_" + _stat.getType());
+		createHeader(s);
+		createTable(s, _stat);
+	}
+
+    public static void createRepliconSheet(Workbook _workbook, Replicon _replicon) throws IOException {
+        Sheet s = _workbook.createSheet(_replicon.getName());
+        createHeader(s);
+        createTable(s, _replicon);
+    }
+
+	public static void  createHeader(Sheet _sheet) throws IOException {
+        Row r = _sheet.createRow(0);
+        Cell c = r.createCell(0);
+        c.setCellValue("Trinucléotides");
+        c = r.createCell(1);
+        c.setCellValue("Phase0");
+        c = r.createCell(2);
+        c.setCellValue("Freq0");
+        c = r.createCell(3);
+        c.setCellValue("Phase1");
+        c = r.createCell(4);
+        c.setCellValue("Freq1");
+        c = r.createCell(5);
+        c.setCellValue("Phase2");
+        c = r.createCell(6);
+        c.setCellValue("Freq2");
+        c = r.createCell(7);
+        c.setCellValue("Pref0");
+        c = r.createCell(8);
+        c.setCellValue("Pref1");
+        c = r.createCell(9);
+        c.setCellValue("Pref2");
+    }
+
+	public static void createTable(Sheet _sheet, Statistics _stat) throws IOException {
+		int i = 1;
+		Row r;
+		Cell c;
+		for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
+			Tuple row = _stat.getTable().get(tri);
+			r = _sheet.createRow(i);
+			c = r.createCell(0);
+			c.setCellValue(tri.toString());
+			c = r.createCell(1);
+			c.setCellValue(row.get(Statistics.StatLong.PHASE0));
+			c = r.createCell(2);
+			c.setCellValue(row.get(Statistics.StatFloat.FREQ0));
+			c = r.createCell(3);
+			c.setCellValue(row.get(Statistics.StatLong.PHASE1));
+			c = r.createCell(4);
+			c.setCellValue(row.get(Statistics.StatFloat.FREQ1));
+			c = r.createCell(5);
+			c.setCellValue(row.get(Statistics.StatLong.PHASE2));
+			c = r.createCell(6);
+			c.setCellValue(row.get(Statistics.StatFloat.FREQ2));
+			c = r.createCell(7);
+			c.setCellValue(row.get(Statistics.StatLong.PREF0));
+			c = r.createCell(8);
+			c.setCellValue(row.get(Statistics.StatLong.PREF1));
+			c = r.createCell(9);
+			c.setCellValue(row.get(Statistics.StatLong.PREF2));
+			i++;
+		}
+		r = _sheet.createRow(i);
+		c = r.createCell(0);
+		c.setCellValue("TOTAL");
+		c = r.createCell(1);
+		c.setCellValue(_stat.getTotalTrinucleotide());
 	}
 
 
