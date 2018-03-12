@@ -229,6 +229,14 @@ public class IDataBase {
     }
 
     /**
+     * Clear data
+     */
+    protected final void clear() {
+        m_statistics.clear();
+        m_genomeNumber.clear();
+    }
+
+    /**
      * Type of each State
      */
     public enum State {

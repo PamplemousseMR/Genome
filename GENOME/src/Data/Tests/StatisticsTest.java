@@ -31,23 +31,28 @@ class StatisticsTest {
 
     @Test
     void statisticsTest() throws AddException, InvalidStateException {
-        DataBase db = DataBase.getInstance();
+        DataBase db = new DataBase("DataBase", _dataBase -> {
+        });
         int nb = 5, nbrep = 200;
         db.start();
         for (int k = 0; k < nb; ++k) {
-            Kingdom ki = new Kingdom("Kingdom_" + k);
+            Kingdom ki = new Kingdom("Kingdom_" + k, _kingdom -> {
+            });
             ki.start();
             db.addKingdom(ki);
             for (int g = 0; g < nb; ++g) {
-                Group gr = new Group("Group_" + g);
+                Group gr = new Group("Group_" + g, _group -> {
+                });
                 gr.start();
                 ki.addGroup(gr);
                 for (int s = 0; s < nb; ++s) {
-                    SubGroup su = new SubGroup("SubGroup" + s);
+                    SubGroup su = new SubGroup("SubGroup" + s, _subGroup -> {
+                    });
                     su.start();
                     gr.addSubGroup(su);
                     for (int o = 0; o < nb; ++o) {
-                        Organism or = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
+                        Organism or = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+                        });
                         or.start();
                         su.addOrganism(or);
                         for (int r = 0; r < nbrep; ++r) {

@@ -12,40 +12,47 @@ class GlobalTest {
 
     @org.junit.jupiter.api.Test
     void dataBaseTest() throws AddException, InvalidStateException {
-        DataBase dataBase = DataBase.getInstance();
+        DataBase dataBase = new DataBase("d1", _dataBase -> {
+        });
         assertEquals(IDataBase.State.CREATED, dataBase.getState());
 
         // Database start and stop
-        Kingdom k1 = new Kingdom("k1");
+        Kingdom k1 = new Kingdom("k1", _kingdom -> {
+        });
         assertEquals(false, dataBase.addKingdom(k1));
         dataBase.start();
         assertEquals(true, dataBase.addKingdom(k1));
 
-        Kingdom k2 = new Kingdom("k2");
+        Kingdom k2 = new Kingdom("k2", _kingdom -> {
+        });
         assertEquals(true, dataBase.addKingdom(k2));
 
         assertThrows(Exception.class, () -> dataBase.addKingdom(k2));
         dataBase.stop();
 
-        Kingdom k3 = new Kingdom("k3");
+        Kingdom k3 = new Kingdom("k3", _kingdom -> {
+        });
         assertEquals(false, dataBase.addKingdom(k3));
         assertEquals(IDataBase.State.STOPPED, dataBase.getState());
 
         // Group start and Kingdom start and stop
         for (Kingdom k : dataBase.getKingdoms()) {
-            Group g1 = new Group("g1_" + k.getName());
+            Group g1 = new Group("g1_" + k.getName(), _group -> {
+            });
             g1.start();
             assertEquals(false, k.addGroup(g1));
             k.start();
             assertEquals(true, k.addGroup(g1));
 
-            Group g2 = new Group("g2_" + k.getName());
+            Group g2 = new Group("g2_" + k.getName(), _group -> {
+            });
             g2.start();
             assertEquals(true, k.addGroup(g2));
             assertThrows(Exception.class, () -> k.addGroup(g2));
             k.stop();
 
-            Group g3 = new Group("g3_" + k.getName());
+            Group g3 = new Group("g3_" + k.getName(), _group -> {
+            });
             g3.start();
             assertEquals(false, k.addGroup(g3));
             assertEquals(IDataBase.State.STOPPED, k.getState());
@@ -54,15 +61,18 @@ class GlobalTest {
         // Group stop
         for (Kingdom k : dataBase.getKingdoms()) {
             for (Group g : k.getGroups()) {
-                SubGroup s1 = new SubGroup("s1_" + g.getName());
+                SubGroup s1 = new SubGroup("s1_" + g.getName(), _subGroup -> {
+                });
                 assertEquals(true, g.addSubGroup(s1));
 
-                SubGroup s2 = new SubGroup("s2_" + g.getName());
+                SubGroup s2 = new SubGroup("s2_" + g.getName(), _subGroup -> {
+                });
                 assertEquals(true, g.addSubGroup(s2));
                 assertThrows(Exception.class, () -> g.addSubGroup(s2));
 
                 g.stop();
-                SubGroup s3 = new SubGroup("s3_" + g.getName());
+                SubGroup s3 = new SubGroup("s3_" + g.getName(), _subGroup -> {
+                });
                 assertEquals(false, g.addSubGroup(s3));
                 assertEquals(IDataBase.State.STOPPED, g.getState());
             }
@@ -74,19 +84,22 @@ class GlobalTest {
         for (Kingdom k : dataBase.getKingdoms()) {
             for (Group g : k.getGroups()) {
                 for (SubGroup s : g.getSubGroups()) {
-                    Organism o1 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
+                    Organism o1 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+                    });
                     assertEquals(false, s.addOrganism(o1));
                     s.start();
                     assertEquals(true, s.addOrganism(o1));
                     list.add(o1);
 
-                    Organism o2 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
+                    Organism o2 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+                    });
                     assertEquals(true, s.addOrganism(o2));
                     assertThrows(Exception.class, () -> s.addOrganism(o2));
                     s.stop();
                     list.add(o2);
 
-                    Organism o3 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
+                    Organism o3 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+                    });
                     assertEquals(false, s.addOrganism(o3));
                     assertEquals(IDataBase.State.STOPPED, s.getState());
                 }
@@ -139,18 +152,22 @@ class GlobalTest {
     @org.junit.jupiter.api.Test
     void nameTest() throws AddException, InvalidStateException {
 
-        Kingdom k = new Kingdom("KINGDOM");
+        Kingdom k = new Kingdom("KINGDOM", _kingdom -> {
+        });
         k.start();
 
-        Group g = new Group("GROUP");
+        Group g = new Group("GROUP", _group -> {
+        });
         g.start();
         k.addGroup(g);
 
-        SubGroup s = new SubGroup("SUBGROUP");
+        SubGroup s = new SubGroup("SUBGROUP", _subGroup -> {
+        });
         s.start();
         g.addSubGroup(s);
 
-        Organism o = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l);
+        Organism o = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+        });
         s.addOrganism(o);
 
         assertEquals("KINGDOM", o.getKingdomName());
