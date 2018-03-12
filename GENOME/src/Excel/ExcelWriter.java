@@ -2,17 +2,18 @@ package Excel;
 
 import Data.*;
 
+/* external library import  */
+import Utils.Logs;
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Cell;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.ss.usermodel.Sheet;
+import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-
-/* external library import  */
-import Utils.Logs;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
-import org.json.JSONObject;
 
 public class ExcelWriter {
 
@@ -317,11 +318,15 @@ public class ExcelWriter {
 			c.setCellValue(row.get(Statistics.StatLong.PREF2));
 			i++;
 		}
+
 		r = _sheet.createRow(i);
 		c = r.createCell(0);
 		c.setCellValue("TOTAL");
-		c = r.createCell(1);
-		c.setCellValue(_stat.getTotalTrinucleotide());
+		for(int p = 1 ; p <= 9 ; p++){
+			c = r.createCell(p);
+			c.setCellFormula("SUM(" + (char)('A' + p) + "2:" + (char)('A' + p) + "65)");
+		}
+
 	}
 
 
