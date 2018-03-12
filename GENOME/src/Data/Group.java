@@ -12,6 +12,10 @@ public final class Group extends IDataBase {
      */
     private final ArrayList<SubGroup> m_subGroups;
     /**
+     * Event to call when compute are finished
+     */
+    private final IGroupCallback m_event;
+    /**
      * Reference to the parent
      */
     private Kingdom m_parent;
@@ -20,11 +24,13 @@ public final class Group extends IDataBase {
      * Class constructor
      *
      * @param _name, the name of this Group
+     * @param _event the event call when compute is finished
      */
-    public Group(String _name) {
+    public Group(String _name, IGroupCallback _event) {
         super(_name);
         m_subGroups = new ArrayList<>();
         m_parent = null;
+        m_event = _event;
     }
 
     /**
@@ -94,10 +100,12 @@ public final class Group extends IDataBase {
             }
             super.incrementFinishedChildren();
             if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_subGroups.size()) {
-                m_subGroups.clear();
                 super.computeStatistics();
+                m_event.finish(this);
                 m_parent.finish(this);
                 super.finish();
+                m_subGroups.clear();
+                super.clear();
             }
         }
     }

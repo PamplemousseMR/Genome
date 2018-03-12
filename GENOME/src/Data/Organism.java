@@ -20,6 +20,10 @@ public final class Organism extends IDataBase {
      */
     private final long m_version;
     /**
+     * Event to call when compute are finished
+     */
+    private final IOrganismCallback m_event;
+    /**
      * Reference to the parent
      */
     private SubGroup m_parent;
@@ -30,13 +34,15 @@ public final class Organism extends IDataBase {
      * @param _name    the name of the organism
      * @param _id      the id of the organism
      * @param _version the version of the organism
+     * @param _event   the event call when compute is finished
      */
-    public Organism(String _name, long _id, long _version) {
+    public Organism(String _name, long _id, long _version, IOrganismCallback _event) {
         super(_name);
         m_id = _id;
         m_version = _version;
         m_replicons = new ArrayList<>();
         m_parent = null;
+        m_event = _event;
     }
 
     /**
@@ -70,10 +76,12 @@ public final class Organism extends IDataBase {
             super.updateStatistics(rep);
             super.incrementGenomeNumber(rep.getType());
         }
-        m_replicons.clear();
         super.computeStatistics();
+        m_event.finish(this);
         m_parent.finish(this);
         super.finish();
+        m_replicons.clear();
+        super.clear();
     }
 
     /**

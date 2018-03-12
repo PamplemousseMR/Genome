@@ -12,6 +12,10 @@ public final class Kingdom extends IDataBase {
      */
     private final ArrayList<Group> m_groups;
     /**
+     * Event to call when compute are finished
+     */
+    private final IKingdomCallback m_event;
+    /**
      * Reference to the parent
      */
     private DataBase m_parent;
@@ -19,12 +23,14 @@ public final class Kingdom extends IDataBase {
     /**
      * Class constructor
      *
-     * @param _name, the name of this Kingdom
+     * @param _name  the name of this Kingdom
+     * @param _event the event call when compute is finished
      */
-    public Kingdom(String _name) {
+    public Kingdom(String _name, IKingdomCallback _event) {
         super(_name);
         m_groups = new ArrayList<>();
         m_parent = null;
+        m_event = _event;
     }
 
     /**
@@ -85,10 +91,12 @@ public final class Kingdom extends IDataBase {
             }
             super.incrementFinishedChildren();
             if (getState() == State.STOPPED && super.getFinishedChildren() == m_groups.size()) {
-                m_groups.clear();
                 super.computeStatistics();
+                m_event.finish(this);
                 m_parent.finish(this);
                 super.finish();
+                m_groups.clear();
+                super.clear();
             }
         }
     }

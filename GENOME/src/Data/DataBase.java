@@ -8,10 +8,6 @@ import java.util.ArrayList;
 public final class DataBase extends IDataBase {
 
     /**
-     * Name of the database
-     */
-    public static final String s_NAME = "GENOME";
-    /**
      * Instance of the singleton
      */
     private static DataBase s_DataBase;
@@ -19,26 +15,21 @@ public final class DataBase extends IDataBase {
      * Array of this Database's Kingdom
      */
     private final ArrayList<Kingdom> m_kingdoms;
+    /**
+     * Event to call when compute are finished
+     */
+    private final IDataBaseCallback m_event;
 
     /**
      * Class constructor
-     */
-    private DataBase() {
-        super(s_NAME);
-        m_kingdoms = new ArrayList<>();
-    }
-
-    /**
-     * Accessor to the singleton
      *
-     * @return the instance of the singleton
+     * @param _name, the name of this DataBase
+     * @param _event the event call when compute is finished
      */
-    public static DataBase getInstance() {
-        if (s_DataBase == null) {
-            return (s_DataBase = new DataBase());
-        } else {
-            return s_DataBase;
-        }
+    public DataBase(String _name, IDataBaseCallback _event) {
+        super(_name);
+        m_kingdoms = new ArrayList<>();
+        m_event = _event;
     }
 
     /**
@@ -98,9 +89,11 @@ public final class DataBase extends IDataBase {
             }
             incrementFinishedChildren();
             if (super.getState() == IDataBase.State.STOPPED && super.getFinishedChildren() == m_kingdoms.size()) {
-                m_kingdoms.clear();
                 super.computeStatistics();
+                m_event.finish(this);
                 super.finish();
+                m_kingdoms.clear();
+                super.clear();
             }
         }
     }

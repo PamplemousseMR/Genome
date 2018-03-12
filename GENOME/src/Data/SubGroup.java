@@ -12,6 +12,10 @@ public final class SubGroup extends IDataBase {
      */
     private final ArrayList<Organism> m_organisms;
     /**
+     * Event to call when compute are finished
+     */
+    private final ISubGroupCallback m_event;
+    /**
      * Reference to the parent
      */
     private Group m_parent;
@@ -20,11 +24,13 @@ public final class SubGroup extends IDataBase {
      * Class constructor
      *
      * @param _name, the name of this SubGroup
+     * @param _event the event call when compute is finished
      */
-    public SubGroup(String _name) {
+    public SubGroup(String _name, ISubGroupCallback _event) {
         super(_name);
         m_organisms = new ArrayList<>();
         m_parent = null;
+        m_event = _event;
     }
 
     /**
@@ -53,10 +59,12 @@ public final class SubGroup extends IDataBase {
     public void stop() throws InvalidStateException {
         super.stop();
         if (super.getFinishedChildren() == m_organisms.size()) {
-            m_organisms.clear();
             super.computeStatistics();
+            m_event.finish(this);
             m_parent.finish(this);
             super.finish();
+            m_organisms.clear();
+            super.clear();
         }
     }
 
@@ -103,10 +111,12 @@ public final class SubGroup extends IDataBase {
             }
             super.incrementFinishedChildren();
             if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_organisms.size()) {
-                m_organisms.clear();
                 super.computeStatistics();
+                m_event.finish(this);
                 m_parent.finish(this);
                 super.finish();
+                m_organisms.clear();
+                super.clear();
             }
         }
     }
