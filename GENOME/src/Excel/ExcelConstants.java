@@ -1,6 +1,8 @@
 package Excel;
 
- class ExcelConstants
+import java.text.SimpleDateFormat;
+
+class ExcelConstants
 {
 	//File names
 
@@ -12,9 +14,14 @@ package Excel;
 
 
 	//General information sheet constants
+
+
 	public static  String s_generalInfoNameHeader="Name";
 	public static  ExcelCell s_generalInfoNameCell= new ExcelCell(5,2);
 
 
 	//
+
+	public static SimpleDateFormat s_dateFormat = new SimpleDateFormat("d MMM yyyy");
+
 }

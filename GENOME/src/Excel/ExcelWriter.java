@@ -4,16 +4,16 @@ import Data.*;
 
 /* external library import  */
 import Utils.Logs;
+import com.sun.org.glassfish.external.statistics.Statistic;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
-import org.apache.poi.ss.usermodel.Cell;
-import org.apache.poi.ss.usermodel.Row;
-import org.apache.poi.ss.usermodel.Sheet;
-import org.apache.poi.ss.usermodel.Workbook;
+import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Map;
 
 public class ExcelWriter {
 
@@ -43,6 +43,8 @@ public class ExcelWriter {
 		//	Create workbook
 		Workbook workbook = new XSSFWorkbook();
 
+		Sheet _generalInfoSheet = workbook.createSheet();
+		writeGeneralInfoSheet(_generalInfoSheet,_kingdom);
 		//	Create sheet
 		Sheet sheet = workbook.createSheet();
 
@@ -100,6 +102,8 @@ public class ExcelWriter {
 		//	Create workbook
 		Workbook workbook = new XSSFWorkbook();
 
+		Sheet _generalInfoSheet = workbook.createSheet();
+		writeGeneralInfoSheet(_generalInfoSheet,_group);
 		//	Create sheet
 		Sheet sheet = workbook.createSheet();
 
@@ -157,7 +161,8 @@ public class ExcelWriter {
 		Workbook workbook = new XSSFWorkbook();
 
 		//	Create general info sheet
-		Sheet sheet = workbook.createSheet();
+		Sheet _generalInfoSheet = workbook.createSheet();
+		writeGeneralInfoSheet(_generalInfoSheet,_subGroup);
 
 		// Fill the sheet
 
@@ -212,7 +217,11 @@ public class ExcelWriter {
 
 		//	Create general info sheet
 		Sheet general_info_sheet = workbook.createSheet(ExcelConstants.s_generalInfoSheet);
-		general_info_sheet.createRow(0).createCell(0).setCellValue("Allo");
+
+		writeGeneralInfoSheet(general_info_sheet,_organism);
+
+		
+
 		// 	Create stats & replicons
 		createStatistics(workbook, _organism);
 		createReplicons(workbook, _organism);
@@ -237,6 +246,45 @@ public class ExcelWriter {
 		} catch (IOException e) {
 			Logs.exception(e);
 			throw e;
+		}
+
+	}
+
+	public  static  void writeGeneralInfoSheet(Sheet _general_info_sheet, IDataBase _data)
+	{
+		_general_info_sheet.createRow(0).createCell(0).setCellValue("Information");
+
+		Row r;
+
+		r=_general_info_sheet.createRow(2);
+		r.createCell(0).setCellValue("Name");
+		r.createCell(1).setCellValue(_data.getName());
+		r.createCell(5).setCellValue("Genome");
+
+		r=_general_info_sheet.createRow(4);
+		r.createCell(0).setCellValue("Modification Date");
+		r.createCell(1).setCellValue(ExcelConstants.s_dateFormat.format(_data.getModificationDate()));
+
+		r=_general_info_sheet.createRow(6);
+		r.createCell(0).setCellValue("Number of CDS sequences");
+		r.createCell(1).setCellValue("placeholder");
+
+		r=_general_info_sheet.createRow(8);
+		r.createCell(0).setCellValue("Number of invalids CDS");
+		r.createCell(1).setCellValue("placeholder");
+
+		r=_general_info_sheet.createRow(10);
+		r.createCell(0).setCellValue("Number of Organisms");
+		r.createCell(1).setCellValue("placeholder");
+
+		int genomeInfoRowNumber=3;
+
+		for(Map.Entry<Statistics.Type,Long> entry: _data.getGenomeNumber().entrySet())
+		{
+			Row row=_general_info_sheet.createRow(genomeInfoRowNumber);
+			row.createCell(5).setCellValue(entry.getKey().toString());
+			writeNumericCell( row.createCell(6),entry.getValue());
+			genomeInfoRowNumber++;
 		}
 
 	}
@@ -299,23 +347,23 @@ public class ExcelWriter {
 			c = r.createCell(0);
 			c.setCellValue(tri.toString());
 			c = r.createCell(1);
-			c.setCellValue(row.get(Statistics.StatLong.PHASE0));
+			writeNumericCell(c,row.get(Statistics.StatLong.PHASE0));
 			c = r.createCell(2);
-			c.setCellValue(row.get(Statistics.StatFloat.FREQ0));
+			writeNumericCell(c,row.get(Statistics.StatFloat.FREQ0));
 			c = r.createCell(3);
-			c.setCellValue(row.get(Statistics.StatLong.PHASE1));
+			writeNumericCell(c,row.get(Statistics.StatLong.PHASE1));
 			c = r.createCell(4);
-			c.setCellValue(row.get(Statistics.StatFloat.FREQ1));
+			writeNumericCell(c,row.get(Statistics.StatFloat.FREQ1));
 			c = r.createCell(5);
-			c.setCellValue(row.get(Statistics.StatLong.PHASE2));
+			writeNumericCell(c,row.get(Statistics.StatLong.PHASE2));
 			c = r.createCell(6);
-			c.setCellValue(row.get(Statistics.StatFloat.FREQ2));
+			writeNumericCell(c,row.get(Statistics.StatFloat.FREQ2));
 			c = r.createCell(7);
-			c.setCellValue(row.get(Statistics.StatLong.PREF0));
+			writeNumericCell(c,row.get(Statistics.StatLong.PREF0));
 			c = r.createCell(8);
-			c.setCellValue(row.get(Statistics.StatLong.PREF1));
+			writeNumericCell(c,row.get(Statistics.StatLong.PREF1));
 			c = r.createCell(9);
-			c.setCellValue(row.get(Statistics.StatLong.PREF2));
+			writeNumericCell(c,row.get(Statistics.StatLong.PREF2));
 			i++;
 		}
 
@@ -324,11 +372,24 @@ public class ExcelWriter {
 		c.setCellValue("TOTAL");
 		for(int p = 1 ; p <= 9 ; p++){
 			c = r.createCell(p);
+			c.setCellType(CellType.NUMERIC);
 			c.setCellFormula("SUM(" + (char)('A' + p) + "2:" + (char)('A' + p) + "65)");
 		}
 
 	}
 
+	public  static  void writeNumericCell(Cell _cell, float _f)
+	{
 
+		_cell.setCellValue(_f);
+		_cell.setCellType(CellType.NUMERIC);
+	}
+
+	public  static  void writeNumericCell(Cell _cell, long _l)
+	{
+
+		_cell.setCellValue(_l);
+		_cell.setCellType(CellType.NUMERIC);
+	}
 }
 
