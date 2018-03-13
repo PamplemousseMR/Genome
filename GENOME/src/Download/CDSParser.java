@@ -53,11 +53,19 @@ public class CDSParser {
     /**
      * Name
      */
-    private String m_name;
+    private final String m_name;
     /**
      * Initial buffer
      */
-    private StringBuilder m_buffer;
+    private final StringBuilder m_buffer;
+    /**
+     * List of CDS
+     */
+    private final ArrayList<StringBuilder> m_cdsList;
+    /**
+     * Full sequences
+     */
+    private final StringBuilder m_origin;
     /**
      * Total of CDS
      */
@@ -66,14 +74,6 @@ public class CDSParser {
      * Total of valid CDS
      */
     private long m_valid;
-    /**
-     * List of CDS
-     */
-    private ArrayList<StringBuilder> m_cdsList;
-    /**
-     * Full sequences
-     */
-    private StringBuilder m_origin;
 
     /**
      * Constructor
@@ -300,7 +300,7 @@ public class CDSParser {
      *
      */
     private abstract class Operator {
-        private Operator m_parent;
+        private final Operator m_parent;
 
         protected Operator(Operator _parent) {
             m_parent = _parent;
