@@ -1,8 +1,7 @@
 package Data;
 
-import java.util.Arrays;
-
-public final class Tuple {
+import java.io.Serializable;
+public final class Tuple implements Serializable{
 
     /**
      * Array to store float

@@ -1,8 +1,9 @@
 package Data;
 
+import java.io.Serializable;
 import java.util.stream.IntStream;
 
-public class Statistics {
+public class Statistics implements Serializable{
 
     /**
      * Type of this Statistic

@@ -14,11 +14,11 @@ public final class DataBase extends IDataBase {
     /**
      * Array of this Database's Kingdom
      */
-    private final ArrayList<Kingdom> m_kingdoms;
+    private transient final ArrayList<Kingdom> m_kingdoms;
     /**
      * Event to call when compute are finished
      */
-    private final IDataBaseCallback m_event;
+    private transient final IDataBaseCallback m_event;
 
     /**
      * Class constructor

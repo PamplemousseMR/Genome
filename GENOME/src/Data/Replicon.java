@@ -9,15 +9,15 @@ public final class Replicon extends Statistics {
     /**
      * The name
      */
-    private final String m_name;
+    private transient final String m_name;
     /**
      * Array of all the sequences of this Replicon
      */
-    private final ArrayList<StringBuilder> m_sequences;
+    private transient final ArrayList<StringBuilder> m_sequences;
     /**
      * Local index
      */
-    private int m_index;
+    private transient int m_index;
 
     /**
      * Class constructor

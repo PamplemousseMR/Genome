@@ -2,16 +2,17 @@ package Data;
 
 import Exception.InvalidStateException;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
 
-public class IDataBase {
+public class IDataBase implements Serializable {
 
     /**
      * The name
      */
-    private final String m_name;
+    private transient final String m_name;
     /**
      * Statistics of this IDataBase
      */
@@ -23,7 +24,7 @@ public class IDataBase {
     /**
      * Last modification's date
      */
-    private final Date m_modificationDate;
+    private transient final Date m_modificationDate;
     /**
      * The number of valid CDS sequences
      */
@@ -39,15 +40,15 @@ public class IDataBase {
     /**
      * Actual State
      */
-    private State m_state;
+    private transient State m_state;
     /**
      * Local index
      */
-    private int m_index;
+    private transient int m_index;
     /**
      * Total of finished children
      */
-    private int m_finished;
+    private transient int m_finished;
 
     /**
      * Class constructor

@@ -10,15 +10,15 @@ public final class Group extends IDataBase {
     /**
      * Array of this Group's SubGroups
      */
-    private final ArrayList<SubGroup> m_subGroups;
+    private transient final ArrayList<SubGroup> m_subGroups;
     /**
      * Event to call when compute are finished
      */
-    private final IGroupCallback m_event;
+    private transient final IGroupCallback m_event;
     /**
      * Reference to the parent
      */
-    private Kingdom m_parent;
+    private transient Kingdom m_parent;
 
     /**
      * Class constructor

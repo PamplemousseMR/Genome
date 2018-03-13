@@ -10,15 +10,15 @@ public final class SubGroup extends IDataBase {
     /**
      * Array of this SubGroup's Organisms
      */
-    private final ArrayList<Organism> m_organisms;
+    private transient final ArrayList<Organism> m_organisms;
     /**
      * Event to call when compute are finished
      */
-    private final ISubGroupCallback m_event;
+    private transient final ISubGroupCallback m_event;
     /**
      * Reference to the parent
      */
-    private Group m_parent;
+    private transient Group m_parent;
 
     /**
      * Class constructor
