@@ -1,8 +1,8 @@
 package Download.Tests;
 
 import Download.OrganismParser;
-import org.json.JSONException;
-import org.json.JSONObject;
+import Json.JSONException;
+import Json.JSONObject;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 

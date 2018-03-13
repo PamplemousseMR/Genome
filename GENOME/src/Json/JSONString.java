@@ -1,4 +1,4 @@
-package org.json;
+package Json;
 
 /**
  * The <code>JSONString</code> interface allows a <code>toJSONString()</code>
