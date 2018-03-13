@@ -59,10 +59,7 @@ public final class Kingdom extends IDataBase {
     public void stop() throws InvalidStateException {
         super.stop();
         if (super.getFinishedChildren() == m_groups.size()) {
-            m_groups.clear();
-            super.computeStatistics();
-            m_parent.finish(this);
-            super.finish();
+            end();
         }
     }
 
@@ -91,12 +88,7 @@ public final class Kingdom extends IDataBase {
             }
             super.incrementFinishedChildren();
             if (getState() == State.STOPPED && super.getFinishedChildren() == m_groups.size()) {
-                super.computeStatistics();
-                m_event.finish(this);
-                m_parent.finish(this);
-                super.finish();
-                m_groups.clear();
-                super.clear();
+                end();
             }
         }
     }
@@ -108,6 +100,20 @@ public final class Kingdom extends IDataBase {
      */
     protected void setParent(DataBase _dataBase) {
         m_parent = _dataBase;
+    }
+
+    /**
+     * Call callback and clear data
+     *
+     * @throws InvalidStateException if an exception appear
+     */
+    private void end() throws InvalidStateException {
+        super.computeStatistics();
+        m_event.finish(this);
+        m_parent.finish(this);
+        super.finish();
+        m_groups.clear();
+        super.clear();
     }
 
 }

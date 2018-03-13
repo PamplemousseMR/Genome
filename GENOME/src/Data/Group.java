@@ -59,10 +59,7 @@ public final class Group extends IDataBase {
     public void stop() throws InvalidStateException {
         super.stop();
         if (getFinishedChildren() == m_subGroups.size()) {
-            m_subGroups.clear();
-            super.computeStatistics();
-            m_parent.finish(this);
-            super.finish();
+            end();
         }
     }
 
@@ -100,12 +97,7 @@ public final class Group extends IDataBase {
             }
             super.incrementFinishedChildren();
             if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_subGroups.size()) {
-                super.computeStatistics();
-                m_event.finish(this);
-                m_parent.finish(this);
-                super.finish();
-                m_subGroups.clear();
-                super.clear();
+                end();
             }
         }
     }
@@ -126,6 +118,20 @@ public final class Group extends IDataBase {
      */
     protected void setParent(Kingdom _kingdom) {
         m_parent = _kingdom;
+    }
+
+    /**
+     * Call callback and clear data
+     *
+     * @throws InvalidStateException if an exception appear
+     */
+    private void end() throws InvalidStateException {
+        super.computeStatistics();
+        m_event.finish(this);
+        m_parent.finish(this);
+        super.finish();
+        m_subGroups.clear();
+        super.clear();
     }
 
 }

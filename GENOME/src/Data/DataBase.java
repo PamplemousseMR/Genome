@@ -67,9 +67,7 @@ public final class DataBase extends IDataBase {
     public void stop() throws InvalidStateException {
         super.stop();
         if (super.getFinishedChildren() == m_kingdoms.size()) {
-            m_kingdoms.clear();
-            super.computeStatistics();
-            super.finish();
+            end();
         }
     }
 
@@ -89,13 +87,22 @@ public final class DataBase extends IDataBase {
             }
             incrementFinishedChildren();
             if (super.getState() == IDataBase.State.STOPPED && super.getFinishedChildren() == m_kingdoms.size()) {
-                super.computeStatistics();
-                m_event.finish(this);
-                super.finish();
-                m_kingdoms.clear();
-                super.clear();
+                end();
             }
         }
+    }
+
+    /**
+     * Call callback and clear data
+     *
+     * @throws InvalidStateException if an exception appear
+     */
+    private void end() throws InvalidStateException {
+        super.computeStatistics();
+        m_event.finish(this);
+        super.finish();
+        m_kingdoms.clear();
+        super.clear();
     }
 
 }

@@ -34,9 +34,42 @@ class StatisticsTest {
 
     @Test
     void statisticsTest() throws AddException, InvalidStateException {
+        final int nb = 1, nbrep = 20;
         DataBase db = new DataBase("DataBase", _dataBase -> {
+            for (Statistics stat : _dataBase.getStatistics().values()) {
+                long totalPhase0 = 0;
+                long totalPhase1 = 0;
+                long totalPhase2 = 0;
+                float totalFreq0 = 0;
+                float totalFreq1 = 0;
+                float totalFreq2 = 0;
+                for (Tuple en : stat.getTable().values()) {
+                    totalPhase0 += en.get(Statistics.StatLong.PHASE0).intValue();
+                    totalPhase1 += en.get(Statistics.StatLong.PHASE1).intValue();
+                    totalPhase2 += en.get(Statistics.StatLong.PHASE2).intValue();
+                    totalFreq0 += en.get(Statistics.StatFloat.FREQ0);
+                    totalFreq1 += en.get(Statistics.StatFloat.FREQ1);
+                    totalFreq2 += en.get(Statistics.StatFloat.FREQ2);
+                }
+                assertEquals(1.0F, totalFreq0, 0.000001F);
+                assertEquals(1.0F, totalFreq1, 0.000001F);
+                assertEquals(1.0F, totalFreq2, 0.000001F);
+                assertEquals(totalPhase0, stat.getTotalTrinucleotide());
+                assertEquals(totalPhase1, stat.getTotalTrinucleotide());
+                assertEquals(totalPhase2, stat.getTotalTrinucleotide());
+                printTriTable(stat);
+            }
+
+            EnumMap<Statistics.Type, Long> genNumb = _dataBase.getGenomeNumber();
+            long totalGenom = 0L;
+            for (Statistics.Type t : Statistics.Type.values()) {
+                if (genNumb.get(t) != null) {
+                    System.out.println(t + " : " + genNumb.get(t));
+                    totalGenom += genNumb.get(t);
+                }
+            }
+            assertEquals((long) (nb * nb * nb * nb * nbrep), totalGenom);
         });
-        int nb = 5, nbrep = 200;
         db.start();
         for (int k = 0; k < nb; ++k) {
             Kingdom ki = new Kingdom("Kingdom_" + k, _kingdom -> {
@@ -410,40 +443,6 @@ class StatisticsTest {
             ki.stop();
         }
         db.stop();
-
-        for (Statistics stat : db.getStatistics().values()) {
-            long totalPhase0 = 0;
-            long totalPhase1 = 0;
-            long totalPhase2 = 0;
-            float totalFreq0 = 0;
-            float totalFreq1 = 0;
-            float totalFreq2 = 0;
-            for (Tuple en : stat.getTable().values()) {
-                totalPhase0 += en.get(Statistics.StatLong.PHASE0).intValue();
-                totalPhase1 += en.get(Statistics.StatLong.PHASE1).intValue();
-                totalPhase2 += en.get(Statistics.StatLong.PHASE2).intValue();
-                totalFreq0 += en.get(Statistics.StatFloat.FREQ0);
-                totalFreq1 += en.get(Statistics.StatFloat.FREQ1);
-                totalFreq2 += en.get(Statistics.StatFloat.FREQ2);
-            }
-            assertEquals(1.0F, totalFreq0, 0.000001F);
-            assertEquals(1.0F, totalFreq1, 0.000001F);
-            assertEquals(1.0F, totalFreq2, 0.000001F);
-            assertEquals(totalPhase0, stat.getTotalTrinucleotide());
-            assertEquals(totalPhase1, stat.getTotalTrinucleotide());
-            assertEquals(totalPhase2, stat.getTotalTrinucleotide());
-            printTriTable(stat);
-        }
-
-        EnumMap<Statistics.Type, Long> genNumb = db.getGenomeNumber();
-        long totalGenom = 0L;
-        for (Statistics.Type t : Statistics.Type.values()) {
-            if (genNumb.get(t) != null) {
-                System.out.println(t + " : " + genNumb.get(t));
-                totalGenom += genNumb.get(t);
-            }
-        }
-        assertEquals((long) (nb * nb * nb * nb * nbrep), totalGenom);
     }
 
 }

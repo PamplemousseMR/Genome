@@ -59,12 +59,7 @@ public final class SubGroup extends IDataBase {
     public void stop() throws InvalidStateException {
         super.stop();
         if (super.getFinishedChildren() == m_organisms.size()) {
-            super.computeStatistics();
-            m_event.finish(this);
-            m_parent.finish(this);
-            super.finish();
-            m_organisms.clear();
-            super.clear();
+            end();
         }
     }
 
@@ -111,12 +106,7 @@ public final class SubGroup extends IDataBase {
             }
             super.incrementFinishedChildren();
             if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_organisms.size()) {
-                super.computeStatistics();
-                m_event.finish(this);
-                m_parent.finish(this);
-                super.finish();
-                m_organisms.clear();
-                super.clear();
+                end();
             }
         }
     }
@@ -137,6 +127,20 @@ public final class SubGroup extends IDataBase {
      */
     protected void setParent(Group _group) {
         m_parent = _group;
+    }
+
+    /**
+     * Call callback and clear data
+     *
+     * @throws InvalidStateException if an exception appear
+     */
+    private void end() throws InvalidStateException {
+        super.computeStatistics();
+        m_event.finish(this);
+        m_parent.finish(this);
+        super.finish();
+        m_organisms.clear();
+        super.clear();
     }
 
 }
