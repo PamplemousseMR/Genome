@@ -47,7 +47,7 @@ public  class FileManager {
      */
     public static String GetPathFor(Kingdom _kindgom) throws IOException{
 
-        String KingdomPath= _kindgom.getName();
+        String KingdomPath="";
 
         return  CreatePath(KingdomPath);
     }
@@ -55,7 +55,7 @@ public  class FileManager {
     public static String GetPathFor(Group _group) throws IOException{
 
 
-        String GroupPath= _group.getKingdomName()+"/"+_group.getName();
+        String GroupPath= _group.getKingdomName();
 
 
 
@@ -65,7 +65,7 @@ public  class FileManager {
     public static String GetPathFor(SubGroup _subGroup) throws IOException{
 
 
-        String SubGroupPath= _subGroup.getKingdomName()+"/"+_subGroup.getGroupName()+"/"+_subGroup.getName();
+        String SubGroupPath= _subGroup.getKingdomName()+"/"+_subGroup.getGroupName();
 
 
 

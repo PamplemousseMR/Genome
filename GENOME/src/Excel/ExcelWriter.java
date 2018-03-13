@@ -1,26 +1,23 @@
 package Excel;
 
 import Data.*;
-
-/* external library import  */
 import Utils.Logs;
-import com.sun.org.glassfish.external.statistics.Statistic;
-import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Map;
+
+/* external library import  */
 
 public class ExcelWriter {
 
 	/**
 	 * Function call to write kingdom summary in Excel workbook
 	 */
-	public void writeKingdom(Kingdom _kingdom) throws IOException, InvalidFormatException {
+	public static void writeKingdom(Kingdom _kingdom) throws IOException {
 
 	    //	Get path from file manager
 
@@ -28,7 +25,7 @@ public class ExcelWriter {
 
 		//	Check if file exist
 
-		File file = new File(Path + "/" +  _kingdom.getName() + ".xls");
+		File file = new File(Path +   _kingdom.getName() + ".xlsx");
 
 		if (file.exists()) {
 			file.delete();
@@ -46,7 +43,7 @@ public class ExcelWriter {
 		Sheet _generalInfoSheet = workbook.createSheet();
 		writeGeneralInfoSheet(_generalInfoSheet,_kingdom);
 		//	Create sheet
-		Sheet sheet = workbook.createSheet();
+		createStatistics(workbook,_kingdom);
 
 		// Fill the sheet
 
@@ -79,7 +76,7 @@ public class ExcelWriter {
 	/**
 	 * Function call to write group summary in Excel workbook
 	 */
-	public void writeGroup(Group _group) throws IOException, InvalidFormatException {
+	public static void writeGroup(Group _group) throws IOException {
 
 		//	Get path from file manager
 
@@ -87,7 +84,7 @@ public class ExcelWriter {
 
 		//	Check if file exist
 
-		File file = new File(Path + "/" +  _group.getName() + ".xls");
+		File file = new File(Path + "/" +  _group.getName() + ".xlsx");
 
 		if (file.exists()) {
 			file.delete();
@@ -105,8 +102,7 @@ public class ExcelWriter {
 		Sheet _generalInfoSheet = workbook.createSheet();
 		writeGeneralInfoSheet(_generalInfoSheet,_group);
 		//	Create sheet
-		Sheet sheet = workbook.createSheet();
-
+		createStatistics(workbook,_group);
 		// Fill the sheet
 
 			// TODO
@@ -137,7 +133,7 @@ public class ExcelWriter {
 	/**
 	 * Function call to write subgroup summary in Excel workbook
 	 */
-	public void writeSubGroup(SubGroup _subGroup) throws IOException, InvalidFormatException {
+	public static void writeSubGroup(SubGroup _subGroup) throws IOException {
 
 		//	Get path from file manager
 
@@ -164,6 +160,7 @@ public class ExcelWriter {
 		Sheet _generalInfoSheet = workbook.createSheet();
 		writeGeneralInfoSheet(_generalInfoSheet,_subGroup);
 
+		createStatistics(workbook,_subGroup);
 		// Fill the sheet
 
 			// TODO
@@ -295,8 +292,8 @@ public class ExcelWriter {
         }
     }
 
-    public static void createStatistics(Workbook _workbook, Organism _organism) throws IOException {
-        for (Statistics stat : _organism.getStatistics().values()) {
+    public static void createStatistics(Workbook _workbook, IDataBase _data) throws IOException {
+        for (Statistics stat : _data.getStatistics().values()) {
             createStatisticSheet(_workbook, stat);
         }
     }

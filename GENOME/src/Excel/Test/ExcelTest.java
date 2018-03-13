@@ -16,16 +16,31 @@ class ExcelTest {
         db.start();
         for (int k = 0; k < nb; ++k) {
             Kingdom ki = new Kingdom("Kingdom_" + k, _kingdom -> {
+                try {
+                    ExcelWriter.writeKingdom(_kingdom);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             });
             ki.start();
             db.addKingdom(ki);
             for (int g = 0; g < nb; ++g) {
                 Group gr = new Group("Group_" + g, _group -> {
+                    try {
+                        ExcelWriter.writeGroup(_group);
+                    } catch (IOException e) {
+                        e.printStackTrace();
+                    }
                 });
                 gr.start();
                 ki.addGroup(gr);
                 for (int s = 0; s < nb; ++s) {
                     SubGroup su = new SubGroup("SubGroup_" + s, _subGroup -> {
+                        try {
+                            ExcelWriter.writeSubGroup(_subGroup);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
                     });
                     su.start();
                     gr.addSubGroup(su);
