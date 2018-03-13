@@ -21,6 +21,10 @@ public class IDataBase {
      */
     private final EnumMap<Statistics.Type, Long> m_genomeNumber;
     /**
+     * Last modification's date
+     */
+    private final Date m_modificationDate;
+    /**
      * Actual State
      */
     private State m_state;
@@ -32,10 +36,6 @@ public class IDataBase {
      * Total of finished children
      */
     private int m_finished;
-    /**
-     * Last modification's date
-     */
-    private Date m_modificationDate;
 
     /**
      * Class constructor

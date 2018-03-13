@@ -14,7 +14,7 @@ public class ICallbackTest {
     @Test
     public void stopFinishTest() throws InvalidStateException, AddException {
 
-        final ArrayList<Boolean> check = new ArrayList();
+        final ArrayList<Boolean> check = new ArrayList<>();
         check.add(false);
         check.add(false);
         check.add(false);
@@ -37,7 +37,7 @@ public class ICallbackTest {
             check.set(3, true);
             assertEquals(1, _subGroup.getStatistics().size());
         });
-        Organism organism = new Organism("Organism", 1234l, 4321l, _organism -> {
+        Organism organism = new Organism("Organism", 1234L, 4321L, _organism -> {
             check.set(4, true);
             assertEquals(1, _organism.getStatistics().size());
             assertEquals(1, _organism.getReplicons().size());
@@ -81,7 +81,7 @@ public class ICallbackTest {
     @Test
     public void finishStopTest() throws InvalidStateException, AddException {
 
-        final ArrayList<Boolean> check = new ArrayList();
+        final ArrayList<Boolean> check = new ArrayList<>();
         check.add(false);
         check.add(false);
         check.add(false);
@@ -104,7 +104,7 @@ public class ICallbackTest {
             check.set(3, true);
             assertEquals(1, _subGroup.getStatistics().size());
         });
-        Organism organism = new Organism("Organism", 1234l, 4321l, _organism -> {
+        Organism organism = new Organism("Organism", 1234L, 4321L, _organism -> {
             check.set(4, true);
             assertEquals(1, _organism.getStatistics().size());
             assertEquals(1, _organism.getReplicons().size());
