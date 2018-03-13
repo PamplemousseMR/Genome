@@ -34,7 +34,7 @@ class StatisticsTest {
 
     @Test
     void statisticsTest() throws AddException, InvalidStateException {
-        final int nb = 1, nbrep = 20;
+        final int nb = 5, nbrep = 200;
         DataBase db = new DataBase("DataBase", _dataBase -> {
             for (Statistics stat : _dataBase.getStatistics().values()) {
                 long totalPhase0 = 0;
@@ -87,7 +87,7 @@ class StatisticsTest {
                     su.start();
                     gr.addSubGroup(su);
                     for (int o = 0; o < nb; ++o) {
-                        Organism or = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+                        Organism or = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
                         });
                         or.start();
                         su.addOrganism(or);

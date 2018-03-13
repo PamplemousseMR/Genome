@@ -84,21 +84,21 @@ class GlobalTest {
         for (Kingdom k : dataBase.getKingdoms()) {
             for (Group g : k.getGroups()) {
                 for (SubGroup s : g.getSubGroups()) {
-                    Organism o1 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+                    Organism o1 = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
                     });
                     assertEquals(false, s.addOrganism(o1));
                     s.start();
                     assertEquals(true, s.addOrganism(o1));
                     list.add(o1);
 
-                    Organism o2 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+                    Organism o2 = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
                     });
                     assertEquals(true, s.addOrganism(o2));
                     assertThrows(Exception.class, () -> s.addOrganism(o2));
                     s.stop();
                     list.add(o2);
 
-                    Organism o3 = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+                    Organism o3 = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
                     });
                     assertEquals(false, s.addOrganism(o3));
                     assertEquals(IDataBase.State.STOPPED, s.getState());
@@ -166,7 +166,7 @@ class GlobalTest {
         s.start();
         g.addSubGroup(s);
 
-        Organism o = new Organism("'Brassica napus' phytoplasma", 152753l, 1592820474201505800l, _organism -> {
+        Organism o = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
         });
         s.addOrganism(o);
 

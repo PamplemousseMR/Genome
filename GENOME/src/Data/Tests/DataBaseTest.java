@@ -1,7 +1,6 @@
 package Data.Tests;
 
 import Data.DataBase;
-import Data.IDataBaseCallback;
 import Data.Kingdom;
 import Exception.AddException;
 import Exception.InvalidStateException;
@@ -19,11 +18,7 @@ class DataBaseTest {
 
     @BeforeAll
     static void setUpTest() throws InvalidStateException {
-        db = new DataBase("", new IDataBaseCallback() {
-            @Override
-            public void finish(DataBase _dataBase) {
-
-            }
+        db = new DataBase("", _dataBase -> {
         });
         db.start();
     }

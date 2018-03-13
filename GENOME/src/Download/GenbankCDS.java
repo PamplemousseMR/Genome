@@ -58,10 +58,11 @@ public final class GenbankCDS extends IDownloader {
     /**
      * Downloads refseq file from genbank
      *
-     * @throws IOException   if an IOException is throw
-     * @throws HTTPException if an HTTPException is throw
+     * @throws IOException      if an IOException is throw
+     * @throws HTTPException    if an HTTPException is throw
+     * @throws OutOfMemoryError A savage out of memory appear
      */
-    public void download() throws HTTPException, IOException {
+    public void download() throws HTTPException, IOException, OutOfMemoryError {
         Logs.info(String.format("Requesting sequence file [%s]", m_refseqId));
         final BufferedReader reader;
         URL url = null;
@@ -74,6 +75,10 @@ public final class GenbankCDS extends IDownloader {
         } catch (HTTPException | IOException e) {
             Logs.warning("Unable to get data : " + m_refseqId + " : " + url);
             Logs.exception(e);
+            throw e;
+        } catch (OutOfMemoryError e) {
+            Logs.warning("Out of memory : " + m_refseqId + " : " + url);
+            Logs.exception(new Exception(e));
             throw e;
         }
         Logs.info(String.format("Sequence [%s] : Request ended successfully (%d Bytes)", m_refseqId, m_data.length()));
