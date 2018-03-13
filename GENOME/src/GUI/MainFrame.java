@@ -104,7 +104,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener
 		m_jpb = new JProgressBar();
 
 		m_exitB = new JButton(" X ");
-		m_fullScreenB= new JButton("[=]"); //[-]
+		m_fullScreenB= new JButton("[¤]"); //[-]
 		m_reduceB = new JButton(" - ");
 	}
 
