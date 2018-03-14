@@ -1,6 +1,7 @@
 package Data;
 
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.stream.IntStream;
 
 public class Statistics implements Serializable{
@@ -135,6 +136,14 @@ public class Statistics implements Serializable{
      */
     private void incrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
         m_trinucleotideTable[_tri.ordinal()].incr(_stat, _inc);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null || getClass() != obj.getClass()) return false;
+        Statistics stat = (Statistics) obj;
+        if(m_type != stat.m_type || m_totalTrinucleotide != stat.m_totalTrinucleotide) return false;
+        return Arrays.equals(m_trinucleotideTable, stat.m_trinucleotideTable);
     }
 
     /**

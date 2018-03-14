@@ -6,12 +6,13 @@ import Exception.InvalidStateException;
 import Utils.Logs;
 import org.junit.jupiter.api.Test;
 
-import java.io.*;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SerializableTest {
 
@@ -49,39 +50,6 @@ class SerializableTest {
         }
     }
 
-    private static void serializableIData(IDataBase _data){
-        printIData(_data);
-
-        File fileOut = new File("Save/test_"+_data.getName()+".ser");
-        ObjectOutputStream objectOut = null;
-        ObjectInputStream objectIn = null;
-        if (fileOut.exists()) {
-            fileOut.delete();
-        }
-        File fileIn = null;
-        try {
-            fileOut.createNewFile();
-            objectOut = new ObjectOutputStream(new FileOutputStream(fileOut));
-
-            objectOut.writeObject((IDataBase)_data);
-            objectOut.flush();
-            objectOut.close();
-
-            fileIn = new File("Save/test_"+_data.getName()+".ser");
-            objectIn = new ObjectInputStream((new FileInputStream(fileIn)));
-            IDataBase retour = (IDataBase) objectIn.readObject();
-            if(retour != null){
-                printIData(retour);
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-            Logs.exception(e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            Logs.exception(e);
-        }
-    }
-
     @Test
     void serializableTest() throws AddException, InvalidStateException {
 
@@ -96,212 +64,302 @@ class SerializableTest {
 
         }
 
-        DataBase db = new DataBase("DataBase", _dataBase -> {
-            serializableIData(_dataBase);
-            /*printIData(_dataBase);
-
-            File fileOut = new File("Save/test_"+_dataBase.getName()+".ser");
-            ObjectOutputStream objectOut = null;
-            ObjectInputStream objectIn = null;
-            if (fileOut.exists()) {
-                fileOut.delete();
-            }
-            File fileIn = null;
-            try {
-                fileOut.createNewFile();
-                objectOut = new ObjectOutputStream(new FileOutputStream(fileOut));
-
-                objectOut.writeObject(_dataBase);
-                objectOut.flush();
-                objectOut.close();
-
-                fileIn = new File("Save/test_"+_dataBase.getName()+".ser");
-                objectIn = new ObjectInputStream((new FileInputStream(fileIn)));
-                DataBase retour = (DataBase) objectIn.readObject();
-                if(retour != null){
-                    printIData(retour);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            }*/
+        final int nb = 5, nbrep = 200;
+        DataBase db = new DataBase("_DataBase", _dataBase -> {
+            _dataBase.save();
+            IDataBase retour = IDataBase.s_load(_dataBase.getName());
+            assertTrue(_dataBase.equals(retour));
             });
         db.start();
 
-        Kingdom ki = new Kingdom("Kingdom", _kingdom -> {
-            serializableIData(_kingdom);
-            /*printIData(_kingdom);
+        for (int k = 0 ; k < nb ; k++) {
+            Kingdom ki = new Kingdom(k+"__Kingdom", _kingdom -> {
+                _kingdom.save();
+                IDataBase retour = IDataBase.s_load(_kingdom.getName());
+                assertTrue(_kingdom.equals(retour));
+                });
+            ki.start();
+            db.addKingdom(ki);
 
-            File fileOut = new File("Save/test_"+_kingdom.getName()+".ser");
-            ObjectOutputStream objectOut = null;
-            ObjectInputStream objectIn = null;
-            if (fileOut.exists()) {
-                fileOut.delete();
-            }
-            File fileIn = null;
-            try {
-                fileOut.createNewFile();
-                objectOut = new ObjectOutputStream(new FileOutputStream(fileOut));
+            for (int g = 0; g < nb ; g++) {
+                Group gr = new Group(k+"_"+g+"__Group", _group -> {
+                    _group.save();
+                    IDataBase retour = IDataBase.s_load(_group.getName());
+                    assertTrue(_group.equals(retour));
+                });
+                gr.start();
+                ki.addGroup(gr);
 
-                objectOut.writeObject(_kingdom);
-                objectOut.flush();
-                objectOut.close();
+                for(int s = 0; s < nb ; s++) {
+                    SubGroup su = new SubGroup(k+"_"+g+"_"+s+"__SubGroup", _subGroup -> {
+                        _subGroup.save();
+                        IDataBase retour = IDataBase.s_load(_subGroup.getName());
+                        assertTrue(_subGroup.equals(retour));
+                    });
+                    su.start();
+                    gr.addSubGroup(su);
 
-                fileIn = new File("Save/test_"+_kingdom.getName()+".ser");
-                objectIn = new ObjectInputStream((new FileInputStream(fileIn)));
-                Kingdom retour = (Kingdom) objectIn.readObject();
-                if(retour != null){
-                    printIData(retour);
+                    for(int o = 0; o< nb ; o++) {
+                        Organism or = new Organism(k+"_"+g+"_"+s+"_"+o+"__Organism", 152753L, 1592820474201505800L, _organism -> {
+                            _organism.save();
+                            IDataBase retour = IDataBase.s_load(_organism.getName());
+                            assertTrue(_organism.equals(retour));
+                        });
+                        or.start();
+                        su.addOrganism(or);
+
+                        for (int r = 0; r < nbrep; ++r) {
+                            Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1");
+                            StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
+                            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
+                            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
+                            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
+                            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
+                            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
+                            strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTAT");
+                            re.addSequence(strBuf);
+                            assertEquals("CR1", re.getName());
+                            or.addReplicon(re);
+                        }
+                        or.stop();
+                        or.finish();
+                    }
+                    su.stop();
                 }
-            } catch (IOException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            }*/
-            });
-        ki.start();
-        db.addKingdom(ki);
-        db.stop();
-
-        Group gr = new Group("Group", _group -> {
-            serializableIData(_group);
-            /*printIData(_group);
-
-            File fileOut = new File("Save/test_"+_group.getName()+".ser");
-            ObjectOutputStream objectOut = null;
-            ObjectInputStream objectIn = null;
-            if (fileOut.exists()) {
-                fileOut.delete();
+                gr.stop();
             }
-            File fileIn = null;
-            try {
-                fileOut.createNewFile();
-                objectOut = new ObjectOutputStream(new FileOutputStream(fileOut));
-
-                objectOut.writeObject(_group);
-                objectOut.flush();
-                objectOut.close();
-
-                fileIn = new File("Save/test_"+_group.getName()+".ser");
-                objectIn = new ObjectInputStream((new FileInputStream(fileIn)));
-                Group retour = (Group) objectIn.readObject();
-                if(retour != null){
-                    printIData(retour);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            }*/
-            });
-        gr.start();
-        ki.addGroup(gr);
-        ki.stop();
-
-        SubGroup su = new SubGroup("SubGroup", _subGroup -> {
-            serializableIData(_subGroup);
-            /*printIData(_subGroup);
-
-            File fileOut = new File("Save/test_"+_subGroup.getName()+".ser");
-            ObjectOutputStream objectOut = null;
-            ObjectInputStream objectIn = null;
-            if (fileOut.exists()) {
-                fileOut.delete();
-            }
-            File fileIn = null;
-            try {
-                fileOut.createNewFile();
-                objectOut = new ObjectOutputStream(new FileOutputStream(fileOut));
-
-                objectOut.writeObject(_subGroup);
-                objectOut.flush();
-                objectOut.close();
-
-                fileIn = new File("Save/test_"+_subGroup.getName()+".ser");
-                objectIn = new ObjectInputStream((new FileInputStream(fileIn)));
-                SubGroup retour = (SubGroup) objectIn.readObject();
-                if(retour != null){
-                    printIData(retour);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            }*/
-            });
-        su.start();
-        gr.addSubGroup(su);
-        gr.stop();
-
-        Organism or = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
-            serializableIData(_organism);
-            /*printIData(_organism);
-
-            File fileOut = new File("Save/test_"+_organism.getName()+".ser");
-            ObjectOutputStream objectOut = null;
-            ObjectInputStream objectIn = null;
-            if (fileOut.exists()) {
-                fileOut.delete();
-            }
-            File fileIn = null;
-            try {
-                fileOut.createNewFile();
-                objectOut = new ObjectOutputStream(new FileOutputStream(fileOut));
-
-                objectOut.writeObject(_organism);
-                objectOut.flush();
-                objectOut.close();
-
-                fileIn = new File("Save/test_"+_organism.getName()+".ser");
-                objectIn = new ObjectInputStream((new FileInputStream(fileIn)));
-                Organism retour = (Organism) objectIn.readObject();
-                if(retour != null){
-                    printIData(retour);
-                }
-            } catch (IOException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-                Logs.exception(e);
-            }*/
-            });
-        or.start();
-        su.addOrganism(or);
-        su.stop();
-
-        for (int r = 0; r < 3; ++r) {
-        Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1");
-            StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
-            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
-            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
-            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
-            strBuf.append("ATTTTATTATTTATATATATAAATATATTATTAAATTATTTATATTAATA");
-            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
-            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
-            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
-            strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
-            strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
-            strBuf.append("AGAACTATAATTATGTTTTCATTGAGATATATTTATATATTTAAATAAAT");
-            strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
-            strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
-            strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
-            strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTAT");
-            re.addSequence(strBuf);
-            assertEquals("CR1", re.getName());
-            or.addReplicon(re);
+            ki.stop();
         }
-        or.stop();
-        or.finish();
+        db.stop();
     }
 
 }

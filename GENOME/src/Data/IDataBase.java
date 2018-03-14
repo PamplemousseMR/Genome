@@ -1,8 +1,9 @@
 package Data;
 
 import Exception.InvalidStateException;
+import Utils.Logs;
 
-import java.io.Serializable;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
@@ -306,6 +307,51 @@ public class IDataBase implements Serializable {
      */
     protected final void setTotalOrganismToOne(){
         m_totalOrganism = 1L;
+    }
+
+    public final void save() {
+        File file = new File("Save/test_"+getName()+".ser");
+        ObjectOutputStream stream;
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            file.createNewFile();
+            stream = new ObjectOutputStream(new FileOutputStream(file));
+            stream.writeObject(this);
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logs.exception(e);
+            //TODO throw ??
+        }
+    }
+
+    public static final IDataBase s_load(String _name){
+        File file = new File("Save/test_"+_name+".ser");
+        ObjectInputStream stream;
+        if (!file.exists()) {
+            return null;
+        }
+        try {
+            stream = new ObjectInputStream((new FileInputStream(file)));
+            return (IDataBase) stream.readObject();
+        } catch (IOException e) {
+            e.printStackTrace();
+            Logs.exception(e);
+        } catch (ClassNotFoundException e) {
+            e.printStackTrace();
+            Logs.exception(e);
+        }
+        return null;
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if(obj == null || getClass() != obj.getClass()) return false;
+        IDataBase dat = (IDataBase) obj;
+        return(m_statistics.equals(dat.m_statistics) && m_genomeNumber.equals(dat.m_genomeNumber));
     }
 
     /**
