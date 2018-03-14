@@ -1,67 +1,76 @@
 package Data;
 
-import java.util.EnumMap;
+import java.util.Arrays;
 
 public final class Tuple {
 
     /**
-     * EnumMap to store float
+     * Array to store float
      */
-    private final EnumMap<Statistics.StatFloat, Float> m_floats;
+    private final Float[] m_floats;
     /**
-     * EnumMap to store long
+     * Array to store long
      */
-    private final EnumMap<Statistics.StatLong, Long> m_longs;
+    private final Long[] m_longs;
 
     /**
      * Class constructor
-     *
-     * @param _floats, the enumMap of float
-     * @param _longs,  the enumMap of long
      */
-    Tuple(EnumMap<Statistics.StatFloat, Float> _floats, EnumMap<Statistics.StatLong, Long> _longs) {
-        m_floats = _floats;
-        m_longs = _longs;
+    Tuple() {
+        m_longs = new Long[Statistics.StatLong.values().length];
+        Arrays.fill(m_longs, 0L);
+        m_floats = new Float[Statistics.StatFloat.values().length];
+        Arrays.fill(m_floats, 0.F);
     }
 
     /**
-     * Get value from enum
+     * Get value from the enum
      *
      * @param _stat, the enum
      * @return the float get from the enum
      */
     public Float get(Statistics.StatFloat _stat) {
-        return m_floats.get(_stat);
+        return m_floats[_stat.ordinal()];
     }
 
     /**
-     * Get value from enum
+     * Get value from the enum
      *
      * @param _stat, the enum
      * @return the long get from the enum
      */
     public Long get(Statistics.StatLong _stat) {
-        return m_longs.get(_stat);
+        return m_longs[_stat.ordinal()];
     }
 
     /**
-     * Set value from enum
+     * Set value of the enum
      *
      * @param _stat, the enum
      * @param _val,  the value to set
      */
-    public void set(Statistics.StatFloat _stat, float _val) {
-        m_floats.put(_stat, _val);
+    protected void set(Statistics.StatFloat _stat, float _val) {
+        m_floats[_stat.ordinal()] = _val;
     }
 
     /**
-     * Set value from enum
+     * Set value of the enum
      *
      * @param _stat, the enum
      * @param _val,  the value to set
      */
-    public void set(Statistics.StatLong _stat, long _val) {
-        m_longs.put(_stat, _val);
+    protected void set(Statistics.StatLong _stat, long _val) {
+        m_longs[_stat.ordinal()] = _val;
+    }
+
+    /**
+     * Increment the value of the enum
+     *
+     * @param _stat, the enum
+     * @param _val,  the value to set
+     */
+    protected void incr(Statistics.StatLong _stat, long _val) {
+        m_longs[_stat.ordinal()] += _val;
     }
 
 }

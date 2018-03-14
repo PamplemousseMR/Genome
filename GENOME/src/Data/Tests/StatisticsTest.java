@@ -14,7 +14,7 @@ class StatisticsTest {
     private static void printTriTable(Statistics _stat) {
         System.out.print("TRI\tPhase0\tFreq0\tPhase1\tFreq1\tPhase2\tFreq2\tPref0\tPref1\tPref2\t");
         for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
-            Tuple row = _stat.getTable().get(tri);
+            Tuple row = _stat.getTable()[tri.ordinal()];
             System.out.print("\n" + tri + "\t");
             System.out.print(row.get(Statistics.StatLong.PHASE0) + "\t");
             System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ0)));
@@ -43,7 +43,7 @@ class StatisticsTest {
                 float totalFreq0 = 0;
                 float totalFreq1 = 0;
                 float totalFreq2 = 0;
-                for (Tuple en : stat.getTable().values()) {
+                for (Tuple en : stat.getTable()) {
                     totalPhase0 += en.get(Statistics.StatLong.PHASE0).intValue();
                     totalPhase1 += en.get(Statistics.StatLong.PHASE1).intValue();
                     totalPhase2 += en.get(Statistics.StatLong.PHASE2).intValue();
@@ -61,14 +61,14 @@ class StatisticsTest {
             }
 
             EnumMap<Statistics.Type, Long> genNumb = _dataBase.getGenomeNumber();
-            long totalGenom = 0L;
+            long totalGenome = 0L;
             for (Statistics.Type t : Statistics.Type.values()) {
                 if (genNumb.get(t) != null) {
                     System.out.println(t + " : " + genNumb.get(t));
-                    totalGenom += genNumb.get(t);
+                    totalGenome += genNumb.get(t);
                 }
             }
-            assertEquals((long) (nb * nb * nb * nb * nbrep), totalGenom);
+            assertEquals((long) (nb * nb * nb * nb * nbrep), totalGenome);
         });
         db.start();
         for (int k = 0; k < nb; ++k) {
