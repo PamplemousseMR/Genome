@@ -74,7 +74,7 @@ public final class Replicon extends Statistics {
             super.incrementTotal(idx / 3);
 
             long val0, val1, val2;
-            for (Tuple tuple : temp.getTable().values()) {
+            for (Tuple tuple : temp.getTable()) {
                 val0 = tuple.get(Statistics.StatLong.PHASE0);
                 val1 = tuple.get(Statistics.StatLong.PHASE1);
                 val2 = tuple.get(Statistics.StatLong.PHASE2);
