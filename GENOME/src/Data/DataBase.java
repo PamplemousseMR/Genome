@@ -14,11 +14,11 @@ public final class DataBase extends IDataBase {
     /**
      * Array of this Database's Kingdom
      */
-    private final ArrayList<Kingdom> m_kingdoms;
+    private transient final ArrayList<Kingdom> m_kingdoms;
     /**
      * Event to call when compute are finished
      */
-    private final IDataBaseCallback m_event;
+    private transient final IDataBaseCallback m_event;
 
     /**
      * Class constructor
@@ -71,8 +71,6 @@ public final class DataBase extends IDataBase {
         }
     }
 
-    // Do not use
-
     /**
      * Finish this DataBase if it can
      *
@@ -85,6 +83,7 @@ public final class DataBase extends IDataBase {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _kingdom.getTypeNumber(stat.getType()));
             }
+            super.incrementGenericTotals(_kingdom);
             incrementFinishedChildren();
             if (super.getState() == IDataBase.State.STOPPED && super.getFinishedChildren() == m_kingdoms.size()) {
                 end();

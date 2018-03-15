@@ -1,8 +1,9 @@
 package Data;
 
+import java.io.Serializable;
 import java.util.stream.IntStream;
 
-public class Statistics {
+public class Statistics implements Serializable {
 
     /**
      * Type of this Statistic
@@ -16,6 +17,14 @@ public class Statistics {
      * Number total of trinucleotide on phase 0
      */
     private long m_totalTrinucleotide;
+    /**
+     * The number of valid CDS sequences
+     */
+    private long m_validCDSNumber;
+    /**
+     * The number of invalid CDS sequences
+     */
+    private long m_invalidCDSNumber;
 
     /**
      * Class constructor
@@ -23,10 +32,10 @@ public class Statistics {
     Statistics(Type _type) {
         m_type = _type;
         m_trinucleotideTable = new Tuple[Trinucleotide.values().length];
-        IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> {
-            m_trinucleotideTable[i] = new Tuple();
-        });
+        IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> m_trinucleotideTable[i] = new Tuple());
         m_totalTrinucleotide = 0;
+        m_validCDSNumber = 0L;
+        m_invalidCDSNumber = 0L;
     }
 
     /**
@@ -55,6 +64,24 @@ public class Statistics {
     }
 
     /**
+     * Get the number of valid CDS
+     *
+     * @return the number of valid CDS
+     */
+    public final long getValidCDSNumber() {
+        return m_validCDSNumber;
+    }
+
+    /**
+     * Get the number of invalid CDS
+     *
+     * @return the number of invalid CDS
+     */
+    public final long getInvalidCDSNumber() {
+        return m_invalidCDSNumber;
+    }
+
+    /**
      * Update statistics
      *
      * @param _stats, the stats use to update
@@ -71,6 +98,8 @@ public class Statistics {
             incrementStat(tri, StatLong.PREF2, inputRow.get(StatLong.PREF2));
         });
         m_totalTrinucleotide += _stats.m_totalTrinucleotide;
+        m_validCDSNumber += _stats.m_validCDSNumber;
+        m_invalidCDSNumber += _stats.m_invalidCDSNumber;
     }
 
     /**
@@ -103,7 +132,23 @@ public class Statistics {
         m_totalTrinucleotide += _inc;
     }
 
-    // Do not use
+    /**
+     * Increment the number of valid CDS sequence
+     *
+     * @param _long, the value to increment
+     */
+    protected final void incrementValidCDS(long _long) {
+        m_validCDSNumber += _long;
+    }
+
+    /**
+     * Increment the number of valid CDS sequence
+     *
+     * @param _long, the value to increment
+     */
+    protected final void incrementInvalidCDS(long _long) {
+        m_invalidCDSNumber += _long;
+    }
 
     /**
      * Increment the value of a trinucleotide for a stat by the parameter

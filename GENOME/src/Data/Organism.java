@@ -10,23 +10,23 @@ public final class Organism extends IDataBase {
     /**
      * Array of this organism's Replicon
      */
-    private final ArrayList<Replicon> m_replicons;
+    private transient final ArrayList<Replicon> m_replicons;
     /**
      * The id of this organism
      */
-    private final long m_id;
+    private transient final long m_id;
     /**
      * The version of the organism
      */
-    private final long m_version;
+    private transient final long m_version;
     /**
      * Event to call when compute are finished
      */
-    private final IOrganismCallback m_event;
+    private transient final IOrganismCallback m_event;
     /**
      * Reference to the parent
      */
-    private SubGroup m_parent;
+    private transient SubGroup m_parent;
 
     /**
      * Class constructor
@@ -43,6 +43,7 @@ public final class Organism extends IDataBase {
         m_replicons = new ArrayList<>();
         m_parent = null;
         m_event = _event;
+        super.setTotalOrganismToOne();
     }
 
     /**
@@ -75,6 +76,7 @@ public final class Organism extends IDataBase {
         for (Replicon rep : m_replicons) {
             super.updateStatistics(rep);
             super.incrementGenomeNumber(rep.getType());
+            super.incrementGenericTotals(rep);
         }
         super.computeStatistics();
         m_event.finish(this);
@@ -137,8 +139,6 @@ public final class Organism extends IDataBase {
     public long getId() {
         return m_id;
     }
-
-    // Do not use
 
     /**
      * Set the parent

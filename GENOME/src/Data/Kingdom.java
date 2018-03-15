@@ -10,15 +10,15 @@ public final class Kingdom extends IDataBase {
     /**
      * Array of this Kingdom's Group
      */
-    private final ArrayList<Group> m_groups;
+    private transient final ArrayList<Group> m_groups;
     /**
      * Event to call when compute are finished
      */
-    private final IKingdomCallback m_event;
+    private transient final IKingdomCallback m_event;
     /**
      * Reference to the parent
      */
-    private DataBase m_parent;
+    private transient DataBase m_parent;
 
     /**
      * Class constructor
@@ -72,8 +72,6 @@ public final class Kingdom extends IDataBase {
         return m_groups;
     }
 
-    // Do not use
-
     /**
      * Finish this Kingdom if it can
      *
@@ -86,6 +84,7 @@ public final class Kingdom extends IDataBase {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _group.getTypeNumber(stat.getType()));
             }
+            super.incrementGenericTotals(_group);
             super.incrementFinishedChildren();
             if (getState() == State.STOPPED && super.getFinishedChildren() == m_groups.size()) {
                 end();

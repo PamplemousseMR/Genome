@@ -10,15 +10,15 @@ public final class SubGroup extends IDataBase {
     /**
      * Array of this SubGroup's Organisms
      */
-    private final ArrayList<Organism> m_organisms;
+    private transient final ArrayList<Organism> m_organisms;
     /**
      * Event to call when compute are finished
      */
-    private final ISubGroupCallback m_event;
+    private transient final ISubGroupCallback m_event;
     /**
      * Reference to the parent
      */
-    private Group m_parent;
+    private transient Group m_parent;
 
     /**
      * Class constructor
@@ -90,8 +90,6 @@ public final class SubGroup extends IDataBase {
         return m_parent.getParent().getName();
     }
 
-    // Do not use
-
     /**
      * Finish this Subgroup if it can
      *
@@ -104,6 +102,7 @@ public final class SubGroup extends IDataBase {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _organism.getTypeNumber(stat.getType()));
             }
+            super.incrementGenericTotals(_organism);
             super.incrementFinishedChildren();
             if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_organisms.size()) {
                 end();

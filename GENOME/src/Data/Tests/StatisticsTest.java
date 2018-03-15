@@ -37,16 +37,16 @@ class StatisticsTest {
         final int nb = 5, nbrep = 200;
         DataBase db = new DataBase("DataBase", _dataBase -> {
             for (Statistics stat : _dataBase.getStatistics().values()) {
-                long totalPhase0 = 0;
-                long totalPhase1 = 0;
-                long totalPhase2 = 0;
-                float totalFreq0 = 0;
-                float totalFreq1 = 0;
-                float totalFreq2 = 0;
+                long totalPhase0 = 0L;
+                long totalPhase1 = 0L;
+                long totalPhase2 = 0L;
+                float totalFreq0 = 0.0F;
+                float totalFreq1 = 0.0F;
+                float totalFreq2 = 0.0F;
                 for (Tuple en : stat.getTable()) {
-                    totalPhase0 += en.get(Statistics.StatLong.PHASE0).intValue();
-                    totalPhase1 += en.get(Statistics.StatLong.PHASE1).intValue();
-                    totalPhase2 += en.get(Statistics.StatLong.PHASE2).intValue();
+                    totalPhase0 += en.get(Statistics.StatLong.PHASE0);
+                    totalPhase1 += en.get(Statistics.StatLong.PHASE1);
+                    totalPhase2 += en.get(Statistics.StatLong.PHASE2);
                     totalFreq0 += en.get(Statistics.StatFloat.FREQ0);
                     totalFreq1 += en.get(Statistics.StatFloat.FREQ1);
                     totalFreq2 += en.get(Statistics.StatFloat.FREQ2);
@@ -60,6 +60,18 @@ class StatisticsTest {
                 printTriTable(stat);
             }
 
+            long totalValid = 0L;
+            long totalInvalid = 0L;
+            long totalOrganism = 0L;
+            for (Kingdom child : _dataBase.getKingdoms()) {
+                totalValid += child.getValidCDSNumber();
+                totalInvalid += child.getInvalidCDSNumber();
+                totalOrganism += child.getTotalOrganism();
+            }
+            assertEquals(nb * nb * nb * nb, _dataBase.getTotalOrganism());
+            assertEquals(totalValid, _dataBase.getValidCDSNumber());
+            assertEquals(totalInvalid, _dataBase.getInvalidCDSNumber());
+            assertEquals(totalOrganism, _dataBase.getTotalOrganism());
             EnumMap<Statistics.Type, Long> genNumb = _dataBase.getGenomeNumber();
             long totalGenome = 0L;
             for (Statistics.Type t : Statistics.Type.values()) {

@@ -9,15 +9,15 @@ public final class Replicon extends Statistics {
     /**
      * The name
      */
-    private final String m_name;
+    private transient final String m_name;
     /**
      * Array of all the sequences of this Replicon
      */
-    private final ArrayList<StringBuilder> m_sequences;
+    private transient final ArrayList<StringBuilder> m_sequences;
     /**
      * Local index
      */
-    private int m_index;
+    private transient int m_index;
 
     /**
      * Class constructor
@@ -54,8 +54,6 @@ public final class Replicon extends Statistics {
         return m_sequences.add(_sequence);
     }
 
-    // Do not use
-
     /**
      * Compute statistics of this Replicon
      */
@@ -72,6 +70,7 @@ public final class Replicon extends Statistics {
                 idx += 3;
             }
             super.incrementTotal(idx / 3);
+            super.incrementValidCDS(1L);
 
             long val0, val1, val2;
             for (Tuple tuple : temp.getTable()) {
@@ -85,11 +84,11 @@ public final class Replicon extends Statistics {
                 if (val2 < val0 || val2 < val1)
                     val2 = 0;
                 if (val0 != 0)
-                    tuple.set(Statistics.StatLong.PREF0, 1);
+                    tuple.incr(Statistics.StatLong.PREF0, 1);
                 if (val1 != 0)
-                    tuple.set(Statistics.StatLong.PREF1, 1);
+                    tuple.incr(Statistics.StatLong.PREF1, 1);
                 if (val2 != 0)
-                    tuple.set(Statistics.StatLong.PREF2, 1);
+                    tuple.incr(Statistics.StatLong.PREF2, 1);
             }
             update(temp);
             super.compute();

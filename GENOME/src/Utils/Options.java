@@ -28,6 +28,14 @@ public final class Options {
      */
     private static final String s_CDS_BASE_URL = "https://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi";
     /**
+     * Output directory for serialized data
+     */
+    private static final String s_SERIALIZE_DIRECTORY = "save";
+    /**
+     * Extension used for serialization
+     */
+    private static final String s_SERIALIZE_EXTENSION = ".ser";
+    /**
      * Option's properties
      */
     private static Properties m_properties = null;
@@ -149,6 +157,14 @@ public final class Options {
 
     public static String getCDSBaseUrl() {
         return s_CDS_BASE_URL;
+    }
+
+    public static String getSerializeDirectory() {
+        return s_SERIALIZE_DIRECTORY;
+    }
+
+    public static String getSerializeExtension() {
+        return s_SERIALIZE_EXTENSION;
     }
 
 }
