@@ -2,7 +2,10 @@ package Excel;
 
 import Data.*;
 import Utils.Logs;
-import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.usermodel.CellType;
+import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFRow;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import java.io.File;
@@ -17,6 +20,62 @@ public class ExcelWriter {
 	/**
 	 * Function call to write kingdom summary in Excel workbook
 	 */
+
+	
+
+	public  static  void writeDatabase(DataBase _data) throws IOException
+    {
+        String Path = FileManager.GetPathFor(_data);
+
+        //	Check if file exist
+
+        File file = new File(Path );
+
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            file.createNewFile();
+        } catch (IOException e) {
+            Logs.exception(e);
+            throw e;
+        }
+
+        //	Create workbook
+        XSSFWorkbook workbook = new XSSFWorkbook();
+
+        XSSFSheet _generalInfoSheet = workbook.createSheet();
+        writeGeneralInfoSheet(_generalInfoSheet,_data);
+        //	Create sheet
+        createStatistics(workbook,_data);
+
+        // Fill the sheet
+
+        // TODO
+
+        // Write the output to the file
+
+        FileOutputStream fileOut;
+        try {
+            fileOut = new FileOutputStream(file);
+        } catch (IOException e) {
+            Logs.exception(e);
+            throw e;
+        }
+        try {
+            workbook.write(fileOut);
+        } catch (IOException e) {
+            Logs.exception(e);
+            throw e;
+        }
+        try {
+            fileOut.close();
+        } catch (IOException e) {
+            Logs.exception(e);
+            throw e;
+        }
+
+    }
 	public static void writeKingdom(Kingdom _kingdom) throws IOException {
 
 	    //	Get path from file manager
@@ -25,7 +84,7 @@ public class ExcelWriter {
 
 		//	Check if file exist
 
-		File file = new File(Path +   _kingdom.getName() + ".xlsx");
+		File file = new File(Path );
 
 		if (file.exists()) {
 			file.delete();
@@ -38,9 +97,9 @@ public class ExcelWriter {
 		}
 
 		//	Create workbook
-		Workbook workbook = new XSSFWorkbook();
+		XSSFWorkbook workbook = new XSSFWorkbook();
 
-		Sheet _generalInfoSheet = workbook.createSheet();
+		XSSFSheet _generalInfoSheet = workbook.createSheet();
 		writeGeneralInfoSheet(_generalInfoSheet,_kingdom);
 		//	Create sheet
 		createStatistics(workbook,_kingdom);
@@ -84,7 +143,7 @@ public class ExcelWriter {
 
 		//	Check if file exist
 
-		File file = new File(Path + "/" +  _group.getName() + ".xlsx");
+		File file = new File(Path );
 
 		if (file.exists()) {
 			file.delete();
@@ -97,9 +156,9 @@ public class ExcelWriter {
 		}
 
 		//	Create workbook
-		Workbook workbook = new XSSFWorkbook();
+		XSSFWorkbook workbook = new XSSFWorkbook();
 
-		Sheet _generalInfoSheet = workbook.createSheet();
+		XSSFSheet _generalInfoSheet = workbook.createSheet();
 		writeGeneralInfoSheet(_generalInfoSheet,_group);
 		//	Create sheet
 		createStatistics(workbook,_group);
@@ -141,7 +200,7 @@ public class ExcelWriter {
 
 		//	Check if file exist
 
-		File file = new File(Path + "/" +  _subGroup.getName() + ".xlsx");
+		File file = new File(Path );
 
 		if (file.exists()) {
 			file.delete();
@@ -154,18 +213,14 @@ public class ExcelWriter {
 		}
 
 		//	Create workbook
-		Workbook workbook = new XSSFWorkbook();
+		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		//	Create general info sheet
-		Sheet _generalInfoSheet = workbook.createSheet();
+		XSSFSheet _generalInfoSheet = workbook.createSheet();
 		writeGeneralInfoSheet(_generalInfoSheet,_subGroup);
 
 		createStatistics(workbook,_subGroup);
-		// Fill the sheet
 
-			// TODO
-
-		// Write the output to the file
 
 		FileOutputStream fileOut;
 		try {
@@ -198,7 +253,7 @@ public class ExcelWriter {
 
         //	Check if file exist
 
-		File file = new File(Path + "/" +  _organism.getName() + ".xlsx");
+		File file = new File(Path );
 		if (file.exists()) {
 			file.delete();
 		}
@@ -210,10 +265,10 @@ public class ExcelWriter {
 		}
 
         //	Create workbook
-		Workbook workbook = new XSSFWorkbook();
+		XSSFWorkbook workbook = new XSSFWorkbook();
 
 		//	Create general info sheet
-		Sheet general_info_sheet = workbook.createSheet(ExcelConstants.s_generalInfoSheet);
+		XSSFSheet general_info_sheet = workbook.createSheet(ExcelConstants.s_generalInfoSheet);
 
 		writeGeneralInfoSheet(general_info_sheet,_organism);
 
@@ -247,11 +302,11 @@ public class ExcelWriter {
 
 	}
 
-	public  static  void writeGeneralInfoSheet(Sheet _general_info_sheet, IDataBase _data)
+	public  static  void writeGeneralInfoSheet(XSSFSheet _general_info_sheet, IDataBase _data)
 	{
 		_general_info_sheet.createRow(0).createCell(0).setCellValue("Information");
 
-		Row r;
+		XSSFRow r;
 
 		r=_general_info_sheet.createRow(2);
 		r.createCell(0).setCellValue("Name");
@@ -264,57 +319,74 @@ public class ExcelWriter {
 
 		r=_general_info_sheet.createRow(6);
 		r.createCell(0).setCellValue("Number of CDS sequences");
-		r.createCell(1).setCellValue("placeholder");
+		r.createCell(1).setCellValue(_data.getValidCDSNumber());
 
 		r=_general_info_sheet.createRow(8);
 		r.createCell(0).setCellValue("Number of invalids CDS");
-		r.createCell(1).setCellValue("placeholder");
+		r.createCell(1).setCellValue(_data.getInvalidCDSNumber());
 
-		r=_general_info_sheet.createRow(10);
-		r.createCell(0).setCellValue("Number of Organisms");
-		r.createCell(1).setCellValue("placeholder");
+		if(_data.getClass()!=Organism.class)
+		{
+			r=_general_info_sheet.createRow(10);
+			r.createCell(0).setCellValue("Number of Organisms");
+			r.createCell(1).setCellValue(_data.getTotalOrganism());
+		}
+
 
 		int genomeInfoRowNumber=3;
 
 		for(Map.Entry<Statistics.Type,Long> entry: _data.getGenomeNumber().entrySet())
 		{
-			Row row=_general_info_sheet.createRow(genomeInfoRowNumber);
+			XSSFRow row=_general_info_sheet.createRow(genomeInfoRowNumber);
 			row.createCell(5).setCellValue(entry.getKey().toString());
 			writeNumericCell( row.createCell(6),entry.getValue());
 			genomeInfoRowNumber++;
 		}
 
+		for(int i=0; i<6;i++)
+        {
+            _general_info_sheet.autoSizeColumn(i);
+        }
+
 	}
 
-	public static void createReplicons(Workbook _workbook, Organism _organism) throws IOException {
+	public static void createReplicons(XSSFWorkbook _workbook, Organism _organism) throws IOException {
         for (Replicon replicon : _organism.getReplicons()) {
             createRepliconSheet(_workbook, replicon);
         }
     }
 
-    public static void createStatistics(Workbook _workbook, IDataBase _data) throws IOException {
+    public static void createStatistics(XSSFWorkbook _workbook, IDataBase _data) throws IOException {
         for (Statistics stat : _data.getStatistics().values()) {
             createStatisticSheet(_workbook, stat);
         }
     }
 
-	public static void createStatisticSheet(Workbook _workbook, Statistics _stat) throws IOException {
-		Sheet s = _workbook.createSheet("SUM_" + _stat.getType());
+	public static void createStatisticSheet(XSSFWorkbook _workbook, Statistics _stat) throws IOException {
+		XSSFSheet s = _workbook.createSheet("SUM_" + _stat.getType());
 		createHeader(s);
 		createTable(s, _stat);
 	}
 
-    public static void createRepliconSheet(Workbook _workbook, Replicon _replicon) throws IOException {
-        Sheet s = _workbook.createSheet(_replicon.getName());
+    public static void createRepliconSheet(XSSFWorkbook _workbook, Replicon _replicon) throws IOException {
+        XSSFSheet s = _workbook.createSheet(_replicon.getName());
         createHeader(s);
         createTable(s, _replicon);
     }
 
-	public static void  createHeader(Sheet _sheet) throws IOException {
-        Row r = _sheet.createRow(0);
-        Cell c = r.createCell(0);
+	public static void  createHeader(XSSFSheet _sheet) throws IOException {
+        XSSFRow r = _sheet.createRow(0);
+       /* XSSFCellStyle style=_sheet.getWorkbook().createCellStyle();
+        style.setFillBackgroundColor(new XSSFColor(Color.blue));
+          style.
+        XSSFFont font =_sheet.getWorkbook().createFont();
+        font.setBold(true);
+
+        style.setFont(font);*/
+        XSSFCell c = r.createCell(0);
         c.setCellValue("Trinucléotides");
         c = r.createCell(1);
+       // c.setCellStyle(style);
         c.setCellValue("Phase0");
         c = r.createCell(2);
         c.setCellValue("Freq0");
@@ -332,14 +404,18 @@ public class ExcelWriter {
         c.setCellValue("Pref1");
         c = r.createCell(9);
         c.setCellValue("Pref2");
+
     }
 
-	public static void createTable(Sheet _sheet, Statistics _stat) throws IOException {
+	public static void createTable(XSSFSheet _sheet, Statistics _stat) throws IOException {
 		int i = 1;
-		Row r;
-		Cell c;
-		for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
-			Tuple row = _stat.getTable().get(tri);
+		XSSFRow r;
+		XSSFCell c;
+
+
+
+        for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
+			Tuple row = _stat.getTable()[tri.ordinal()];
 			r = _sheet.createRow(i);
 			c = r.createCell(0);
 			c.setCellValue(tri.toString());
@@ -367,22 +443,26 @@ public class ExcelWriter {
 		r = _sheet.createRow(i);
 		c = r.createCell(0);
 		c.setCellValue("TOTAL");
+		_sheet.autoSizeColumn(0);
 		for(int p = 1 ; p <= 9 ; p++){
 			c = r.createCell(p);
 			c.setCellType(CellType.NUMERIC);
 			c.setCellFormula("SUM(" + (char)('A' + p) + "2:" + (char)('A' + p) + "65)");
+            _sheet.autoSizeColumn(p);
 		}
+
+
 
 	}
 
-	public  static  void writeNumericCell(Cell _cell, float _f)
+	public  static  void writeNumericCell(XSSFCell _cell, float _f)
 	{
 
 		_cell.setCellValue(_f);
 		_cell.setCellType(CellType.NUMERIC);
 	}
 
-	public  static  void writeNumericCell(Cell _cell, long _l)
+	public  static  void writeNumericCell(XSSFCell _cell, long _l)
 	{
 
 		_cell.setCellValue(_l);

@@ -11,6 +11,11 @@ class ExcelTest {
     @Test
     void excelTest() throws Exception{
         DataBase db = new DataBase("DataBase", _dataBase -> {
+            try {
+                ExcelWriter.writeDatabase(_dataBase);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         });
         int nb = 3, nbrep = 20;
         db.start();
@@ -405,7 +410,7 @@ class ExcelTest {
             }
             ki.stop();
         }
-
+        db.stop();
     }
 
 }

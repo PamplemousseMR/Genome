@@ -2,9 +2,7 @@ package Excel;
 
 import Data.*;
 import Utils.Logs;
-import org.json.JSONObject;
 
-import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -41,7 +39,17 @@ public  class FileManager {
 
         return  pathName;
     }
+    /*
+     * Get the path for the data folder, create it if needed
+     */
+    public static String GetPathFor(DataBase _data) throws IOException{
 
+        String Path="";
+
+        Path =CreatePath(Path);
+
+        return Path+"Total" + ".xlsx";
+    }
     /*
     * Get the path for the kingdom folder, create it if needed
      */
@@ -49,7 +57,9 @@ public  class FileManager {
 
         String KingdomPath="";
 
-        return  CreatePath(KingdomPath);
+        KingdomPath=  CreatePath(KingdomPath);
+
+        return  KingdomPath+"Total_"+ _kindgom.getName() + ".xlsx";
     }
 
     public static String GetPathFor(Group _group) throws IOException{
@@ -57,9 +67,9 @@ public  class FileManager {
 
         String GroupPath= _group.getKingdomName();
 
+        GroupPath =  CreatePath(GroupPath);
 
-
-        return   CreatePath(GroupPath);
+        return  GroupPath + "/Total_" + _group.getName() + ".xlsx";
     }
 
     public static String GetPathFor(SubGroup _subGroup) throws IOException{
@@ -67,9 +77,9 @@ public  class FileManager {
 
         String SubGroupPath= _subGroup.getKingdomName()+"/"+_subGroup.getGroupName();
 
+        SubGroupPath =  CreatePath(SubGroupPath);
 
-
-        return  CreatePath(SubGroupPath);
+        return SubGroupPath+ "/Total_" +  _subGroup.getName() + ".xlsx";
     }
 
 
@@ -77,8 +87,8 @@ public  class FileManager {
     public static String GetPathFor(Organism _organism)throws IOException{
         String OrganismPath= _organism.getKingdomName()+"/"+_organism.getGroupName()+"/"+_organism.getSubGroupName();
 
+        OrganismPath =   CreatePath(OrganismPath);
 
-
-        return   CreatePath(OrganismPath);
+        return  OrganismPath+ "/" +  _organism.getName() + ".xlsx";
     }
 }
