@@ -37,11 +37,11 @@ public class CDSParser {
     /**
      * Regex used to get interval descriptor
      */
-    private static final String s_INTERVAL_REGEX = " *<?[0-9]+\\.\\.>?[0-9]+[ )]*";
+    private static final String s_INTERVAL_REGEX = " *[0-9]+\\.\\.[0-9]+[ )]*";
     /**
      * Regex used to get unique descriptor
      */
-    private static final String s_DESCRIPTOR_REGEX = " *[<>]?[0-9]+[, )]*";
+    private static final String s_DESCRIPTOR_REGEX = " *[0-9]+[, )]*";
     /**
      * Regex used to get number
      */
@@ -183,7 +183,6 @@ public class CDSParser {
                     Matcher mDescriptor = interval.matcher(op);
                     if (mDescriptor.matches()) {
 
-                        // TODO '<' and '>'
                         try {
                             Matcher mNumber = number.matcher(op);
                             mNumber.find();
@@ -219,7 +218,6 @@ public class CDSParser {
                         Matcher mDescriptorSimple = descriptor.matcher(op);
                         if (mDescriptorSimple.matches()) {
 
-                            // TODO '<' and '>'
                             try {
                                 Matcher mNumber = number.matcher(op);
                                 mNumber.find();
