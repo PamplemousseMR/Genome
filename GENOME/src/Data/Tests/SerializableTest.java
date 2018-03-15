@@ -4,6 +4,7 @@ import Data.*;
 import Exception.AddException;
 import Exception.InvalidStateException;
 import Utils.Logs;
+import Utils.Options;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -16,46 +17,47 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class SerializableTest {
 
-    private static void printTriTable(Statistics _stat) {
-        System.out.print("TRI\tPhase0\tFreq0\tPhase1\tFreq1\tPhase2\tFreq2\tPref0\tPref1\tPref2\t");
-        for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
-            Tuple row = _stat.getTable()[tri.ordinal()];
-            System.out.print("\n" + tri + "\t");
-            if(row != null) {
-                System.out.print(row.get(Statistics.StatLong.PHASE0) + "\t");
-                System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ0)));
-                System.out.print(row.get(Statistics.StatLong.PHASE1) + "\t");
-                System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ1)));
-                System.out.print(row.get(Statistics.StatLong.PHASE2) + "\t");
-                System.out.print(String.format("%.4f\t", row.get(Statistics.StatFloat.FREQ2)));
-                System.out.print(row.get(Statistics.StatLong.PREF0) + "\t");
-                System.out.print(row.get(Statistics.StatLong.PREF1) + "\t");
-                System.out.print(row.get(Statistics.StatLong.PREF2) + "\t");
-            }else System.out.print("NUUUUUUUUUUUUUUUUUUULLLLLLLLLLLLLLLLLLLLLLLLLLLLLLLL nein nein nein");
-        }
-
-        System.out.println("\nTOTAL\t" + _stat.getTotalTrinucleotide() + "\t\t"
-                + _stat.getTotalTrinucleotide() + "\t\t"
-                + _stat.getTotalTrinucleotide() + "\n");
+    private static boolean equals(Statistics _stat, Statistics _statc) {
+        return _stat == null && _statc == null || _stat != null && _statc != null && _stat.getType() == _statc.getType() && _stat.getTotalTrinucleotide() == _statc.getTotalTrinucleotide() && equals(_stat.getTable(), _statc.getTable()) && _stat.getValidCDSNumber() == _statc.getValidCDSNumber() && _stat.getInvalidCDSNumber() == _statc.getInvalidCDSNumber();
     }
 
-    private static void printIData(IDataBase _data){
-        System.out.println("NOM            : "+_data.getName());
-        System.out.println("DATE           : "+_data.getModificationDate());
-        System.out.println("STATE          : "+_data.getState());
-        System.out.println("GENOME         : "+_data.getGenomeNumber());
-        for(Statistics stat : _data.getStatistics().values()){
-            System.out.println("TYPE           : "+stat.getType());
-            printTriTable(stat);
+    private static boolean equals(Tuple[] _tuple, Tuple[] _tuplec) {
+        if (_tuple == null && _tuplec == null) return true;
+        if (_tuple == null || _tuplec == null) return false;
+        if (_tuple.length != _tuplec.length) return false;
+        for (int i = 0; i < _tuple.length; ++i) {
+            if (_tuple[i] == null || _tuplec[i] == null) return false;
+            for (Statistics.StatLong l : Statistics.StatLong.values())
+                if (_tuple[i].get(l) != _tuplec[i].get(l)) return false;
+            for (Statistics.StatFloat f : Statistics.StatFloat.values())
+                if (_tuple[i].get(f) != _tuplec[i].get(f)) return false;
         }
+        return true;
+    }
+
+    private static boolean equals(IDataBase _data, IDataBase _datac) {
+        if (_data == null && _datac == null) return true;
+        if (_data == null || _datac == null) return false;
+        for (Statistics.Type t : Statistics.Type.values()) {
+            if (_data.getGenomeNumber().get(t) != null || _datac.getGenomeNumber().get(t) != null) {
+                if (!equals(_data.getStatistics().get(t), _datac.getStatistics().get(t))) {
+                    return false;
+                }
+                if (_data.getGenomeNumber().get(t).longValue() != (_datac.getGenomeNumber().get(t)).longValue()) {
+                    return false;
+                }
+            }
+        }
+        return _data.getTotalOrganism() == _datac.getTotalOrganism()
+                && _data.getValidCDSNumber() == _datac.getValidCDSNumber()
+                && _data.getInvalidCDSNumber() == _datac.getInvalidCDSNumber();
     }
 
     @Test
     void serializableTest() throws AddException, InvalidStateException {
 
-        Path Path= Paths.get("Save");
-        if(Files.notExists(Path))
-        {
+        Path Path = Paths.get(Options.getSerializeDirectory());
+        if (Files.notExists(Path)) {
             try {
                 Files.createDirectories(Path);
             } catch (IOException e) {
@@ -67,43 +69,43 @@ class SerializableTest {
         final int nb = 5, nbrep = 200;
         DataBase db = new DataBase("_DataBase", _dataBase -> {
             _dataBase.save();
-            IDataBase retour = IDataBase.s_load(_dataBase.getName());
-            assertTrue(_dataBase.equals(retour));
-            });
+            IDataBase retour = IDataBase.load(_dataBase.getName());
+            assertTrue(equals(_dataBase, retour));
+        });
         db.start();
 
-        for (int k = 0 ; k < nb ; k++) {
-            Kingdom ki = new Kingdom(k+"__Kingdom", _kingdom -> {
+        for (int k = 0; k < nb; k++) {
+            Kingdom ki = new Kingdom(k + "__Kingdom", _kingdom -> {
                 _kingdom.save();
-                IDataBase retour = IDataBase.s_load(_kingdom.getName());
-                assertTrue(_kingdom.equals(retour));
-                });
+                IDataBase retour = IDataBase.load(_kingdom.getName());
+                assertTrue(equals(_kingdom, retour));
+            });
             ki.start();
             db.addKingdom(ki);
 
-            for (int g = 0; g < nb ; g++) {
-                Group gr = new Group(k+"_"+g+"__Group", _group -> {
+            for (int g = 0; g < nb; g++) {
+                Group gr = new Group(k + "_" + g + "__Group", _group -> {
                     _group.save();
-                    IDataBase retour = IDataBase.s_load(_group.getName());
-                    assertTrue(_group.equals(retour));
+                    IDataBase retour = IDataBase.load(_group.getName());
+                    assertTrue(equals(_group, retour));
                 });
                 gr.start();
                 ki.addGroup(gr);
 
-                for(int s = 0; s < nb ; s++) {
-                    SubGroup su = new SubGroup(k+"_"+g+"_"+s+"__SubGroup", _subGroup -> {
+                for (int s = 0; s < nb; s++) {
+                    SubGroup su = new SubGroup(k + "_" + g + "_" + s + "__SubGroup", _subGroup -> {
                         _subGroup.save();
-                        IDataBase retour = IDataBase.s_load(_subGroup.getName());
-                        assertTrue(_subGroup.equals(retour));
+                        IDataBase retour = IDataBase.load(_subGroup.getName());
+                        assertTrue(equals(_subGroup, retour));
                     });
                     su.start();
                     gr.addSubGroup(su);
 
-                    for(int o = 0; o< nb ; o++) {
-                        Organism or = new Organism(k+"_"+g+"_"+s+"_"+o+"__Organism", 152753L, 1592820474201505800L, _organism -> {
+                    for (int o = 0; o < nb; o++) {
+                        Organism or = new Organism(k + "_" + g + "_" + s + "_" + o + "__Organism", 152753L, 1592820474201505800L, _organism -> {
                             _organism.save();
-                            IDataBase retour = IDataBase.s_load(_organism.getName());
-                            assertTrue(_organism.equals(retour));
+                            IDataBase retour = IDataBase.load(_organism.getName());
+                            assertTrue(equals(_organism, retour));
                         });
                         or.start();
                         su.addOrganism(or);

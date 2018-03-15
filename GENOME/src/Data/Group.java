@@ -81,8 +81,6 @@ public final class Group extends IDataBase {
         return m_parent.getName();
     }
 
-    // Do not use
-
     /**
      * Finish this Group if it can
      *

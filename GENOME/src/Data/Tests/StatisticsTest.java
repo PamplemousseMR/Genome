@@ -68,10 +68,10 @@ class StatisticsTest {
                 totalInvalid += child.getInvalidCDSNumber();
                 totalOrganism += child.getTotalOrganism();
             }
-            System.out.println("BD  : "+_dataBase.getValidCDSNumber()+" "+_dataBase.getInvalidCDSNumber()+" "+_dataBase.getTotalOrganism());
-            assertEquals(totalValid,_dataBase.getValidCDSNumber());
-            assertEquals(totalInvalid,_dataBase.getInvalidCDSNumber());
-            assertEquals(totalOrganism,_dataBase.getTotalOrganism());
+            assertEquals(nb * nb * nb * nb, _dataBase.getTotalOrganism());
+            assertEquals(totalValid, _dataBase.getValidCDSNumber());
+            assertEquals(totalInvalid, _dataBase.getInvalidCDSNumber());
+            assertEquals(totalOrganism, _dataBase.getTotalOrganism());
             EnumMap<Statistics.Type, Long> genNumb = _dataBase.getGenomeNumber();
             long totalGenome = 0L;
             for (Statistics.Type t : Statistics.Type.values()) {

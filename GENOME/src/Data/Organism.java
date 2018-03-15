@@ -140,8 +140,6 @@ public final class Organism extends IDataBase {
         return m_id;
     }
 
-    // Do not use
-
     /**
      * Set the parent
      *

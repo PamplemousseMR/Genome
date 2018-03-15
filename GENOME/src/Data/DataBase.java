@@ -71,8 +71,6 @@ public final class DataBase extends IDataBase {
         }
     }
 
-    // Do not use
-
     /**
      * Finish this DataBase if it can
      *

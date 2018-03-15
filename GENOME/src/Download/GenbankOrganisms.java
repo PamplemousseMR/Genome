@@ -2,11 +2,11 @@ package Download;
 
 import Exception.HTTPException;
 import Exception.MissException;
-import Utils.Logs;
-import Utils.Options;
 import Json.JSONArray;
 import Json.JSONException;
 import Json.JSONObject;
+import Utils.Logs;
+import Utils.Options;
 
 import java.io.BufferedReader;
 import java.io.IOException;

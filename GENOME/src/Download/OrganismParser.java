@@ -1,8 +1,8 @@
 package Download;
 
-import Utils.Logs;
 import Json.JSONException;
 import Json.JSONObject;
+import Utils.Logs;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;

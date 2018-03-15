@@ -54,8 +54,6 @@ public final class Replicon extends Statistics {
         return m_sequences.add(_sequence);
     }
 
-    // Do not use
-
     /**
      * Compute statistics of this Replicon
      */
@@ -86,11 +84,11 @@ public final class Replicon extends Statistics {
                 if (val2 < val0 || val2 < val1)
                     val2 = 0;
                 if (val0 != 0)
-                    tuple.set(Statistics.StatLong.PREF0, 1);
+                    tuple.incr(Statistics.StatLong.PREF0, 1);
                 if (val1 != 0)
-                    tuple.set(Statistics.StatLong.PREF1, 1);
+                    tuple.incr(Statistics.StatLong.PREF1, 1);
                 if (val2 != 0)
-                    tuple.set(Statistics.StatLong.PREF2, 1);
+                    tuple.incr(Statistics.StatLong.PREF2, 1);
             }
             update(temp);
             super.compute();

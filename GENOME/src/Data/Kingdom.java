@@ -72,8 +72,6 @@ public final class Kingdom extends IDataBase {
         return m_groups;
     }
 
-    // Do not use
-
     /**
      * Finish this Kingdom if it can
      *

@@ -1,10 +1,9 @@
 package Data;
 
 import java.io.Serializable;
-import java.util.Arrays;
 import java.util.stream.IntStream;
 
-public class Statistics implements Serializable{
+public class Statistics implements Serializable {
 
     /**
      * Type of this Statistic
@@ -33,9 +32,7 @@ public class Statistics implements Serializable{
     Statistics(Type _type) {
         m_type = _type;
         m_trinucleotideTable = new Tuple[Trinucleotide.values().length];
-        IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> {
-            m_trinucleotideTable[i] = new Tuple();
-        });
+        IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> m_trinucleotideTable[i] = new Tuple());
         m_totalTrinucleotide = 0;
         m_validCDSNumber = 0L;
         m_invalidCDSNumber = 0L;
@@ -66,11 +63,21 @@ public class Statistics implements Serializable{
         return m_trinucleotideTable;
     }
 
-    public final long getValidCDSNumber(){
+    /**
+     * Get the number of valid CDS
+     *
+     * @return the number of valid CDS
+     */
+    public final long getValidCDSNumber() {
         return m_validCDSNumber;
     }
 
-    public final long getInvalidCDSNumber(){
+    /**
+     * Get the number of invalid CDS
+     *
+     * @return the number of invalid CDS
+     */
+    public final long getInvalidCDSNumber() {
         return m_invalidCDSNumber;
     }
 
@@ -125,27 +132,6 @@ public class Statistics implements Serializable{
         m_totalTrinucleotide += _inc;
     }
 
-    // Do not use
-
-    /**
-     * Increment the value of a trinucleotide for a stat by the parameter
-     *
-     * @param _tri,  the Trinucleotide to set
-     * @param _stat, the statistic to set
-     * @param _inc,  the value to increment
-     */
-    private void incrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
-        m_trinucleotideTable[_tri.ordinal()].incr(_stat, _inc);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(obj == null || getClass() != obj.getClass()) return false;
-        Statistics stat = (Statistics) obj;
-        if(m_type != stat.m_type || m_totalTrinucleotide != stat.m_totalTrinucleotide) return false;
-        return Arrays.equals(m_trinucleotideTable, stat.m_trinucleotideTable);
-    }
-
     /**
      * Increment the number of valid CDS sequence
      *
@@ -162,6 +148,17 @@ public class Statistics implements Serializable{
      */
     protected final void incrementInvalidCDS(long _long) {
         m_invalidCDSNumber += _long;
+    }
+
+    /**
+     * Increment the value of a trinucleotide for a stat by the parameter
+     *
+     * @param _tri,  the Trinucleotide to set
+     * @param _stat, the statistic to set
+     * @param _inc,  the value to increment
+     */
+    private void incrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
+        m_trinucleotideTable[_tri.ordinal()].incr(_stat, _inc);
     }
 
     /**

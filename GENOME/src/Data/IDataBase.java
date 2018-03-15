@@ -2,6 +2,7 @@ package Data;
 
 import Exception.InvalidStateException;
 import Utils.Logs;
+import Utils.Options;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -68,6 +69,28 @@ public class IDataBase implements Serializable {
     }
 
     /**
+     * Load a data from a file
+     *
+     * @param _name the name of the file to load
+     * @return the IDatabase loaded
+     */
+    public static IDataBase load(String _name) {
+        final File file = new File(Options.getSerializeDirectory() + File.separator + _name + Options.getSerializeExtension());
+        final ObjectInputStream stream;
+        if (!file.exists()) {
+            return null;
+        }
+        try {
+            stream = new ObjectInputStream((new FileInputStream(file)));
+            return (IDataBase) stream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            Logs.warning("Unable to load : " + _name);
+            Logs.exception(e);
+        }
+        return null;
+    }
+
+    /**
      * Start
      *
      * @throws InvalidStateException if it can't be started
@@ -93,19 +116,6 @@ public class IDataBase implements Serializable {
         if (m_state == State.FINISHED)
             throw new InvalidStateException("Already finished : " + this.getName());
         m_state = State.STOPPED;
-    }
-
-    /**
-     * Finish
-     *
-     * @throws InvalidStateException if it can't be finished
-     */
-    protected void finish() throws InvalidStateException {
-        if (m_state == State.CREATED || m_state == State.STARTED)
-            throw new InvalidStateException("Not stopped : " + this.getName());
-        if (m_state == State.FINISHED)
-            throw new InvalidStateException("Already finished : " + this.getName());
-        m_state = State.FINISHED;
     }
 
     /**
@@ -158,7 +168,7 @@ public class IDataBase implements Serializable {
      *
      * @return the number of valid sequences
      */
-    public final long getValidCDSNumber(){
+    public final long getValidCDSNumber() {
         return m_validCDSNumber;
     }
 
@@ -167,7 +177,7 @@ public class IDataBase implements Serializable {
      *
      * @return the number of invalid sequences
      */
-    public final long getInvalidCDSNumber(){
+    public final long getInvalidCDSNumber() {
         return m_invalidCDSNumber;
     }
 
@@ -180,7 +190,39 @@ public class IDataBase implements Serializable {
         return m_totalOrganism;
     }
 
-    // Do not used
+    /**
+     * Save this data
+     */
+    public final void save() {
+        final File file = new File(Options.getSerializeDirectory() + File.separator + m_name + Options.getSerializeExtension());
+        final ObjectOutputStream stream;
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            file.createNewFile();
+            stream = new ObjectOutputStream(new FileOutputStream(file));
+            stream.writeObject(this);
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+            Logs.warning("Unable to save : " + m_name);
+            Logs.exception(e);
+        }
+    }
+
+    /**
+     * Finish
+     *
+     * @throws InvalidStateException if it can't be finished
+     */
+    protected void finish() throws InvalidStateException {
+        if (m_state == State.CREATED || m_state == State.STARTED)
+            throw new InvalidStateException("Not stopped : " + this.getName());
+        if (m_state == State.FINISHED)
+            throw new InvalidStateException("Already finished : " + this.getName());
+        m_state = State.FINISHED;
+    }
 
     /**
      * Get the number of a genome's specified type
@@ -277,7 +319,7 @@ public class IDataBase implements Serializable {
      */
     protected final void clear() {
         m_statistics.clear();
-        m_genomeNumber.clear()  ;
+        m_genomeNumber.clear();
     }
 
     /**
@@ -285,7 +327,7 @@ public class IDataBase implements Serializable {
      *
      * @param _data, the data used to increment
      */
-    protected final void incrementGenericTotals(IDataBase _data){
+    protected final void incrementGenericTotals(IDataBase _data) {
         m_validCDSNumber += _data.m_validCDSNumber;
         m_invalidCDSNumber += _data.m_invalidCDSNumber;
         m_totalOrganism += _data.m_totalOrganism;
@@ -296,7 +338,7 @@ public class IDataBase implements Serializable {
      *
      * @param _stat, the data used to increment
      */
-    protected final void incrementGenericTotals(Statistics _stat){
+    protected final void incrementGenericTotals(Statistics _stat) {
         m_validCDSNumber += _stat.getValidCDSNumber();
         m_invalidCDSNumber += _stat.getInvalidCDSNumber();
     }
@@ -305,53 +347,8 @@ public class IDataBase implements Serializable {
      * Set the total of underlying organism to one
      * used for initialise Organism
      */
-    protected final void setTotalOrganismToOne(){
+    protected final void setTotalOrganismToOne() {
         m_totalOrganism = 1L;
-    }
-
-    public final void save() {
-        File file = new File("Save/test_"+getName()+".ser");
-        ObjectOutputStream stream;
-        if (file.exists()) {
-            file.delete();
-        }
-        try {
-            file.createNewFile();
-            stream = new ObjectOutputStream(new FileOutputStream(file));
-            stream.writeObject(this);
-            stream.flush();
-            stream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Logs.exception(e);
-            //TODO throw ??
-        }
-    }
-
-    public static final IDataBase s_load(String _name){
-        File file = new File("Save/test_"+_name+".ser");
-        ObjectInputStream stream;
-        if (!file.exists()) {
-            return null;
-        }
-        try {
-            stream = new ObjectInputStream((new FileInputStream(file)));
-            return (IDataBase) stream.readObject();
-        } catch (IOException e) {
-            e.printStackTrace();
-            Logs.exception(e);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-            Logs.exception(e);
-        }
-        return null;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(obj == null || getClass() != obj.getClass()) return false;
-        IDataBase dat = (IDataBase) obj;
-        return(m_statistics.equals(dat.m_statistics) && m_genomeNumber.equals(dat.m_genomeNumber));
     }
 
     /**

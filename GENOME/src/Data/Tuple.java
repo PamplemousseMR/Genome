@@ -3,7 +3,7 @@ package Data;
 import java.io.Serializable;
 import java.util.Arrays;
 
-public final class Tuple implements Serializable{
+public final class Tuple implements Serializable {
 
     /**
      * Array to store float
@@ -55,16 +55,6 @@ public final class Tuple implements Serializable{
     }
 
     /**
-     * Set value of the enum
-     *
-     * @param _stat, the enum
-     * @param _val,  the value to set
-     */
-    protected void set(Statistics.StatLong _stat, long _val) {
-        m_longs[_stat.ordinal()] = _val;
-    }
-
-    /**
      * Increment the value of the enum
      *
      * @param _stat, the enum
@@ -72,12 +62,5 @@ public final class Tuple implements Serializable{
      */
     protected void incr(Statistics.StatLong _stat, long _val) {
         m_longs[_stat.ordinal()] += _val;
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(obj == null || getClass() != obj.getClass()) return false;
-        Tuple tup = (Tuple) obj;
-        return (Arrays.equals(m_floats, tup.m_floats) && Arrays.equals(m_longs, tup.m_longs));
     }
 }

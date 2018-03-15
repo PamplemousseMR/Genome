@@ -90,8 +90,6 @@ public final class SubGroup extends IDataBase {
         return m_parent.getParent().getName();
     }
 
-    // Do not use
-
     /**
      * Finish this Subgroup if it can
      *
