@@ -104,6 +104,7 @@ public final class SubGroup extends IDataBase {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _organism.getTypeNumber(stat.getType()));
             }
+            super.incrementGenericTotals(_organism);
             super.incrementFinishedChildren();
             if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_organisms.size()) {
                 end();

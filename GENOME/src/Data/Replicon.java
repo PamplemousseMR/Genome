@@ -72,6 +72,7 @@ public final class Replicon extends Statistics {
                 idx += 3;
             }
             super.incrementTotal(idx / 3);
+            super.incrementValidCDS(1L);
 
             long val0, val1, val2;
             for (Tuple tuple : temp.getTable()) {

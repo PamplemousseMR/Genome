@@ -85,6 +85,7 @@ public final class DataBase extends IDataBase {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _kingdom.getTypeNumber(stat.getType()));
             }
+            super.incrementGenericTotals(_kingdom);
             incrementFinishedChildren();
             if (super.getState() == IDataBase.State.STOPPED && super.getFinishedChildren() == m_kingdoms.size()) {
                 end();

@@ -43,6 +43,7 @@ public final class Organism extends IDataBase {
         m_replicons = new ArrayList<>();
         m_parent = null;
         m_event = _event;
+        super.setTotalOrganismToOne();
     }
 
     /**
@@ -75,6 +76,7 @@ public final class Organism extends IDataBase {
         for (Replicon rep : m_replicons) {
             super.updateStatistics(rep);
             super.incrementGenomeNumber(rep.getType());
+            super.incrementGenericTotals(rep);
         }
         super.computeStatistics();
         m_event.finish(this);

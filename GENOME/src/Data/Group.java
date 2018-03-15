@@ -95,6 +95,7 @@ public final class Group extends IDataBase {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _subGroup.getTypeNumber(stat.getType()));
             }
+            super.incrementGenericTotals(_subGroup);
             super.incrementFinishedChildren();
             if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_subGroups.size()) {
                 end();

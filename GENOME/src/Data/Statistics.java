@@ -16,6 +16,14 @@ public class Statistics {
      * Number total of trinucleotide on phase 0
      */
     private long m_totalTrinucleotide;
+    /**
+     * The number of valid CDS sequences
+     */
+    private long m_validCDSNumber;
+    /**
+     * The number of invalid CDS sequences
+     */
+    private long m_invalidCDSNumber;
 
     /**
      * Class constructor
@@ -27,6 +35,8 @@ public class Statistics {
             m_trinucleotideTable[i] = new Tuple();
         });
         m_totalTrinucleotide = 0;
+        m_validCDSNumber = 0L;
+        m_invalidCDSNumber = 0L;
     }
 
     /**
@@ -54,6 +64,14 @@ public class Statistics {
         return m_trinucleotideTable;
     }
 
+    public final long getValidCDSNumber(){
+        return m_validCDSNumber;
+    }
+
+    public final long getInvalidCDSNumber(){
+        return m_invalidCDSNumber;
+    }
+
     /**
      * Update statistics
      *
@@ -71,6 +89,8 @@ public class Statistics {
             incrementStat(tri, StatLong.PREF2, inputRow.get(StatLong.PREF2));
         });
         m_totalTrinucleotide += _stats.m_totalTrinucleotide;
+        m_validCDSNumber += _stats.m_validCDSNumber;
+        m_invalidCDSNumber += _stats.m_invalidCDSNumber;
     }
 
     /**
@@ -114,6 +134,24 @@ public class Statistics {
      */
     private void incrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
         m_trinucleotideTable[_tri.ordinal()].incr(_stat, _inc);
+    }
+
+    /**
+     * Increment the number of valid CDS sequence
+     *
+     * @param _long, the value to increment
+     */
+    protected final void incrementValidCDS(long _long) {
+        m_validCDSNumber += _long;
+    }
+
+    /**
+     * Increment the number of valid CDS sequence
+     *
+     * @param _long, the value to increment
+     */
+    protected final void incrementInvalidCDS(long _long) {
+        m_invalidCDSNumber += _long;
     }
 
     /**

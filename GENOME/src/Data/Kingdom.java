@@ -86,6 +86,7 @@ public final class Kingdom extends IDataBase {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _group.getTypeNumber(stat.getType()));
             }
+            super.incrementGenericTotals(_group);
             super.incrementFinishedChildren();
             if (getState() == State.STOPPED && super.getFinishedChildren() == m_groups.size()) {
                 end();

@@ -25,6 +25,18 @@ public class IDataBase {
      */
     private final Date m_modificationDate;
     /**
+     * The number of valid CDS sequences
+     */
+    private long m_validCDSNumber;
+    /**
+     * The number of invalid CDS sequences
+     */
+    private long m_invalidCDSNumber;
+    /**
+     * The number of underlying organism
+     */
+    private long m_totalOrganism;
+    /**
      * Actual State
      */
     private State m_state;
@@ -45,6 +57,9 @@ public class IDataBase {
         m_modificationDate = new Date();
         m_statistics = new EnumMap<>(Statistics.Type.class);
         m_genomeNumber = new EnumMap<>(Statistics.Type.class);
+        m_validCDSNumber = 0L;
+        m_invalidCDSNumber = 0L;
+        m_totalOrganism = 0L;
         m_state = State.CREATED;
         m_index = -1;
         m_finished = 0;
@@ -136,6 +151,33 @@ public class IDataBase {
         return m_genomeNumber;
     }
 
+    /**
+     * Get the number of valid sequences
+     *
+     * @return the number of valid sequences
+     */
+    public final long getValidCDSNumber(){
+        return m_validCDSNumber;
+    }
+
+    /**
+     * Get the number of invalid sequences
+     *
+     * @return the number of invalid sequences
+     */
+    public final long getInvalidCDSNumber(){
+        return m_invalidCDSNumber;
+    }
+
+    /**
+     * Get the number of underlying organism
+     *
+     * @return the number of underlying organism
+     */
+    public final long getTotalOrganism() {
+        return m_totalOrganism;
+    }
+
     // Do not used
 
     /**
@@ -144,7 +186,7 @@ public class IDataBase {
      * @param _type, the Type of the genomes's number to get
      * @return the number of genomes
      */
-    protected final Long getTypeNumber(Statistics.Type _type) {
+    protected final long getTypeNumber(Statistics.Type _type) {
         return m_genomeNumber.get(_type);
     }
 
@@ -233,7 +275,36 @@ public class IDataBase {
      */
     protected final void clear() {
         m_statistics.clear();
-        m_genomeNumber.clear();
+        m_genomeNumber.clear()  ;
+    }
+
+    /**
+     * Increment the generic totals with those of another
+     *
+     * @param _data, the data used to increment
+     */
+    protected final void incrementGenericTotals(IDataBase _data){
+        m_validCDSNumber += _data.m_validCDSNumber;
+        m_invalidCDSNumber += _data.m_invalidCDSNumber;
+        m_totalOrganism += _data.m_totalOrganism;
+    }
+
+    /**
+     * Increment the generic totals with those of a Statistics
+     *
+     * @param _stat, the data used to increment
+     */
+    protected final void incrementGenericTotals(Statistics _stat){
+        m_validCDSNumber += _stat.getValidCDSNumber();
+        m_invalidCDSNumber += _stat.getInvalidCDSNumber();
+    }
+
+    /**
+     * Set the total of underlying organism to one
+     * used for initialise Organism
+     */
+    protected final void setTotalOrganismToOne(){
+        m_totalOrganism = 1L;
     }
 
     /**
