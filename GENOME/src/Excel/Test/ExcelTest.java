@@ -1,7 +1,7 @@
 package Excel.Test;
 
 import Data.*;
-import Excel.*;
+import Excel.ExcelWriter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
@@ -9,7 +9,7 @@ import java.io.IOException;
 class ExcelTest {
 
     @Test
-    void excelTest() throws Exception{
+    void excelTest() throws Exception {
         DataBase db = new DataBase("DataBase", _dataBase -> {
             try {
                 ExcelWriter.writeDatabase(_dataBase);
@@ -50,7 +50,7 @@ class ExcelTest {
                     su.start();
                     gr.addSubGroup(su);
                     for (int o = 0; o < nb; ++o) {
-                        Organism or = new Organism("'Brassica napus' phytoplasma_" + o, 152753l, 1592820474201505800l, _organism -> {
+                        Organism or = new Organism("'Brassica napus' phytoplasma_" + o, 152753L, 1592820474201505800L, _organism -> {
                             try {
                                 ExcelWriter.writeOrganism(_organism);
                             } catch (IOException e) {
@@ -60,7 +60,7 @@ class ExcelTest {
                         or.start();
                         su.addOrganism(or);
                         for (int r = 0; r < nbrep; ++r) {
-                            Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR_" + r);
+                            Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "NC_" + r);
                             StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("TATAATCCTTTTCTTTTTAATTAAAAAAATCTCTAATAATATTTTTTTTA");
                             strBuf.append("TTATATTAATTTCAGGAACTTTAATTACCATTTCATCTAATTCCTGATTA");

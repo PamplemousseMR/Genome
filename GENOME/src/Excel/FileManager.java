@@ -2,93 +2,113 @@ package Excel;
 
 import Data.*;
 import Utils.Logs;
+import Utils.Options;
 
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public  class FileManager {
+public class FileManager {
 
-    private static String s_RootFolderPath;
-    private static String s_RootFolderName="Results";
-
-
-    private  FileManager() throws IOException {
-       /* s_RootFolderPath=System.getProperty("user.dir")+s_RootFolderName;
-        CreatePath(s_RootFolderPath);*/
+    /**
+     * Constructor
+     */
+    private FileManager() {
     }
-    
 
+    /**
+     * Create path prefix
+     *
+     * @param _pathName the sub path to create
+     * @return the prefix
+     * @throws IOException if it's impossible to create the directory
+     */
+    private static String createPath(String _pathName) throws IOException {
+        final String pathName = System.getProperty("user.dir") + File.separator + Options.getResultDirectory() + File.separator + _pathName;
 
-      private static String CreatePath(String pathName) throws IOException {
-        pathName=System.getProperty("user.dir")+"/"+s_RootFolderName+"/"+pathName;
-
-        Path Path= Paths.get(pathName);
-
-        if(Files.notExists(Path))
-        {
+        final Path Path = Paths.get(pathName);
+        if (Files.notExists(Path)) {
             try {
                 Files.createDirectories(Path);
             } catch (IOException e) {
-                Logs.exception(e);
-                throw  e;
+                final String message = "Unable to create the path : " + pathName;
+                Logs.warning(message);
+                Logs.exception(new IOException(message, e));
+                throw e;
             }
-
         }
 
-        return  pathName;
+        return pathName;
     }
-    /*
-     * Get the path for the data folder, create it if needed
+
+    /**
+     * Create path suffix
+     *
+     * @param _prefix    the prefix to used first
+     * @param _idataBase the IDataBase use to get the name
+     * @return the total path file name
      */
-    public static String GetPathFor(DataBase _data) throws IOException{
-
-        String Path="";
-
-        Path =CreatePath(Path);
-
-        return Path+"Total" + ".xlsx";
+    private static String createPathEnd(String _prefix, IDataBase _idataBase) {
+        return _prefix + File.separator + Options.getTotalPrefix() + _idataBase.getName() + Options.getExcelExtension();
     }
-    /*
-    * Get the path for the kingdom folder, create it if needed
+
+    /**
+     * Create path for dataBase
+     *
+     * @param _data the dataBase
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
      */
-    public static String GetPathFor(Kingdom _kindgom) throws IOException{
-
-        String KingdomPath="";
-
-        KingdomPath=  CreatePath(KingdomPath);
-
-        return  KingdomPath+"Total_"+ _kindgom.getName() + ".xlsx";
+    protected static String getPathFor(DataBase _data) throws IOException {
+        return createPathEnd(createPath(""), _data);
     }
 
-    public static String GetPathFor(Group _group) throws IOException{
-
-
-        String GroupPath= _group.getKingdomName();
-
-        GroupPath =  CreatePath(GroupPath);
-
-        return  GroupPath + "/Total_" + _group.getName() + ".xlsx";
+    /**
+     * Create path for kingdom
+     *
+     * @param _kindgom the kingdom
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
+     */
+    protected static String getPathFor(Kingdom _kindgom) throws IOException {
+        return createPathEnd(createPath(_kindgom.getName()), _kindgom);
     }
 
-    public static String GetPathFor(SubGroup _subGroup) throws IOException{
-
-
-        String SubGroupPath= _subGroup.getKingdomName()+"/"+_subGroup.getGroupName();
-
-        SubGroupPath =  CreatePath(SubGroupPath);
-
-        return SubGroupPath+ "/Total_" +  _subGroup.getName() + ".xlsx";
+    /**
+     * Create path for group
+     *
+     * @param _group the group
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
+     */
+    protected static String getPathFor(Group _group) throws IOException {
+        String groupPath = _group.getKingdomName() + File.separator + _group.getName();
+        return createPathEnd(createPath(groupPath), _group);
     }
 
+    /**
+     * Create path for subGroup
+     *
+     * @param _subGroup the subGroup
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
+     */
+    protected static String getPathFor(SubGroup _subGroup) throws IOException {
+        String subGroupPath = _subGroup.getKingdomName() + File.separator + _subGroup.getGroupName() + File.separator + _subGroup.getName();
+        return createPathEnd(createPath(subGroupPath), _subGroup);
+    }
 
-
-    public static String GetPathFor(Organism _organism)throws IOException{
-        String OrganismPath= _organism.getKingdomName()+"/"+_organism.getGroupName()+"/"+_organism.getSubGroupName();
-
-        OrganismPath =   CreatePath(OrganismPath);
-
-        return  OrganismPath+ "/" +  _organism.getName() + ".xlsx";
+    /**
+     * Create path for organism
+     *
+     * @param _organism the organism
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
+     */
+    protected static String getPathFor(Organism _organism) throws IOException {
+        String organismPath = _organism.getKingdomName() + File.separator + _organism.getGroupName() + File.separator + _organism.getSubGroupName();
+        return createPath(organismPath) + File.separator + _organism.getName() + Options.getExcelExtension();
     }
 }

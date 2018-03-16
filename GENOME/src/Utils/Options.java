@@ -30,11 +30,27 @@ public final class Options {
     /**
      * Output directory for serialized data
      */
-    private static final String s_SERIALIZE_DIRECTORY = "save";
+    private static final String s_SERIALIZE_DIRECTORY = "Save";
     /**
      * Extension used for serialization
      */
     private static final String s_SERIALIZE_EXTENSION = ".ser";
+    /**
+     * Directory where store excel files
+     */
+    private static final String s_RESULT_DIRECTORY = "Results";
+    /**
+     * Total file prefix
+     */
+    private static final String s_TOTAL_PREFIX = "Total_";
+    /**
+     * Sum file prefix
+     */
+    private static final String s_SUM_PREFIX = "Sum_";
+    /**
+     * Excel file extension
+     */
+    private static final String s_EXCEL_EXTENSION = ".xlsx";
     /**
      * Option's properties
      */
@@ -165,6 +181,22 @@ public final class Options {
 
     public static String getSerializeExtension() {
         return s_SERIALIZE_EXTENSION;
+    }
+
+    public static String getResultDirectory() {
+        return s_RESULT_DIRECTORY;
+    }
+
+    public static String getTotalPrefix() {
+        return s_TOTAL_PREFIX;
+    }
+
+    public static String getSumPrefix() {
+        return s_SUM_PREFIX;
+    }
+
+    public static String getExcelExtension() {
+        return s_EXCEL_EXTENSION;
     }
 
 }
