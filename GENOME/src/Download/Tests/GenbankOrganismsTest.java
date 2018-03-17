@@ -3,7 +3,6 @@ package Download.Tests;
 import Download.GenbankOrganisms;
 import Download.OrganismParser;
 import Exception.MissException;
-import Utils.Logs;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;

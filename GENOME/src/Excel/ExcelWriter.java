@@ -112,11 +112,11 @@ public class ExcelWriter {
 
         r = _general_info_sheet.createRow(6);
         r.createCell(0).setCellValue("Number of CDS sequences");
-        r.createCell(1).setCellValue(_data.getValidCDSNumber());
+        r.createCell(1).setCellValue(_data.getCDSNumber());
 
         r = _general_info_sheet.createRow(8);
-        r.createCell(0).setCellValue("Number of invalids CDS");
-        r.createCell(1).setCellValue(_data.getInvalidCDSNumber());
+        r.createCell(0).setCellValue("Number of valid CDS");
+        r.createCell(1).setCellValue(_data.getValidCDSNumber());
 
         if (_data.getClass() != Organism.class) {
             r = _general_info_sheet.createRow(10);

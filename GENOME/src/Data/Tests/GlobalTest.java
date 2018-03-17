@@ -6,7 +6,8 @@ import Exception.InvalidStateException;
 
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class GlobalTest {
 
@@ -111,34 +112,24 @@ class GlobalTest {
                 for (SubGroup s : g.getSubGroups()) {
                     for (Organism o : s.getOrganisms()) {
                         o.start();
-                        Replicon r1 = new Replicon(Replicon.Type.CHLOROPLAST, "r1_" + o.getName());
+                        ArrayList<StringBuilder> sequences = new ArrayList<>();
+                        sequences.add(new StringBuilder("ATGAAATAA"));
+                        sequences.add(new StringBuilder("ATGATAA"));
+
+                        Replicon r1 = new Replicon(Replicon.Type.CHLOROPLAST, "r1_" + o.getName(), 2, 1, sequences);
                         assertEquals(true, o.addReplicon(r1));
                         assertEquals(Replicon.Type.CHLOROPLAST, r1.getType());
 
-                        Replicon r2 = new Replicon(Replicon.Type.CHLOROPLAST, "r2_" + o.getName());
+                        Replicon r2 = new Replicon(Replicon.Type.CHLOROPLAST, "r2_" + o.getName(), 2, 1, sequences);
                         assertEquals(true, o.addReplicon(r2));
                         assertEquals(Replicon.Type.CHLOROPLAST, r2.getType());
 
-                        Replicon r3 = new Replicon(Replicon.Type.MITOCHONDRION, "r3_" + o.getName());
+                        Replicon r3 = new Replicon(Replicon.Type.MITOCHONDRION, "r3_" + o.getName(), 2, 1, sequences);
                         assertEquals(true, o.addReplicon(r3));
                         assertEquals(Replicon.Type.MITOCHONDRION, r3.getType());
 
                         assertThrows(Exception.class, () -> o.addReplicon(r3));
                         o.stop();
-                    }
-                }
-            }
-        }
-
-        for (Kingdom k : dataBase.getKingdoms()) {
-            for (Group g : k.getGroups()) {
-                for (SubGroup s : g.getSubGroups()) {
-                    for (Organism o : s.getOrganisms()) {
-                        for (Replicon r : o.getReplicons()) {
-                            StringBuilder sb = new StringBuilder("AAATTTCCCGGG");
-                            assertTrue(r.addSequence(sb));
-                            assertThrows(Exception.class, () -> r.addSequence(sb));
-                        }
                     }
                 }
             }

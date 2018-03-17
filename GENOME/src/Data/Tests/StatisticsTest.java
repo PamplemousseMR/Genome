@@ -5,6 +5,7 @@ import Exception.AddException;
 import Exception.InvalidStateException;
 import org.junit.jupiter.api.Test;
 
+import java.util.ArrayList;
 import java.util.EnumMap;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -60,17 +61,17 @@ class StatisticsTest {
                 printTriTable(stat);
             }
 
+            long total = 0L;
             long totalValid = 0L;
-            long totalInvalid = 0L;
             long totalOrganism = 0L;
             for (Kingdom child : _dataBase.getKingdoms()) {
+                total += child.getCDSNumber();
                 totalValid += child.getValidCDSNumber();
-                totalInvalid += child.getInvalidCDSNumber();
                 totalOrganism += child.getTotalOrganism();
             }
             assertEquals(nb * nb * nb * nb, _dataBase.getTotalOrganism());
+            assertEquals(total, _dataBase.getCDSNumber());
             assertEquals(totalValid, _dataBase.getValidCDSNumber());
-            assertEquals(totalInvalid, _dataBase.getInvalidCDSNumber());
             assertEquals(totalOrganism, _dataBase.getTotalOrganism());
             EnumMap<Statistics.Type, Long> genNumb = _dataBase.getGenomeNumber();
             long totalGenome = 0L;
@@ -104,7 +105,6 @@ class StatisticsTest {
                         or.start();
                         su.addOrganism(or);
                         for (int r = 0; r < nbrep; ++r) {
-                            Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1");
                             StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("TATAATCCTTTTCTTTTTAATTAAAAAAATCTCTAATAATATTTTTTTTA");
                             strBuf.append("TTATATTAATTTCAGGAACTTTAATTACCATTTCATCTAATTCCTGATTA");
@@ -441,7 +441,9 @@ class StatisticsTest {
                             strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
                             strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
                             strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTAT");
-                            re.addSequence(strBuf);
+                            ArrayList<StringBuilder> sequences = new ArrayList<>();
+                            sequences.add(strBuf);
+                            Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1", 2, 1, sequences);
                             assertEquals("CR1", re.getName());
                             or.addReplicon(re);
                         }

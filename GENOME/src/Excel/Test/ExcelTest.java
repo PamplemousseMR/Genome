@@ -5,6 +5,7 @@ import Excel.ExcelWriter;
 import org.junit.jupiter.api.Test;
 
 import java.io.IOException;
+import java.util.ArrayList;
 
 class ExcelTest {
 
@@ -60,7 +61,6 @@ class ExcelTest {
                         or.start();
                         su.addOrganism(or);
                         for (int r = 0; r < nbrep; ++r) {
-                            Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "NC_" + r);
                             StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("TATAATCCTTTTCTTTTTAATTAAAAAAATCTCTAATAATATTTTTTTTA");
                             strBuf.append("TTATATTAATTTCAGGAACTTTAATTACCATTTCATCTAATTCCTGATTA");
@@ -397,9 +397,10 @@ class ExcelTest {
                             strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
                             strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
                             strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTAT");
-                            re.addSequence(strBuf);
+                            ArrayList<StringBuilder> sequences = new ArrayList<>();
+                            sequences.add(strBuf);
+                            Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "NC_" + r, 2, 1, sequences);
                             or.addReplicon(re);
-
                         }
                         or.stop();
                         or.finish();
