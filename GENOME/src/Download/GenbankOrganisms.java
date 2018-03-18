@@ -63,21 +63,12 @@ public final class GenbankOrganisms extends IDownloader {
     /**
      * Class constructor
      */
-    private GenbankOrganisms() {
+    public GenbankOrganisms() {
         m_downloaded = 0;
         m_totalCount = -1;
         m_enqueued = 0;
         m_failedOrganism = 0;
         m_dataQueue = new LinkedList<>();
-    }
-
-    /**
-     * Get singleton (only one thread for the moment)
-     *
-     * @return GenbankOrganism database instance
-     */
-    public static GenbankOrganisms getInstance() {
-        return GenbankOrganismsHolder.s_INSTANCE;
     }
 
     /**
@@ -314,16 +305,6 @@ public final class GenbankOrganisms extends IDownloader {
      */
     public OrganismParser getNext() {
         return m_dataQueue.removeFirst();
-    }
-
-    /**
-     * Here SingletonHolder is static so it gets loaded in memory only
-     * on the first access, this mechanism ensure that the singleton is
-     * thread safe.
-     * Locks lacks in performance causing poor access to the instance.
-     */
-    private static class GenbankOrganismsHolder {
-        private final static GenbankOrganisms s_INSTANCE = new GenbankOrganisms();
     }
 
 }

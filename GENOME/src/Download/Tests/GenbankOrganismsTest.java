@@ -14,7 +14,7 @@ class GenbankOrganismsTest {
     @Test
     void runTest() throws MissException {
 
-        GenbankOrganisms go = GenbankOrganisms.getInstance();
+        GenbankOrganisms go = new GenbankOrganisms();
         go.downloadOrganisms();
 
         ArrayList<String> kingdom = new ArrayList<>();
