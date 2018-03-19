@@ -103,7 +103,7 @@ class OrganismParserTest {
 
     @Test
     void getReplicons() {
-        assertTrue(s_REPLICONS.compareTo(m_OrganismParser.getReplicons().get(0)) == 0);
+        assertTrue(s_REPLICONS.compareTo(m_OrganismParser.getReplicons().get(0).getKey()) == 0);
     }
 
     @Test

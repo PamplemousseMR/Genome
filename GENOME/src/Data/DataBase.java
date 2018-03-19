@@ -6,7 +6,7 @@ import Exception.InvalidStateException;
 import java.util.ArrayList;
 
 public final class DataBase extends IDataBase {
-    
+
     /**
      * Array of this Database's Kingdom
      */

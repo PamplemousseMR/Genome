@@ -6,9 +6,9 @@ import Exception.MissException;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GenbankOrganismsTest {
     @Test
@@ -38,8 +38,9 @@ class GenbankOrganismsTest {
             assertTrue(ro.getVersion() != -1);
             assertTrue(ro.getModificationDate() != null);
 
-            for (String CDS : ro.getReplicons()) {
-                assertTrue(CDS.indexOf("NC_") == 0);
+            for (Map.Entry<String, String> CDS : ro.getReplicons()) {
+                assertTrue(CDS.getKey().indexOf("NC_") == 0);
+                assertNotNull(CDS.getValue());
             }
 
             count++;

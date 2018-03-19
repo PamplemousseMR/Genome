@@ -106,10 +106,12 @@ public class Statistics implements Serializable {
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
     protected final void compute() {
-        for (Tuple row : m_trinucleotideTable) {
-            row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalTrinucleotide);
-            row.set(StatFloat.FREQ1, row.get(StatLong.PHASE1) / (float) m_totalTrinucleotide);
-            row.set(StatFloat.FREQ2, row.get(StatLong.PHASE2) / (float) m_totalTrinucleotide);
+        if (m_totalTrinucleotide != 0) {
+            for (Tuple row : m_trinucleotideTable) {
+                row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalTrinucleotide);
+                row.set(StatFloat.FREQ1, row.get(StatLong.PHASE1) / (float) m_totalTrinucleotide);
+                row.set(StatFloat.FREQ2, row.get(StatLong.PHASE2) / (float) m_totalTrinucleotide);
+            }
         }
     }
 
@@ -260,6 +262,45 @@ public class Statistics implements Serializable {
         MITOCHONDRION,
         PLASMID,
         DNA,
-        CHLOROPLAST
+        CHLOROPLAST,
+        SEGMENT,
+        LINKAGE,
+        PLASTID,
+        CIRCLE,
+        RNA,
+        PLTD,
+        UNKNOWN,
+        UNNAMED;
+
+        public static Type isTypeOf(String _s) {
+            if (_s.contains("CHLOROPLAST")) {
+                return CHLOROPLAST;
+            } else if (_s.contains("CHROMOSOME")) {
+                return CHROMOSOME;
+            } else if (_s.contains("PLASMID")) {
+                return PLASMID;
+            } else if (_s.contains("SEGMENT") || _s.contains("SEGMEN")) {
+                return SEGMENT;
+            } else if (_s.contains("LINKAGE")) {
+                return LINKAGE;
+            } else if (_s.contains("PLASTID")) {
+                return PLASTID;
+            } else if (_s.contains("CIRCLE")) {
+                return CIRCLE;
+            } else if (_s.contains("PLTD")) {
+                return PLTD;
+            } else if (_s.contains("UNKNOWN")) {
+                return UNKNOWN;
+            } else if (_s.contains("UNNAMED")) {
+                return UNNAMED;
+            } else if (_s.contains("MITOCHONDRION") || _s.contains("MT")) {
+                return MITOCHONDRION;
+            } else if (_s.contains("DNA") || _s.contains("DN")) {
+                return DNA;
+            } else if (_s.contains("RNA") || _s.contains("RN")) {
+                return RNA;
+            }
+            return null;
+        }
     }
 }
