@@ -111,19 +111,22 @@ public class ExcelWriter {
         r.createCell(1).setCellValue(new SimpleDateFormat("d MMM yyyy").format(_data.getModificationDate()));
 
         r = _general_info_sheet.createRow(6);
-        r.createCell(0).setCellValue("Number of CDS sequences");
+        r.createCell(0).setCellValue("Total number of CDS sequences");
         r.createCell(1).setCellValue(_data.getCDSNumber());
 
         r = _general_info_sheet.createRow(8);
         r.createCell(0).setCellValue("Number of valid CDS");
         r.createCell(1).setCellValue(_data.getValidCDSNumber());
 
+        r = _general_info_sheet.createRow(10);
+        r.createCell(0).setCellValue("Number of invalid CDS");
+        r.createCell(1).setCellValue(_data.getCDSNumber() - _data.getValidCDSNumber());
+
         if (_data.getClass() != Organism.class) {
-            r = _general_info_sheet.createRow(10);
+            r = _general_info_sheet.createRow(12);
             r.createCell(0).setCellValue("Number of Organisms");
             r.createCell(1).setCellValue(_data.getTotalOrganism());
         }
-
 
         int genomeInfoRowNumber = 3;
 
@@ -220,6 +223,21 @@ public class ExcelWriter {
             c.setCellType(CellType.NUMERIC);
             c.setCellFormula("SUM(" + (char) ('A' + p) + "2:" + (char) ('A' + p) + "65)");
         }
+
+        i += 2;
+        r = _sheet.createRow(i);
+        r.createCell(0).setCellValue("Total number of CDS sequences");
+        r.createCell(1).setCellValue(_stat.getCDSNumber());
+
+        i += 2;
+        r = _sheet.createRow(i);
+        r.createCell(0).setCellValue("Number of valid CDS");
+        r.createCell(1).setCellValue(_stat.getValidCDSNumber());
+
+        i += 2;
+        r = _sheet.createRow(i);
+        r.createCell(0).setCellValue("Number of invalids CDS");
+        r.createCell(1).setCellValue(_stat.getCDSNumber() - _stat.getValidCDSNumber());
     }
 
     private static void writeNumericCell(XSSFCell _cell, float _f) {
