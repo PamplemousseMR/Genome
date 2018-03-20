@@ -148,7 +148,7 @@ public final class OrganismParser {
                             final String sequenceInfo = data[0];
                             final Matcher mType = patternType.matcher(sequenceInfo);
                             if (mType.find()) {
-                                m_replicons.add(new Map.Entry<>() {
+                                m_replicons.add(new Map.Entry<String, String>() {
                                     @Override
                                     public String getKey() {
                                         return sequenceId;
@@ -165,10 +165,10 @@ public final class OrganismParser {
                                     }
                                 });
                             } else {
-                                Logs.warning("Unable to get type of : '" + m_name + "' from sequence : " + sequence);
+                                Logs.info("Unable to get type of : '" + m_name + "' from sequence : " + sequence);
                             }
                         } else {
-                            Logs.warning("Unable to get information of : '" + m_name + "' from sequence : " + sequence);
+                            Logs.info("Unable to get information of : '" + m_name + "' from sequence : " + sequence);
                         }
                     }
 
