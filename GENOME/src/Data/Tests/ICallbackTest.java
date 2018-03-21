@@ -42,7 +42,10 @@ public class ICallbackTest {
             assertEquals(1, _organism.getStatistics().size());
             assertEquals(1, _organism.getReplicons().size());
         });
-        Replicon replicon = new Replicon(Statistics.Type.CHLOROPLAST, "Replicon");
+        ArrayList<StringBuilder> sequences = new ArrayList<>();
+        sequences.add(new StringBuilder("ATGAAATAA"));
+        sequences.add(new StringBuilder("ATGATAA"));
+        Replicon replicon = new Replicon(Statistics.Type.CHLOROPLAST, "Replicon", 2, 1, sequences);
 
         dataBase.start();
         kingdom.start();
@@ -55,7 +58,6 @@ public class ICallbackTest {
         group.addSubGroup(subGroup);
         subGroup.addOrganism(organism);
         organism.addReplicon(replicon);
-        replicon.addSequence(new StringBuilder("AAAAACAAGAATACAACCACGACTAGAAGCAGGAGTATAATCATGATTCAACACCAGCATCCACCCCCGCCTCGACGCCGGCGTCTACTCCTGCTTGAAGACGAGGATGCAGCCGCGGCTGGAGGCGGGGGTGTAGTCGTGGTTTAATACTAGTATTCATCCTCGTCTTGATGCTGGTGTTTATTCTTGTTT"));
 
         organism.stop();
         group.stop();
@@ -109,7 +111,10 @@ public class ICallbackTest {
             assertEquals(1, _organism.getStatistics().size());
             assertEquals(1, _organism.getReplicons().size());
         });
-        Replicon replicon = new Replicon(Statistics.Type.CHLOROPLAST, "Replicon");
+        ArrayList<StringBuilder> sequences = new ArrayList<>();
+        sequences.add(new StringBuilder("ATGAAATAA"));
+        sequences.add(new StringBuilder("ATGATAA"));
+        Replicon replicon = new Replicon(Statistics.Type.CHLOROPLAST, "Replicon", 2, 1, sequences);
 
         dataBase.start();
         kingdom.start();
@@ -122,7 +127,6 @@ public class ICallbackTest {
         group.addSubGroup(subGroup);
         subGroup.addOrganism(organism);
         organism.addReplicon(replicon);
-        replicon.addSequence(new StringBuilder("AAAAACAAGAATACAACCACGACTAGAAGCAGGAGTATAATCATGATTCAACACCAGCATCCACCCCCGCCTCGACGCCGGCGTCTACTCCTGCTTGAAGACGAGGATGCAGCCGCGGCTGGAGGCGGGGGTGTAGTCGTGGTTTAATACTAGTATTCATCCTCGTCTTGATGCTGGTGTTTATTCTTGTTT"));
 
         organism.stop();
         organism.finish();

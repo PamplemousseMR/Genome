@@ -33,7 +33,7 @@ public class CDSParser {
     /**
      * Regex used to get all sequences
      */
-    private static final String s_ADN_REGEX = "[A-Z]";
+    private static final String s_ADN_REGEX = "[A-Z]*";
     /**
      * Regex used to get interval descriptor
      */
@@ -41,7 +41,7 @@ public class CDSParser {
     /**
      * Regex used to get unique descriptor
      */
-    private static final String s_DESCRIPTOR_REGEX = " *[0-9]+[, )]*";
+    private static final String s_DESCRIPTOR_REGEX = " *[0-9]+[ )]*";
     /**
      * Regex used to get number
      */

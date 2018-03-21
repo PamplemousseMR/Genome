@@ -15,8 +15,7 @@ class GlobalTest {
     @org.junit.jupiter.api.Test
     void threadManagerTest() throws Exception {
 
-        ThreadManager.configure(Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors() / 2);
-        ThreadManager thr = ThreadManager.getInstance();
+        ThreadManager thr = new ThreadManager(Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors() / 2);
 
         // Store results of each threads
         ArrayList<ArrayList<Boolean>> results = new ArrayList<>();

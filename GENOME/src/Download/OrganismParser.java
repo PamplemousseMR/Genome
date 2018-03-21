@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -53,7 +54,11 @@ public final class OrganismParser {
     /**
      * Regex used to get only replicon which contain NC_
      */
-    private static final String s_REGEX = "NC_[^(/|;| |\n|:)]*";
+    private static final String s_NC_REGEX = "NC_[^(/|;| |\n|:)]*";
+    /**
+     * Regex used tu get good CDS type
+     */
+    private static final String s_TYPE_REGEX = "(CHLOROPLAST)|(CHROMOSOME)|(PLASMID)|(SEGMENT)|(SEGMEN)|(LINKAGE)|(PLASTID)|(CIRCLE)|(PLTD)|(UNKNOWN)|(UNNAMED)|(MITOCHONDRION)|(MT)|(DNA)|(DN)|(RNA)|(RN)";
     /**
      * Object to parse
      */
@@ -61,7 +66,7 @@ public final class OrganismParser {
     /**
      * List of replicon's ID of this organism
      */
-    private final ArrayList<String> m_replicons;
+    private final ArrayList<Map.Entry<String, String>> m_replicons;
     /**
      * ID of this organism
      */
@@ -128,10 +133,45 @@ public final class OrganismParser {
         try {
             // Replicons formatting
             if (m_object.has(s_REPLICON)) {
-                final Pattern pattern = Pattern.compile(s_REGEX, Pattern.CASE_INSENSITIVE);
-                final Matcher m = pattern.matcher(m_object.getString(s_REPLICON));
-                while (m.find()) {
-                    m_replicons.add(m.group(0));
+                final Pattern patternNC = Pattern.compile(s_NC_REGEX, Pattern.CASE_INSENSITIVE);
+                final Pattern patternType = Pattern.compile(s_TYPE_REGEX, Pattern.CASE_INSENSITIVE);
+
+                for (String sequence : m_object.getString(s_REPLICON).split(";")) {
+                    sequence = sequence.toUpperCase();
+                    final Matcher mNC = patternNC.matcher(sequence);
+
+                    if (mNC.find()) {
+                        final String sequenceId = mNC.group(0);
+
+                        final String[] data = sequence.split(":");
+                        if (data.length == 2) {
+                            final String sequenceInfo = data[0];
+                            final Matcher mType = patternType.matcher(sequenceInfo);
+                            if (mType.find()) {
+                                m_replicons.add(new Map.Entry<String, String>() {
+                                    @Override
+                                    public String getKey() {
+                                        return sequenceId;
+                                    }
+
+                                    @Override
+                                    public String getValue() {
+                                        return sequenceInfo;
+                                    }
+
+                                    @Override
+                                    public String setValue(String _value) {
+                                        return null;
+                                    }
+                                });
+                            } else {
+                                Logs.info("Unable to get type of : '" + m_name + "' from sequence : " + sequence);
+                            }
+                        } else {
+                            Logs.info("Unable to get information of : '" + m_name + "' from sequence : " + sequence);
+                        }
+                    }
+
                 }
             }
 
@@ -206,7 +246,7 @@ public final class OrganismParser {
      *
      * @return the replicon's id list
      */
-    public ArrayList<String> getReplicons() {
+    public ArrayList<Map.Entry<String, String>> getReplicons() {
         return m_replicons;
     }
 

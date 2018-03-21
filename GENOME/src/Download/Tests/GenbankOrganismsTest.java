@@ -3,19 +3,18 @@ package Download.Tests;
 import Download.GenbankOrganisms;
 import Download.OrganismParser;
 import Exception.MissException;
-import Utils.Logs;
 import org.junit.jupiter.api.Test;
 
 import java.util.ArrayList;
+import java.util.Map;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class GenbankOrganismsTest {
     @Test
     void runTest() throws MissException {
 
-        GenbankOrganisms go = GenbankOrganisms.getInstance();
+        GenbankOrganisms go = new GenbankOrganisms();
         go.downloadOrganisms();
 
         ArrayList<String> kingdom = new ArrayList<>();
@@ -27,7 +26,6 @@ class GenbankOrganismsTest {
         String lastSubGroup = "";
 
         int count = 0;
-        Logs.initializeLog();
         while (go.hasNext()) {
             OrganismParser ro = go.getNext();
             ro.parse();
@@ -40,8 +38,9 @@ class GenbankOrganismsTest {
             assertTrue(ro.getVersion() != -1);
             assertTrue(ro.getModificationDate() != null);
 
-            for (String CDS : ro.getReplicons()) {
-                assertTrue(CDS.indexOf("NC_") == 0);
+            for (Map.Entry<String, String> CDS : ro.getReplicons()) {
+                assertTrue(CDS.getKey().indexOf("NC_") == 0);
+                assertNotNull(CDS.getValue());
             }
 
             count++;
@@ -49,7 +48,6 @@ class GenbankOrganismsTest {
             String kin = ro.getKingdom().toUpperCase();
             String gro = ro.getGroup().toUpperCase();
             String sub = ro.getSubGroup().toUpperCase();
-            Logs.info(kin + " : " + gro + " : " + sub);
 
             if (kin.compareTo(lastKingdom) != 0) {
                 kingdom.add(kin);
@@ -73,7 +71,6 @@ class GenbankOrganismsTest {
             lastGroup = gro;
             lastSubGroup = sub;
         }
-        Logs.finalizeLog();
 
         boolean kingdomSorted = true;
         for (int i = 0; i < kingdom.size(); ++i) {

@@ -18,13 +18,13 @@ public class Statistics implements Serializable {
      */
     private long m_totalTrinucleotide;
     /**
+     * The number of CDS sequences
+     */
+    private long m_CDSNumber;
+    /**
      * The number of valid CDS sequences
      */
     private long m_validCDSNumber;
-    /**
-     * The number of invalid CDS sequences
-     */
-    private long m_invalidCDSNumber;
 
     /**
      * Class constructor
@@ -33,9 +33,9 @@ public class Statistics implements Serializable {
         m_type = _type;
         m_trinucleotideTable = new Tuple[Trinucleotide.values().length];
         IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> m_trinucleotideTable[i] = new Tuple());
-        m_totalTrinucleotide = 0;
+        m_totalTrinucleotide = 0L;
+        m_CDSNumber = 0L;
         m_validCDSNumber = 0L;
-        m_invalidCDSNumber = 0L;
     }
 
     /**
@@ -64,21 +64,21 @@ public class Statistics implements Serializable {
     }
 
     /**
+     * Get the number of CDS
+     *
+     * @return the number of CDS
+     */
+    public final long getCDSNumber() {
+        return m_CDSNumber;
+    }
+
+    /**
      * Get the number of valid CDS
      *
      * @return the number of valid CDS
      */
     public final long getValidCDSNumber() {
         return m_validCDSNumber;
-    }
-
-    /**
-     * Get the number of invalid CDS
-     *
-     * @return the number of invalid CDS
-     */
-    public final long getInvalidCDSNumber() {
-        return m_invalidCDSNumber;
     }
 
     /**
@@ -98,18 +98,20 @@ public class Statistics implements Serializable {
             incrementStat(tri, StatLong.PREF2, inputRow.get(StatLong.PREF2));
         });
         m_totalTrinucleotide += _stats.m_totalTrinucleotide;
+        m_CDSNumber += _stats.m_CDSNumber;
         m_validCDSNumber += _stats.m_validCDSNumber;
-        m_invalidCDSNumber += _stats.m_invalidCDSNumber;
     }
 
     /**
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
     protected final void compute() {
-        for (Tuple row : m_trinucleotideTable) {
-            row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalTrinucleotide);
-            row.set(StatFloat.FREQ1, row.get(StatLong.PHASE1) / (float) m_totalTrinucleotide);
-            row.set(StatFloat.FREQ2, row.get(StatLong.PHASE2) / (float) m_totalTrinucleotide);
+        if (m_totalTrinucleotide != 0) {
+            for (Tuple row : m_trinucleotideTable) {
+                row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalTrinucleotide);
+                row.set(StatFloat.FREQ1, row.get(StatLong.PHASE1) / (float) m_totalTrinucleotide);
+                row.set(StatFloat.FREQ2, row.get(StatLong.PHASE2) / (float) m_totalTrinucleotide);
+            }
         }
     }
 
@@ -133,12 +135,12 @@ public class Statistics implements Serializable {
     }
 
     /**
-     * Increment the number of valid CDS sequence
+     * Increment the number of CDS sequence
      *
      * @param _long, the value to increment
      */
-    protected final void incrementValidCDS(long _long) {
-        m_validCDSNumber += _long;
+    protected final void incrementCDS(long _long) {
+        m_CDSNumber += _long;
     }
 
     /**
@@ -146,8 +148,8 @@ public class Statistics implements Serializable {
      *
      * @param _long, the value to increment
      */
-    protected final void incrementInvalidCDS(long _long) {
-        m_invalidCDSNumber += _long;
+    protected final void incrementValidCDS(long _long) {
+        m_validCDSNumber += _long;
     }
 
     /**
@@ -260,6 +262,45 @@ public class Statistics implements Serializable {
         MITOCHONDRION,
         PLASMID,
         DNA,
-        CHLOROPLAST
+        CHLOROPLAST,
+        SEGMENT,
+        LINKAGE,
+        PLASTID,
+        CIRCLE,
+        RNA,
+        PLTD,
+        UNKNOWN,
+        UNNAMED;
+
+        public static Type isTypeOf(String _s) {
+            if (_s.contains("CHLOROPLAST")) {
+                return CHLOROPLAST;
+            } else if (_s.contains("CHROMOSOME")) {
+                return CHROMOSOME;
+            } else if (_s.contains("PLASMID")) {
+                return PLASMID;
+            } else if (_s.contains("SEGMENT") || _s.contains("SEGMEN")) {
+                return SEGMENT;
+            } else if (_s.contains("LINKAGE")) {
+                return LINKAGE;
+            } else if (_s.contains("PLASTID")) {
+                return PLASTID;
+            } else if (_s.contains("CIRCLE")) {
+                return CIRCLE;
+            } else if (_s.contains("PLTD")) {
+                return PLTD;
+            } else if (_s.contains("UNKNOWN")) {
+                return UNKNOWN;
+            } else if (_s.contains("UNNAMED")) {
+                return UNNAMED;
+            } else if (_s.contains("MITOCHONDRION") || _s.contains("MT")) {
+                return MITOCHONDRION;
+            } else if (_s.contains("DNA") || _s.contains("DN")) {
+                return DNA;
+            } else if (_s.contains("RNA") || _s.contains("RN")) {
+                return RNA;
+            }
+            return null;
+        }
     }
 }

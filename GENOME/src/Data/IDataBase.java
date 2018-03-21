@@ -28,13 +28,13 @@ public class IDataBase implements Serializable {
      */
     private transient final Date m_modificationDate;
     /**
+     * The number of CDS sequences
+     */
+    private long m_CDSNumber;
+    /**
      * The number of valid CDS sequences
      */
     private long m_validCDSNumber;
-    /**
-     * The number of invalid CDS sequences
-     */
-    private long m_invalidCDSNumber;
     /**
      * The number of underlying organism
      */
@@ -60,8 +60,8 @@ public class IDataBase implements Serializable {
         m_modificationDate = new Date();
         m_statistics = new EnumMap<>(Statistics.Type.class);
         m_genomeNumber = new EnumMap<>(Statistics.Type.class);
+        m_CDSNumber = 0L;
         m_validCDSNumber = 0L;
-        m_invalidCDSNumber = 0L;
         m_totalOrganism = 0L;
         m_state = State.CREATED;
         m_index = -1;
@@ -164,21 +164,21 @@ public class IDataBase implements Serializable {
     }
 
     /**
+     * Get the number of invalid sequences
+     *
+     * @return the number of invalid sequences
+     */
+    public final long getCDSNumber() {
+        return m_CDSNumber;
+    }
+
+    /**
      * Get the number of valid sequences
      *
      * @return the number of valid sequences
      */
     public final long getValidCDSNumber() {
         return m_validCDSNumber;
-    }
-
-    /**
-     * Get the number of invalid sequences
-     *
-     * @return the number of invalid sequences
-     */
-    public final long getInvalidCDSNumber() {
-        return m_invalidCDSNumber;
     }
 
     /**
@@ -328,8 +328,8 @@ public class IDataBase implements Serializable {
      * @param _data, the data used to increment
      */
     protected final void incrementGenericTotals(IDataBase _data) {
+        m_CDSNumber += _data.m_CDSNumber;
         m_validCDSNumber += _data.m_validCDSNumber;
-        m_invalidCDSNumber += _data.m_invalidCDSNumber;
         m_totalOrganism += _data.m_totalOrganism;
     }
 
@@ -339,8 +339,8 @@ public class IDataBase implements Serializable {
      * @param _stat, the data used to increment
      */
     protected final void incrementGenericTotals(Statistics _stat) {
+        m_CDSNumber += _stat.getCDSNumber();
         m_validCDSNumber += _stat.getValidCDSNumber();
-        m_invalidCDSNumber += _stat.getInvalidCDSNumber();
     }
 
     /**

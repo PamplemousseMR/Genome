@@ -1,7 +1,5 @@
 package Data;
 
-import Exception.AddException;
-
 import java.util.ArrayList;
 
 public final class Replicon extends Statistics {
@@ -25,11 +23,13 @@ public final class Replicon extends Statistics {
      * @param _type, the type of this Replicon
      * @param _name, the name of the organism
      */
-    public Replicon(Type _type, String _name) {
+    public Replicon(Type _type, String _name, long _total, long _valid, ArrayList<StringBuilder> _sequences) {
         super(_type);
         m_name = _name;
-        m_sequences = new ArrayList<>();
+        m_sequences = _sequences;
         m_index = -1;
+        super.incrementCDS(_total);
+        super.incrementValidCDS(_valid);
     }
 
     /**
@@ -39,19 +39,6 @@ public final class Replicon extends Statistics {
      */
     public String getName() {
         return m_name;
-    }
-
-    /**
-     * Add a sequence
-     *
-     * @param _sequence, the sequence to add
-     * @return the insertion success
-     * @throws AddException if the _sequence are already added
-     */
-    public boolean addSequence(StringBuilder _sequence) throws AddException {
-        if (m_sequences.contains(_sequence))
-            throw new AddException("Sequence already added : " + _sequence);
-        return m_sequences.add(_sequence);
     }
 
     /**
@@ -70,7 +57,6 @@ public final class Replicon extends Statistics {
                 idx += 3;
             }
             super.incrementTotal(idx / 3);
-            super.incrementValidCDS(1L);
 
             long val0, val1, val2;
             for (Tuple tuple : temp.getTable()) {

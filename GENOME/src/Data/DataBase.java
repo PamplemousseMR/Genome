@@ -8,10 +8,6 @@ import java.util.ArrayList;
 public final class DataBase extends IDataBase {
 
     /**
-     * Instance of the singleton
-     */
-    private static DataBase s_DataBase;
-    /**
      * Array of this Database's Kingdom
      */
     private transient final ArrayList<Kingdom> m_kingdoms;

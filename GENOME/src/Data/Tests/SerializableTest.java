@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertTrue;
@@ -18,7 +19,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class SerializableTest {
 
     private static boolean equals(Statistics _stat, Statistics _statc) {
-        return _stat == null && _statc == null || _stat != null && _statc != null && _stat.getType() == _statc.getType() && _stat.getTotalTrinucleotide() == _statc.getTotalTrinucleotide() && equals(_stat.getTable(), _statc.getTable()) && _stat.getValidCDSNumber() == _statc.getValidCDSNumber() && _stat.getInvalidCDSNumber() == _statc.getInvalidCDSNumber();
+        return _stat == null && _statc == null || _stat != null && _statc != null && _stat.getType() == _statc.getType() && _stat.getTotalTrinucleotide() == _statc.getTotalTrinucleotide() && equals(_stat.getTable(), _statc.getTable()) && _stat.getCDSNumber() == _statc.getCDSNumber() && _stat.getValidCDSNumber() == _statc.getValidCDSNumber();
     }
 
     private static boolean equals(Tuple[] _tuple, Tuple[] _tuplec) {
@@ -49,8 +50,8 @@ class SerializableTest {
             }
         }
         return _data.getTotalOrganism() == _datac.getTotalOrganism()
-                && _data.getValidCDSNumber() == _datac.getValidCDSNumber()
-                && _data.getInvalidCDSNumber() == _datac.getInvalidCDSNumber();
+                && _data.getCDSNumber() == _datac.getCDSNumber()
+                && _data.getValidCDSNumber() == _datac.getValidCDSNumber();
     }
 
     @Test
@@ -111,7 +112,6 @@ class SerializableTest {
                         su.addOrganism(or);
 
                         for (int r = 0; r < nbrep; ++r) {
-                            Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1");
                             StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
                             strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");
@@ -348,7 +348,9 @@ class SerializableTest {
                             strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
                             strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
                             strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTAT");
-                            re.addSequence(strBuf);
+                            ArrayList<StringBuilder> sequences = new ArrayList<>();
+                            sequences.add(strBuf);
+                            Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1", 2, 1, sequences);
                             assertEquals("CR1", re.getName());
                             or.addReplicon(re);
                         }

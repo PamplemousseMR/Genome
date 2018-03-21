@@ -9,7 +9,8 @@ import org.junit.jupiter.api.Test;
 
 import java.time.Duration;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertTimeout;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class ThreadManagerTest {
 
@@ -17,28 +18,13 @@ class ThreadManagerTest {
 
     @BeforeAll
     static void setUp() throws Exception {
-        ThreadManager.configure(Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors() / 2);
-        threadManager = ThreadManager.getInstance();
+        threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors() / 2);
+
     }
 
     @AfterAll
     static void finalizeThreadManager() {
         assertTimeout(Duration.ofSeconds(1), () -> threadManager.finalizeThreadManager());
-    }
-
-    @Test
-    void configure() {
-        assertThrows(Exception.class, () -> ThreadManager.configure(0, 0));
-        assertThrows(Exception.class, () -> ThreadManager.configure(0, 1));
-        assertThrows(Exception.class, () -> ThreadManager.configure(1, 0));
-        assertThrows(Exception.class, () -> ThreadManager.configure(-1, 1));
-        assertThrows(Exception.class, () -> ThreadManager.configure(1, -1));
-        assertThrows(Exception.class, () -> ThreadManager.configure(2, 4));
-    }
-
-    @Test
-    void getInstance() {
-        assertSame(threadManager, ThreadManager.getInstance());
     }
 
     @Test

@@ -10,15 +10,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 public final class ThreadManager {
 
-    private static int s_nbThreadMax;
 
-    // Configuration
-    private static int s_iDownloadMax;
-    private static int s_iComputeMax;
-    private static ThreadManager s_instance;
     private final int m_nbThreadMax;
-
-    // Singleton
     private final int m_iDownloadMax;
     private final int m_iComputeMax;
     private final Lock m_runningLock;
@@ -35,17 +28,24 @@ public final class ThreadManager {
     /**
      * Instantiate all threads
      */
-    private ThreadManager() {
+    public ThreadManager(int _nbThreadMax, int _iDownloadMax) throws Exception {
 
-        m_nbThreadMax = s_nbThreadMax;
-        m_iDownloadMax = s_iDownloadMax;
-        m_iComputeMax = s_iComputeMax;
+        if (_iDownloadMax <= 0 || _nbThreadMax <= 0) {
+            throw new Exception("Value can't be negative");
+        }
+        if (_iDownloadMax > _nbThreadMax) {
+            throw new Exception("_iDownloadMax must be inferior at _nbThreadMax");
+        }
 
-        Logs.info("Number of threads : " + s_nbThreadMax);
+        m_nbThreadMax = _nbThreadMax;
+        m_iDownloadMax = _iDownloadMax;
+        m_iComputeMax = _nbThreadMax - _iDownloadMax;
+
+        Logs.info("Number of threads : " + m_nbThreadMax);
         Logs.info("Number of download threads : " + m_iDownloadMax);
         Logs.info("Number of compute threads : " + m_iComputeMax);
 
-        m_threads = new ArrayList<>(s_nbThreadMax);
+        m_threads = new ArrayList<>(m_nbThreadMax);
         m_running = true;
         m_runningLock = new ReentrantLock();
 
@@ -59,42 +59,12 @@ public final class ThreadManager {
         m_condArray = m_lockArray.newCondition();
         m_condPush = m_lockArray.newCondition();
 
-        for (int i = 0; i < s_nbThreadMax; ++i) {
+        for (int i = 0; i < m_nbThreadMax; ++i) {
             final Thread thr = new Thread(new Executor(i));
             thr.setPriority(Thread.MAX_PRIORITY);
             m_threads.add(thr);
             thr.start();
         }
-    }
-
-    /**
-     * Configure ThreadManager's parameters
-     *
-     * @param _nbThreadMax,  the max number of threads
-     * @param _iDownloadMax, the max number of download thread
-     * @throws Exception, if the parameters are not corrects
-     */
-    public static void configure(int _nbThreadMax, int _iDownloadMax) throws Exception {
-        if (_iDownloadMax <= 0 || _nbThreadMax <= 0) {
-            throw new Exception("Value can't be negative");
-        }
-        if (_iDownloadMax > _nbThreadMax) {
-            throw new Exception("_iDownloadMax must be inferior at _nbThreadMax");
-        }
-
-        s_nbThreadMax = _nbThreadMax;
-        s_iDownloadMax = _iDownloadMax;
-        s_iComputeMax = _nbThreadMax - _iDownloadMax;
-    }
-
-    /**
-     * Get the only instance
-     */
-    public static ThreadManager getInstance() {
-        if (s_instance == null) {
-            s_instance = new ThreadManager();
-        }
-        return s_instance;
     }
 
     /**
