@@ -56,7 +56,7 @@ public final class SubGroup extends IDataBase {
      * @throws InvalidStateException if it can't be sopped
      */
     @Override
-    public void stop() throws InvalidStateException {
+    public synchronized void stop() throws InvalidStateException {
         super.stop();
         if (super.getFinishedChildren() == m_organisms.size()) {
             end();
@@ -96,7 +96,7 @@ public final class SubGroup extends IDataBase {
      * @param _organism, the Organism to finish
      * @throws InvalidStateException if it can't be finished
      */
-    protected void finish(Organism _organism) throws InvalidStateException {
+    protected synchronized void finish(Organism _organism) throws InvalidStateException {
         if (super.contains(m_organisms, _organism) && _organism.getState() != State.FINISHED) {
             for (Statistics stat : _organism.getStatistics().values()) {
                 super.updateStatistics(stat);

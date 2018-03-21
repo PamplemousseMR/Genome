@@ -1,7 +1,6 @@
 package Manager.Tests;
 
-import Manager.ICompute;
-import Manager.IDownload;
+import Manager.ITask;
 import Manager.ThreadManager;
 import Utils.Logs;
 
@@ -13,9 +12,9 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class GlobalTest {
 
     @org.junit.jupiter.api.Test
-    void threadManagerTest() throws Exception {
+    void threadManagerTest() {
 
-        ThreadManager thr = new ThreadManager(Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors() / 2);
+        ThreadManager thr = new ThreadManager(Runtime.getRuntime().availableProcessors());
 
         // Store results of each threads
         ArrayList<ArrayList<Boolean>> results = new ArrayList<>();
@@ -26,7 +25,7 @@ class GlobalTest {
             ArrayList<Boolean> res2 = new ArrayList<>();
             results.add(res2);
 
-            assertTrue(thr.pushDownloadTask(new IDownload("" + i) {
+            assertTrue(thr.pushTask(new ITask("" + i) {
                 @Override
                 public void run() {
                     for (long j = 0; j < 10; ++j) {
@@ -40,7 +39,7 @@ class GlobalTest {
                 }
             }));
 
-            assertTrue(thr.pushComputeTask(new ICompute("" + i) {
+            assertTrue(thr.pushTask(new ITask("" + i) {
                 @Override
                 public void run() {
                     for (long j = 0; j < 10; ++j) {
@@ -60,6 +59,9 @@ class GlobalTest {
 
         for (ArrayList<Boolean> li : results) {
             assertEquals(10, li.size());
+            for(Boolean b : li){
+                assertTrue(b);
+            }
         }
     }
 

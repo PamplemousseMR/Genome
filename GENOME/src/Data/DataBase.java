@@ -60,7 +60,7 @@ public final class DataBase extends IDataBase {
      * @throws InvalidStateException if it can't be stopped
      */
     @Override
-    public void stop() throws InvalidStateException {
+    public synchronized void stop() throws InvalidStateException {
         super.stop();
         if (super.getFinishedChildren() == m_kingdoms.size()) {
             end();
@@ -73,7 +73,7 @@ public final class DataBase extends IDataBase {
      * @param _kingdom, the Kingdom to finish
      * @throws InvalidStateException if it can't be finished
      */
-    protected void finish(Kingdom _kingdom) throws InvalidStateException {
+    protected synchronized void finish(Kingdom _kingdom) throws InvalidStateException {
         if (super.contains(m_kingdoms, _kingdom) && _kingdom.getState() != State.FINISHED) {
             for (Statistics stat : _kingdom.getStatistics().values()) {
                 super.updateStatistics(stat);
