@@ -10,7 +10,7 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CDSParserTest {
 
     @Test
-    void getId() throws OperatorException {
+    void CDSParser() throws OperatorException {
         String s_CDS = "     CDS             complement(1552..2616)\n" +
                 "     CDS             complement(2688..3668)\n" +
                 "     CDS             4660..6212\n" +
@@ -26,6 +26,12 @@ class CDSParserTest {
                 "     CDS             13416..14553\n" +
                 "     CDS             join(13416..14553, 13416..14553)\n" +
                 "     CDS             join(7489..8181, 7489, 7489, 7489, 7489..8181)\n" +
+                "     CDS             -1..2563589\n" +
+                "     CDS             5..2563589\n" +
+                "     CDS             join()\n" +
+                "     CDS             join(complement(), 12)\n" +
+                "     CDS             12..\n" +
+                "     CDS             \n" +
                 "ORIGIN      \n" +
                 "        1 agatagaaac tgacctggct cacgccggtc tgaactcaga tcacgtagga ttttaatggt\n" +
                 "       61 cgaacagacc aaccctcagg aactactgca cccctaggca atcccgatcc aacatcgagg\n" +
@@ -301,7 +307,7 @@ class CDSParserTest {
                 "//";
         CDSParser parser = new CDSParser(new StringBuilder(s_CDS), "NC_TEST");
         parser.parse();
-        assertEquals(15, parser.getTotal());
+        assertEquals(21, parser.getTotal());
         assertEquals(11, parser.getValid());
 
         assertTrue(0 == parser.getSequences().get(0).toString().compareTo("ATGCATCGTAGGGTTTTTATTGTGTTGGTTGTTAGAGTTGTCTTTGGGACTTTTGTTGTTTTAAGAAGCCATCACTGGTTTACTTTGTGGGTGGGATTGGAGGTGAATACTTTATCTATTTTGCCCATTCTGTGTGGGGGGTTTTTACCCCGGAAGGTAGAGTCGTCCGTGAAGTATTTTTTGGTGCAGTCCGTGAGGGCTGCTGTTATACTTAATGTTGTTGTTATACAAGCTTGGTTTAGTTCTTCGTGGTTGGTTGGCCAACCCCTGCTTAAGGTTTCTTCCTTATTGATCACTCTGGCCATAGGTCTCAAGTTGGGGCTCTTTCCGTGTCATTACTGGTTTCCAGATGTTGTCCAGGGGGTTGGCTTCTTAGAGGGTTTGGTTCTGTCAACTTGGCAGAAGCTGGCCCCTTTTTCTGTTTTGGTGTATGTGATTGATAGGGTAGATATTCGAGTATTGTCATGTCTGGCTGTGTTTTCTGTGCTAATAGGTGGGTGGGGAGGTTTGAATCAGACGCAGGTGCGGAAGATTTTGGCTTTTTCATCGGTGGCACATATGGGGTGGATTTGCTCAACTGTGGGGTATTCTGCTAATGCCGGTTGTGTTATGTTGCTGATTTACATAATTACTAATTCCAGGGTGTTTTTGATTGCGAGAGAATTTGATTTGAAGACTTTAGCTCATGTAGGTCGTGTTTCATACTTTAATGTTGGGAAGAGTTCCGGTATTGTTTTGGGTGTGCTTTCCCTGGGGGTTTTGCCTCCTCTTTTCGGCTTCCTAATAAAGTTCGTCTCTCTGAAGTGTCTTCTTGAAAGGGGTAGTGTTCTGGTAAGAGGTTTTTTAGTTGCAGGGAGTCTGCTTAGCTTGTTCTTTTATCTTCGTGTGTCCTTTAAAAGGAGCTTGTTGTTGTTTCCTCAGCATTCTCTAGTTCTCTTTGGCTGGCGAGGGCTGCAGGATGGGGGATTGGGTGTTCCTACGGCTCGGGGTCTAATTCTTTGTTGGGGTTTGAGGGTGAGTTTACTAGGCTTGGTGAGTTTCCCTGTGTTTGTTTCCTTGTTGTAG"));

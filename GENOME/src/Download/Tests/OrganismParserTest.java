@@ -9,8 +9,7 @@ import org.junit.jupiter.api.Test;
 import java.text.Format;
 import java.text.SimpleDateFormat;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class OrganismParserTest {
 
@@ -44,36 +43,58 @@ class OrganismParserTest {
     }
 
     @Test
-    void error() {
-        final String jsonFail_0 = "{" + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-        assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail_0)).parse());
-
-        final String jsonFail_1 = "{" + s_SUBGROUP_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-        assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail_1)).parse());
-
-        final String jsonFail_2 = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-        OrganismParser fail2 = new OrganismParser(new JSONObject(jsonFail_2));
-        fail2.parse();
-
-        final String jsonFail_3 = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-        assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail_3)).parse());
-
-        final String jsonFail_4 = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-        assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail_4)).parse());
-
-        final String jsonFail_5 = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-        assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail_5)).parse());
-
-        final String jsonFail_6 = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-        OrganismParser fail6 = new OrganismParser(new JSONObject(jsonFail_6));
-        fail6.parse();
-
-        final String jsonFail_7 = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_GROUP_JS + "}";
-        OrganismParser fail7 = new OrganismParser(new JSONObject(jsonFail_7));
-        fail7.parse();
-
-        final String jsonFail_8 = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "}";
-        assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail_8)).parse());
+    void organismParser() {
+        {
+            final String jsonFail = "{" + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+        }
+        {
+            final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+        }
+        {
+            final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
+            OrganismParser fail2 = new OrganismParser(new JSONObject(jsonFail));
+            fail2.parse();
+        }
+        {
+            final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+        }
+        {
+            final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+        }
+        {
+            final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+        }
+        {
+            final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
+            OrganismParser fail6 = new OrganismParser(new JSONObject(jsonFail));
+            fail6.parse();
+        }
+        {
+            final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_GROUP_JS + "}";
+            OrganismParser fail7 = new OrganismParser(new JSONObject(jsonFail));
+            fail7.parse();
+        }
+        {
+            final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "}";
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+        }
+        {
+            final String jsonFail = "{\"id\": test," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_SUBGROUP_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+        }
+        {
+            final String jsonFail = "{\"version\": test," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_ID_JS + "," + s_SUBGROUP_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+        }
+        {
+            final String jsonFail = "{}";
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+        }
     }
 
     @Test
@@ -104,6 +125,15 @@ class OrganismParserTest {
     @Test
     void getReplicons() {
         assertTrue(s_REPLICONS.compareTo(m_OrganismParser.getReplicons().get(0).getKey()) == 0);
+        String json = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_GROUP_JS +
+                ",\"replicons\": \"DNA:NC_1256;MT:NC_1546;NC_785;test:NC_854;DNS:test\"}";
+        OrganismParser parser = new OrganismParser(new JSONObject(json));
+        parser.parse();
+        assertEquals(2, parser.getReplicons().size());
+        assertEquals("NC_1256", parser.getReplicons().get(0).getKey());
+        assertEquals("DNA", parser.getReplicons().get(0).getValue());
+        assertEquals("NC_1546", parser.getReplicons().get(1).getKey());
+        assertEquals("MT", parser.getReplicons().get(1).getValue());
     }
 
     @Test

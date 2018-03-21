@@ -12,10 +12,14 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class GenbankOrganismsTest {
     @Test
-    void runTest() throws MissException {
+    void genbankOrganism() {
 
         GenbankOrganisms go = new GenbankOrganisms();
-        go.downloadOrganisms();
+        try {
+            go.downloadOrganisms();
+        } catch (MissException e) {
+            assertTrue(true, e.toString());
+        }
 
         ArrayList<String> kingdom = new ArrayList<>();
         ArrayList<ArrayList<String>> group = new ArrayList<>();
@@ -25,25 +29,25 @@ class GenbankOrganismsTest {
         String lastGroup = "";
         String lastSubGroup = "";
 
-        int count = 0;
+        int totalOrganism = 0;
         while (go.hasNext()) {
             OrganismParser ro = go.getNext();
             ro.parse();
 
             assertTrue(ro.getId() != -1);
-            assertTrue(ro.getName() != null);
-            assertTrue(ro.getKingdom() != null);
-            assertTrue(ro.getGroup() != null);
-            assertTrue(ro.getSubGroup() != null);
-            assertTrue(ro.getVersion() != -1);
-            assertTrue(ro.getModificationDate() != null);
+            assertTrue(ro.getName() != null, "id : " + ro.getId());
+            assertTrue(ro.getKingdom() != null, "id : " + ro.getId() + ", name : " + ro.getName());
+            assertTrue(ro.getGroup() != null, "id : " + ro.getId() + ", name : " + ro.getName());
+            assertTrue(ro.getSubGroup() != null, "id : " + ro.getId() + ", name : " + ro.getName());
+            assertTrue(ro.getVersion() != -1, "id : " + ro.getId() + ", name : " + ro.getName());
+            assertTrue(ro.getModificationDate() != null, "id : " + ro.getId() + ", name : " + ro.getName());
 
             for (Map.Entry<String, String> CDS : ro.getReplicons()) {
-                assertTrue(CDS.getKey().indexOf("NC_") == 0);
-                assertNotNull(CDS.getValue());
+                assertTrue(CDS.getKey().indexOf("NC_") == 0, "id : " + ro.getId() + ", name : " + ro.getName() + ", Replicon : " + CDS.getKey());
+                assertNotNull(CDS.getValue(), "id : " + ro.getId() + ", name : " + ro.getName() + ", Replicon : " + CDS.getKey());
             }
 
-            count++;
+            totalOrganism++;
 
             String kin = ro.getKingdom().toUpperCase();
             String gro = ro.getGroup().toUpperCase();
@@ -106,9 +110,9 @@ class GenbankOrganismsTest {
             assertTrue(subSorted);
         }
 
-        count += go.getFailedOrganism();
+        totalOrganism += go.getFailedOrganism();
 
-        assertEquals(count, go.getTotalCount());
+        assertEquals(totalOrganism, go.getTotalCount());
     }
 
 }
