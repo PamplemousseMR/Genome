@@ -67,45 +67,45 @@ class SerializableTest {
 
         }
 
-        final int nb = 5, nbrep = 200;
-        DataBase db = new DataBase("_DataBase", _dataBase -> {
+        final int nb = 1, nbrep = 200;
+        DataBase db = new DataBase("GENBANK", _dataBase -> {
             _dataBase.save();
-            IDataBase retour = IDataBase.load(_dataBase.getName());
+            DataBase retour = DataBase.load(_dataBase.getName(), _arg -> {});
             assertTrue(equals(_dataBase, retour));
         });
         db.start();
 
         for (int k = 0; k < nb; k++) {
-            Kingdom ki = new Kingdom(k + "__Kingdom", _kingdom -> {
+            Kingdom ki = new Kingdom(k + "KNG" + k, _kingdom -> {
                 _kingdom.save();
-                IDataBase retour = IDataBase.load(_kingdom.getName());
+                Kingdom retour = Kingdom.load(_kingdom.getName(), _kingdom.getParent(), _arg -> {});
                 assertTrue(equals(_kingdom, retour));
             });
             ki.start();
             db.addKingdom(ki);
 
             for (int g = 0; g < nb; g++) {
-                Group gr = new Group(k + "_" + g + "__Group", _group -> {
+                Group gr = new Group("GRP" + g, _group -> {
                     _group.save();
-                    IDataBase retour = IDataBase.load(_group.getName());
+                    Group retour = Group.load(_group.getName(), _group.getParent(), _arg -> {});
                     assertTrue(equals(_group, retour));
                 });
                 gr.start();
                 ki.addGroup(gr);
 
                 for (int s = 0; s < nb; s++) {
-                    SubGroup su = new SubGroup(k + "_" + g + "_" + s + "__SubGroup", _subGroup -> {
+                    SubGroup su = new SubGroup("SUB" + s, _subGroup -> {
                         _subGroup.save();
-                        IDataBase retour = IDataBase.load(_subGroup.getName());
+                        SubGroup retour = SubGroup.load(_subGroup.getName(), _subGroup.getParent(), _arg -> {});
                         assertTrue(equals(_subGroup, retour));
                     });
                     su.start();
                     gr.addSubGroup(su);
 
                     for (int o = 0; o < nb; o++) {
-                        Organism or = new Organism(k + "_" + g + "_" + s + "_" + o + "__Organism", 152753L, 1592820474201505800L, _organism -> {
+                        Organism or = new Organism("ORG" + o, 152753L, 1592820474201505800L, _organism -> {
                             _organism.save();
-                            IDataBase retour = IDataBase.load(_organism.getName());
+                            Organism retour = Organism.load(_organism.getName(), _organism.getParent(), _arg -> {});
                             assertTrue(equals(_organism, retour));
                         });
                         or.start();

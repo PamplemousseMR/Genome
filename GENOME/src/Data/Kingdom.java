@@ -34,6 +34,49 @@ public final class Kingdom extends IDataBase {
     }
 
     /**
+     * Class constructor when already exist
+     *
+     * @param _name, the name of this Kingdom
+     * @param _data, the previous version of this Kingdom
+     * @param _event the event call when compute is finished
+     */
+    private Kingdom(String _name, IDataBase _data, IKingdomCallback _event) {
+        super(_name, _data);
+        m_groups = new ArrayList<>();
+        m_parent = null;
+        m_event = _event;
+    }
+
+    /**
+     * Load a Kingdom with his name and affect the event
+     * It create it if the file doesn't exist
+     *
+     * @param _name the name of the file to load
+     * @param _parent the parent DataBase (used to know the path_name)
+     * @param _event the Callback you want to apply
+     * @return the IDatabase loaded or created
+     */
+    public static Kingdom load(String _name, DataBase _parent, IKingdomCallback _event) {
+        IDataBase result = IDataBase.load(_parent.getSavedName() + "__K_" + _name);
+
+        if (result == null) {
+            return new Kingdom(_name, _event);
+        } else {
+            return new Kingdom(_name, result, _event);
+        }
+    }
+
+    /**
+     * Get the main part of the save path_name
+     *
+     * @return the main part of the save path_name
+     */
+    @Override
+    protected String getSavedName() {
+        return m_parent.getSavedName() + "__K_" + getName();
+    }
+
+    /**
      * Add a Group to this Kingdom
      *
      * @param _group, the Group to insert
@@ -90,6 +133,15 @@ public final class Kingdom extends IDataBase {
                 end();
             }
         }
+    }
+
+    /**
+     * Get the parent
+     *
+     * @return the parent
+     */
+    public DataBase getParent() {
+        return m_parent;
     }
 
     /**

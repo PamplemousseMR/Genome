@@ -47,6 +47,31 @@ public final class Organism extends IDataBase {
     }
 
     /**
+     * Load a Subgroup with his name and affect the event
+     * It create it if the file doesn't exist
+     *
+     * @param _name the name of the file to load
+     * @param _parent the parent Group (used to know the path_name)
+     * @param _event the Callback you want to apply
+     * @return the IDatabase loaded or created
+     */
+    public static Organism load(String _name, SubGroup _parent, ISubGroupCallback _event) {
+        return (Organism) IDataBase.load(_parent.getSavedName() + "__O_" + _name);
+
+        //TODO will we unload here ? and return a new Organism ?
+    }
+
+    /**
+     * Get the main part of the save path_name
+     *
+     * @return the main part of the save path_name
+     */
+    @Override
+    protected String getSavedName() {
+        return m_parent.getSavedName() + "__O_" + getName();
+    }
+
+    /**
      * Add a Replicon to this Organism
      *
      * @param _replicon, the Replicon to insert
@@ -138,6 +163,15 @@ public final class Organism extends IDataBase {
      */
     public long getId() {
         return m_id;
+    }
+
+    /**
+     * Get the parent
+     *
+     * @return the parent
+     */
+    public SubGroup getParent() {
+        return m_parent;
     }
 
     /**

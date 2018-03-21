@@ -29,6 +29,47 @@ public final class DataBase extends IDataBase {
     }
 
     /**
+     * Class constructor when already exist
+     *
+     * @param _name, the name of this DataBase
+     * @param _data, the previous version of this DataBase
+     * @param _event the event call when compute is finished
+     */
+    private DataBase(String _name, IDataBase _data, IDataBaseCallback _event) {
+        super(_name, _data);
+        m_kingdoms = new ArrayList<>();
+        m_event = _event;
+    }
+
+    /**
+     * Load a DataBase with his name and affect the event
+     * It create it if the file doesn't exist
+     *
+     * @param _name the name of the file to load
+     * @param _event the Callback you want to apply
+     * @return the IDatabase loaded or created
+     */
+    public static DataBase load(String _name, IDataBaseCallback _event) {
+        IDataBase result = IDataBase.load("D_" + _name);
+
+        if (result == null) {
+            return new DataBase(_name, _event);
+        } else {
+            return new DataBase(_name, result, _event);
+        }
+    }
+
+    /**
+     * Get the main part of the save path_name
+     *
+     * @return the main part of the save path_name
+     */
+    @Override
+    protected String getSavedName() {
+        return "D_" + getName();
+    }
+
+    /**
      * Add a Kingdom to the Database
      *
      * @param _kingdom, the Kingdom to insert

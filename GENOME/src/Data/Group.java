@@ -34,6 +34,49 @@ public final class Group extends IDataBase {
     }
 
     /**
+     * Class constructor when already exist
+     *
+     * @param _name, the name of this Group
+     * @param _data, the previous version of this Group
+     * @param _event the event call when compute is finished
+     */
+    private Group(String _name, IDataBase _data, IGroupCallback _event) {
+        super(_name, _data);
+        m_subGroups = new ArrayList<>();
+        m_parent = null;
+        m_event = _event;
+    }
+
+    /**
+     * Load a Group with his name and affect the event
+     * It create it if the file doesn't exist
+     *
+     * @param _name the name of the file to load
+     * @param _parent the parent Kingdom (used to know the path_name)
+     * @param _event the Callback you want to apply
+     * @return the IDatabase loaded or created
+     */
+    public static Group load(String _name, Kingdom _parent, IGroupCallback _event) {
+        IDataBase result = IDataBase.load(_parent.getSavedName() + "__G_" + _name);
+
+        if (result == null) {
+            return new Group(_name, _event);
+        } else {
+            return new Group(_name, result, _event);
+        }
+    }
+
+    /**
+     * Get the main part of the save file name
+     *
+     * @return the main part of the save path_name
+     */
+    @Override
+    protected String getSavedName() {
+        return m_parent.getSavedName() + "__G_" + getName();
+    }
+
+    /**
      * Add a SubGroup to this Group
      *
      * @param _subGroup, the Subgroup to insert
@@ -102,11 +145,11 @@ public final class Group extends IDataBase {
     }
 
     /**
-     * Get the Kingdom
+     * Get the parent
      *
-     * @return the Kingdom
+     * @return the parent
      */
-    protected Kingdom getParent() {
+    public Kingdom getParent() {
         return m_parent;
     }
 

@@ -68,13 +68,26 @@ public class IDataBase implements Serializable {
         m_finished = 0;
     }
 
+    protected IDataBase(String _name, IDataBase _data) {
+        m_name = _name;
+        m_modificationDate = new Date();
+        m_statistics = _data.m_statistics;
+        m_genomeNumber = _data.m_genomeNumber;
+        m_CDSNumber = _data.m_CDSNumber;
+        m_validCDSNumber = _data.m_validCDSNumber;
+        m_totalOrganism = _data.m_totalOrganism;
+        m_state = State.LOADED;
+        m_index = -1;
+        m_finished = 0;
+    }
+
     /**
      * Load a data from a file
      *
      * @param _name the name of the file to load
      * @return the IDatabase loaded
      */
-    public static IDataBase load(String _name) {
+    protected static IDataBase load(String _name) {
         final File file = new File(Options.getSerializeDirectory() + File.separator + _name + Options.getSerializeExtension());
         final ObjectInputStream stream;
         if (!file.exists()) {
@@ -194,7 +207,7 @@ public class IDataBase implements Serializable {
      * Save this data
      */
     public final void save() {
-        final File file = new File(Options.getSerializeDirectory() + File.separator + m_name + Options.getSerializeExtension());
+        final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
         final ObjectOutputStream stream;
         if (file.exists()) {
             file.delete();
@@ -206,7 +219,7 @@ public class IDataBase implements Serializable {
             stream.flush();
             stream.close();
         } catch (IOException e) {
-            Logs.warning("Unable to save : " + m_name);
+            Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
         }
     }
@@ -356,10 +369,19 @@ public class IDataBase implements Serializable {
      */
     public enum State {
         CREATED,
+        LOADED,
         STARTED,
         STOPPED,
         FINISHED
     }
 
+    /**
+     * Get the main part of the save path_name
+     *
+     * @return the main part of the save path_name
+     */
+    protected String getSavedName(){
+        return getName();
+    }
 }
 

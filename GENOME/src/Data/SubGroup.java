@@ -34,6 +34,49 @@ public final class SubGroup extends IDataBase {
     }
 
     /**
+     * Class constructor when already exist
+     *
+     * @param _name, the name of this SubGroup
+     * @param _data, the previous version of this SubGroup
+     * @param _event the event call when compute is finished
+     */
+    private SubGroup(String _name, IDataBase _data, ISubGroupCallback _event) {
+        super(_name, _data);
+        m_organisms = new ArrayList<>();
+        m_parent = null;
+        m_event = _event;
+    }
+
+    /**
+     * Load a Subgroup with his name and affect the event
+     * It create it if the file doesn't exist
+     *
+     * @param _name the name of the file to load
+     * @param _parent the parent Group (used to know the path_name)
+     * @param _event the Callback you want to apply
+     * @return the IDatabase loaded or created
+     */
+    public static SubGroup load(String _name, Group _parent, ISubGroupCallback _event) {
+        IDataBase result = IDataBase.load(_parent.getSavedName() + "__SG_" + _name);
+
+        if (result == null) {
+            return new SubGroup(_name, _event);
+        } else {
+            return new SubGroup(_name, result, _event);
+        }
+    }
+
+    /**
+     * Get the main part of the save path_name
+     *
+     * @return the main part of the save path_name
+     */
+    @Override
+    protected String getSavedName() {
+        return m_parent.getSavedName() + "__SG_" + getName();
+    }
+
+    /**
      * Add an Organism to this SubGroup
      *
      * @param _organism, the Organism to insert
@@ -111,11 +154,11 @@ public final class SubGroup extends IDataBase {
     }
 
     /**
-     * Get the Group
+     * Get the parent
      *
-     * @return the Group
+     * @return the parent
      */
-    protected Group getParent() {
+    public Group getParent() {
         return m_parent;
     }
 
