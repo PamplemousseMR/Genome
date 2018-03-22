@@ -66,27 +66,26 @@ class StatisticsTest {
         final long nb = 5, nbrep = 200;
         DataBase db = new DataBase("DataBase", _dataBase -> {
             long tot = nb * nb * nb * nb;
-            global(_dataBase, _dataBase.getKingdoms(), tot, tot*nbrep);
+            global(_dataBase, _dataBase.getKingdoms(), tot, tot * nbrep);
         });
         db.start();
         for (int k = 0; k < nb; ++k) {
             Kingdom ki = new Kingdom("Kingdom_" + k, _kingdom -> {
                 long tot = nb * nb * nb;
-                global(_kingdom, _kingdom.getGroups(), tot, tot*nbrep);
+                global(_kingdom, _kingdom.getGroups(), tot, tot * nbrep);
             });
             ki.start();
             db.addKingdom(ki);
             for (int g = 0; g < nb; ++g) {
                 Group gr = new Group("Group_" + g, _group -> {
                     long tot = nb * nb;
-                    global(_group, _group.getSubGroups(), tot, tot*nbrep);
+                    global(_group, _group.getSubGroups(), tot, tot * nbrep);
                 });
                 gr.start();
                 ki.addGroup(gr);
                 for (int s = 0; s < nb; ++s) {
                     SubGroup su = new SubGroup("SubGroup" + s, _subGroup -> {
-                        long tot = nb;
-                        global(_subGroup, _subGroup.getOrganisms(), tot, tot*nbrep);
+                        global(_subGroup, _subGroup.getOrganisms(), nb, nb * nbrep);
                     });
                     su.start();
                     gr.addSubGroup(su);
@@ -103,7 +102,7 @@ class StatisticsTest {
                             assertEquals(totalValid, _organism.getValidCDSNumber());
                             assertEquals(1, _organism.getTotalOrganism());
                             assertTrue(_organism.getCDSNumber() == _organism.getValidCDSNumber() * 2);
-                            global(_organism, tot, tot*nbrep);
+                            global(_organism, tot, tot * nbrep);
                         });
                         or.start();
                         su.addOrganism(or);

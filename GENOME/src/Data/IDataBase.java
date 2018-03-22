@@ -108,7 +108,7 @@ public class IDataBase implements Serializable {
      *
      * @throws InvalidStateException if it can't be stopped
      */
-    public void stop() throws InvalidStateException {
+    public synchronized void stop() throws InvalidStateException {
         if (m_state == State.CREATED)
             throw new InvalidStateException("Not started : " + this.getName());
         if (m_state == State.STOPPED)
@@ -216,7 +216,7 @@ public class IDataBase implements Serializable {
      *
      * @throws InvalidStateException if it can't be finished
      */
-    protected void finish() throws InvalidStateException {
+    protected synchronized void finish() throws InvalidStateException {
         if (m_state == State.CREATED || m_state == State.STARTED)
             throw new InvalidStateException("Not stopped : " + this.getName());
         if (m_state == State.FINISHED)

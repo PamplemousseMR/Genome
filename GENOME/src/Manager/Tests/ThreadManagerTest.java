@@ -1,7 +1,6 @@
 package Manager.Tests;
 
-import Manager.ICompute;
-import Manager.IDownload;
+import Manager.ITask;
 import Manager.ThreadManager;
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.BeforeAll;
@@ -17,8 +16,8 @@ class ThreadManagerTest {
     private static ThreadManager threadManager;
 
     @BeforeAll
-    static void setUp() throws Exception {
-        threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors(), Runtime.getRuntime().availableProcessors() / 2);
+    static void setUp() {
+        threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors());
 
     }
 
@@ -28,17 +27,8 @@ class ThreadManagerTest {
     }
 
     @Test
-    void pushDownloadTask() {
-        assertTrue(threadManager.pushDownloadTask(new IDownload("") {
-            @Override
-            public void run() {
-            }
-        }));
-    }
-
-    @Test
-    void pushComputeTask() {
-        assertTrue(threadManager.pushComputeTask(new ICompute("") {
+    void pushTask() {
+        assertTrue(threadManager.pushTask(new ITask("") {
             @Override
             public void run() {
             }

@@ -38,7 +38,7 @@ public final class GenbankOrganisms extends IDownloader {
     /**
      * request
      */
-    private static final String s_REQUEST = "[display( id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_),hist(kingdom,group,subgroup)].from(GenomeAssemblies).usingschema(/schema/GenomeAssemblies).sort(lineage,asc)";
+    private static final String s_REQUEST = "[display( id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_)].from(GenomeAssemblies).sort(lineage,asc)";
     /**
      * Queue of retrieved organisms
      */

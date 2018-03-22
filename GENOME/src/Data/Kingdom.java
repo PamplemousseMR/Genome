@@ -56,7 +56,7 @@ public final class Kingdom extends IDataBase {
      * @throws InvalidStateException if it can't be stopped
      */
     @Override
-    public void stop() throws InvalidStateException {
+    public synchronized void stop() throws InvalidStateException {
         super.stop();
         if (super.getFinishedChildren() == m_groups.size()) {
             end();
@@ -78,7 +78,7 @@ public final class Kingdom extends IDataBase {
      * @param _group, the Group to finish
      * @throws InvalidStateException if it can't be finished
      */
-    protected void finish(Group _group) throws InvalidStateException {
+    protected synchronized void finish(Group _group) throws InvalidStateException {
         if (super.contains(m_groups, _group) && _group.getState() != State.FINISHED) {
             for (Statistics stat : _group.getStatistics().values()) {
                 super.updateStatistics(stat);
