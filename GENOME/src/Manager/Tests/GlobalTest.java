@@ -59,7 +59,7 @@ class GlobalTest {
 
         for (ArrayList<Boolean> li : results) {
             assertEquals(10, li.size());
-            for(Boolean b : li){
+            for (Boolean b : li) {
                 assertTrue(b);
             }
         }

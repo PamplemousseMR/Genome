@@ -21,12 +21,12 @@ import java.util.Map;
 public class Activity {
 
     public static void genbank() throws Exception {
-        GenbankOrganisms go = new GenbankOrganisms();
+        final GenbankOrganisms go = new GenbankOrganisms();
         go.downloadOrganisms();
 
-        ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
+        final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
 
-        DataBase currentDataBase = new DataBase("Genbank", _dataBase -> {
+        final DataBase currentDataBase = new DataBase("Genbank", _dataBase -> {
             try {
                 ExcelWriter.writeDatabase(_dataBase);
             } catch (IOException e) {
@@ -51,7 +51,7 @@ public class Activity {
         currentDataBase.addKingdom(currentKingdom);
 
         while (go.hasNext()) {
-            OrganismParser organismParser = go.getNext();
+            final OrganismParser organismParser = go.getNext();
             try {
                 organismParser.parse();
             } catch (JSONException e) {
@@ -164,14 +164,14 @@ public class Activity {
                         Logs.exception(e);
                     }
                     for (Map.Entry<String, String> ent : organismParser.getReplicons()) {
-                        GenbankCDS cdsDownloader = new GenbankCDS(ent.getKey());
+                        final GenbankCDS cdsDownloader = new GenbankCDS(ent.getKey());
                         try {
                             cdsDownloader.download();
                         } catch (HTTPException | IOException e) {
                             Logs.warning("Unable to download : " + ent.getKey());
                             Logs.exception(e);
                         }
-                        CDSParser cdsParser = new CDSParser(cdsDownloader.getRefseqData(), ent.getKey());
+                        final CDSParser cdsParser = new CDSParser(cdsDownloader.getRefseqData(), ent.getKey());
                         try {
                             cdsParser.parse();
                         } catch (OperatorException e) {
@@ -179,7 +179,7 @@ public class Activity {
                             Logs.exception(e);
                         }
 
-                        Replicon replicon = new Replicon(Statistics.Type.isTypeOf(ent.getValue()), ent.getKey(), cdsParser.getTotal(), cdsParser.getValid(), cdsParser.getSequences());
+                        final Replicon replicon = new Replicon(Statistics.Type.isTypeOf(ent.getValue()), ent.getKey(), cdsParser.getTotal(), cdsParser.getValid(), cdsParser.getSequences());
                         try {
                             organism.addReplicon(replicon);
                         } catch (AddException e) {
