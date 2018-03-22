@@ -2,6 +2,7 @@ package Download;
 
 import Exception.HTTPException;
 import Exception.MissException;
+import Exception.OutOfMemoryException;
 import Json.JSONArray;
 import Json.JSONException;
 import Json.JSONObject;
@@ -147,12 +148,12 @@ public final class GenbankOrganisms extends IDownloader {
      *
      * @param _index the index to begin
      * @return thew number of organism downloaded
-     * @throws IOException      if an IOException is throw
-     * @throws JSONException    if an JSONException is throw
-     * @throws HTTPException    if an HTTPException is throw
-     * @throws OutOfMemoryError A savage out of memory appear
+     * @throws IOException          if an IOException is throw
+     * @throws JSONException        if an JSONException is throw
+     * @throws HTTPException        if an HTTPException is throw
+     * @throws OutOfMemoryException A savage out of memory appear
      */
-    private int downloadChunk(int _index) throws IOException, JSONException, HTTPException, OutOfMemoryError {
+    private int downloadChunk(int _index) throws IOException, JSONException, HTTPException, OutOfMemoryException {
         Logs.info(String.format("Requesting organisms [%d;%d]", _index, _index + Options.getDownloadStep()));
 
         final JSONObject json;
@@ -165,7 +166,7 @@ public final class GenbankOrganisms extends IDownloader {
         } catch (OutOfMemoryError e) {
             Logs.warning("Out of memory");
             Logs.exception(new Exception(e));
-            throw e;
+            throw new OutOfMemoryException(e.getMessage());
         }
 
         try {
@@ -210,12 +211,12 @@ public final class GenbankOrganisms extends IDownloader {
      *
      * @param _url The request URL to retrieve data from
      * @return The JSONObject parsed from server response
-     * @throws IOException      An error occurred while connecting to the server
-     * @throws JSONException    Invalid JSON
-     * @throws HTTPException    An error occurred while downloading data
-     * @throws OutOfMemoryError A savage out of memory appear
+     * @throws IOException          An error occurred while connecting to the server
+     * @throws JSONException        Invalid JSON
+     * @throws HTTPException        An error occurred while downloading data
+     * @throws OutOfMemoryException A savage out of memory appear
      */
-    private JSONObject getJSON(URL _url) throws IOException, JSONException, HTTPException, OutOfMemoryError {
+    private JSONObject getJSON(URL _url) throws IOException, JSONException, HTTPException, OutOfMemoryException {
         final StringBuilder responseText = new StringBuilder();
         String line;
 
@@ -229,7 +230,7 @@ public final class GenbankOrganisms extends IDownloader {
         } catch (OutOfMemoryError e) {
             Logs.warning("Out of memory : " + responseText);
             Logs.exception(new Exception(e));
-            throw e;
+            throw new OutOfMemoryException(e.getMessage());
         }
 
         final JSONObject obj;

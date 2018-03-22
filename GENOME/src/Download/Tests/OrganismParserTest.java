@@ -14,9 +14,9 @@ import static org.junit.jupiter.api.Assertions.*;
 class OrganismParserTest {
 
     private final static String s_ID = "27587";
-    private final static String s_NAME = "Lachnospiraceae bacterium UBA4380";
+    private final static String s_NAME = "Lachnospiraceae";
     private final static String s_KINGDOM = "Bacteria";
-    private final static String s_GROUP = "Terrabacteria group";
+    private final static String s_GROUP = "Terrabacteria";
     private final static String s_SUBGROUP = "Firmicutes";
     private final static String s_RELEASE = "2017-09-28T00:00:00Z";
     private final static String s_MODIFICATION = "2017-09-28T00:00:00Z";
@@ -104,22 +104,22 @@ class OrganismParserTest {
 
     @Test
     void getName() {
-        assertTrue(s_NAME.compareTo(m_OrganismParser.getName()) == 0);
+        assertTrue(s_NAME.toLowerCase().compareTo(m_OrganismParser.getName()) == 0);
     }
 
     @Test
     void getKingdom() {
-        assertTrue(s_KINGDOM.compareTo(m_OrganismParser.getKingdom()) == 0);
+        assertTrue(s_KINGDOM.toLowerCase().compareTo(m_OrganismParser.getKingdom()) == 0);
     }
 
     @Test
     void getGroup() {
-        assertTrue(s_GROUP.compareTo(m_OrganismParser.getGroup()) == 0);
+        assertTrue(s_GROUP.toLowerCase().compareTo(m_OrganismParser.getGroup()) == 0);
     }
 
     @Test
     void getSubGroup() {
-        assertTrue(s_SUBGROUP.compareTo(m_OrganismParser.getSubGroup()) == 0);
+        assertTrue(s_SUBGROUP.toLowerCase().compareTo(m_OrganismParser.getSubGroup()) == 0);
     }
 
     @Test
