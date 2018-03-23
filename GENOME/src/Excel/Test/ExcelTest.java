@@ -51,7 +51,7 @@ class ExcelTest {
                     su.start();
                     gr.addSubGroup(su);
                     for (int o = 0; o < nb; ++o) {
-                        Organism or = new Organism("'Brassica napus' phytoplasma_" + o, 152753L, 1592820474201505800L, _organism -> {
+                        Organism or = new Organism("Brassica_napus_phytoplasma_" + o, 152753L, 1592820474201505800L, _organism -> {
                             try {
                                 ExcelWriter.writeOrganism(_organism);
                             } catch (IOException e) {

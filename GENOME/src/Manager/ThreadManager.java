@@ -19,7 +19,6 @@ public final class ThreadManager {
     private final ArrayList<Thread> m_threads;
     private final LinkedList<ITask> m_task;
     private volatile boolean m_running;
-    private volatile int m_actualRun;
 
     /**
      * Instantiate all threads
@@ -35,7 +34,6 @@ public final class ThreadManager {
         m_runningLock = new ReentrantLock();
 
         m_task = new LinkedList<>();
-        m_actualRun = 0;
 
         m_lockArray = new ReentrantLock();
         m_condArray = m_lockArray.newCondition();
@@ -155,7 +153,6 @@ public final class ThreadManager {
 
                     // Choose a data
                     if (!m_task.isEmpty()) {
-                        ++m_actualRun;
                         todo = m_task.removeFirst();
                     } else {
                         Logs.warning("Concurrency error in thread " + m_id);
@@ -182,13 +179,17 @@ public final class ThreadManager {
                         Logs.exception(new Exception(e));
                     }
 
-                    // Free
+                    String threadsInfos = "[";
                     m_lockArray.lock();
                     {
-                        --m_actualRun;
-                        Logs.info("Task '" + todo.getName() + " from thread " + m_id + "  is finished");
+                        for (Thread t : m_threads) {
+                            threadsInfos += t.getState() + ", ";
+                        }
                     }
                     m_lockArray.unlock();
+                    threadsInfos += "]";
+
+                    Logs.info("Task '" + todo.getName() + " from thread " + m_id + "  is finished : " + threadsInfos);
 
                 } else {
                     Logs.warning("No task to do by thread " + m_id);

@@ -6,10 +6,7 @@ import Download.GenbankCDS;
 import Download.GenbankOrganisms;
 import Download.OrganismParser;
 import Excel.ExcelWriter;
-import Exception.AddException;
-import Exception.HTTPException;
-import Exception.InvalidStateException;
-import Exception.OperatorException;
+import Exception.*;
 import Json.JSONException;
 import Manager.ITask;
 import Manager.ThreadManager;
@@ -61,6 +58,7 @@ public class Activity {
             }
 
             if (organismParser.getReplicons().size() == 0) {
+                Logs.info("No replicon in : " + organismParser.getId() + ", " + organismParser.getName());
                 continue;
             }
 
@@ -158,46 +156,58 @@ public class Activity {
                 @Override
                 public void run() {
                     try {
-                        organism.start();
-                    } catch (InvalidStateException e) {
-                        Logs.warning("Unable to start : " + organism.getName());
-                        Logs.exception(e);
-                    }
-                    for (Map.Entry<String, String> ent : organismParser.getReplicons()) {
-                        final GenbankCDS cdsDownloader = new GenbankCDS(ent.getKey());
                         try {
-                            cdsDownloader.download();
-                        } catch (HTTPException | IOException e) {
-                            Logs.warning("Unable to download : " + ent.getKey());
+                            organism.start();
+                        } catch (InvalidStateException e) {
+                            Logs.warning("Unable to start : " + organism.getName());
                             Logs.exception(e);
+                            return;
                         }
-                        final CDSParser cdsParser = new CDSParser(cdsDownloader.getRefseqData(), ent.getKey());
-                        try {
-                            cdsParser.parse();
-                        } catch (OperatorException e) {
-                            Logs.warning("Unable to parse : " + ent.getKey());
-                            Logs.exception(e);
-                        }
+                        for (Map.Entry<String, String> ent : organismParser.getReplicons()) {
+                            final GenbankCDS cdsDownloader = new GenbankCDS(ent.getKey());
+                            try {
+                                cdsDownloader.download();
+                            } catch (HTTPException | IOException | OutOfMemoryException e) {
+                                Logs.warning("Unable to download : " + ent.getKey());
+                                Logs.exception(e);
+                                continue;
+                            }
+                            final CDSParser cdsParser = new CDSParser(cdsDownloader.getRefseqData(), ent.getKey());
+                            try {
+                                cdsParser.parse();
+                            } catch (OperatorException e) {
+                                Logs.warning("Unable to parse : " + ent.getKey());
+                                Logs.exception(e);
+                                continue;
+                            }
 
-                        final Replicon replicon = new Replicon(Statistics.Type.isTypeOf(ent.getValue()), ent.getKey(), cdsParser.getTotal(), cdsParser.getValid(), cdsParser.getSequences());
+                            final Replicon replicon = new Replicon(Statistics.Type.isTypeOf(ent.getValue()), ent.getKey(), cdsParser.getTotal(), cdsParser.getValid(), cdsParser.getSequences());
+                            try {
+                                organism.addReplicon(replicon);
+                            } catch (AddException e) {
+                                Logs.warning("Unable to add replicon : " + replicon.getName());
+                                Logs.exception(e);
+                            }
+                        }
+                    } catch (OutOfMemoryError e) {
+                        Logs.warning("Memory error : " + organism.getName());
+                        Logs.exception(new Exception(e));
+                    } catch (Throwable e) {
+                        Logs.warning("Unknow error : " + organism.getName());
+                        Logs.exception(new Exception(e));
+                    } finally {
                         try {
-                            organism.addReplicon(replicon);
-                        } catch (AddException e) {
-                            Logs.warning("Unable to add replicon : " + replicon.getName());
+                            organism.stop();
+                        } catch (InvalidStateException e) {
+                            Logs.warning("Unable to stop : " + organism.getName());
                             Logs.exception(e);
                         }
-                    }
-                    try {
-                        organism.stop();
-                    } catch (InvalidStateException e) {
-                        Logs.warning("Unable to stop : " + organism.getName());
-                        Logs.exception(e);
-                    }
-                    try {
-                        organism.finish();
-                    } catch (InvalidStateException e) {
-                        Logs.warning("Unable to finish : " + organism.getName());
-                        Logs.exception(e);
+                        try {
+                            organism.finish();
+                        } catch (InvalidStateException e) {
+                            Logs.warning("Unable to finish : " + organism.getName());
+                            Logs.exception(e);
+                        }
                     }
                 }
             });

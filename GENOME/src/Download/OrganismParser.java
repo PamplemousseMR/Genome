@@ -117,10 +117,10 @@ public final class OrganismParser {
     public void parse() throws JSONException {
         try {
             m_id = m_object.getLong(s_ID);
-            m_name = m_object.getString(s_NAME);
-            m_kingdom = m_object.getString(s_KINGDOM);
-            m_group = m_object.getString(s_GROUP);
-            m_subGroup = m_object.getString(s_SUBGROUP);
+            m_name = m_object.getString(s_NAME).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
+            m_kingdom = m_object.getString(s_KINGDOM).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
+            m_group = m_object.getString(s_GROUP).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
+            m_subGroup = m_object.getString(s_SUBGROUP).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
             m_version = m_object.getLong(s_VERSION);
         } catch (JSONException e) {
             final String message = "Unable to get basic data : " + m_object;

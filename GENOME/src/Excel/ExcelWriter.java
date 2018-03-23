@@ -66,8 +66,8 @@ public class ExcelWriter {
 
     private static XSSFWorkbook writeSheet(IDataBase _idataBase) {
         final XSSFWorkbook workbook = new XSSFWorkbook();
-        final XSSFSheet _generalInfoSheet = workbook.createSheet();
-        createGeneralInfoSheet(_generalInfoSheet, _idataBase);
+        final XSSFSheet generalInfoSheet = workbook.createSheet(_idataBase.getName());
+        createGeneralInfoSheet(generalInfoSheet, _idataBase);
         createStatisticsSheet(workbook, _idataBase);
         return workbook;
     }
@@ -99,6 +99,10 @@ public class ExcelWriter {
     private static void createGeneralInfoSheet(XSSFSheet _general_info_sheet, IDataBase _data) {
         _general_info_sheet.createRow(0).createCell(0).setCellValue("Information");
 
+        _general_info_sheet.setColumnWidth(0, 7340);
+        _general_info_sheet.autoSizeColumn(1);
+        _general_info_sheet.setColumnWidth(4450, 2240);
+
         XSSFRow r;
 
         r = _general_info_sheet.createRow(2);
@@ -126,19 +130,26 @@ public class ExcelWriter {
             r = _general_info_sheet.createRow(12);
             r.createCell(0).setCellValue("Number of Organisms");
             r.createCell(1).setCellValue(_data.getTotalOrganism());
+        } else {
+            r = _general_info_sheet.createRow(12);
+            r.createCell(0).setCellValue("Id");
+            r.createCell(1).setCellValue(((Organism) _data).getId());
+
+            r = _general_info_sheet.createRow(14);
+            r.createCell(0).setCellValue("Version");
+            r.createCell(1).setCellValue(((Organism) _data).getVersion());
         }
 
         int genomeInfoRowNumber = 3;
 
         for (Map.Entry<Statistics.Type, Long> entry : _data.getGenomeNumber().entrySet()) {
-            XSSFRow row = _general_info_sheet.createRow(genomeInfoRowNumber);
+            XSSFRow row = _general_info_sheet.getRow(genomeInfoRowNumber);
+            if (row == null) {
+                row = _general_info_sheet.createRow(genomeInfoRowNumber);
+            }
             row.createCell(5).setCellValue(entry.getKey().toString());
             writeNumericCell(row.createCell(6), entry.getValue());
             genomeInfoRowNumber++;
-        }
-
-        for (int i = 0; i < 6; i++) {
-            _general_info_sheet.autoSizeColumn(i);
         }
 
     }
