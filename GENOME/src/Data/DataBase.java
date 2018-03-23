@@ -47,7 +47,7 @@ public final class DataBase extends IDataBase {
      *
      * @param _name the name of the file to load
      * @param _event the Callback you want to apply
-     * @return the IDatabase loaded or created
+     * @return the DataBase loaded or created
      */
     public static DataBase load(String _name, IDataBaseCallback _event) {
         IDataBase result = IDataBase.load("D_" + _name);

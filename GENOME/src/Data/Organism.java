@@ -47,18 +47,26 @@ public final class Organism extends IDataBase {
     }
 
     /**
-     * Load a Subgroup with his name and affect the event
-     * It create it if the file doesn't exist
+     * Load a Organism with his name, his id and his version and affect the event
+     * You can choose to create a newOne with unloadTheLas if it exist
      *
-     * @param _name the name of the file to load
-     * @param _parent the parent Group (used to know the path_name)
+     * @param _name the name of the organism
+     * @param _id the id of the organism
+     * @param _version the version of the organism
+     * @param _parent the parent SubGroup (used to know the path_name and to unload it)
+     * @param _unloadLastCreateNew true for create a new one and unfold the last, false to get the last
      * @param _event the Callback you want to apply
-     * @return the IDatabase loaded or created
+     * @return the Organism loaded or created
      */
-    public static Organism load(String _name, SubGroup _parent, ISubGroupCallback _event) {
-        return (Organism) IDataBase.load(_parent.getSavedName() + "__O_" + _name);
-
-        //TODO will we unload here ? and return a new Organism ?
+    public static Organism load(String _name, long _id, long _version, SubGroup _parent, Boolean _unloadLastCreateNew, IOrganismCallback _event) {
+        Organism lastOne = (Organism) IDataBase.load(_parent.getSavedName() + "__O_" + _name);
+        if(_unloadLastCreateNew){
+            if(lastOne != null)
+                _parent.unload(lastOne);
+            return new Organism(_name, _id, _version, _event);
+        }else{
+            return lastOne;
+        }
     }
 
     /**
@@ -181,5 +189,18 @@ public final class Organism extends IDataBase {
      */
     protected void setParent(SubGroup _subGroup) {
         m_parent = _subGroup;
+    }
+
+
+    /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if(m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a SubGroup : " + getName());
+        super.start();
     }
 }

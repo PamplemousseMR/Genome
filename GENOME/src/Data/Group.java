@@ -54,7 +54,7 @@ public final class Group extends IDataBase {
      * @param _name the name of the file to load
      * @param _parent the parent Kingdom (used to know the path_name)
      * @param _event the Callback you want to apply
-     * @return the IDatabase loaded or created
+     * @return the Group loaded or created
      */
     public static Group load(String _name, Kingdom _parent, IGroupCallback _event) {
         IDataBase result = IDataBase.load(_parent.getSavedName() + "__G_" + _name);
@@ -176,4 +176,23 @@ public final class Group extends IDataBase {
         super.clear();
     }
 
+
+    protected void unload(SubGroup _sub) {
+        if(super.getLoadState() == LoadState.LOAD){
+            m_parent.unload(this);
+            setLoadState(LoadState.UNLOAD);
+        }
+        super.unload(_sub);
+    }
+    /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if(m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a Kingdom : " + getName());
+        super.start();
+    }
 }

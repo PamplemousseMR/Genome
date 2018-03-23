@@ -54,7 +54,7 @@ public final class SubGroup extends IDataBase {
      * @param _name the name of the file to load
      * @param _parent the parent Group (used to know the path_name)
      * @param _event the Callback you want to apply
-     * @return the IDatabase loaded or created
+     * @return the Subgroup loaded or created
      */
     public static SubGroup load(String _name, Group _parent, ISubGroupCallback _event) {
         IDataBase result = IDataBase.load(_parent.getSavedName() + "__SG_" + _name);
@@ -185,4 +185,24 @@ public final class SubGroup extends IDataBase {
         super.clear();
     }
 
+
+    protected void unload(Organism _org) {
+        if(super.getLoadState() == LoadState.LOAD){
+            m_parent.unload(this);
+            setLoadState(LoadState.UNLOAD);
+        }
+        super.unload(_org);
+    }
+
+    /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if(m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a Group : " + getName());
+        super.start();
+    }
 }

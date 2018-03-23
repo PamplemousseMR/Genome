@@ -52,6 +52,8 @@ public class IDataBase implements Serializable {
      */
     private transient int m_finished;
 
+    private transient LoadState m_loadState;
+
     /**
      * Class constructor
      */
@@ -66,6 +68,7 @@ public class IDataBase implements Serializable {
         m_state = State.CREATED;
         m_index = -1;
         m_finished = 0;
+        m_loadState = LoadState.NEW;
     }
 
     protected IDataBase(String _name, IDataBase _data) {
@@ -76,9 +79,10 @@ public class IDataBase implements Serializable {
         m_CDSNumber = _data.m_CDSNumber;
         m_validCDSNumber = _data.m_validCDSNumber;
         m_totalOrganism = _data.m_totalOrganism;
-        m_state = State.LOADED;
+        m_state = State.CREATED;
         m_index = -1;
         m_finished = 0;
+        m_loadState = LoadState.LOAD;
     }
 
     /**
@@ -108,7 +112,7 @@ public class IDataBase implements Serializable {
      *
      * @throws InvalidStateException if it can't be started
      */
-    public final void start() throws InvalidStateException {
+    public void start() throws InvalidStateException {
         if (m_state == State.STARTED)
             throw new InvalidStateException("Already started : " + this.getName());
         if (m_state == State.STOPPED || m_state == State.FINISHED)
@@ -382,6 +386,45 @@ public class IDataBase implements Serializable {
      */
     protected String getSavedName(){
         return getName();
+    }
+
+    protected void unload(IDataBase _data) {
+        if(m_loadState != LoadState.LOAD && m_loadState != LoadState.UNLOAD )
+            return;
+
+        m_CDSNumber -= _data.m_CDSNumber;
+        m_validCDSNumber -= _data.m_validCDSNumber;
+        m_totalOrganism -= _data.m_totalOrganism;
+
+        for( Statistics stat : _data.m_statistics.values()){
+            Statistics.Type type = stat.getType();
+            m_statistics.get(type).unload(stat);
+            m_genomeNumber.put(type,m_genomeNumber.get(type)-_data.m_genomeNumber.get(type));
+        }
+    }
+
+    /**
+     * Get actual LoadState
+     *
+     * @return the LoadState
+     */
+    public final LoadState getLoadState() {
+        return m_loadState;
+    }
+
+    /**
+     * set actual LoadState
+     *
+     * @param _ls the LoadState to set
+     */
+    public final void setLoadState(LoadState _ls) {
+        m_loadState = _ls;
+    }
+
+    protected enum LoadState {
+        NEW,
+        LOAD,
+        UNLOAD
     }
 }
 

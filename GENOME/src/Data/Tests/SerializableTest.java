@@ -13,45 +13,49 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
 
 class SerializableTest {
 
-    private static boolean equals(Statistics _stat, Statistics _statc) {
-        return _stat == null && _statc == null || _stat != null && _statc != null && _stat.getType() == _statc.getType() && _stat.getTotalTrinucleotide() == _statc.getTotalTrinucleotide() && equals(_stat.getTable(), _statc.getTable()) && _stat.getCDSNumber() == _statc.getCDSNumber() && _stat.getValidCDSNumber() == _statc.getValidCDSNumber();
+    private static void myAssertEquals(Statistics _stat, Statistics _statc) {
+        if (_stat == null && _statc == null) return;
+        assertNotNull(_stat);
+        assertNotNull(_statc);
+        assertEquals(_stat.getType(), _statc.getType());
+        assertEquals( _stat.getTotalTrinucleotide() , _statc.getTotalTrinucleotide());
+        myAssertEquals(_stat.getTable(), _statc.getTable());
+        assertEquals( _stat.getCDSNumber(), _statc.getCDSNumber());
+        assertEquals( _stat.getValidCDSNumber(), _statc.getValidCDSNumber());
     }
 
-    private static boolean equals(Tuple[] _tuple, Tuple[] _tuplec) {
-        if (_tuple == null && _tuplec == null) return true;
-        if (_tuple == null || _tuplec == null) return false;
-        if (_tuple.length != _tuplec.length) return false;
+    private static void myAssertEquals(Tuple[] _tuple, Tuple[] _tuplec) {
+        if (_tuple == null && _tuplec == null) return;
+        assertNotNull(_tuple);
+        assertNotNull(_tuple);
+        assertEquals(_tuple.length, _tuplec.length);
         for (int i = 0; i < _tuple.length; ++i) {
-            if (_tuple[i] == null || _tuplec[i] == null) return false;
+            assertNotNull(_tuple[i]);
+            assertNotNull(_tuplec[i]);
             for (Statistics.StatLong l : Statistics.StatLong.values())
-                if (_tuple[i].get(l) != _tuplec[i].get(l)) return false;
+                assertEquals(_tuple[i].get(l), _tuplec[i].get(l));
             for (Statistics.StatFloat f : Statistics.StatFloat.values())
-                if (_tuple[i].get(f) != _tuplec[i].get(f)) return false;
+                assertEquals(_tuple[i].get(f), _tuplec[i].get(f));
         }
-        return true;
     }
 
-    private static boolean equals(IDataBase _data, IDataBase _datac) {
-        if (_data == null && _datac == null) return true;
-        if (_data == null || _datac == null) return false;
+    private void myAssertEquals(IDataBase _data, IDataBase _datac) {
+        if (_data == null && _datac == null) return;
+        assertNotNull(_data);
+        assertNotNull(_datac);
         for (Statistics.Type t : Statistics.Type.values()) {
             if (_data.getGenomeNumber().get(t) != null || _datac.getGenomeNumber().get(t) != null) {
-                if (!equals(_data.getStatistics().get(t), _datac.getStatistics().get(t))) {
-                    return false;
-                }
-                if (_data.getGenomeNumber().get(t).longValue() != (_datac.getGenomeNumber().get(t)).longValue()) {
-                    return false;
-                }
+                myAssertEquals(_data.getStatistics().get(t), _datac.getStatistics().get(t));
+                assertEquals(_data.getGenomeNumber().get(t).longValue(),_datac.getGenomeNumber().get(t).longValue());
             }
         }
-        return _data.getTotalOrganism() == _datac.getTotalOrganism()
-                && _data.getCDSNumber() == _datac.getCDSNumber()
-                && _data.getValidCDSNumber() == _datac.getValidCDSNumber();
+        assertEquals( _data.getTotalOrganism() , _datac.getTotalOrganism());
+        assertEquals( _data.getCDSNumber() , _datac.getCDSNumber());
+        assertEquals( _data.getValidCDSNumber() , _datac.getValidCDSNumber());
     }
 
     @Test
@@ -67,51 +71,68 @@ class SerializableTest {
 
         }
 
-        final int nb = 1, nbrep = 200;
+        final int nb = 2, nbRep = 200;
         DataBase db = new DataBase("GENBANK", _dataBase -> {
             _dataBase.save();
-            DataBase retour = DataBase.load(_dataBase.getName(), _arg -> {});
-            assertTrue(equals(_dataBase, retour));
+            DataBase loaded = DataBase.load(_dataBase.getName(), _arg -> {});
+            myAssertEquals(_dataBase, loaded);
         });
         db.start();
 
         for (int k = 0; k < nb; k++) {
-            Kingdom ki = new Kingdom(k + "KNG" + k, _kingdom -> {
+            Kingdom ki = new Kingdom("KNG" + k, _kingdom -> {
                 _kingdom.save();
-                Kingdom retour = Kingdom.load(_kingdom.getName(), _kingdom.getParent(), _arg -> {});
-                assertTrue(equals(_kingdom, retour));
+                Kingdom loaded = Kingdom.load(_kingdom.getName(), _kingdom.getParent(), _arg -> {});
+                myAssertEquals(_kingdom, loaded);
             });
-            ki.start();
             db.addKingdom(ki);
+            ki.start();
 
             for (int g = 0; g < nb; g++) {
                 Group gr = new Group("GRP" + g, _group -> {
                     _group.save();
-                    Group retour = Group.load(_group.getName(), _group.getParent(), _arg -> {});
-                    assertTrue(equals(_group, retour));
+                    Group loaded = Group.load(_group.getName(), _group.getParent(), _arg -> {});
+                    myAssertEquals(_group, loaded);
                 });
-                gr.start();
                 ki.addGroup(gr);
+                gr.start();
 
                 for (int s = 0; s < nb; s++) {
                     SubGroup su = new SubGroup("SUB" + s, _subGroup -> {
                         _subGroup.save();
-                        SubGroup retour = SubGroup.load(_subGroup.getName(), _subGroup.getParent(), _arg -> {});
-                        assertTrue(equals(_subGroup, retour));
+                        SubGroup loaded = SubGroup.load(_subGroup.getName(), _subGroup.getParent(), _arg -> {});
+                        myAssertEquals(_subGroup, loaded);
+
+                        if (nb == 2) { //TEST EN DUR DE L'UNLOAD
+                            try {
+                                _subGroup.getParent().addSubGroup(loaded);
+                                loaded.start();
+                            }catch (Exception e){e.printStackTrace();}
+                            //first time to unload it
+                            //second time to get the last
+                            Organism loaded_child = Organism.load(_subGroup.getOrganisms().get(0).getName(), 45L, 54L,  loaded, true, _arg -> {});
+                            loaded_child = Organism.load(_subGroup.getOrganisms().get(0).getName(), 45L, 54L,  loaded, false, _arg -> {});
+                            myAssertEquals(loaded, loaded_child);
+                            try {
+                                loaded.stop();
+                            }catch (Exception e){e.printStackTrace();}
+                        }
                     });
-                    su.start();
                     gr.addSubGroup(su);
+                    su.start();
 
                     for (int o = 0; o < nb; o++) {
                         Organism or = new Organism("ORG" + o, 152753L, 1592820474201505800L, _organism -> {
                             _organism.save();
-                            Organism retour = Organism.load(_organism.getName(), _organism.getParent(), _arg -> {});
-                            assertTrue(equals(_organism, retour));
+                            Organism loaded = Organism.load(_organism.getName(), 45L, 54L, _organism.getParent(), false, _arg -> {});
+                            myAssertEquals(_organism, loaded);
+                            Date loadedDate = Organism.loadDate(_organism.getName(), _organism.getParent());
+                            assertEquals(_organism.getModificationDate(),loadedDate);
                         });
-                        or.start();
                         su.addOrganism(or);
+                        or.start();
 
-                        for (int r = 0; r < nbrep; ++r) {
+                        for (int r = 0; r < nbRep; ++r) {
                             StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("AATTATTAATTATGTAAAATTAATTAATATAAAATTTTTATTAGTTTAAT");
                             strBuf.append("ATATTAATATATAATATATATATATATAAAATTTTATATTTATATATATA");

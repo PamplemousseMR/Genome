@@ -58,9 +58,20 @@ public final class Tuple implements Serializable {
      * Increment the value of the enum
      *
      * @param _stat, the enum
-     * @param _val,  the value to set
+     * @param _val,  the value to increment
      */
     protected void incr(Statistics.StatLong _stat, long _val) {
         m_longs[_stat.ordinal()] += _val;
     }
+
+    /**
+     * Decrement the value of the enum
+     *
+     * @param _stat, the enum
+     * @param _val,  the value to decrement
+     */
+    protected void decr(Statistics.StatLong _stat, long _val) {
+        m_longs[_stat.ordinal()] -= _val;
+    }
+
 }

@@ -167,4 +167,24 @@ public final class Kingdom extends IDataBase {
         super.clear();
     }
 
+    protected void unload(Group _grp) {
+        if(super.getLoadState() == LoadState.LOAD){
+            m_parent.unload(this);
+            setLoadState(LoadState.UNLOAD);
+        }
+        super.unload(_grp);
+    }
+
+    /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if(m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a DataBase : " + getName());
+        super.start();
+    }
+
 }

@@ -89,7 +89,7 @@ public class Statistics implements Serializable {
     protected final void update(Statistics _stats) {
         IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> {
             final Trinucleotide tri = Trinucleotide.values()[i];
-            final Tuple inputRow = _stats.m_trinucleotideTable[tri.ordinal()];
+            final Tuple inputRow = _stats.m_trinucleotideTable[i];
             incrementStat(tri, StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
             incrementStat(tri, StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
             incrementStat(tri, StatLong.PHASE2, inputRow.get(StatLong.PHASE2));
@@ -161,6 +161,17 @@ public class Statistics implements Serializable {
      */
     private void incrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
         m_trinucleotideTable[_tri.ordinal()].incr(_stat, _inc);
+    }
+
+    /**
+     * Increment the value of a trinucleotide for a stat by the parameter
+     *
+     * @param _tri,  the Trinucleotide to set
+     * @param _stat, the statistic to set
+     * @param _inc,  the value to increment
+     */
+    private void decrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
+        m_trinucleotideTable[_tri.ordinal()].decr(_stat, _inc);
     }
 
     /**
@@ -302,5 +313,22 @@ public class Statistics implements Serializable {
             }
             return null;
         }
+    }
+
+    protected void unload(Statistics _stat){
+        m_totalTrinucleotide -= _stat.m_totalTrinucleotide;
+        m_CDSNumber -= _stat.m_CDSNumber;
+        m_validCDSNumber -= _stat.m_validCDSNumber;
+        IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> {
+            final Trinucleotide tri = Trinucleotide.values()[i];
+            final Tuple inputRow = _stat.m_trinucleotideTable[i];
+            decrementStat(tri, StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
+            decrementStat(tri, StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
+            decrementStat(tri, StatLong.PHASE2, inputRow.get(StatLong.PHASE2));
+            decrementStat(tri, StatLong.PREF0, inputRow.get(StatLong.PREF0));
+            decrementStat(tri, StatLong.PREF1, inputRow.get(StatLong.PREF1));
+            decrementStat(tri, StatLong.PREF2, inputRow.get(StatLong.PREF2));
+        });
+
     }
 }
