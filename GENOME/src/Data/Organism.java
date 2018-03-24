@@ -2,8 +2,12 @@ package Data;
 
 import Exception.AddException;
 import Exception.InvalidStateException;
+import Utils.Logs;
+import Utils.Options;
 
+import java.io.*;
 import java.util.ArrayList;
+import java.util.Date;
 
 public final class Organism extends IDataBase {
 
@@ -202,5 +206,44 @@ public final class Organism extends IDataBase {
         if(m_parent == null)
             throw new InvalidStateException("Unable to start without been add in a SubGroup : " + getName());
         super.start();
+    }
+
+    @Override
+    public void save() {
+        super.save();
+
+        //Saving the Date
+        final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getDateModifSerializeExtension());
+        final ObjectOutputStream stream;
+        if (file.exists()) {
+            file.delete();
+        }
+        try {
+            file.createNewFile();
+            stream = new ObjectOutputStream(new FileOutputStream(file));
+            stream.writeObject(getModificationDate());
+            stream.flush();
+            stream.close();
+        } catch (IOException e) {
+            Logs.warning("Unable to save : " + getSavedName());
+            Logs.exception(e);
+        }
+    }
+
+    public static final Date loadDate(String _name, SubGroup _parent) {
+        String fileName = _parent.getSavedName()+ "__O_" + _name;
+        final File file = new File(Options.getSerializeDirectory() + File.separator + fileName + Options.getDateModifSerializeExtension());
+        final ObjectInputStream stream;
+        if (!file.exists()) {
+            return null;
+        }
+        try {
+            stream = new ObjectInputStream((new FileInputStream(file)));
+            return (Date) stream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            Logs.warning("Unable to load : " + fileName);
+            Logs.exception(e);
+        }
+        return null;
     }
 }

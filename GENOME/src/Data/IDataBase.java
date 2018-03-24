@@ -210,7 +210,7 @@ public class IDataBase implements Serializable {
     /**
      * Save this data
      */
-    public final void save() {
+    public void save() {
         final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
         final ObjectOutputStream stream;
         if (file.exists()) {

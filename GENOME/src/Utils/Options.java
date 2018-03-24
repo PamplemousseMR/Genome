@@ -36,6 +36,10 @@ public final class Options {
      */
     private static final String s_SERIALIZE_EXTENSION = ".ser";
     /**
+     * Extension used for serialization
+     */
+    private static final String s_DATEMODIF_SERIALIZE_EXTENSION = "__DATEMODIF.ser";
+    /**
      * Directory where store excel files
      */
     private static final String s_RESULT_DIRECTORY = "Results";
@@ -181,6 +185,10 @@ public final class Options {
 
     public static String getSerializeExtension() {
         return s_SERIALIZE_EXTENSION;
+    }
+
+    public static String getDateModifSerializeExtension() {
+        return s_DATEMODIF_SERIALIZE_EXTENSION;
     }
 
     public static String getResultDirectory() {
