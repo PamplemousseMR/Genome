@@ -1,5 +1,6 @@
 package Download;
 
+import Exception.IException;
 import Exception.OperatorException;
 import Utils.Logs;
 
@@ -235,7 +236,7 @@ public class CDSParser {
                             }
 
                         } else {
-                            throw new OperatorException("Unable to parse " + m_name + " : " + sb + " at : " + op);
+                            throw new IException("Unable to parse " + m_name + " : " + sb + " at : " + op);
                         }
                     }
 
@@ -243,6 +244,8 @@ public class CDSParser {
             } catch (OperatorException e) {
                 Logs.warning("Unable to parse " + m_name + " : " + sb);
                 Logs.exception(e);
+                continue;
+            } catch (IException e) {
                 continue;
             }
 
@@ -369,7 +372,6 @@ public class CDSParser {
 
         @Override
         protected StringBuilder compute() throws OperatorException {
-            // TODO
             try {
                 return new StringBuilder(m_origin.substring(m_begin, m_end));
             } catch (StringIndexOutOfBoundsException e) {
@@ -400,7 +402,6 @@ public class CDSParser {
 
         @Override
         protected StringBuilder compute() throws OperatorException {
-            // TODO
             try {
                 return new StringBuilder("" + m_origin.charAt(m_index));
             } catch (StringIndexOutOfBoundsException e) {
@@ -435,7 +436,6 @@ public class CDSParser {
 
         @Override
         protected StringBuilder compute() throws OperatorException {
-            // TODO
             if (m_operator == null) {
                 throw new OperatorException("Not enough data");
             }

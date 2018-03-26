@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 public final class Tuple implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Array to store float
@@ -17,7 +18,7 @@ public final class Tuple implements Serializable {
     /**
      * Class constructor
      */
-    Tuple() {
+    protected Tuple() {
         m_longs = new long[Statistics.StatLong.values().length];
         Arrays.fill(m_longs, 0L);
         m_floats = new float[Statistics.StatFloat.values().length];

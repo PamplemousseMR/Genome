@@ -179,15 +179,15 @@ public final class ThreadManager {
                         Logs.exception(new Exception(e));
                     }
 
-                    String threadsInfos = "[";
+                    StringBuilder threadsInfos = new StringBuilder("[");
                     m_lockArray.lock();
                     {
                         for (Thread t : m_threads) {
-                            threadsInfos += t.getState() + ", ";
+                            threadsInfos.append(t.getState()).append(", ");
                         }
                     }
                     m_lockArray.unlock();
-                    threadsInfos += "]";
+                    threadsInfos.append("]");
 
                     Logs.info("Task '" + todo.getName() + " from thread " + m_id + "  is finished : " + threadsInfos);
 

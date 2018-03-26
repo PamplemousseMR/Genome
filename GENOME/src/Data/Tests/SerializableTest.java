@@ -3,14 +3,10 @@ package Data.Tests;
 import Data.*;
 import Exception.AddException;
 import Exception.InvalidStateException;
-import Utils.Logs;
 import Utils.Options;
 import org.junit.jupiter.api.Test;
 
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
 
@@ -24,10 +20,10 @@ class SerializableTest {
         assertNotNull(_stat);
         assertNotNull(_statc);
         assertEquals(_stat.getType(), _statc.getType());
-        assertEquals( _stat.getTotalTrinucleotide() , _statc.getTotalTrinucleotide());
+        assertEquals(_stat.getTotalTrinucleotide(), _statc.getTotalTrinucleotide());
         myAssertEquals(_stat.getTable(), _statc.getTable());
-        assertEquals( _stat.getCDSNumber(), _statc.getCDSNumber());
-        assertEquals( _stat.getValidCDSNumber(), _statc.getValidCDSNumber());
+        assertEquals(_stat.getCDSNumber(), _statc.getCDSNumber());
+        assertEquals(_stat.getValidCDSNumber(), _statc.getValidCDSNumber());
     }
 
     private static void myAssertEquals(Tuple[] _tuple, Tuple[] _tuplec) {
@@ -45,93 +41,133 @@ class SerializableTest {
         }
     }
 
-    private void myAssertEquals(IDataBase _data, IDataBase _datac) {
+    private static void myAssertEquals(IDataBase _data, IDataBase _datac) {
         if (_data == null && _datac == null) return;
         assertNotNull(_data);
         assertNotNull(_datac);
         for (Statistics.Type t : Statistics.Type.values()) {
             if (_data.getGenomeNumber().get(t) != null || _datac.getGenomeNumber().get(t) != null) {
                 myAssertEquals(_data.getStatistics().get(t), _datac.getStatistics().get(t));
-                assertEquals(_data.getGenomeNumber().get(t).longValue(),_datac.getGenomeNumber().get(t).longValue());
+                assertEquals(_data.getGenomeNumber().get(t).longValue(), _datac.getGenomeNumber().get(t).longValue());
             }
         }
-        assertEquals( _data.getTotalOrganism() , _datac.getTotalOrganism());
-        assertEquals( _data.getCDSNumber() , _datac.getCDSNumber());
-        assertEquals( _data.getValidCDSNumber() , _datac.getValidCDSNumber());
+        assertEquals(_data.getTotalOrganism(), _datac.getTotalOrganism());
+        assertEquals(_data.getCDSNumber(), _datac.getCDSNumber());
+        assertEquals(_data.getValidCDSNumber(), _datac.getValidCDSNumber());
+    }
+
+    private static void deleteSaveFolder() {
+        File path = new File(Options.getSerializeDirectory());
+        if (path.exists()) {
+            File[] files = path.listFiles();
+            if (files != null) {
+                for (File f : files) {
+                    f.delete();
+                }
+            }
+        } else {
+            path.mkdir();
+        }
     }
 
     @Test
     void serializableTest() throws AddException, InvalidStateException {
-
-        Path Path = Paths.get(Options.getSerializeDirectory());
-        if (Files.notExists(Path)) {
-            try {
-                Files.createDirectories(Path);
-            } catch (IOException e) {
-                Logs.exception(e);
-            }
-
-        }
+        deleteSaveFolder();
 
         final int nb = 2, nbRep = 200;
-        DataBase db = new DataBase("GENBANK", _dataBase -> {
+        DataBase db = DataBase.load("GENBANK", _dataBase -> {
             _dataBase.save();
-            DataBase loaded = DataBase.load(_dataBase.getName(), _arg -> {});
+            DataBase loaded = DataBase.load(_dataBase.getName(), _arg -> {
+            });
             myAssertEquals(_dataBase, loaded);
         });
         db.start();
 
         for (int k = 0; k < nb; k++) {
-            Kingdom ki = new Kingdom("KNG" + k, _kingdom -> {
+            Kingdom ki = Kingdom.load("KNG" + k, db, _kingdom -> {
                 _kingdom.save();
-                Kingdom loaded = Kingdom.load(_kingdom.getName(), _kingdom.getParent(), _arg -> {});
+                Kingdom loaded = null;
+                try {
+                    loaded = Kingdom.load(_kingdom.getName(), db, _arg -> {
+                    });
+                } catch (AddException | InvalidStateException e) {
+                    e.printStackTrace();
+                }
                 myAssertEquals(_kingdom, loaded);
             });
-            db.addKingdom(ki);
             ki.start();
 
             for (int g = 0; g < nb; g++) {
-                Group gr = new Group("GRP" + g, _group -> {
+                Group gr = Group.load("GRP" + g, ki, _group -> {
                     _group.save();
-                    Group loaded = Group.load(_group.getName(), _group.getParent(), _arg -> {});
+                    Group loaded = null;
+                    try {
+                        loaded = Group.load(_group.getName(), ki, _arg -> {
+                        });
+                    } catch (AddException | InvalidStateException e) {
+                        e.printStackTrace();
+                    }
                     myAssertEquals(_group, loaded);
                 });
-                ki.addGroup(gr);
                 gr.start();
 
                 for (int s = 0; s < nb; s++) {
-                    SubGroup su = new SubGroup("SUB" + s, _subGroup -> {
+                    SubGroup su = SubGroup.load("SUB" + s, gr, _subGroup -> {
                         _subGroup.save();
-                        SubGroup loaded = SubGroup.load(_subGroup.getName(), _subGroup.getParent(), _arg -> {});
+                        SubGroup loaded = null;
+                        try {
+                            loaded = SubGroup.load(_subGroup.getName(), gr, _arg -> {
+                            });
+                        } catch (AddException | InvalidStateException e) {
+                            e.printStackTrace();
+                        }
                         myAssertEquals(_subGroup, loaded);
 
                         if (nb == 2) { //TEST EN DUR DE L'UNLOAD
                             try {
-                                _subGroup.getParent().addSubGroup(loaded);
                                 loaded.start();
-                            }catch (Exception e){e.printStackTrace();}
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                             //first time to unload it
+                            try {
+                                Organism.load(_subGroup.getOrganisms().get(0).getName(), 45L, 54L, loaded, true, _arg -> {
+                                });
+                            } catch (AddException | InvalidStateException e) {
+                                e.printStackTrace();
+                            }
                             //second time to get the last
-                            Organism loaded_child = Organism.load(_subGroup.getOrganisms().get(0).getName(), 45L, 54L,  loaded, true, _arg -> {});
-                            loaded_child = Organism.load(_subGroup.getOrganisms().get(0).getName(), 45L, 54L,  loaded, false, _arg -> {});
+                            Organism loaded_child = null;
+                            try {
+                                loaded_child = Organism.load(_subGroup.getOrganisms().get(0).getName(), 45L, 54L, loaded, false, _arg -> {
+                                });
+                            } catch (AddException | InvalidStateException e) {
+                                e.printStackTrace();
+                            }
                             myAssertEquals(loaded, loaded_child);
                             try {
                                 loaded.stop();
-                            }catch (Exception e){e.printStackTrace();}
+                            } catch (Exception e) {
+                                e.printStackTrace();
+                            }
                         }
                     });
-                    gr.addSubGroup(su);
                     su.start();
 
                     for (int o = 0; o < nb; o++) {
-                        Organism or = new Organism("ORG" + o, 152753L, 1592820474201505800L, _organism -> {
+                        Organism or = Organism.load("ORG" + o, 152753L, 1592820474201505800L, su, true, _organism -> {
                             _organism.save();
-                            Organism loaded = Organism.load(_organism.getName(), 45L, 54L, _organism.getParent(), false, _arg -> {});
+                            Organism loaded = null;
+                            try {
+                                loaded = Organism.load(_organism.getName(), 45L, 54L, su, false, _arg -> {
+                                });
+                            } catch (AddException | InvalidStateException e) {
+                                e.printStackTrace();
+                            }
                             myAssertEquals(_organism, loaded);
-                            Date loadedDate = Organism.loadDate(_organism.getName(), _organism.getParent());
-                            assertEquals(_organism.getModificationDate(),loadedDate);
+                            Date loadedDate = Organism.loadDate("GENBANK", _organism.getKingdomName(), _organism.getGroupName(), _organism.getSubGroupName(), _organism.getName());
+                            assertEquals(_organism.getModificationDate(), loadedDate);
                         });
-                        su.addOrganism(or);
                         or.start();
 
                         for (int r = 0; r < nbRep; ++r) {

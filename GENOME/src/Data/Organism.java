@@ -12,6 +12,10 @@ import java.util.Date;
 public final class Organism extends IDataBase {
 
     /**
+     * Prefix used for serialization
+     */
+    private static final String s_SERIALIZATION_PREFIX = "__O_";
+    /**
      * Array of this organism's Replicon
      */
     private transient final ArrayList<Replicon> m_replicons;
@@ -40,7 +44,7 @@ public final class Organism extends IDataBase {
      * @param _version the version of the organism
      * @param _event   the event call when compute is finished
      */
-    public Organism(String _name, long _id, long _version, IOrganismCallback _event) {
+    private Organism(String _name, long _id, long _version, IOrganismCallback _event) {
         super(_name);
         m_id = _id;
         m_version = _version;
@@ -54,33 +58,40 @@ public final class Organism extends IDataBase {
      * Load a Organism with his name, his id and his version and affect the event
      * You can choose to create a newOne with unloadTheLas if it exist
      *
-     * @param _name the name of the organism
-     * @param _id the id of the organism
-     * @param _version the version of the organism
-     * @param _parent the parent SubGroup (used to know the path_name and to unload it)
+     * @param _name                the name of the organism
+     * @param _id                  the id of the organism
+     * @param _version             the version of the organism
+     * @param _parent              the parent SubGroup (used to know the path_name and to unload it)
      * @param _unloadLastCreateNew true for create a new one and unfold the last, false to get the last
-     * @param _event the Callback you want to apply
+     * @param _event               the Callback you want to apply
      * @return the Organism loaded or created
      */
-    public static Organism load(String _name, long _id, long _version, SubGroup _parent, Boolean _unloadLastCreateNew, IOrganismCallback _event) {
-        Organism lastOne = (Organism) IDataBase.load(_parent.getSavedName() + "__O_" + _name);
-        if(_unloadLastCreateNew){
-            if(lastOne != null)
+    public static Organism load(String _name, long _id, long _version, SubGroup _parent, Boolean _unloadLastCreateNew, IOrganismCallback _event) throws AddException, InvalidStateException {
+        Organism lastOne = (Organism) IDataBase.load(_parent.getSavedName() + s_SERIALIZATION_PREFIX + _name);
+        if (_unloadLastCreateNew) {
+            if (lastOne != null)
                 _parent.unload(lastOne);
-            return new Organism(_name, _id, _version, _event);
-        }else{
-            return lastOne;
+            lastOne = new Organism(_name, _id, _version, _event);
+            _parent.addOrganism(lastOne);
         }
+        return lastOne;
     }
 
-    /**
-     * Get the main part of the save path_name
-     *
-     * @return the main part of the save path_name
-     */
-    @Override
-    protected String getSavedName() {
-        return m_parent.getSavedName() + "__O_" + getName();
+    public static Date loadDate(String _db, String _ki, String _gp, String _sg, String _name) {
+        String fileName = "D_" + _db + "__K_" + _ki + "__G_" + _gp + "__SG_" + _sg + "__O_" + _name;
+        final File file = new File(Options.getSerializeDirectory() + File.separator + fileName + Options.getDateModifSerializeExtension());
+        final ObjectInputStream stream;
+        if (!file.exists()) {
+            return null;
+        }
+        try {
+            stream = new ObjectInputStream((new FileInputStream(file)));
+            return (Date) stream.readObject();
+        } catch (IOException | ClassNotFoundException e) {
+            Logs.warning("Unable to load : " + fileName);
+            Logs.exception(e);
+        }
+        return null;
     }
 
     /**
@@ -147,7 +158,7 @@ public final class Organism extends IDataBase {
      * @return the Group's name
      */
     public String getGroupName() {
-        return m_parent.getParent().getName();
+        return m_parent.getGroupName();
     }
 
     /**
@@ -156,7 +167,7 @@ public final class Organism extends IDataBase {
      * @return the Kingdom's name
      */
     public String getKingdomName() {
-        return m_parent.getParent().getParent().getName();
+        return m_parent.getKingdomName();
     }
 
     /**
@@ -178,15 +189,6 @@ public final class Organism extends IDataBase {
     }
 
     /**
-     * Get the parent
-     *
-     * @return the parent
-     */
-    public SubGroup getParent() {
-        return m_parent;
-    }
-
-    /**
      * Set the parent
      *
      * @param _subGroup, the parent to set
@@ -195,7 +197,6 @@ public final class Organism extends IDataBase {
         m_parent = _subGroup;
     }
 
-
     /**
      * Start
      *
@@ -203,11 +204,14 @@ public final class Organism extends IDataBase {
      */
     @Override
     public final void start() throws InvalidStateException {
-        if(m_parent == null)
+        if (m_parent == null)
             throw new InvalidStateException("Unable to start without been add in a SubGroup : " + getName());
         super.start();
     }
 
+    /**
+     * Save this organism
+     */
     @Override
     public void save() {
         super.save();
@@ -230,20 +234,14 @@ public final class Organism extends IDataBase {
         }
     }
 
-    public static final Date loadDate(String _name, SubGroup _parent) {
-        String fileName = _parent.getSavedName()+ "__O_" + _name;
-        final File file = new File(Options.getSerializeDirectory() + File.separator + fileName + Options.getDateModifSerializeExtension());
-        final ObjectInputStream stream;
-        if (!file.exists()) {
-            return null;
-        }
-        try {
-            stream = new ObjectInputStream((new FileInputStream(file)));
-            return (Date) stream.readObject();
-        } catch (IOException | ClassNotFoundException e) {
-            Logs.warning("Unable to load : " + fileName);
-            Logs.exception(e);
-        }
-        return null;
+    /**
+     * Get the main part of the save path_name
+     *
+     * @return the main part of the save path_name
+     */
+    @Override
+    protected String getSavedName() {
+        return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
     }
+
 }

@@ -26,7 +26,7 @@ public class FileManager {
      * @throws IOException if it's impossible to create the directory
      */
     private static String createPath(String _pathName) throws IOException {
-        final String pathName = System.getProperty("user.dir") + File.separator + Options.getResultDirectory() + File.separator + _pathName;
+        final String pathName = Options.getResultDirectory() + File.separator + _pathName;
 
         final Path Path = Paths.get(pathName);
         if (Files.notExists(Path)) {

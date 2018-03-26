@@ -56,6 +56,10 @@ public final class Options {
      */
     private static final String s_EXCEL_EXTENSION = ".xlsx";
     /**
+     * The name of the genbank
+     */
+    private static final String s_GENBANK_NAME = "Genbank";
+    /**
      * Option's properties
      */
     private static Properties m_properties = null;
@@ -180,7 +184,7 @@ public final class Options {
     }
 
     public static String getSerializeDirectory() {
-        return s_SERIALIZE_DIRECTORY;
+        return System.getProperty("user.dir") + File.separator + s_SERIALIZE_DIRECTORY;
     }
 
     public static String getSerializeExtension() {
@@ -192,7 +196,7 @@ public final class Options {
     }
 
     public static String getResultDirectory() {
-        return s_RESULT_DIRECTORY;
+        return System.getProperty("user.dir") + File.separator + s_RESULT_DIRECTORY;
     }
 
     public static String getTotalPrefix() {
@@ -207,4 +211,7 @@ public final class Options {
         return s_EXCEL_EXTENSION;
     }
 
+    public static String getGenbankName() {
+        return s_GENBANK_NAME;
+    }
 }
