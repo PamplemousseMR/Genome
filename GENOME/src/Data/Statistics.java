@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.stream.IntStream;
 
 public class Statistics implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Type of this Statistic
@@ -29,7 +30,7 @@ public class Statistics implements Serializable {
     /**
      * Class constructor
      */
-    Statistics(Type _type) {
+    protected Statistics(Type _type) {
         m_type = _type;
         m_trinucleotideTable = new Tuple[Trinucleotide.values().length];
         IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> m_trinucleotideTable[i] = new Tuple());
@@ -153,6 +154,28 @@ public class Statistics implements Serializable {
     }
 
     /**
+     * Unload data
+     *
+     * @param _stat the data to unload
+     */
+    protected void unload(Statistics _stat) {
+        m_totalTrinucleotide -= _stat.m_totalTrinucleotide;
+        m_CDSNumber -= _stat.m_CDSNumber;
+        m_validCDSNumber -= _stat.m_validCDSNumber;
+        IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> {
+            final Trinucleotide tri = Trinucleotide.values()[i];
+            final Tuple inputRow = _stat.m_trinucleotideTable[i];
+            decrementStat(tri, StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
+            decrementStat(tri, StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
+            decrementStat(tri, StatLong.PHASE2, inputRow.get(StatLong.PHASE2));
+            decrementStat(tri, StatLong.PREF0, inputRow.get(StatLong.PREF0));
+            decrementStat(tri, StatLong.PREF1, inputRow.get(StatLong.PREF1));
+            decrementStat(tri, StatLong.PREF2, inputRow.get(StatLong.PREF2));
+        });
+
+    }
+
+    /**
      * Increment the value of a trinucleotide for a stat by the parameter
      *
      * @param _tri,  the Trinucleotide to set
@@ -161,6 +184,17 @@ public class Statistics implements Serializable {
      */
     private void incrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
         m_trinucleotideTable[_tri.ordinal()].incr(_stat, _inc);
+    }
+
+    /**
+     * Increment the value of a trinucleotide for a stat by the parameter
+     *
+     * @param _tri,  the Trinucleotide to set
+     * @param _stat, the statistic to set
+     * @param _inc,  the value to increment
+     */
+    private void decrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
+        m_trinucleotideTable[_tri.ordinal()].decr(_stat, _inc);
     }
 
     /**

@@ -2,11 +2,17 @@ package Data;
 
 import Exception.AddException;
 import Exception.InvalidStateException;
+import Utils.Options;
 
+import java.io.File;
 import java.util.ArrayList;
 
 public final class DataBase extends IDataBase {
 
+    /**
+     * Prefix used for serialization
+     */
+    private static final String s_SERIALIZATION_PREFIX = "D_";
     /**
      * Array of this Database's Kingdom
      */
@@ -22,27 +28,43 @@ public final class DataBase extends IDataBase {
      * @param _name, the name of this DataBase
      * @param _event the event call when compute is finished
      */
-    public DataBase(String _name, IDataBaseCallback _event) {
+    private DataBase(String _name, IDataBaseCallback _event) {
         super(_name);
         m_kingdoms = new ArrayList<>();
         m_event = _event;
     }
 
     /**
-     * Add a Kingdom to the Database
+     * Class constructor when already exist
      *
-     * @param _kingdom, the Kingdom to insert
-     * @return the insertion success
-     * @throws AddException if _kingdom are already added
+     * @param _name, the name of this DataBase
+     * @param _data, the previous version of this DataBase
+     * @param _event the event call when compute is finished
      */
-    public boolean addKingdom(Kingdom _kingdom) throws AddException {
-        if (super.getState() == State.STARTED) {
-            if (super.contains(m_kingdoms, _kingdom))
-                throw new AddException("Kingdom already added : " + _kingdom.getName());
-            _kingdom.setIndex(m_kingdoms.size());
-            _kingdom.setParent(this);
-            return m_kingdoms.add(_kingdom);
-        } else return false;
+    private DataBase(String _name, IDataBase _data, IDataBaseCallback _event) {
+        super(_name, _data);
+        m_kingdoms = new ArrayList<>();
+        m_event = _event;
+    }
+
+    /**
+     * Load a DataBase with his name and affect the event
+     * It create it if the file doesn't exist
+     *
+     * @param _name  the name of the file to load
+     * @param _event the Callback you want to apply
+     * @return the DataBase loaded or created
+     */
+    public static DataBase load(String _name, IDataBaseCallback _event) {
+        final File saveFolder = new File(Options.getSerializeDirectory());
+        saveFolder.mkdir();
+        final IDataBase result = IDataBase.load(s_SERIALIZATION_PREFIX + _name);
+
+        if (result == null) {
+            return new DataBase(_name, _event);
+        } else {
+            return new DataBase(_name, result, _event);
+        }
     }
 
     /**
@@ -68,6 +90,16 @@ public final class DataBase extends IDataBase {
     }
 
     /**
+     * Get the main part of the save path_name
+     *
+     * @return the main part of the save path_name
+     */
+    @Override
+    protected String getSavedName() {
+        return s_SERIALIZATION_PREFIX + getName();
+    }
+
+    /**
      * Finish this DataBase if it can
      *
      * @param _kingdom, the Kingdom to finish
@@ -85,6 +117,23 @@ public final class DataBase extends IDataBase {
                 end();
             }
         }
+    }
+
+    /**
+     * Add a Kingdom to the Database
+     *
+     * @param _kingdom, the Kingdom to insert
+     * @return the insertion success
+     * @throws AddException if _kingdom are already added
+     */
+    protected boolean addKingdom(Kingdom _kingdom) throws AddException {
+        if (super.getState() == State.STARTED) {
+            if (super.contains(m_kingdoms, _kingdom))
+                throw new AddException("Kingdom already added : " + _kingdom.getName());
+            _kingdom.setIndex(m_kingdoms.size());
+            _kingdom.setParent(this);
+            return m_kingdoms.add(_kingdom);
+        } else return false;
     }
 
     /**

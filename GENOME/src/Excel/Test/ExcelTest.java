@@ -11,7 +11,7 @@ class ExcelTest {
 
     @Test
     void excelTest() throws Exception {
-        DataBase db = new DataBase("DataBase", _dataBase -> {
+        DataBase db = DataBase.load("DataBase", _dataBase -> {
             try {
                 ExcelWriter.writeDatabase(_dataBase);
             } catch (IOException e) {
@@ -21,7 +21,7 @@ class ExcelTest {
         int nb = 3, nbrep = 20;
         db.start();
         for (int k = 0; k < nb; ++k) {
-            Kingdom ki = new Kingdom("Kingdom_" + k, _kingdom -> {
+            Kingdom ki = Kingdom.load("Kingdom_" + k, db, _kingdom -> {
                 try {
                     ExcelWriter.writeKingdom(_kingdom);
                 } catch (IOException e) {
@@ -29,9 +29,8 @@ class ExcelTest {
                 }
             });
             ki.start();
-            db.addKingdom(ki);
             for (int g = 0; g < nb; ++g) {
-                Group gr = new Group("Group_" + g, _group -> {
+                Group gr = Group.load("Group_" + g, ki, _group -> {
                     try {
                         ExcelWriter.writeGroup(_group);
                     } catch (IOException e) {
@@ -39,9 +38,8 @@ class ExcelTest {
                     }
                 });
                 gr.start();
-                ki.addGroup(gr);
                 for (int s = 0; s < nb; ++s) {
-                    SubGroup su = new SubGroup("SubGroup_" + s, _subGroup -> {
+                    SubGroup su = SubGroup.load("SubGroup_" + s, gr, _subGroup -> {
                         try {
                             ExcelWriter.writeSubGroup(_subGroup);
                         } catch (IOException e) {
@@ -49,9 +47,8 @@ class ExcelTest {
                         }
                     });
                     su.start();
-                    gr.addSubGroup(su);
                     for (int o = 0; o < nb; ++o) {
-                        Organism or = new Organism("Brassica_napus_phytoplasma_" + o, 152753L, 1592820474201505800L, _organism -> {
+                        Organism or = Organism.load("Brassica_napus_phytoplasma_" + o, 152753L, 1592820474201505800L, su, true, _organism -> {
                             try {
                                 ExcelWriter.writeOrganism(_organism);
                             } catch (IOException e) {
@@ -59,7 +56,6 @@ class ExcelTest {
                             }
                         });
                         or.start();
-                        su.addOrganism(or);
                         for (int r = 0; r < nbrep; ++r) {
                             StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("TATAATCCTTTTCTTTTTAATTAAAAAAATCTCTAATAATATTTTTTTTA");

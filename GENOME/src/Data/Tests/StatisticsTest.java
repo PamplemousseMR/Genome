@@ -64,33 +64,28 @@ class StatisticsTest {
     @Test
     void statistics() throws AddException, InvalidStateException {
         final long nb = 5, nbrep = 200;
-        DataBase db = new DataBase("DataBase", _dataBase -> {
+        DataBase db = DataBase.load("DataBase", _dataBase -> {
             long tot = nb * nb * nb * nb;
             global(_dataBase, _dataBase.getKingdoms(), tot, tot * nbrep);
         });
         db.start();
         for (int k = 0; k < nb; ++k) {
-            Kingdom ki = new Kingdom("Kingdom_" + k, _kingdom -> {
+            Kingdom ki = Kingdom.load("Kingdom_" + k, db, _kingdom -> {
                 long tot = nb * nb * nb;
                 global(_kingdom, _kingdom.getGroups(), tot, tot * nbrep);
             });
             ki.start();
-            db.addKingdom(ki);
             for (int g = 0; g < nb; ++g) {
-                Group gr = new Group("Group_" + g, _group -> {
+                Group gr = Group.load("Group_" + g, ki, _group -> {
                     long tot = nb * nb;
                     global(_group, _group.getSubGroups(), tot, tot * nbrep);
                 });
                 gr.start();
-                ki.addGroup(gr);
                 for (int s = 0; s < nb; ++s) {
-                    SubGroup su = new SubGroup("SubGroup" + s, _subGroup -> {
-                        global(_subGroup, _subGroup.getOrganisms(), nb, nb * nbrep);
-                    });
+                    SubGroup su = SubGroup.load("SubGroup" + s, gr, _subGroup -> global(_subGroup, _subGroup.getOrganisms(), nb, nb * nbrep));
                     su.start();
-                    gr.addSubGroup(su);
                     for (int o = 0; o < nb; ++o) {
-                        Organism or = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
+                        Organism or = Organism.load("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, su, true, _organism -> {
                             long tot = 1;
                             long total = 0L;
                             long totalValid = 0L;
@@ -105,7 +100,6 @@ class StatisticsTest {
                             global(_organism, tot, tot * nbrep);
                         });
                         or.start();
-                        su.addOrganism(or);
                         for (int r = 0; r < nbrep; ++r) {
                             StringBuilder strBuf = new StringBuilder("AAAAAGATAAGCTAATTAAGCTATTGGGTTCATACCCCACTTATAAAGGT");
                             strBuf.append("TATAATCCTTTTCTTTTTAATTAAAAAAATCTCTAATAATATTTTTTTTA");

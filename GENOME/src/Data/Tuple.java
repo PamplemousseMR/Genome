@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 public final class Tuple implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * Array to store float
@@ -17,7 +18,7 @@ public final class Tuple implements Serializable {
     /**
      * Class constructor
      */
-    Tuple() {
+    protected Tuple() {
         m_longs = new long[Statistics.StatLong.values().length];
         Arrays.fill(m_longs, 0L);
         m_floats = new float[Statistics.StatFloat.values().length];
@@ -58,9 +59,20 @@ public final class Tuple implements Serializable {
      * Increment the value of the enum
      *
      * @param _stat, the enum
-     * @param _val,  the value to set
+     * @param _val,  the value to increment
      */
     protected void incr(Statistics.StatLong _stat, long _val) {
         m_longs[_stat.ordinal()] += _val;
     }
+
+    /**
+     * Decrement the value of the enum
+     *
+     * @param _stat, the enum
+     * @param _val,  the value to decrement
+     */
+    protected void decr(Statistics.StatLong _stat, long _val) {
+        m_longs[_stat.ordinal()] -= _val;
+    }
+
 }

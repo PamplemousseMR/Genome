@@ -20,7 +20,7 @@ class DataBaseTest {
 
     @BeforeAll
     static void setUp() throws InvalidStateException {
-        db = new DataBase("", _dataBase -> {
+        db = DataBase.load("", _dataBase -> {
         });
         db.start();
     }
@@ -31,29 +31,23 @@ class DataBaseTest {
     }
 
     @Test
-    void addKingdom() throws AddException {
-        db.addKingdom(new Kingdom("", _kingdom -> {
-        }));
+    void addKingdom() throws AddException, InvalidStateException {
+        Kingdom.load("", db, _kingdom -> {
+        });
         assertEquals(1, db.getKingdoms().size());
-        db.addKingdom(new Kingdom("", _kingdom -> {
-        }));
+        Kingdom.load("", db, _kingdom -> {
+        });
         assertEquals(2, db.getKingdoms().size());
     }
 
     @Test
-    void getKingdoms() throws AddException {
-        Kingdom k1 = new Kingdom("one", _kingdom -> {
+    void getKingdoms() throws AddException, InvalidStateException {
+        Kingdom k1 = Kingdom.load("one", db, _kingdom -> {
         });
-        Kingdom k2 = new Kingdom("two", _kingdom -> {
+        Kingdom k2 = Kingdom.load("two", db, _kingdom -> {
         });
-        db.addKingdom(k1);
-        db.addKingdom(k2);
         assertEquals(true, db.getKingdoms().contains(k1));
         assertEquals(true, db.getKingdoms().contains(k2));
-
-        Kingdom k3 = new Kingdom("three", _kingdom -> {
-        });
-        assertEquals(false, db.getKingdoms().contains(k3));
     }
 
     @Test
@@ -69,68 +63,69 @@ class DataBaseTest {
 
     @Test
     void dataBase() throws AddException, InvalidStateException {
-        DataBase dataBase = new DataBase("d1", _dataBase -> {
+        DataBase dataBase = DataBase.load("d1", _dataBase -> {
         });
         assertEquals(IDataBase.State.CREATED, dataBase.getState());
 
         // Database start and stop
-        Kingdom k1 = new Kingdom("k1", _kingdom -> {
+        Kingdom k1 = Kingdom.load("k1", dataBase, _kingdom -> {
         });
-        assertEquals(false, dataBase.addKingdom(k1));
+        assertEquals(false, dataBase.getKingdoms().contains(k1));
         dataBase.start();
-        assertEquals(true, dataBase.addKingdom(k1));
-
-        Kingdom k2 = new Kingdom("k2", _kingdom -> {
+        k1 = Kingdom.load("k1", dataBase, _kingdom -> {
         });
-        assertEquals(true, dataBase.addKingdom(k2));
+        assertEquals(true, dataBase.getKingdoms().contains(k1));
 
-        assertThrows(Exception.class, () -> dataBase.addKingdom(k2));
+        Kingdom k2 = Kingdom.load("k2", dataBase, _kingdom -> {
+        });
+        assertEquals(true, dataBase.getKingdoms().contains(k2));
+
         dataBase.stop();
 
-        Kingdom k3 = new Kingdom("k3", _kingdom -> {
+        Kingdom k3 = Kingdom.load("k3", dataBase, _kingdom -> {
         });
-        assertEquals(false, dataBase.addKingdom(k3));
+        assertEquals(false, dataBase.getKingdoms().contains(k3));
         assertEquals(IDataBase.State.STOPPED, dataBase.getState());
 
         // Group start and Kingdom start and stop
         for (Kingdom k : dataBase.getKingdoms()) {
-            Group g1 = new Group("g1_" + k.getName(), _group -> {
+            Group g1 = Group.load("g1_" + k.getName(), k, _group -> {
             });
-            g1.start();
-            assertEquals(false, k.addGroup(g1));
+            assertEquals(false, k.getGroups().contains(g1));
             k.start();
-            assertEquals(true, k.addGroup(g1));
-
-            Group g2 = new Group("g2_" + k.getName(), _group -> {
+            g1 = Group.load("g1_" + k.getName(), k, _group -> {
             });
-            g2.start();
-            assertEquals(true, k.addGroup(g2));
-            assertThrows(Exception.class, () -> k.addGroup(g2));
+            assertEquals(true, k.getGroups().contains(g1));
+            g1.start();
+
+            Group g2 = Group.load("g2_" + k.getName(), k, _group -> {
+            });
+            assertEquals(true, k.getGroups().contains(g2));
             k.stop();
+            g2.start();
 
-            Group g3 = new Group("g3_" + k.getName(), _group -> {
+            Group g3 = Group.load("g3_" + k.getName(), k, _group -> {
             });
-            g3.start();
-            assertEquals(false, k.addGroup(g3));
+            assertEquals(false, k.getGroups().contains(g3));
             assertEquals(IDataBase.State.STOPPED, k.getState());
+            assertThrows(InvalidStateException.class, g3::start);
         }
 
         // Group stop
         for (Kingdom k : dataBase.getKingdoms()) {
             for (Group g : k.getGroups()) {
-                SubGroup s1 = new SubGroup("s1_" + g.getName(), _subGroup -> {
+                SubGroup s1 = SubGroup.load("s1_" + g.getName(), g, _subGroup -> {
                 });
-                assertEquals(true, g.addSubGroup(s1));
+                assertEquals(true, g.getSubGroups().contains(s1));
 
-                SubGroup s2 = new SubGroup("s2_" + g.getName(), _subGroup -> {
+                SubGroup s2 = SubGroup.load("s2_" + g.getName(), g, _subGroup -> {
                 });
-                assertEquals(true, g.addSubGroup(s2));
-                assertThrows(Exception.class, () -> g.addSubGroup(s2));
+                assertEquals(true, g.getSubGroups().contains(s2));
 
                 g.stop();
-                SubGroup s3 = new SubGroup("s3_" + g.getName(), _subGroup -> {
+                SubGroup s3 = SubGroup.load("s3_" + g.getName(), g, _subGroup -> {
                 });
-                assertEquals(false, g.addSubGroup(s3));
+                assertEquals(false, g.getSubGroups().contains(s3));
                 assertEquals(IDataBase.State.STOPPED, g.getState());
             }
         }
@@ -141,23 +136,24 @@ class DataBaseTest {
         for (Kingdom k : dataBase.getKingdoms()) {
             for (Group g : k.getGroups()) {
                 for (SubGroup s : g.getSubGroups()) {
-                    Organism o1 = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
+                    Organism o1 = Organism.load("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, s, true, _organism -> {
                     });
-                    assertEquals(false, s.addOrganism(o1));
+                    assertEquals(false, s.getOrganisms().contains(o1));
                     s.start();
-                    assertEquals(true, s.addOrganism(o1));
+                    o1 = Organism.load("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, s, true, _organism -> {
+                    });
+                    assertEquals(true, s.getOrganisms().contains(o1));
                     list.add(o1);
 
-                    Organism o2 = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
+                    Organism o2 = Organism.load("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, s, true, _organism -> {
                     });
-                    assertEquals(true, s.addOrganism(o2));
-                    assertThrows(Exception.class, () -> s.addOrganism(o2));
+                    assertEquals(true, s.getOrganisms().contains(o2));
                     s.stop();
                     list.add(o2);
 
-                    Organism o3 = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
+                    Organism o3 = Organism.load("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, s, true, _organism -> {
                     });
-                    assertEquals(false, s.addOrganism(o3));
+                    assertEquals(false, s.getOrganisms().contains(o3));
                     assertEquals(IDataBase.State.STOPPED, s.getState());
                 }
             }
@@ -199,23 +195,20 @@ class DataBaseTest {
     @Test
     void nameTest() throws AddException, InvalidStateException {
 
-        Kingdom k = new Kingdom("KINGDOM", _kingdom -> {
+        Kingdom k = Kingdom.load("KINGDOM", db, _kingdom -> {
         });
         k.start();
 
-        Group g = new Group("GROUP", _group -> {
+        Group g = Group.load("GROUP", k, _group -> {
         });
         g.start();
-        k.addGroup(g);
 
-        SubGroup s = new SubGroup("SUBGROUP", _subGroup -> {
+        SubGroup s = SubGroup.load("SUBGROUP", g, _subGroup -> {
         });
         s.start();
-        g.addSubGroup(s);
 
-        Organism o = new Organism("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, _organism -> {
+        Organism o = Organism.load("'Brassica napus' phytoplasma", 152753L, 1592820474201505800L, s, true, _organism -> {
         });
-        s.addOrganism(o);
 
         assertEquals("KINGDOM", o.getKingdomName());
         assertEquals("GROUP", o.getGroupName());

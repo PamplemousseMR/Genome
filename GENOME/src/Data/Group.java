@@ -8,6 +8,10 @@ import java.util.ArrayList;
 public final class Group extends IDataBase {
 
     /**
+     * Prefix used for serialization
+     */
+    private static final String s_SERIALIZATION_PREFIX = "__G_";
+    /**
      * Array of this Group's SubGroups
      */
     private transient final ArrayList<SubGroup> m_subGroups;
@@ -26,7 +30,7 @@ public final class Group extends IDataBase {
      * @param _name, the name of this Group
      * @param _event the event call when compute is finished
      */
-    public Group(String _name, IGroupCallback _event) {
+    private Group(String _name, IGroupCallback _event) {
         super(_name);
         m_subGroups = new ArrayList<>();
         m_parent = null;
@@ -34,20 +38,39 @@ public final class Group extends IDataBase {
     }
 
     /**
-     * Add a SubGroup to this Group
+     * Class constructor when already exist
      *
-     * @param _subGroup, the Subgroup to insert
-     * @return the insertion success
-     * @throws AddException if _subGroup are already added
+     * @param _name, the name of this Group
+     * @param _data, the previous version of this Group
+     * @param _event the event call when compute is finished
      */
-    public boolean addSubGroup(SubGroup _subGroup) throws AddException {
-        if (super.getState() == State.STARTED) {
-            if (super.contains(m_subGroups, _subGroup))
-                throw new AddException("SubGroup already added : " + _subGroup.getName());
-            _subGroup.setIndex(m_subGroups.size());
-            _subGroup.setParent(this);
-            return m_subGroups.add(_subGroup);
-        } else return false;
+    private Group(String _name, IDataBase _data, IGroupCallback _event) {
+        super(_name, _data);
+        m_subGroups = new ArrayList<>();
+        m_parent = null;
+        m_event = _event;
+    }
+
+    /**
+     * Load a Group with his name and affect the event
+     * It create it if the file doesn't exist
+     *
+     * @param _name   the name of the file to load
+     * @param _parent the parent Kingdom (used to know the path_name)
+     * @param _event  the Callback you want to apply
+     * @return the Group loaded or created
+     */
+    public static Group load(String _name, Kingdom _parent, IGroupCallback _event) throws AddException, InvalidStateException {
+        final IDataBase lastOne = IDataBase.load(_parent.getSavedName() + s_SERIALIZATION_PREFIX + _name);
+        final Group newOne;
+        if (lastOne == null) {
+            newOne = new Group(_name, _event);
+        } else {
+            newOne = new Group(_name, lastOne, _event);
+            _parent.unload(newOne);
+        }
+        _parent.addGroup(newOne);
+        return newOne;
     }
 
     /**
@@ -82,6 +105,27 @@ public final class Group extends IDataBase {
     }
 
     /**
+     * Set the parent
+     *
+     * @param _kingdom, the parent to set
+     */
+    protected void setParent(Kingdom _kingdom) {
+        m_parent = _kingdom;
+    }
+
+    /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if (m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a Kingdom : " + getName());
+        super.start();
+    }
+
+    /**
      * Finish this Group if it can
      *
      * @param _subGroup, the SubGroup to finish
@@ -102,21 +146,30 @@ public final class Group extends IDataBase {
     }
 
     /**
-     * Get the Kingdom
+     * Get the main part of the save file name
      *
-     * @return the Kingdom
+     * @return the main part of the save path_name
      */
-    protected Kingdom getParent() {
-        return m_parent;
+    @Override
+    protected String getSavedName() {
+        return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
     }
 
     /**
-     * Set the parent
+     * Add a SubGroup to this Group
      *
-     * @param _kingdom, the parent to set
+     * @param _subGroup, the Subgroup to insert
+     * @return the insertion success
+     * @throws AddException if _subGroup are already added
      */
-    protected void setParent(Kingdom _kingdom) {
-        m_parent = _kingdom;
+    protected boolean addSubGroup(SubGroup _subGroup) throws AddException {
+        if (super.getState() == State.STARTED) {
+            if (super.contains(m_subGroups, _subGroup))
+                throw new AddException("SubGroup already added : " + _subGroup.getName());
+            _subGroup.setIndex(m_subGroups.size());
+            _subGroup.setParent(this);
+            return m_subGroups.add(_subGroup);
+        } else return false;
     }
 
     /**
@@ -132,5 +185,4 @@ public final class Group extends IDataBase {
         m_subGroups.clear();
         super.clear();
     }
-
 }

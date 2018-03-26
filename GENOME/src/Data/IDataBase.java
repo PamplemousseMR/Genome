@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.EnumMap;
 
 public class IDataBase implements Serializable {
+    private static final long serialVersionUID = 1L;
 
     /**
      * The name
@@ -27,6 +28,10 @@ public class IDataBase implements Serializable {
      * Last modification's date
      */
     private transient final Date m_modificationDate;
+    /**
+     * Is the Data loaded or not
+     */
+    private transient final Boolean m_loaded;
     /**
      * The number of CDS sequences
      */
@@ -66,6 +71,21 @@ public class IDataBase implements Serializable {
         m_state = State.CREATED;
         m_index = -1;
         m_finished = 0;
+        m_loaded = false;
+    }
+
+    protected IDataBase(String _name, IDataBase _data) {
+        m_name = _name;
+        m_modificationDate = new Date();
+        m_statistics = _data.m_statistics;
+        m_genomeNumber = _data.m_genomeNumber;
+        m_CDSNumber = _data.m_CDSNumber;
+        m_validCDSNumber = _data.m_validCDSNumber;
+        m_totalOrganism = _data.m_totalOrganism;
+        m_state = State.CREATED;
+        m_index = -1;
+        m_finished = 0;
+        m_loaded = true;
     }
 
     /**
@@ -74,7 +94,7 @@ public class IDataBase implements Serializable {
      * @param _name the name of the file to load
      * @return the IDatabase loaded
      */
-    public static IDataBase load(String _name) {
+    protected static IDataBase load(String _name) {
         final File file = new File(Options.getSerializeDirectory() + File.separator + _name + Options.getSerializeExtension());
         final ObjectInputStream stream;
         if (!file.exists()) {
@@ -95,7 +115,7 @@ public class IDataBase implements Serializable {
      *
      * @throws InvalidStateException if it can't be started
      */
-    public final void start() throws InvalidStateException {
+    public void start() throws InvalidStateException {
         if (m_state == State.STARTED)
             throw new InvalidStateException("Already started : " + this.getName());
         if (m_state == State.STOPPED || m_state == State.FINISHED)
@@ -193,8 +213,8 @@ public class IDataBase implements Serializable {
     /**
      * Save this data
      */
-    public final void save() {
-        final File file = new File(Options.getSerializeDirectory() + File.separator + m_name + Options.getSerializeExtension());
+    public void save() {
+        final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
         final ObjectOutputStream stream;
         if (file.exists()) {
             file.delete();
@@ -206,7 +226,7 @@ public class IDataBase implements Serializable {
             stream.flush();
             stream.close();
         } catch (IOException e) {
-            Logs.warning("Unable to save : " + m_name);
+            Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
         }
     }
@@ -349,6 +369,35 @@ public class IDataBase implements Serializable {
      */
     protected final void setTotalOrganismToOne() {
         m_totalOrganism = 1L;
+    }
+
+    /**
+     * Get the main part of the save path_name
+     *
+     * @return the main part of the save path_name
+     */
+    protected String getSavedName() {
+        return getName();
+    }
+
+    /**
+     * Unload data
+     *
+     * @param _data the data to unload
+     */
+    protected synchronized void unload(IDataBase _data) throws InvalidStateException {
+        if (!m_loaded)
+            throw new InvalidStateException("Not loaded : " + m_name + ". Requested by : " + _data.getName());
+
+        m_CDSNumber -= _data.m_CDSNumber;
+        m_validCDSNumber -= _data.m_validCDSNumber;
+        m_totalOrganism -= _data.m_totalOrganism;
+
+        for (Statistics stat : _data.m_statistics.values()) {
+            Statistics.Type type = stat.getType();
+            m_statistics.get(type).unload(stat);
+            m_genomeNumber.put(type, m_genomeNumber.get(type) - _data.m_genomeNumber.get(type));
+        }
     }
 
     /**
