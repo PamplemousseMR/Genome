@@ -15,6 +15,7 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 	private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
 	private static final Color s_DARKGRAY = new Color(32, 34, 37);
 	private static final Color s_LIGHTGRAY = new Color(54, 57, 62);
+	private static final Color s_BLUEGRAY = new Color(62, 68, 83);
 	private static final Insets s_INSETS = new Insets(1, 1, 1, 1);
 	private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
 	private static final int s_DEFAULT_FRAME_WIDTH = 300;
@@ -31,10 +32,16 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 	private JPanel m_fileTreePanel;
 	private JPanel m_downloadStatePanel;
 	private JPanel m_logsPanel;
+	private JPanel m_fileTreeTitlePanel;
+	private JPanel m_downloadStateTitlePanel;
+	private JPanel m_logsTitlePanel;
 	private JButton m_launchDL;
-	private JButton m_lookForFiles;
+	//private JButton m_lookForFiles;
 	private JLabel m_titleLabel;
 	private JLabel m_titleLabe2;
+	private JLabel m_logsTitle;
+	private JLabel m_downloadStateTitle;
+	private JLabel m_treeTitle;
 	private JButton m_exitB;
 	private JButton m_fullScreenB;
 	private JButton m_reduceB;
@@ -88,13 +95,20 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		m_fileTreePanel = new JPanel();
 		m_downloadStatePanel = new JPanel();
 		m_logsPanel = new JPanel();
+		m_fileTreeTitlePanel= new JPanel();
+		m_downloadStateTitlePanel= new JPanel();
+		m_logsTitlePanel= new JPanel();
+		
 		m_splitPanel_right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_downloadStatePanel, m_logsPanel);
 		m_splitPanel_main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_fileTreePanel, m_splitPanel_right);
 		// Components
 		m_titleLabel = new JLabel("   Projet de Bio-Informatique");
         m_titleLabe2 = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
-
-        m_lookForFiles= new JButton("Voir les fichiers");
+        
+    	m_downloadStateTitle= new JLabel("Informations");
+    	m_treeTitle= new JLabel("Arborescence des fichiers");
+    	m_logsTitle= new JLabel("Logs");
+        //m_lookForFiles= new JButton("Voir les fichiers");
 		m_launchDL = new JButton("Demarrer le telechargement");
 
 		m_exitB = new JButton();
@@ -132,9 +146,18 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		m_north.add(m_menuPanel, BorderLayout.NORTH);
 		m_north.add(m_titleLabel, BorderLayout.CENTER);
         m_north.add(m_titleLabe2, BorderLayout.SOUTH);
-
-		m_fileTreePanel.add(m_lookForFiles, BorderLayout.NORTH);
+        
+        m_fileTreeTitlePanel.add(m_treeTitle, BorderLayout.CENTER);
+        m_fileTreePanel.add(m_fileTreeTitlePanel, BorderLayout.NORTH);
+		//m_fileTreePanel.add(m_lookForFiles, BorderLayout.NORTH);
 		m_fileTreePanel.add(m_launchDL, BorderLayout.SOUTH);
+		
+		m_downloadStateTitlePanel.add(m_downloadStateTitle, BorderLayout.CENTER);
+		m_downloadStatePanel.add(m_downloadStateTitlePanel, BorderLayout.NORTH);
+		
+		m_logsTitlePanel.add(m_logsTitle, BorderLayout.CENTER);
+		m_logsPanel.add(m_logsTitlePanel, BorderLayout.NORTH);
+		
 	}
 
 	/**
@@ -153,16 +176,26 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		m_fileTreePanel.setBackground(s_LIGHTGRAY);
 		m_downloadStatePanel.setBackground(s_LIGHTGRAY);
 		m_logsPanel.setBackground(s_LIGHTGRAY);
-
+		
+		m_fileTreeTitlePanel.setBackground(s_BLUEGRAY);
+		m_downloadStateTitlePanel.setBackground(s_BLUEGRAY);
+		m_logsTitlePanel.setBackground(s_BLUEGRAY);
+		
 		m_titleLabel.setFont(new Font(s_FONT, Font.PLAIN, 28));
 		m_titleLabe2.setFont(new Font(s_FONT, Font.PLAIN, 18));
 		m_titleLabel.setForeground(Color.WHITE);
 		m_titleLabe2.setForeground(Color.LIGHT_GRAY);
 		m_titleLabe2.setBorder(BorderFactory.createEmptyBorder(0, 25, 5, 5));
-
-		m_lookForFiles.setBackground(Color.LIGHT_GRAY);
-		m_lookForFiles.setForeground(s_LIGHTGRAY);  // Light gray
-		m_lookForFiles.setBorderPainted(false);
+		m_logsTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
+    	m_downloadStateTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
+    	m_treeTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
+    	m_logsTitle.setForeground(Color.WHITE);
+    	m_downloadStateTitle.setForeground(Color.WHITE);
+    	m_treeTitle.setForeground(Color.WHITE);
+    	
+		//m_lookForFiles.setBackground(Color.LIGHT_GRAY);
+		//m_lookForFiles.setForeground(s_LIGHTGRAY);  // Light gray
+		//m_lookForFiles.setBorderPainted(false);
 		m_launchDL.setBackground(Color.LIGHT_GRAY);
 		m_launchDL.setForeground(s_LIGHTGRAY);  // Light gray
 		m_launchDL.setBorderPainted(false);
@@ -220,7 +253,7 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		m_menuPanel.addMouseListener(this);
 		m_menuPanel.addMouseMotionListener(this);
 
-		m_lookForFiles.addActionListener(new OpenFileSystemListener());
+		//m_lookForFiles.addActionListener(new OpenFileSystemListener());
 		m_launchDL.addActionListener(new CloseListener());
 		m_exitB.addActionListener(new CloseListener());
 
