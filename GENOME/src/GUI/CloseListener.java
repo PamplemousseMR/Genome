@@ -11,6 +11,5 @@ public class CloseListener implements ActionListener {
         System.exit(0);
     }
 
-
 }
 

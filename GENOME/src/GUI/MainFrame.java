@@ -8,19 +8,21 @@ import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
-public class MainFrame extends ResizibleFrame implements ActionListener {
-    private static final long serialVersionUID = -6768656055410219611L;
+public final class MainFrame extends ResizibleFrame implements ActionListener {
+
     private static final String s_TITLE = "BioInformatique ILC";//. Realise par Adele M. -- Arthur D. --  Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H."
     private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
     private static final Color s_DARKGRAY = new Color(32, 34, 37);
     private static final Color s_LIGHTGRAY = new Color(54, 57, 62);
-    private static Border s_basicEmptyBorder = BorderFactory.createEmptyBorder(0, 20, 20, 20);
-    private static Insets s_insets = new Insets(1, 1, 1, 1);
-    private static Toolkit toolkit = Toolkit.getDefaultToolkit();
-    private static int s_defaultFrameWidth = 300;
-    private static int s_defaultFrameHeight = 300;
-    private static Point m_initialLocation = new Point((int) toolkit.getScreenSize().getWidth() / 2 - s_defaultFrameWidth / 2, (int) toolkit.getScreenSize().getHeight() / 2 - s_defaultFrameHeight / 2);
-    private static Dimension m_initialDimension = new Dimension(s_defaultFrameWidth, s_defaultFrameHeight);
+    private static final Border s_BASIC_EMPTY_BORDER = BorderFactory.createEmptyBorder(0, 20, 20, 20);
+    private static final Insets s_INSETS = new Insets(1, 1, 1, 1);
+    private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
+    private static final int s_DEFAULT_FRAME_WIDTH = 300;
+    private static final int s_DEFAULT_FRAME_HEIGHT = 300;
+    private static final Point s_INITIAL_LOCATION = new Point((int) s_TOOLKIT.getScreenSize().getWidth() / 2 - s_DEFAULT_FRAME_WIDTH / 2, (int) s_TOOLKIT.getScreenSize().getHeight() / 2 - s_DEFAULT_FRAME_HEIGHT / 2);
+    private static final Dimension s_INITIAL_DIMENSION = new Dimension(s_DEFAULT_FRAME_WIDTH, s_DEFAULT_FRAME_HEIGHT);
+    private static final String s_POLICE = "Helvetica";
+
     private JPanel m_menuPanel;
     private JSplitPane m_splitPanel_main;
     private JSplitPane m_splitPanel_right;
@@ -41,7 +43,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener {
      * ctor
      */
     public MainFrame() {
-        super(m_initialDimension, m_initialLocation, s_TITLE);
+        super(s_INITIAL_DIMENSION, s_INITIAL_LOCATION, s_TITLE);
         initFrame();
         initComponents();
         initLayout();
@@ -54,13 +56,13 @@ public class MainFrame extends ResizibleFrame implements ActionListener {
      * Basic frame inits
      */
     private void initFrame() {
-        this.initIcone();
-        this.setUndecorated(true);
-        this.setVisible(true);
-        this.setSize((s_DIM.width / 2), (s_DIM.height / 2));
-        this.setLocationRelativeTo(null);
-        this.setResizable(true);
-        this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        initIcone();
+        setUndecorated(true);
+        setVisible(true);
+        setSize((s_DIM.width / 2), (s_DIM.height / 2));
+        setLocationRelativeTo(null);
+        setResizable(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
     /**
@@ -68,7 +70,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener {
      */
     private void initIcone() {
         try {
-            this.setIconImage(Toolkit.getDefaultToolkit().getImage((getClass().getResource("Ressources/logo.bioinfo.png"))));
+            setIconImage(Toolkit.getDefaultToolkit().getImage((getClass().getResource("Ressources/logo.bioinfo.png"))));
         } catch (Exception e) {
             Logs.exception(e);
         }
@@ -103,7 +105,7 @@ public class MainFrame extends ResizibleFrame implements ActionListener {
      * Initialize layout types
      */
     private void initLayout() {
-        this.setLayout(new BorderLayout());
+        setLayout(new BorderLayout());
         m_menuPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
         m_center.setLayout(new BorderLayout());
         m_north.setLayout(new BorderLayout());
@@ -116,8 +118,8 @@ public class MainFrame extends ResizibleFrame implements ActionListener {
      * Add components into layouts
      */
     private void addComponents() {
-        this.add(m_north, BorderLayout.NORTH);
-        this.add(m_center, BorderLayout.CENTER);
+        add(m_north, BorderLayout.NORTH);
+        add(m_center, BorderLayout.CENTER);
 
         // Menu
         m_menuPanel.add(m_reduceB);
@@ -133,15 +135,13 @@ public class MainFrame extends ResizibleFrame implements ActionListener {
         m_fileTreePanel.add(m_launchDL, BorderLayout.SOUTH);
 
         m_downloadStatePanel.add(m_jpb, BorderLayout.SOUTH);
-
     }
 
     /**
      * Swag the interface
      */
     private void swagComponents() {
-        //to modify window swag,check the LookAndFeel thing
-        this.getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
         m_splitPanel_right.setResizeWeight(.80d);
         m_splitPanel_main.setResizeWeight(.10d);
 
@@ -152,43 +152,33 @@ public class MainFrame extends ResizibleFrame implements ActionListener {
         m_downloadStatePanel.setBackground(s_LIGHTGRAY);
         m_logsPanel.setBackground(s_LIGHTGRAY);
 
-        // SplitPane
         m_splitPanel_main.setDividerLocation(0.5);
 
-        // Panels margin (top, left, bottom, right)
-        //m_east.setBorder(s_basicEmptyBorder);
-        //m_west.setBorder(s_basicEmptyBorder);
-        m_fileTreePanel.setBorder(s_basicEmptyBorder);
-        m_downloadStatePanel.setBorder(s_basicEmptyBorder);
-        m_logsPanel.setBorder(s_basicEmptyBorder);
+        m_fileTreePanel.setBorder(s_BASIC_EMPTY_BORDER);
+        m_downloadStatePanel.setBorder(s_BASIC_EMPTY_BORDER);
+        m_logsPanel.setBorder(s_BASIC_EMPTY_BORDER);
 
-        // Labels
-        m_titleLabel.setFont(new Font("Helvetica", Font.PLAIN, 28));
-        m_titleLabel2.setFont(new Font("Helvetica", Font.PLAIN, 18));
+        m_titleLabel.setFont(new Font(s_POLICE, Font.PLAIN, 28));
+        m_titleLabel2.setFont(new Font(s_POLICE, Font.PLAIN, 18));
         m_titleLabel.setForeground(Color.WHITE);
         m_titleLabel2.setForeground(Color.LIGHT_GRAY);
-        m_titleLabel.setBorder(s_basicEmptyBorder);
+        m_titleLabel.setBorder(s_BASIC_EMPTY_BORDER);
         m_titleLabel2.setBorder(BorderFactory.createEmptyBorder(0, 25, 5, 5));
 
-        // Progress bar
         m_jpb.setStringPainted(true);
         m_jpb.setString("ProgressBar");
-        //m_jpb.setSize(m_south.getWidth(),( m_south.getHeight()));
         m_jpb.setBackground(new Color(66, 86, 142));     //BLUE
 
-        // Buttons
         m_launchDL.setBackground(Color.LIGHT_GRAY);
         m_launchDL.setForeground(s_LIGHTGRAY);  // Light gray
         m_launchDL.setBorderPainted(false);
 
-        // Menu Bar
-        m_menuPanel.setPreferredSize(new Dimension(s_defaultFrameWidth, 35));
+        m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));
 
-
-        Font font = new Font("Helvetica", Font.BOLD, 16);
-        m_exitB.setMargin(s_insets);
-        m_reduceB.setMargin(s_insets);
-        m_fullScreenB.setMargin(s_insets);
+        final Font font = new Font(s_POLICE, Font.BOLD, 16);
+        m_exitB.setMargin(s_INSETS);
+        m_reduceB.setMargin(s_INSETS);
+        m_fullScreenB.setMargin(s_INSETS);
         m_exitB.setBackground(s_DARKGRAY);
         m_fullScreenB.setBackground(s_DARKGRAY);
         m_reduceB.setBackground(s_DARKGRAY);
@@ -199,9 +189,6 @@ public class MainFrame extends ResizibleFrame implements ActionListener {
         m_fullScreenB.setFont(font);
         m_reduceB.setFont(font);
 
-        //could be useful
-        //UIManager.put("Button.select", Color.WHITE);
-
     }
 
     /**
@@ -209,64 +196,26 @@ public class MainFrame extends ResizibleFrame implements ActionListener {
      * Manage the action to do when a listener is triggered
      */
     private void addListener() {
-        //for resize and fullscreen by double-click
         m_menuPanel.addMouseListener(this);
         m_menuPanel.addMouseMotionListener(this);
 
         m_launchDL.addActionListener(new CloseListener());
         m_exitB.addActionListener(new CloseListener());
 
-        m_reduceB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                reduceActionPerformed(e);
+        m_reduceB.addActionListener(e -> setState(Frame.ICONIFIED));
+        m_fullScreenB.addActionListener(e -> {
+            if (getExtendedState() == MAXIMIZED_BOTH) {
+                setExtendedState(JFrame.NORMAL);
+            } else {
+                setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         });
-        m_fullScreenB.addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                fullScreenActionPerformed(e);
-            }
-        });
-
-    }
-
-
-    protected void reduceActionPerformed(ActionEvent e) {
-        this.setState(Frame.ICONIFIED);
-    }
-
-    protected void fullScreenActionPerformed(ActionEvent e) {
-        if (this.getExtendedState() == MAXIMIZED_BOTH) {
-            this.setExtendedState(JFrame.NORMAL);
-        } else {
-            this.setExtendedState(JFrame.MAXIMIZED_BOTH);
-        }
-        //frame.setUndecorated(true);
-        //frame.setVisible(true);*/
-
-    }
-
-    /**
-     * @return the initialLocation
-     */
-    public Point getInitialLocation() {
-        return m_initialLocation;
-    }
-
-    /**
-     * /**
-     *
-     * @return the s_initialDimension
-     */
-    public Dimension getS_initialDimension() {
-        return m_initialDimension;
     }
 
     @Override
     public void actionPerformed(ActionEvent e) {
         // TODO Auto-generated method stub
-
     }
-
 
 }
 
