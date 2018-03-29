@@ -2,8 +2,8 @@ package GUI;
 
 import Utils.Logs;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
@@ -15,14 +15,13 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 	private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
 	private static final Color s_DARKGRAY = new Color(32, 34, 37);
 	private static final Color s_LIGHTGRAY = new Color(54, 57, 62);
-	private static final Border s_BASIC_EMPTY_BORDER = BorderFactory.createEmptyBorder(0, 20, 20, 20);
 	private static final Insets s_INSETS = new Insets(1, 1, 1, 1);
 	private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
 	private static final int s_DEFAULT_FRAME_WIDTH = 300;
 	private static final int s_DEFAULT_FRAME_HEIGHT = 300;
 	private static final Point s_INITIAL_LOCATION = new Point((int) s_TOOLKIT.getScreenSize().getWidth() / 2 - s_DEFAULT_FRAME_WIDTH / 2, (int) s_TOOLKIT.getScreenSize().getHeight() / 2 - s_DEFAULT_FRAME_HEIGHT / 2);
 	private static final Dimension s_INITIAL_DIMENSION = new Dimension(s_DEFAULT_FRAME_WIDTH, s_DEFAULT_FRAME_HEIGHT);
-	private static final String s_POLICE = "Helvetica";
+	private static final String s_FONT = "Helvetica";
 
 	private JPanel m_menuPanel;
 	private JSplitPane m_splitPanel_main;
@@ -33,9 +32,9 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 	private JPanel m_downloadStatePanel;
 	private JPanel m_logsPanel;
 	private JButton m_launchDL;
+	private JButton m_lookForFiles;
 	private JLabel m_titleLabel;
-	private JLabel m_titleLabel2;
-	private JProgressBar m_jpb;
+	private JLabel m_titleLabe2;
 	private JButton m_exitB;
 	private JButton m_fullScreenB;
 	private JButton m_reduceB;
@@ -92,14 +91,15 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		m_splitPanel_right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_downloadStatePanel, m_logsPanel);
 		m_splitPanel_main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_fileTreePanel, m_splitPanel_right);
 		// Components
-		m_titleLabel = new JLabel("Projet de Bio-Informatique");
-		m_titleLabel2 = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
-		m_launchDL = new JButton("Demarrer le telechargement");
-		m_jpb = new JProgressBar();
+		m_titleLabel = new JLabel("   Projet de Bio-Informatique");
+        m_titleLabe2 = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
 
-		m_exitB = new JButton(" X ");
-		m_fullScreenB = new JButton("[�]"); //[-]
-		m_reduceB = new JButton(" - ");
+        m_lookForFiles= new JButton("Voir les fichiers");
+		m_launchDL = new JButton("Demarrer le telechargement");
+
+		m_exitB = new JButton();
+		m_fullScreenB = new JButton();
+		m_reduceB = new JButton();
 	}
 
 	/**
@@ -127,15 +127,14 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		m_menuPanel.add(m_fullScreenB);
 		m_menuPanel.add(m_exitB);
 
-		m_center.add(m_splitPanel_main, BorderLayout.CENTER);
+        m_center.add(m_splitPanel_main, BorderLayout.CENTER);
 
 		m_north.add(m_menuPanel, BorderLayout.NORTH);
 		m_north.add(m_titleLabel, BorderLayout.CENTER);
-		m_north.add(m_titleLabel2, BorderLayout.SOUTH);
+        m_north.add(m_titleLabe2, BorderLayout.SOUTH);
 
+		m_fileTreePanel.add(m_lookForFiles, BorderLayout.NORTH);
 		m_fileTreePanel.add(m_launchDL, BorderLayout.SOUTH);
-
-		m_downloadStatePanel.add(m_jpb, BorderLayout.SOUTH);
 	}
 
 	/**
@@ -145,7 +144,7 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
 		m_splitPanel_right.setResizeWeight(.80d);
 		m_splitPanel_main.setResizeWeight(.10d);
-		m_splitPanel_right.setDividerSize(3);
+        m_splitPanel_right.setDividerSize(3);
 		m_splitPanel_main.setDividerSize(3);
 
         m_menuPanel.setBackground(s_DARKGRAY);
@@ -154,43 +153,64 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		m_fileTreePanel.setBackground(s_LIGHTGRAY);
 		m_downloadStatePanel.setBackground(s_LIGHTGRAY);
 		m_logsPanel.setBackground(s_LIGHTGRAY);
-		
-		m_fileTreePanel.setBorder(s_BASIC_EMPTY_BORDER);
-		m_downloadStatePanel.setBorder(s_BASIC_EMPTY_BORDER);
-		m_logsPanel.setBorder(s_BASIC_EMPTY_BORDER);
 
-		m_titleLabel.setFont(new Font(s_POLICE, Font.PLAIN, 28));
-		m_titleLabel2.setFont(new Font(s_POLICE, Font.PLAIN, 18));
+		m_titleLabel.setFont(new Font(s_FONT, Font.PLAIN, 28));
+		m_titleLabe2.setFont(new Font(s_FONT, Font.PLAIN, 18));
 		m_titleLabel.setForeground(Color.WHITE);
-		m_titleLabel2.setForeground(Color.LIGHT_GRAY);
-		m_titleLabel.setBorder(s_BASIC_EMPTY_BORDER);
-		m_titleLabel2.setBorder(BorderFactory.createEmptyBorder(0, 25, 5, 5));
+		m_titleLabe2.setForeground(Color.LIGHT_GRAY);
+		m_titleLabe2.setBorder(BorderFactory.createEmptyBorder(0, 25, 5, 5));
 
-		m_jpb.setStringPainted(true);
-		m_jpb.setString("ProgressBar");
-		m_jpb.setBackground(new Color(66, 86, 142));     //BLUE
-
+		m_lookForFiles.setBackground(Color.LIGHT_GRAY);
+		m_lookForFiles.setForeground(s_LIGHTGRAY);  // Light gray
+		m_lookForFiles.setBorderPainted(false);
 		m_launchDL.setBackground(Color.LIGHT_GRAY);
 		m_launchDL.setForeground(s_LIGHTGRAY);  // Light gray
 		m_launchDL.setBorderPainted(false);
 
 		m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));
 
-		final Font font = new Font(s_POLICE, Font.BOLD, 16);
 		m_exitB.setMargin(s_INSETS);
-		m_reduceB.setMargin(s_INSETS);
+        m_reduceB.setMargin(s_INSETS);
 		m_fullScreenB.setMargin(s_INSETS);
-		m_exitB.setBackground(s_DARKGRAY);
-		m_fullScreenB.setBackground(s_DARKGRAY);
-		m_reduceB.setBackground(s_DARKGRAY);
-		m_exitB.setForeground(Color.WHITE);
-		m_fullScreenB.setForeground(Color.WHITE);
-		m_reduceB.setForeground(Color.WHITE);
-		m_exitB.setFont(font);
-		m_fullScreenB.setFont(font);
-		m_reduceB.setFont(font);
 
-	}
+		m_exitB.setBackground(s_DARKGRAY);
+        m_reduceB.setBackground(s_DARKGRAY);
+        m_fullScreenB.setBackground(s_DARKGRAY);
+
+		m_exitB.setForeground(Color.WHITE);
+        m_reduceB.setForeground(Color.WHITE);
+        m_fullScreenB.setForeground(Color.WHITE);
+
+		m_exitB.setFont(new Font(s_FONT, Font.BOLD, 16));
+        m_reduceB.setFont(new Font(s_FONT, Font.BOLD, 16));
+        m_fullScreenB.setFont(new Font(s_FONT, Font.BOLD, 16));
+
+        m_exitB.setBorder(BorderFactory.createEmptyBorder());
+        m_reduceB.setBorder(BorderFactory.createEmptyBorder());
+        m_fullScreenB.setBorder(BorderFactory.createEmptyBorder());
+
+        try {
+            Image img = ImageIO.read(getClass().getResource("Ressources/close.png")).getScaledInstance(20,20, Image.SCALE_DEFAULT);
+            m_exitB.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            Logs.exception(e);
+        }
+
+        try {
+            Image img = ImageIO.read(getClass().getResource("Ressources/minimize.png")).getScaledInstance(20,20, Image.SCALE_DEFAULT);
+            m_reduceB.setIcon(new ImageIcon(img));
+        }catch (Exception e) {
+            Logs.exception(e);
+        }
+
+        try {
+            Image img = ImageIO.read(getClass().getResource("Ressources/maximize.png")).getScaledInstance(20,20, Image.SCALE_DEFAULT);
+            m_fullScreenB.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            Logs.exception(e);
+        }
+
+    }
 
 	/**
 	 * Add listener on components
@@ -200,6 +220,7 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		m_menuPanel.addMouseListener(this);
 		m_menuPanel.addMouseMotionListener(this);
 
+		m_lookForFiles.addActionListener(new OpenFileSystemListener());
 		m_launchDL.addActionListener(new CloseListener());
 		m_exitB.addActionListener(new CloseListener());
 
