@@ -218,15 +218,7 @@ public class ResizibleFrame extends JFrame implements MouseMotionListener, Mouse
      * Double-Click to fullscreen the Frame orto go back to the previous size of the frame
      */
     private void doubleClicktoFullScreen() {
-        if (getWidth() < m_screen.getWidth() || getHeight() < m_screen.getHeight()) {
-            setSize((int) m_screen.getWidth(), (int) m_screen.getHeight());
-            final Dimension screenSize = Toolkit.getDefaultToolkit().getScreenSize();
-            final Dimension frameSize = getSize();
-            setLocation((screenSize.width - frameSize.width) / 2, (screenSize.height - frameSize.height) / 2);
-        } else {
-            setSize(m_precedent_width, m_precedent_height);
-            setLocation(m_precedent_loc);
-        }
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
 }
