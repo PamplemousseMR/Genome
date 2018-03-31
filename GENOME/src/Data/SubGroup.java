@@ -10,7 +10,7 @@ public final class SubGroup extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_PREFIX = "__SG_";
+    private static final String s_SERIALIZATION_PREFIX = "--SG_";
     /**
      * Array of this SubGroup's Organisms
      */

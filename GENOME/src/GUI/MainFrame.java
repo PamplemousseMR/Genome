@@ -4,8 +4,6 @@ import Utils.Logs;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
-import javax.swing.border.Border;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -159,7 +157,7 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
         
         m_fileTreeTitlePanel.add(m_treeTitle, BorderLayout.CENTER);
         m_fileTreePanel.add(m_fileTreeTitlePanel, BorderLayout.NORTH);
-		//m_fileTreePanel.add(m_lookForFiles, BorderLayout.NORTH);
+		m_fileTreePanel.add(DBTree.getTree(), BorderLayout.CENTER);
 		m_fileTreePanel.add(m_launchDL, BorderLayout.SOUTH);
 		
 		m_informationTitlePanel.add(m_informationTitle, BorderLayout.CENTER);

@@ -10,7 +10,7 @@ public final class Kingdom extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_PREFIX = "__K_";
+    private static final String s_SERIALIZATION_PREFIX = "--K_";
     /**
      * Array of this Kingdom's Group
      */

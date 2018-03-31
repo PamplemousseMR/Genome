@@ -14,7 +14,7 @@ public final class Organism extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_PREFIX = "__O_";
+    private static final String s_SERIALIZATION_PREFIX = "--O_";
     /**
      * Array of this organism's Replicon
      */

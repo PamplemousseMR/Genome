@@ -34,11 +34,11 @@ public final class Options {
     /**
      * Extension used for serialization
      */
-    private static final String s_SERIALIZE_EXTENSION = ".ser";
+    private static final String s_SERIALIZE_EXTENSION = "--.ser";
     /**
      * Extension used for serialization
      */
-    private static final String s_DATEMODIF_SERIALIZE_EXTENSION = "__DATEMODIF.ser";
+    private static final String s_DATEMODIF_SERIALIZE_EXTENSION = "--DATEMODIF--.ser";
     /**
      * Directory where store excel files
      */
