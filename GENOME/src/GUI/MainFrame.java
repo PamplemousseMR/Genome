@@ -1,5 +1,6 @@
 package GUI;
 
+import Main.Activity;
 import Utils.Logs;
 
 import javax.imageio.ImageIO;
@@ -157,7 +158,7 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
         
         m_fileTreeTitlePanel.add(m_treeTitle, BorderLayout.CENTER);
         m_fileTreePanel.add(m_fileTreeTitlePanel, BorderLayout.NORTH);
-		m_fileTreePanel.add(DBTree.getTree(), BorderLayout.CENTER);
+		m_fileTreePanel.add(new JScrollPane(DBTree.getTree()), BorderLayout.CENTER);
 		m_fileTreePanel.add(m_launchDL, BorderLayout.SOUTH);
 		
 		m_informationTitlePanel.add(m_informationTitle, BorderLayout.CENTER);
@@ -274,7 +275,15 @@ public final class MainFrame extends ResizibleFrame implements ActionListener {
 		m_menuPanel.addMouseListener(this);
 		m_menuPanel.addMouseMotionListener(this);
 
-		m_launchDL.addActionListener(e -> System.exit(0));
+		m_launchDL.addActionListener(e -> {
+			(new Thread(() -> {
+                try {
+                    Activity.genbank();
+                } catch (Exception e1) {
+                    e1.printStackTrace();
+                }
+            })).start();
+		});
 		m_exitB.addActionListener(e -> System.exit(0));
 
 		m_reduceB.addActionListener(e -> setState(Frame.ICONIFIED));

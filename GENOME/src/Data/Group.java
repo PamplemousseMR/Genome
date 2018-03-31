@@ -10,7 +10,7 @@ public final class Group extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_PREFIX = "--G_";
+    protected static final String s_SERIALIZATION_PREFIX = "--G_";
     /**
      * Array of this Group's SubGroups
      */
@@ -151,7 +151,7 @@ public final class Group extends IDataBase {
      * @return the main part of the save path_name
      */
     @Override
-    protected String getSavedName() {
+    public String getSavedName() {
         return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
     }
 

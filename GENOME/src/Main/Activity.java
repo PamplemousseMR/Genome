@@ -7,6 +7,7 @@ import Download.GenbankOrganisms;
 import Download.OrganismParser;
 import Excel.ExcelWriter;
 import Exception.*;
+import GUI.DBTree;
 import Json.JSONException;
 import Manager.ITask;
 import Manager.ThreadManager;
@@ -25,6 +26,7 @@ public class Activity {
             try {
                 ExcelWriter.writeKingdom(_kingdom);
                 _kingdom.save();
+                DBTree.getTree().update(_kingdom.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel kingdom file : " + _kingdom.getName());
                 Logs.exception(e);
@@ -40,6 +42,7 @@ public class Activity {
             try {
                 ExcelWriter.writeGroup(_group);
                 _group.save();
+                DBTree.getTree().update(_group.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel group file : " + _group.getName());
                 Logs.exception(e);
@@ -55,6 +58,7 @@ public class Activity {
             try {
                 ExcelWriter.writeSubGroup(_subGroup);
                 _subGroup.save();
+                DBTree.getTree().update(_subGroup.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel subGroup file : " + _subGroup.getName());
                 Logs.exception(e);
@@ -74,6 +78,7 @@ public class Activity {
                 try {
                     ExcelWriter.writeDatabase(_dataBase);
                     _dataBase.save();
+                    DBTree.getTree().update(_dataBase.getSavedName() + Options.getSerializeExtension());
                 } catch (IOException e) {
                     Logs.warning("Unable to write excel database file : " + _dataBase.getName());
                     Logs.exception(e);
@@ -93,7 +98,8 @@ public class Activity {
             });
             currentSubGroup.start();
 
-            while (go.hasNext()) {
+            int idx = 0;
+            while (idx <= 50 && go.hasNext()) {
                 final OrganismParser organismParser = go.getNext();
                 try {
                     organismParser.parse();
@@ -114,7 +120,7 @@ public class Activity {
                     Logs.info("No replicon in : " + organismName);
                     continue;
                 }
-
+                idx++;
                 if (organismParser.getKingdom().compareTo(currentKingdom.getName()) != 0) {
                     currentKingdom = switchKingdom(currentKingdom, organismParser.getKingdom(), currentDataBase);
                     currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom);
@@ -130,6 +136,7 @@ public class Activity {
                     try {
                         ExcelWriter.writeOrganism(_organism);
                         _organism.save();
+                        DBTree.getTree().update(_organism.getSavedName() + Options.getSerializeExtension());
                     } catch (IOException e) {
                         Logs.warning("Unable to write excel file : " + _organism.getName());
                         Logs.exception(e);

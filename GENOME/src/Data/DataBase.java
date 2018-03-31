@@ -12,7 +12,7 @@ public final class DataBase extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_PREFIX = "D_";
+    protected static final String s_SERIALIZATION_PREFIX = "D_";
     /**
      * Array of this Database's Kingdom
      */
@@ -95,7 +95,7 @@ public final class DataBase extends IDataBase {
      * @return the main part of the save path_name
      */
     @Override
-    protected String getSavedName() {
+    public String getSavedName() {
         return s_SERIALIZATION_PREFIX + getName();
     }
 

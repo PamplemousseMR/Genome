@@ -10,7 +10,7 @@ public final class Kingdom extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_PREFIX = "--K_";
+    protected static final String s_SERIALIZATION_PREFIX = "--K_";
     /**
      * Array of this Kingdom's Group
      */
@@ -122,7 +122,7 @@ public final class Kingdom extends IDataBase {
      * @return the main part of the save path_name
      */
     @Override
-    protected String getSavedName() {
+    public String getSavedName() {
         return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
     }
 

@@ -78,7 +78,7 @@ public final class Organism extends IDataBase {
     }
 
     public static Date loadDate(String _db, String _ki, String _gp, String _sg, String _name) {
-        String fileName = "D_" + _db + "__K_" + _ki + "__G_" + _gp + "__SG_" + _sg + "__O_" + _name;
+        String fileName = DataBase.s_SERIALIZATION_PREFIX + _db + Kingdom.s_SERIALIZATION_PREFIX+ _ki + Group.s_SERIALIZATION_PREFIX + _gp + SubGroup.s_SERIALIZATION_PREFIX + _sg + s_SERIALIZATION_PREFIX + _name;
         final File file = new File(Options.getSerializeDirectory() + File.separator + fileName + Options.getDateModifSerializeExtension());
         final ObjectInputStream stream;
         if (!file.exists()) {
@@ -240,7 +240,7 @@ public final class Organism extends IDataBase {
      * @return the main part of the save path_name
      */
     @Override
-    protected String getSavedName() {
+    public String getSavedName() {
         return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
     }
 
