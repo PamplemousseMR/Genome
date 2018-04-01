@@ -12,7 +12,7 @@ public final class DataBase extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    protected static final String s_SERIALIZATION_PREFIX = "D_";
+    protected static final String s_SERIALIZATION_PREFIX = Options.getDatabaseSerializationPrefix();
     /**
      * Array of this Database's Kingdom
      */
@@ -123,17 +123,16 @@ public final class DataBase extends IDataBase {
      * Add a Kingdom to the Database
      *
      * @param _kingdom, the Kingdom to insert
-     * @return the insertion success
      * @throws AddException if _kingdom are already added
      */
-    protected boolean addKingdom(Kingdom _kingdom) throws AddException {
+    protected void addKingdom(Kingdom _kingdom) throws AddException {
         if (super.getState() == State.STARTED) {
             if (super.contains(m_kingdoms, _kingdom))
                 throw new AddException("Kingdom already added : " + _kingdom.getName());
             _kingdom.setIndex(m_kingdoms.size());
             _kingdom.setParent(this);
-            return m_kingdoms.add(_kingdom);
-        } else return false;
+            m_kingdoms.add(_kingdom);
+        }
     }
 
     /**

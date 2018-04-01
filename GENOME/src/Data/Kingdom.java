@@ -2,6 +2,7 @@ package Data;
 
 import Exception.AddException;
 import Exception.InvalidStateException;
+import Utils.Options;
 
 import java.util.ArrayList;
 
@@ -10,7 +11,7 @@ public final class Kingdom extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    protected static final String s_SERIALIZATION_PREFIX = "--K_";
+    protected static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getKingdomSerializationPrefix();
     /**
      * Array of this Kingdom's Group
      */
@@ -150,17 +151,16 @@ public final class Kingdom extends IDataBase {
      * Add a Group to this Kingdom
      *
      * @param _group, the Group to insert
-     * @return the insertion success
      * @throws AddException if _group are already added
      */
-    protected boolean addGroup(Group _group) throws AddException {
+    protected void addGroup(Group _group) throws AddException {
         if (super.getState() == State.STARTED) {
             if (super.contains(m_groups, _group))
                 throw new AddException("Group already added : " + _group.getName());
             _group.setIndex(m_groups.size());
             _group.setParent(this);
-            return m_groups.add(_group);
-        } else return false;
+            m_groups.add(_group);
+        }
     }
 
     /**

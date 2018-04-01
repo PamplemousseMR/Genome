@@ -32,13 +32,37 @@ public final class Options {
      */
     private static final String s_SERIALIZE_DIRECTORY = "Save";
     /**
-     * Extension used for serialization
+     * Prefix used for serialization
      */
-    private static final String s_SERIALIZE_EXTENSION = "--.ser";
+    private static final String s_SERIALIZATION_SPLITER = "--";
+    /**
+     * Prefix used for Database serialization
+     */
+    private static final String s_DATABASE_SERIALIZATION_PREFIX = "D_";
+    /**
+     * Prefix used for Kingdom serialization
+     */
+    private static final String s_KINGDOM_SERIALIZATION_PREFIX = "K_";
+    /**
+     * Prefix used for Group serialization
+     */
+    private static final String s_GROUP_SERIALIZATION_PREFIX = "G_";
+    /**
+     * Prefix used for SubGroup serialization
+     */
+    private static final String s_SUBGROUP_SERIALIZATION_PREFIX = "SG_";
+    /**
+     * Prefix used for Organism serialization
+     */
+    private static final String s_ORGANISM_SERIALIZATION_PREFIX = "O_";
     /**
      * Extension used for serialization
      */
-    private static final String s_DATEMODIF_SERIALIZE_EXTENSION = "--DATEMODIF--.ser";
+    private static final String s_SERIALIZE_EXTENSION = s_SERIALIZATION_SPLITER + ".ser";
+    /**
+     * Extension used for serialization
+     */
+    private static final String s_DATEMODIF_SERIALIZE_EXTENSION = s_SERIALIZATION_SPLITER + "DATEMODIF" + s_SERIALIZE_EXTENSION;
     /**
      * Directory where store excel files
      */
@@ -213,5 +237,29 @@ public final class Options {
 
     public static String getGenbankName() {
         return s_GENBANK_NAME;
+    }
+
+    public static String getSerializationSpliter() {
+        return s_SERIALIZATION_SPLITER;
+    }
+
+    public static String getDatabaseSerializationPrefix() {
+        return s_DATABASE_SERIALIZATION_PREFIX;
+    }
+
+    public static String getKingdomSerializationPrefix() {
+        return s_KINGDOM_SERIALIZATION_PREFIX;
+    }
+
+    public static String getGroupSerializationPrefix() {
+        return s_GROUP_SERIALIZATION_PREFIX;
+    }
+
+    public static String getSubGroupSerializationPrefix() {
+        return s_SUBGROUP_SERIALIZATION_PREFIX;
+    }
+
+    public static String getOrganismSerializationPrefix() {
+        return s_ORGANISM_SERIALIZATION_PREFIX;
     }
 }

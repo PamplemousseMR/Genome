@@ -14,12 +14,14 @@ final class GENOME {
         Logs.info("Log initialized");
         Options.initializeOptions();
         Logs.info("Options initialized");
+        Logs.info("Begin");
     }
 
     /**
      * Function call at the end of the program
      */
     private static void finalizeProgram() {
+        Logs.info("End");
         Logs.info("Options finalized");
         Options.finalizeOptions();
         Logs.info("Log finalized");
@@ -27,13 +29,17 @@ final class GENOME {
     }
 
     public static void main(String[] args) {
+        Logs.setListener(System.out::println);
+        MainFrame.getSingleton().addDownloadAction(a -> (new Thread(() -> {
+            try {
+                Activity.genbank();
+            } catch (Exception e) {
+                Logs.exception(e);
+            }
+        })).start());
+
         initializeProgram();
         Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
-
-        // Write main under this comment
-        Logs.info("Begin");
-        new MainFrame();
-        Logs.info("End");
     }
 
 }

@@ -2,6 +2,7 @@ package Data;
 
 import Exception.AddException;
 import Exception.InvalidStateException;
+import Utils.Options;
 
 import java.util.ArrayList;
 
@@ -10,7 +11,7 @@ public final class Group extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    protected static final String s_SERIALIZATION_PREFIX = "--G_";
+    protected static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getGroupSerializationPrefix();
     /**
      * Array of this Group's SubGroups
      */
@@ -159,17 +160,16 @@ public final class Group extends IDataBase {
      * Add a SubGroup to this Group
      *
      * @param _subGroup, the Subgroup to insert
-     * @return the insertion success
      * @throws AddException if _subGroup are already added
      */
-    protected boolean addSubGroup(SubGroup _subGroup) throws AddException {
+    protected void addSubGroup(SubGroup _subGroup) throws AddException {
         if (super.getState() == State.STARTED) {
             if (super.contains(m_subGroups, _subGroup))
                 throw new AddException("SubGroup already added : " + _subGroup.getName());
             _subGroup.setIndex(m_subGroups.size());
             _subGroup.setParent(this);
-            return m_subGroups.add(_subGroup);
-        } else return false;
+            m_subGroups.add(_subGroup);
+        }
     }
 
     /**

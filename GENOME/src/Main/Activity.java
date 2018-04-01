@@ -7,7 +7,7 @@ import Download.GenbankOrganisms;
 import Download.OrganismParser;
 import Excel.ExcelWriter;
 import Exception.*;
-import GUI.DBTree;
+import GUI.MainFrame;
 import Json.JSONException;
 import Manager.ITask;
 import Manager.ThreadManager;
@@ -26,7 +26,7 @@ public class Activity {
             try {
                 ExcelWriter.writeKingdom(_kingdom);
                 _kingdom.save();
-                DBTree.getTree().update(_kingdom.getSavedName() + Options.getSerializeExtension());
+                MainFrame.getSingleton().updateTree(_kingdom.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel kingdom file : " + _kingdom.getName());
                 Logs.exception(e);
@@ -42,7 +42,7 @@ public class Activity {
             try {
                 ExcelWriter.writeGroup(_group);
                 _group.save();
-                DBTree.getTree().update(_group.getSavedName() + Options.getSerializeExtension());
+                MainFrame.getSingleton().updateTree(_group.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel group file : " + _group.getName());
                 Logs.exception(e);
@@ -58,7 +58,7 @@ public class Activity {
             try {
                 ExcelWriter.writeSubGroup(_subGroup);
                 _subGroup.save();
-                DBTree.getTree().update(_subGroup.getSavedName() + Options.getSerializeExtension());
+                MainFrame.getSingleton().updateTree(_subGroup.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel subGroup file : " + _subGroup.getName());
                 Logs.exception(e);
@@ -78,7 +78,7 @@ public class Activity {
                 try {
                     ExcelWriter.writeDatabase(_dataBase);
                     _dataBase.save();
-                    DBTree.getTree().update(_dataBase.getSavedName() + Options.getSerializeExtension());
+                    MainFrame.getSingleton().updateTree(_dataBase.getSavedName() + Options.getSerializeExtension());
                 } catch (IOException e) {
                     Logs.warning("Unable to write excel database file : " + _dataBase.getName());
                     Logs.exception(e);
@@ -99,7 +99,7 @@ public class Activity {
             currentSubGroup.start();
 
             int idx = 0;
-            while (idx <= 50 && go.hasNext()) {
+            while (idx < 50 && go.hasNext()) {
                 final OrganismParser organismParser = go.getNext();
                 try {
                     organismParser.parse();
@@ -136,7 +136,7 @@ public class Activity {
                     try {
                         ExcelWriter.writeOrganism(_organism);
                         _organism.save();
-                        DBTree.getTree().update(_organism.getSavedName() + Options.getSerializeExtension());
+                        MainFrame.getSingleton().updateTree(_organism.getSavedName() + Options.getSerializeExtension());
                     } catch (IOException e) {
                         Logs.warning("Unable to write excel file : " + _organism.getName());
                         Logs.exception(e);
