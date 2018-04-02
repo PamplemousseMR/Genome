@@ -151,17 +151,17 @@ public class DBTree extends JTree {
         }
     }
 
-	private void swagTree() {
-		setOpaque(false);
-		 DefaultTreeCellRenderer renderer =
-	                (DefaultTreeCellRenderer) this.getCellRenderer();
-	        renderer.setTextSelectionColor(Color.WHITE);
-	        renderer.setBackgroundSelectionColor(MainFrame.s_BLUEGRAY);
-	        renderer.setBackgroundNonSelectionColor(MainFrame.s_LIGHTGRAY);
-	        renderer.setTextNonSelectionColor(Color.WHITE);
-	        renderer.setBorderSelectionColor(Color.BLACK);
-	        renderer.setLeafIcon(null); //nothing is nice
-	}
+    private void swagTree() {
+        setOpaque(false);
+        DefaultTreeCellRenderer renderer =
+                (DefaultTreeCellRenderer) this.getCellRenderer();
+        renderer.setTextSelectionColor(Color.WHITE);
+        renderer.setBackgroundSelectionColor(MainFrame.s_BLUEGRAY);
+        renderer.setBackgroundNonSelectionColor(MainFrame.s_LIGHTGRAY);
+        renderer.setTextNonSelectionColor(Color.WHITE);
+        renderer.setBorderSelectionColor(Color.BLACK);
+        renderer.setLeafIcon(null); //nothing is nice
+    }
 
     private DefaultMutableTreeNode loadTree() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");

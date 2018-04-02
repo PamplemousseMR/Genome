@@ -30,13 +30,13 @@ final class GENOME {
 
     public static void main(String[] args) {
         Logs.setListener(System.out::println);
-        MainFrame.getSingleton().addDownloadAction(a -> (new Thread(() -> {
+        MainFrame.getSingleton().addDownloadAction(event -> {
             try {
                 Activity.genbank();
             } catch (Exception e) {
                 Logs.exception(e);
             }
-        })).start());
+        });
 
         initializeProgram();
         Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
