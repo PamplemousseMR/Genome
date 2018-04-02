@@ -4,8 +4,10 @@ import Utils.Options;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.DefaultTreeCellRenderer;
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.awt.*;
 import java.io.File;
 
 public class DBTree extends JTree {
@@ -14,6 +16,7 @@ public class DBTree extends JTree {
 
     protected DBTree() {
         super();
+        swagTree();
         final DefaultMutableTreeNode root = loadTree();
         final DefaultTreeModel model = new DefaultTreeModel(root);
         m_treeModel = model;
@@ -147,6 +150,18 @@ public class DBTree extends JTree {
             }
         }
     }
+
+	private void swagTree() {
+		setOpaque(false);
+		 DefaultTreeCellRenderer renderer =
+	                (DefaultTreeCellRenderer) this.getCellRenderer();
+	        renderer.setTextSelectionColor(Color.WHITE);
+	        renderer.setBackgroundSelectionColor(MainFrame.s_BLUEGRAY);
+	        renderer.setBackgroundNonSelectionColor(MainFrame.s_LIGHTGRAY);
+	        renderer.setTextNonSelectionColor(Color.WHITE);
+	        renderer.setBorderSelectionColor(Color.BLACK);
+	        renderer.setLeafIcon(null); //nothing is nice
+	}
 
     private DefaultMutableTreeNode loadTree() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
