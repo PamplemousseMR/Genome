@@ -4,6 +4,8 @@ import Utils.Logs;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
+
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -28,6 +30,7 @@ public final class MainFrame extends ResizibleFrame {
     private JSplitPane m_splitPanel_main;
     private JSplitPane m_splitPanel_right;
     private JScrollPane m_treeContainer;
+    private JScrollPane m_logContainer;
     private JPanel m_north;
     private JPanel m_center;
     private JPanel m_fileTreePanel;
@@ -47,6 +50,7 @@ public final class MainFrame extends ResizibleFrame {
     private JLabel m_treeTitle;
     private JLabel m_footerTitle;
 
+    private JTextArea m_logConsole;
     private JButton m_closeB;
     private JButton m_maximizeB;
     private JButton m_minimizeB;
@@ -145,15 +149,32 @@ public final class MainFrame extends ResizibleFrame {
         m_logsTitlePanel = new JPanel();
         m_footerTitlePanel = new JPanel();
 
+        m_logConsole=new JTextArea("Démarrage des logs: ",1,8 ); //1 column, 8 rows
+        m_logConsole.setEditable(false);
+
+        /** test débile a virer **/
+        for (int i =0; i<10 ; i++)
+        {
+        m_logConsole.append("\n Ligne :" +i);  
+        }
+        try {
+			m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(4));
+		} catch (BadLocationException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+        /** test débile a virer **/
+        
         m_dbTree = new DBTree();
         m_treeContainer = new JScrollPane(m_dbTree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-
+        m_logContainer = new JScrollPane(m_logConsole, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        
         m_splitPanel_right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_informationsPanel, m_logsPanel);
         m_splitPanel_main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_fileTreePanel, m_splitPanel_right);
 
         m_mainTitle = new JLabel("   Projet de Bio-Informatique");
         m_secondTitle = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
-        m_informationTitle = new JLabel("Informations");
+        m_informationTitle = new JLabel("I	nformations");
         m_treeTitle = new JLabel("Arborescence des fichiers");
         m_logsTitle = new JLabel("Logs");
         m_footerTitle = new JLabel("Application cree par -- Adele M. -- Arthur D. -- Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.");
@@ -208,6 +229,7 @@ public final class MainFrame extends ResizibleFrame {
 
         m_logsTitlePanel.add(m_logsTitle, BorderLayout.CENTER);
         m_logsPanel.add(m_logsTitlePanel, BorderLayout.NORTH);
+        m_logsPanel.add(m_logContainer, BorderLayout.CENTER);
 
         m_informationTitlePanel.add(m_informationTitle, BorderLayout.CENTER);
         m_informationsPanel.add(m_informationTitlePanel, BorderLayout.NORTH);
@@ -239,10 +261,18 @@ public final class MainFrame extends ResizibleFrame {
         m_treeContainer.getVerticalScrollBar().setPreferredSize(new Dimension(15, 0));
         m_treeContainer.getVerticalScrollBar().setAutoscrolls(true);
         m_treeContainer.getVerticalScrollBar().setBackground(s_BLUEGRAY);
-
+        
+        m_logContainer.setOpaque(false);
+        m_logContainer.getViewport().setBackground(s_LIGHTGRAY);
+        m_logContainer.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        m_logContainer.getVerticalScrollBar().setPreferredSize(new Dimension(15, 0));
+        m_logContainer.getVerticalScrollBar().setAutoscrolls(true);
+        m_logContainer.getVerticalScrollBar().setBackground(s_BLUEGRAY);
+        
         m_informationsPanel.setBackground(s_LIGHTGRAY);
         m_logsPanel.setBackground(s_LIGHTGRAY);
-
+        m_logConsole.setOpaque(false);
+        
         m_footerTitlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         m_footerTitlePanel.setBackground(new Color(51, 54, 63));
 
@@ -256,6 +286,8 @@ public final class MainFrame extends ResizibleFrame {
         m_secondTitle.setForeground(Color.LIGHT_GRAY);
         m_secondTitle.setBorder(BorderFactory.createEmptyBorder(0, 25, 5, 5));
         m_logsTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
+        m_logConsole.setFont(new Font(s_FONT, Font.PLAIN, 18));
+        m_logConsole.setForeground(Color.WHITE);
         m_informationTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
         m_treeTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
         m_logsTitle.setForeground(Color.WHITE);
