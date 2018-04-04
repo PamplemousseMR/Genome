@@ -149,21 +149,10 @@ public final class MainFrame extends ResizibleFrame {
         m_logsTitlePanel = new JPanel();
         m_footerTitlePanel = new JPanel();
 
-        m_logConsole=new JTextArea("Démarrage des logs: ",1,8 ); //1 column, 8 rows
+        m_logConsole=new JTextArea("", 1, 8 ); //1 column, 8 rows
         m_logConsole.setEditable(false);
 
-        /** test débile a virer **/
-        for (int i =0; i<10 ; i++)
-        {
-        m_logConsole.append("\n Ligne :" +i);  
-        }
-        try {
-			m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(4));
-		} catch (BadLocationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-        /** test débile a virer **/
+       
         
         m_dbTree = new DBTree();
         m_treeContainer = new JScrollPane(m_dbTree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
@@ -369,6 +358,21 @@ public final class MainFrame extends ResizibleFrame {
                 setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         });
+    }
+    
+    public void addLogsToConsole(String log)
+    {
+        m_logConsole.append("\nlog");     
+        if (m_logConsole.getLineCount()>8) //print only the last 8 lines
+        {
+	        try {
+				m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(1));
+	        } 
+	        catch (BadLocationException e) 
+	        {
+	        	 Logs.exception(e);
+			}
+        }
     }
 
 }
