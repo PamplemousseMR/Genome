@@ -362,7 +362,7 @@ public final class MainFrame extends ResizibleFrame {
     
     public void addLogsToConsole(String log)
     {
-        m_logConsole.append("\nlog");     
+        m_logConsole.append("\n" + log);     
         if (m_logConsole.getLineCount()>8) //print only the last 8 lines
         {
 	        try {
