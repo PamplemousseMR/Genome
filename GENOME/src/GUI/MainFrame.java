@@ -113,7 +113,7 @@ public final class MainFrame extends ResizibleFrame {
      * @param _log to display
      */
     public void writeLog(String _log) {
-        m_logConsole.append("\n" + _log);
+        m_logConsole.append("\n " + _log);
         if (m_logConsole.getLineCount() > 250) //print only the last 250 lines
         {
             try {
@@ -289,11 +289,11 @@ public final class MainFrame extends ResizibleFrame {
         m_mainTitle.setForeground(Color.WHITE);
         m_secondTitle.setForeground(Color.LIGHT_GRAY);
         m_secondTitle.setBorder(BorderFactory.createEmptyBorder(0, 25, 5, 5));
-        m_logsTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
-        m_logConsole.setFont(new Font(s_FONT, Font.PLAIN, 18));
+        m_logsTitle.setFont(new Font(s_FONT, Font.PLAIN, 20));
+        m_logConsole.setFont(new Font(s_FONT, Font.PLAIN, 14));
         m_logConsole.setForeground(Color.WHITE);
-        m_informationTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
-        m_treeTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
+        m_informationTitle.setFont(new Font(s_FONT, Font.PLAIN, 20));
+        m_treeTitle.setFont(new Font(s_FONT, Font.PLAIN, 20));
         m_logsTitle.setForeground(Color.WHITE);
         m_informationTitle.setForeground(Color.WHITE);
         m_treeTitle.setForeground(Color.WHITE);
@@ -303,7 +303,9 @@ public final class MainFrame extends ResizibleFrame {
 
         m_launchDL.setBackground(Color.LIGHT_GRAY);
         m_launchDL.setForeground(s_LIGHTGRAY);  // Light gray
+        m_launchDL.setFocusPainted(false);
         m_launchDL.setBorderPainted(false);
+        m_launchDL.setToolTipText("Lancer le telechargement des fichiers");
 
         m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));
 

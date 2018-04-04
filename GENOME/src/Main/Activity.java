@@ -97,8 +97,7 @@ public class Activity {
             });
             currentSubGroup.start();
 
-            int idx = 0;
-            while (idx < 50 && go.hasNext()) {
+            while (go.hasNext()) {
                 final OrganismParser organismParser = go.getNext();
                 try {
                     organismParser.parse();
@@ -119,7 +118,7 @@ public class Activity {
                     Logs.info("No replicon in : " + organismName);
                     continue;
                 }
-                idx++;
+
                 if (organismParser.getKingdom().compareTo(currentKingdom.getName()) != 0) {
                     currentKingdom = switchKingdom(currentKingdom, organismParser.getKingdom(), currentDataBase, _activityListener);
                     currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom, _activityListener);
