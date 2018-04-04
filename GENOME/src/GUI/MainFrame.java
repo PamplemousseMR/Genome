@@ -5,7 +5,6 @@ import Utils.Logs;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import javax.swing.text.BadLocationException;
-
 import java.awt.*;
 import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
@@ -109,6 +108,23 @@ public final class MainFrame extends ResizibleFrame {
     }
 
     /**
+     * Display log
+     *
+     * @param _log to display
+     */
+    public void writeLog(String _log) {
+        m_logConsole.append("\n" + _log);
+        if (m_logConsole.getLineCount() > 8) //print only the last 8 lines
+        {
+            try {
+                m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(1));
+            } catch (BadLocationException e) {
+                Logs.exception(e);
+            }
+        }
+    }
+
+    /**
      * Basic frame inits
      */
     private void initFrame() {
@@ -149,15 +165,14 @@ public final class MainFrame extends ResizibleFrame {
         m_logsTitlePanel = new JPanel();
         m_footerTitlePanel = new JPanel();
 
-        m_logConsole=new JTextArea("", 1, 8 ); //1 column, 8 rows
+        m_logConsole = new JTextArea("", 1, 8); //1 column, 8 rows
         m_logConsole.setEditable(false);
 
-       
-        
+
         m_dbTree = new DBTree();
         m_treeContainer = new JScrollPane(m_dbTree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         m_logContainer = new JScrollPane(m_logConsole, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-        
+
         m_splitPanel_right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_informationsPanel, m_logsPanel);
         m_splitPanel_main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_fileTreePanel, m_splitPanel_right);
 
@@ -250,18 +265,18 @@ public final class MainFrame extends ResizibleFrame {
         m_treeContainer.getVerticalScrollBar().setPreferredSize(new Dimension(15, 0));
         m_treeContainer.getVerticalScrollBar().setAutoscrolls(true);
         m_treeContainer.getVerticalScrollBar().setBackground(s_BLUEGRAY);
-        
+
         m_logContainer.setOpaque(false);
         m_logContainer.getViewport().setBackground(s_LIGHTGRAY);
         m_logContainer.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
         m_logContainer.getVerticalScrollBar().setPreferredSize(new Dimension(15, 0));
         m_logContainer.getVerticalScrollBar().setAutoscrolls(true);
         m_logContainer.getVerticalScrollBar().setBackground(s_BLUEGRAY);
-        
+
         m_informationsPanel.setBackground(s_LIGHTGRAY);
         m_logsPanel.setBackground(s_LIGHTGRAY);
         m_logConsole.setOpaque(false);
-        
+
         m_footerTitlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
         m_footerTitlePanel.setBackground(new Color(51, 54, 63));
 
@@ -358,21 +373,6 @@ public final class MainFrame extends ResizibleFrame {
                 setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         });
-    }
-    
-    public void addLogsToConsole(String log)
-    {
-        m_logConsole.append("\n" + log);     
-        if (m_logConsole.getLineCount()>8) //print only the last 8 lines
-        {
-	        try {
-				m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(1));
-	        } 
-	        catch (BadLocationException e) 
-	        {
-	        	 Logs.exception(e);
-			}
-        }
     }
 
 }

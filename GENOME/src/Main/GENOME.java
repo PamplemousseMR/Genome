@@ -29,10 +29,10 @@ final class GENOME {
     }
 
     public static void main(String[] args) {
-        Logs.setListener(System.out::println);
+        Logs.setListener(_message -> MainFrame.getSingleton().writeLog(_message));
         MainFrame.getSingleton().addDownloadAction(event -> {
             try {
-                Activity.genbank();
+                Activity.genbank(_message -> MainFrame.getSingleton().updateTree(_message));
             } catch (Exception e) {
                 Logs.exception(e);
             }
