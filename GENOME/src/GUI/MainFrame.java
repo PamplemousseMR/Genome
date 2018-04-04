@@ -114,7 +114,7 @@ public final class MainFrame extends ResizibleFrame {
      */
     public void writeLog(String _log) {
         m_logConsole.append("\n" + _log);
-        if (m_logConsole.getLineCount() > 8) //print only the last 8 lines
+        if (m_logConsole.getLineCount() > 250) //print only the last 250 lines
         {
             try {
                 m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(1));
@@ -165,7 +165,7 @@ public final class MainFrame extends ResizibleFrame {
         m_logsTitlePanel = new JPanel();
         m_footerTitlePanel = new JPanel();
 
-        m_logConsole = new JTextArea("", 1, 8); //1 column, 8 rows
+        m_logConsole = new JTextArea("", 1, 250); //1 column, 250 rows
         m_logConsole.setEditable(false);
 
 
