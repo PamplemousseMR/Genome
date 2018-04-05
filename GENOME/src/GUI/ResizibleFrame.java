@@ -26,37 +26,21 @@ public class ResizibleFrame extends JFrame implements MouseMotionListener, Mouse
     /**
      * Screen environment
      **/
-    private final Rectangle m_screen;
     private final Point m_initialLocation;
     private int m_minWidth;
     private int m_minHeight;
     private Point m_start_drag;
     private Point m_start_loc;
 
-    /**
-     * Previous localization
-     **/
-    private Point m_precedent_loc;
-    /**
-     * Previous width
-     **/
-    private int m_precedent_width;
-    /**
-     * Previous height
-     **/
-    private int m_precedent_height;
-
-
     protected ResizibleFrame(Dimension initialDimension, Point initialLocation, String frameName) {
         super(frameName);
         m_initialLocation = initialLocation;
-        m_screen = GraphicsEnvironment.getLocalGraphicsEnvironment().getMaximumWindowBounds();
         m_minWidth = (int) initialDimension.getWidth();
         m_minHeight = (int) initialDimension.getHeight();
         Init();
     }
 
-    protected static Point getScreenLocation(MouseEvent e, JFrame frame) {
+    private static Point getScreenLocation(MouseEvent e, JFrame frame) {
         final Point cursor = e.getPoint();
         final Point view_location = frame.getLocationOnScreen();
         return new Point((int) (view_location.getX() + cursor.getX()),
@@ -112,11 +96,6 @@ public class ResizibleFrame extends JFrame implements MouseMotionListener, Mouse
     public void mousePressed(MouseEvent e) {
         m_start_drag = getScreenLocation(e, this);
         m_start_loc = getLocation();
-        if (getWidth() < m_screen.getWidth() || getHeight() < m_screen.getHeight()) {
-            m_precedent_loc = getLocation();
-            m_precedent_width = getWidth();
-            m_precedent_height = getHeight();
-        }
     }
 
     @Override
@@ -222,4 +201,4 @@ public class ResizibleFrame extends JFrame implements MouseMotionListener, Mouse
     }
 
 }
-     
+	 

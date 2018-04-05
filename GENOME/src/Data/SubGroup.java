@@ -2,6 +2,7 @@ package Data;
 
 import Exception.AddException;
 import Exception.InvalidStateException;
+import Utils.Options;
 
 import java.util.ArrayList;
 
@@ -10,7 +11,7 @@ public final class SubGroup extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_PREFIX = "--SG_";
+    protected static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getSubGroupSerializationPrefix();
     /**
      * Array of this SubGroup's Organisms
      */
@@ -140,7 +141,7 @@ public final class SubGroup extends IDataBase {
      * @return the main part of the save path_name
      */
     @Override
-    protected String getSavedName() {
+    public String getSavedName() {
         return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
     }
 
@@ -168,17 +169,16 @@ public final class SubGroup extends IDataBase {
      * Add an Organism to this SubGroup
      *
      * @param _organism, the Organism to insert
-     * @return the insertion success
      * @throws AddException if _organism are already added
      */
-    protected boolean addOrganism(Organism _organism) throws AddException {
+    protected void addOrganism(Organism _organism) throws AddException {
         if (super.getState() == State.STARTED) {
             if (super.contains(m_organisms, _organism))
                 throw new AddException("Organism already added : " + _organism.getName());
             _organism.setIndex(m_organisms.size());
             _organism.setParent(this);
-            return m_organisms.add(_organism);
-        } else return false;
+            m_organisms.add(_organism);
+        }
     }
 
     /**

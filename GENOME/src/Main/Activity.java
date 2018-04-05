@@ -19,12 +19,13 @@ import java.util.Map;
 
 public class Activity {
 
-    private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent) throws InvalidStateException, AddException {
+    private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent, ActivityListener _activityListener) throws InvalidStateException, AddException {
         _currentKingdom.stop();
         _currentKingdom = Kingdom.load(_newKingdom, _parent, _kingdom -> {
             try {
                 ExcelWriter.writeKingdom(_kingdom);
                 _kingdom.save();
+                _activityListener.ActivityEvent(_kingdom.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel kingdom file : " + _kingdom.getName());
                 Logs.exception(e);
@@ -34,12 +35,13 @@ public class Activity {
         return _currentKingdom;
     }
 
-    private static Group switchGroup(Group _currentGroup, String _newGroup, Kingdom _parent) throws InvalidStateException, AddException {
+    private static Group switchGroup(Group _currentGroup, String _newGroup, Kingdom _parent, ActivityListener _activityListener) throws InvalidStateException, AddException {
         _currentGroup.stop();
         _currentGroup = Group.load(_newGroup, _parent, _group -> {
             try {
                 ExcelWriter.writeGroup(_group);
                 _group.save();
+                _activityListener.ActivityEvent(_group.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel group file : " + _group.getName());
                 Logs.exception(e);
@@ -49,12 +51,13 @@ public class Activity {
         return _currentGroup;
     }
 
-    private static SubGroup switchSubGroup(SubGroup _currentSubGroup, String _newSubGroup, Group _parent) throws InvalidStateException, AddException {
+    private static SubGroup switchSubGroup(SubGroup _currentSubGroup, String _newSubGroup, Group _parent, ActivityListener _activityListener) throws InvalidStateException, AddException {
         _currentSubGroup.stop();
         _currentSubGroup = SubGroup.load(_newSubGroup, _parent, _subGroup -> {
             try {
                 ExcelWriter.writeSubGroup(_subGroup);
                 _subGroup.save();
+                _activityListener.ActivityEvent(_subGroup.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel subGroup file : " + _subGroup.getName());
                 Logs.exception(e);
@@ -64,7 +67,7 @@ public class Activity {
         return _currentSubGroup;
     }
 
-    public static void genbank() throws InvalidStateException, AddException, MissException {
+    public static void genbank(ActivityListener _activityListener) throws InvalidStateException, AddException, MissException {
         final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
         try {
             final GenbankOrganisms go = new GenbankOrganisms();
@@ -74,6 +77,7 @@ public class Activity {
                 try {
                     ExcelWriter.writeDatabase(_dataBase);
                     _dataBase.save();
+                    _activityListener.ActivityEvent(_dataBase.getSavedName() + Options.getSerializeExtension());
                 } catch (IOException e) {
                     Logs.warning("Unable to write excel database file : " + _dataBase.getName());
                     Logs.exception(e);
@@ -116,20 +120,21 @@ public class Activity {
                 }
 
                 if (organismParser.getKingdom().compareTo(currentKingdom.getName()) != 0) {
-                    currentKingdom = switchKingdom(currentKingdom, organismParser.getKingdom(), currentDataBase);
-                    currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom);
-                    currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
+                    currentKingdom = switchKingdom(currentKingdom, organismParser.getKingdom(), currentDataBase, _activityListener);
+                    currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom, _activityListener);
+                    currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup, _activityListener);
                 } else if (organismParser.getGroup().compareTo(currentGroup.getName()) != 0) {
-                    currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom);
-                    currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
+                    currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom, _activityListener);
+                    currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup, _activityListener);
                 } else if (organismParser.getSubGroup().compareTo(currentSubGroup.getName()) != 0) {
-                    currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
+                    currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup, _activityListener);
                 }
 
                 Organism organism = Organism.load(organismName, organismParser.getId(), organismParser.getVersion(), currentSubGroup, true, _organism -> {
                     try {
                         ExcelWriter.writeOrganism(_organism);
                         _organism.save();
+                        _activityListener.ActivityEvent(_organism.getSavedName() + Options.getSerializeExtension());
                     } catch (IOException e) {
                         Logs.warning("Unable to write excel file : " + _organism.getName());
                         Logs.exception(e);
@@ -209,5 +214,9 @@ public class Activity {
         } finally {
             threadManager.finalizeThreadManager();
         }
+    }
+
+    public interface ActivityListener {
+        void ActivityEvent(String _message);
     }
 }

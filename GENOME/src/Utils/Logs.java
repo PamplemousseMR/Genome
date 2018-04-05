@@ -15,7 +15,8 @@ public final class Logs {
     /**
      * Logs listener
      */
-    private static LogsListener s_logsListener;
+    private static LogsListener s_logsListener = _message -> {
+    };
 
     /**
      * Open the log file in order to write in it
@@ -28,8 +29,6 @@ public final class Logs {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-            s_logsListener = _message -> {
-            };
         }
     }
 
