@@ -99,10 +99,6 @@ public class ExcelWriter {
     private static void createGeneralInfoSheet(XSSFSheet _general_info_sheet, IDataBase _data) {
         _general_info_sheet.createRow(0).createCell(0).setCellValue("Information");
 
-        _general_info_sheet.setColumnWidth(0, 7340);
-        _general_info_sheet.autoSizeColumn(1);
-        _general_info_sheet.setColumnWidth(4450, 2240);
-
         XSSFRow r;
 
         r = _general_info_sheet.createRow(2);
@@ -141,7 +137,6 @@ public class ExcelWriter {
         }
 
         int genomeInfoRowNumber = 3;
-
         for (Map.Entry<Statistics.Type, Long> entry : _data.getGenomeNumber().entrySet()) {
             XSSFRow row = _general_info_sheet.getRow(genomeInfoRowNumber);
             if (row == null) {
@@ -152,6 +147,9 @@ public class ExcelWriter {
             genomeInfoRowNumber++;
         }
 
+        _general_info_sheet.setColumnWidth(0, 7340);
+        _general_info_sheet.autoSizeColumn(1);
+        _general_info_sheet.setColumnWidth(5, 4450);
     }
 
     private static void createStatisticsSheet(XSSFWorkbook _workbook, IDataBase _data) {
@@ -174,24 +172,34 @@ public class ExcelWriter {
         XSSFRow r = _sheet.createRow(0);
         XSSFCell c = r.createCell(0);
         c.setCellValue("Trinucleotide");
+        _sheet.setColumnWidth(0,2600);
         c = r.createCell(1);
         c.setCellValue(Statistics.StatLong.PHASE0.toString());
+        _sheet.setColumnWidth(1,3000);
         c = r.createCell(2);
         c.setCellValue(Statistics.StatFloat.FREQ0.toString());
+        _sheet.setColumnWidth(2,3000);
         c = r.createCell(3);
         c.setCellValue(Statistics.StatLong.PHASE1.toString());
+        _sheet.setColumnWidth(3,3000);
         c = r.createCell(4);
         c.setCellValue(Statistics.StatFloat.FREQ1.toString());
+        _sheet.setColumnWidth(4,3000);
         c = r.createCell(5);
         c.setCellValue(Statistics.StatLong.PHASE2.toString());
+        _sheet.setColumnWidth(5,3000);
         c = r.createCell(6);
         c.setCellValue(Statistics.StatFloat.FREQ2.toString());
+        _sheet.setColumnWidth(6,3000);
         c = r.createCell(7);
         c.setCellValue(Statistics.StatLong.PREF0.toString());
+        _sheet.setColumnWidth(7,3000);
         c = r.createCell(8);
         c.setCellValue(Statistics.StatLong.PREF1.toString());
+        _sheet.setColumnWidth(8,3000);
         c = r.createCell(9);
         c.setCellValue(Statistics.StatLong.PREF2.toString());
+        _sheet.setColumnWidth(9,3000);
 
     }
 
