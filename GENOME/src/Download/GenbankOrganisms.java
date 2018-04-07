@@ -193,7 +193,7 @@ public final class GenbankOrganisms extends IDownloader {
             try {
                 OrganismParser currentOrg = new OrganismParser((JSONObject) org);
                 OrganismParser last = null;
-                if(m_dataQueue.size() > 0) {
+                if (m_dataQueue.size() > 0) {
                     m_dataQueue.getLast();
                 }
                 if (last != null && currentOrg.getName().compareTo(last.getName()) == 0) {

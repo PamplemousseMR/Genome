@@ -19,6 +19,10 @@ import java.util.Map;
 
 public class Activity {
 
+    private static Boolean s_stop = false;
+    private static Boolean s_run = false;
+    private static Thread s_activityThread = null;
+
     private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent) throws InvalidStateException, AddException {
         _currentKingdom.stop();
         _currentKingdom = Kingdom.load(_newKingdom, _parent, _kingdom -> {
@@ -67,144 +71,178 @@ public class Activity {
         return _currentSubGroup;
     }
 
-    public static void genbank() throws InvalidStateException, AddException, MissException {
-        final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
-        try {
-            final GenbankOrganisms go = new GenbankOrganisms();
-            go.downloadOrganisms();
-
-            final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
+    public static void genbank() {
+        boolean run = true;
+        synchronized (s_run) {
+            if (!s_run) {
+                run = false;
+                s_run = true;
+            }
+        }
+        if (!run) {
+            s_activityThread = new Thread(() -> {
+                final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
-                    ExcelWriter.writeDatabase(_dataBase);
-                    _dataBase.save();
-                    MainFrame.getSingleton().updateTree(_dataBase.getSavedName() + Options.getSerializeExtension());
-                } catch (IOException e) {
-                    Logs.warning("Unable to write excel database file : " + _dataBase.getName());
-                    Logs.exception(e);
-                }
-            });
-            currentDataBase.start();
+                    final GenbankOrganisms go = new GenbankOrganisms();
+                    go.downloadOrganisms();
 
-            Kingdom currentKingdom = Kingdom.load("", currentDataBase, _kingdom -> {
-            });
-            currentKingdom.start();
-
-            Group currentGroup = Group.load("", currentKingdom, _group -> {
-            });
-            currentGroup.start();
-
-            SubGroup currentSubGroup = SubGroup.load("", currentGroup, _subGroup -> {
-            });
-            currentSubGroup.start();
-
-            while (go.hasNext()) {
-                final OrganismParser organismParser = go.getNext();
-                final String organismName = organismParser.getName() + "-" + organismParser.getId();
-
-                final Date dateModif = Organism.loadDate(Options.getGenbankName(), organismParser.getKingdom(), organismParser.getGroup(), organismParser.getSubGroup(), organismName);
-                if (dateModif != null && organismParser.getModificationDate().compareTo(dateModif) <= 0) {
-                    Logs.info("Organism " + organismName + " already up to date");
-                    continue;
-                }
-                if (organismParser.getReplicons().size() == 0) {
-                    Logs.info("No replicon in : " + organismName);
-                    continue;
-                }
-
-                if (organismParser.getKingdom().compareTo(currentKingdom.getName()) != 0) {
-                    currentKingdom = switchKingdom(currentKingdom, organismParser.getKingdom(), currentDataBase);
-                    currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom);
-                    currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
-                } else if (organismParser.getGroup().compareTo(currentGroup.getName()) != 0) {
-                    currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom);
-                    currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
-                } else if (organismParser.getSubGroup().compareTo(currentSubGroup.getName()) != 0) {
-                    currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
-                }
-
-                Organism organism = Organism.load(organismName, organismParser.getId(), organismParser.getVersion(), currentSubGroup, true, _organism -> {
-                    try {
-                        ExcelWriter.writeOrganism(_organism);
-                        _organism.save();
-                        MainFrame.getSingleton().updateTree(_organism.getSavedName() + Options.getSerializeExtension());
-                    } catch (IOException e) {
-                        Logs.warning("Unable to write excel file : " + _organism.getName());
-                        Logs.exception(e);
-                    }
-                });
-
-                // Thread
-                threadManager.pushTask(new ITask(organismName) {
-                    @Override
-                    public void run() {
+                    final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
                         try {
-                            try {
-                                organism.start();
-                            } catch (InvalidStateException e) {
-                                Logs.warning("Unable to start : " + organism.getName());
-                                Logs.exception(e);
-                                return;
-                            }
-                            for (Map.Entry<String, String> ent : organismParser.getReplicons()) {
-                                final GenbankCDS cdsDownloader = new GenbankCDS(ent.getKey());
-                                try {
-                                    cdsDownloader.download();
-                                } catch (HTTPException | IOException | OutOfMemoryException e) {
-                                    Logs.warning("Unable to download : " + ent.getKey());
-                                    Logs.exception(e);
-                                    continue;
-                                }
-                                final CDSParser cdsParser = new CDSParser(cdsDownloader.getRefseqData(), ent.getKey());
-                                try {
-                                    cdsParser.parse();
-                                } catch (OperatorException e) {
-                                    Logs.warning("Unable to parse : " + ent.getKey());
-                                    Logs.exception(e);
-                                    continue;
-                                }
+                            ExcelWriter.writeDatabase(_dataBase);
+                            _dataBase.save();
+                            MainFrame.getSingleton().updateTree(_dataBase.getSavedName() + Options.getSerializeExtension());
+                        } catch (IOException e) {
+                            Logs.warning("Unable to write excel database file : " + _dataBase.getName());
+                            Logs.exception(e);
+                        }
+                    });
+                    currentDataBase.start();
 
-                                final Replicon replicon = new Replicon(Statistics.Type.isTypeOf(ent.getValue()), ent.getKey(), cdsParser.getTotal(), cdsParser.getValid(), cdsParser.getSequences());
+                    Kingdom currentKingdom = Kingdom.load("", currentDataBase, _kingdom -> {
+                    });
+                    currentKingdom.start();
+
+                    Group currentGroup = Group.load("", currentKingdom, _group -> {
+                    });
+                    currentGroup.start();
+
+                    SubGroup currentSubGroup = SubGroup.load("", currentGroup, _subGroup -> {
+                    });
+                    currentSubGroup.start();
+
+                    boolean stop = false;
+                    while (!stop && go.hasNext()) {
+                        final OrganismParser organismParser = go.getNext();
+                        final String organismName = organismParser.getName() + "-" + organismParser.getId();
+
+                        final Date dateModif = Organism.loadDate(Options.getGenbankName(), organismParser.getKingdom(), organismParser.getGroup(), organismParser.getSubGroup(), organismName);
+                        if (dateModif != null && organismParser.getModificationDate().compareTo(dateModif) <= 0) {
+                            Logs.info("Organism " + organismName + " already up to date");
+                            continue;
+                        }
+                        if (organismParser.getReplicons().size() == 0) {
+                            Logs.info("No replicon in : " + organismName);
+                            continue;
+                        }
+
+                        if (organismParser.getKingdom().compareTo(currentKingdom.getName()) != 0) {
+                            currentKingdom = switchKingdom(currentKingdom, organismParser.getKingdom(), currentDataBase);
+                            currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom);
+                            currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
+                        } else if (organismParser.getGroup().compareTo(currentGroup.getName()) != 0) {
+                            currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom);
+                            currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
+                        } else if (organismParser.getSubGroup().compareTo(currentSubGroup.getName()) != 0) {
+                            currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
+                        }
+
+                        Organism organism = Organism.load(organismName, organismParser.getId(), organismParser.getVersion(), currentSubGroup, true, _organism -> {
+                            try {
+                                ExcelWriter.writeOrganism(_organism);
+                                _organism.save();
+                                MainFrame.getSingleton().updateTree(_organism.getSavedName() + Options.getSerializeExtension());
+                            } catch (IOException e) {
+                                Logs.warning("Unable to write excel file : " + _organism.getName());
+                                Logs.exception(e);
+                            }
+                        });
+
+                        // Thread
+                        threadManager.pushTask(new ITask(organismName) {
+                            @Override
+                            public void run() {
                                 try {
-                                    organism.addReplicon(replicon);
-                                } catch (AddException e) {
-                                    Logs.warning("Unable to add replicon : " + replicon.getName());
-                                    Logs.exception(e);
+                                    try {
+                                        organism.start();
+                                    } catch (InvalidStateException e) {
+                                        Logs.warning("Unable to start : " + organism.getName());
+                                        Logs.exception(e);
+                                        return;
+                                    }
+                                    for (Map.Entry<String, String> ent : organismParser.getReplicons()) {
+                                        final GenbankCDS cdsDownloader = new GenbankCDS(ent.getKey());
+                                        try {
+                                            cdsDownloader.download();
+                                        } catch (HTTPException | IOException | OutOfMemoryException e) {
+                                            Logs.warning("Unable to download : " + ent.getKey());
+                                            Logs.exception(e);
+                                            continue;
+                                        }
+                                        final CDSParser cdsParser = new CDSParser(cdsDownloader.getRefseqData(), ent.getKey());
+                                        try {
+                                            cdsParser.parse();
+                                        } catch (OperatorException e) {
+                                            Logs.warning("Unable to parse : " + ent.getKey());
+                                            Logs.exception(e);
+                                            continue;
+                                        }
+
+                                        final Replicon replicon = new Replicon(Statistics.Type.isTypeOf(ent.getValue()), ent.getKey(), cdsParser.getTotal(), cdsParser.getValid(), cdsParser.getSequences());
+                                        try {
+                                            organism.addReplicon(replicon);
+                                        } catch (AddException e) {
+                                            Logs.warning("Unable to add replicon : " + replicon.getName());
+                                            Logs.exception(e);
+                                        }
+                                    }
+                                } catch (OutOfMemoryError e) {
+                                    Logs.warning("Memory error : " + organism.getName());
+                                    Logs.exception(new Exception(e));
+                                } catch (Throwable e) {
+                                    Logs.warning("Unknow error : " + organism.getName());
+                                    Logs.exception(new Exception(e));
+                                } finally {
+                                    try {
+                                        organism.stop();
+                                    } catch (InvalidStateException e) {
+                                        Logs.warning("Unable to stop : " + organism.getName());
+                                        Logs.exception(e);
+                                    }
+                                    try {
+                                        organism.finish();
+                                    } catch (InvalidStateException e) {
+                                        Logs.warning("Unable to finish : " + organism.getName());
+                                        Logs.exception(e);
+                                    }
                                 }
                             }
-                        } catch (OutOfMemoryError e) {
-                            Logs.warning("Memory error : " + organism.getName());
-                            Logs.exception(new Exception(e));
-                        } catch (Throwable e) {
-                            Logs.warning("Unknow error : " + organism.getName());
-                            Logs.exception(new Exception(e));
-                        } finally {
-                            try {
-                                organism.stop();
-                            } catch (InvalidStateException e) {
-                                Logs.warning("Unable to stop : " + organism.getName());
-                                Logs.exception(e);
-                            }
-                            try {
-                                organism.finish();
-                            } catch (InvalidStateException e) {
-                                Logs.warning("Unable to finish : " + organism.getName());
-                                Logs.exception(e);
-                            }
+                        });
+                        synchronized (s_stop) {
+                            stop = s_stop;
                         }
                     }
-                });
-            }
 
-            currentDataBase.stop();
-            currentKingdom.stop();
-            currentGroup.stop();
-            currentSubGroup.stop();
-        } catch (InvalidStateException | AddException | MissException e) {
-            Logs.warning("Unable to run programme");
-            Logs.exception(e);
-            throw e;
-        } finally {
-            threadManager.finalizeThreadManager();
+                    currentDataBase.stop();
+                    currentKingdom.stop();
+                    currentGroup.stop();
+                    currentSubGroup.stop();
+                } catch (InvalidStateException | AddException | MissException e) {
+                    Logs.warning("Unable to run programme");
+                    Logs.exception(e);
+                } finally {
+                    threadManager.finalizeThreadManager();
+                    synchronized (s_stop) {
+                        s_stop = false;
+                    }
+                    synchronized (s_run) {
+                        s_run = false;
+                    }
+                }
+            });
+            s_activityThread.start();
+        }
+    }
+
+    public static void stop() {
+        synchronized (s_stop) {
+            s_stop = true;
+        }
+        if (s_activityThread != null) {
+            try {
+                s_activityThread.join();
+            } catch (InterruptedException e) {
+                Logs.exception(e);
+            }
         }
     }
 

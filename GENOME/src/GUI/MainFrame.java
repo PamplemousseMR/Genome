@@ -97,14 +97,7 @@ public final class MainFrame extends ResizibleFrame {
      * @param _actionListener the download action
      */
     public void addDownloadAction(ActionListener _actionListener) {
-        m_launchDL.addActionListener(e -> {
-            m_launchDL.setEnabled(false);
-            Thread action = new Thread(() -> {
-                _actionListener.actionPerformed(e);
-                m_launchDL.setEnabled(true);
-            });
-            action.start();
-        });
+        m_launchDL.addActionListener(_actionListener);
     }
 
     /**
@@ -235,6 +228,9 @@ public final class MainFrame extends ResizibleFrame {
         m_logsPanel.add(m_logsTitlePanel, BorderLayout.NORTH);
         m_logsPanel.add(m_logContainer, BorderLayout.CENTER);
 
+        m_footerTitlePanel.add(m_footerTitle, BorderLayout.CENTER);
+        m_footerPanel.add(m_footerTitlePanel, BorderLayout.CENTER);
+
         m_informationTitlePanel.add(m_informationTitle, BorderLayout.CENTER);
         m_informationsPanel.add(m_informationTitlePanel, BorderLayout.NORTH);
     }
@@ -277,7 +273,7 @@ public final class MainFrame extends ResizibleFrame {
         m_logsPanel.setBackground(s_LIGHTGRAY);
         m_logConsole.setOpaque(false);
 
-        m_footerTitlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        m_footerTitlePanel.setBorder(null);
         m_footerTitlePanel.setBackground(new Color(51, 54, 63));
 
         m_fileTreeTitlePanel.setBackground(s_BLUEGRAY);
