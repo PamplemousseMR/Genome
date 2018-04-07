@@ -16,12 +16,20 @@ import Utils.Options;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
 
 public class Activity {
 
+    private static final Lock m_lock = new ReentrantLock();
+    private static final Condition m_cond = m_lock.newCondition();
+    private static final Object s_stopLock = new Object();
+    private static final Object s_runLock = new Object();
     private static Boolean s_stop = false;
     private static Boolean s_run = false;
     private static Thread s_activityThread = null;
+    private static boolean s_wait = false;
 
     private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent) throws InvalidStateException, AddException {
         _currentKingdom.stop();
@@ -73,13 +81,20 @@ public class Activity {
 
     public static void genbank() {
         boolean run = true;
-        synchronized (s_run) {
+        synchronized (s_runLock) {
             if (!s_run) {
                 run = false;
                 s_run = true;
             }
         }
         if (!run) {
+            m_lock.lock();
+            {
+                if (s_wait) {
+                    s_wait = false;
+                }
+            }
+            m_lock.unlock();
             s_activityThread = new Thread(() -> {
                 final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
@@ -207,7 +222,19 @@ public class Activity {
                                 }
                             }
                         });
-                        synchronized (s_stop) {
+                        m_lock.lock();
+                        {
+                            while (s_wait) {
+                                Logs.info("wait...");
+                                try {
+                                    m_cond.await();
+                                } catch (InterruptedException e) {
+                                    Logs.exception(e);
+                                }
+                            }
+                        }
+                        m_lock.unlock();
+                        synchronized (s_stopLock) {
                             stop = s_stop;
                         }
                     }
@@ -221,10 +248,10 @@ public class Activity {
                     Logs.exception(e);
                 } finally {
                     threadManager.finalizeThreadManager();
-                    synchronized (s_stop) {
+                    synchronized (s_stopLock) {
                         s_stop = false;
                     }
-                    synchronized (s_run) {
+                    synchronized (s_runLock) {
                         s_run = false;
                     }
                 }
@@ -234,9 +261,18 @@ public class Activity {
     }
 
     public static void stop() {
-        synchronized (s_stop) {
+        Logs.info("stop requested");
+        synchronized (s_stopLock) {
             s_stop = true;
         }
+        m_lock.lock();
+        {
+            if (s_wait) {
+                s_wait = false;
+                m_cond.signalAll();
+            }
+        }
+        m_lock.unlock();
         if (s_activityThread != null) {
             try {
                 s_activityThread.join();
@@ -244,6 +280,29 @@ public class Activity {
                 Logs.exception(e);
             }
         }
+    }
+
+    public static void pause() {
+        Logs.info("pause requested");
+        m_lock.lock();
+        {
+            if (!s_wait) {
+                s_wait = true;
+            }
+        }
+        m_lock.unlock();
+    }
+
+    public static void resume() {
+        Logs.info("resume requested");
+        m_lock.lock();
+        {
+            if (s_wait) {
+                s_wait = false;
+                m_cond.signalAll();
+            }
+        }
+        m_lock.unlock();
     }
 
 }

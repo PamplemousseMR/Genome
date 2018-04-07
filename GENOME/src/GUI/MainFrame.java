@@ -100,15 +100,18 @@ public final class MainFrame extends ResizibleFrame {
      *
      * @param _actionListener the download action
      */
-    public void addDownloadAction(ActionListener _actionListener) {
+    public void addStartAction(ActionListener _actionListener) {
         m_launchDL.addActionListener(_actionListener);
     }
+
     public void addStopAction(ActionListener _actionListener) {
         m_stop.addActionListener(_actionListener);
     }
+
     public void addPauseAction(ActionListener _actionListener) {
         m_pause.addActionListener(_actionListener);
     }
+
     public void addResumeAction(ActionListener _actionListener) {
         m_resume.addActionListener(_actionListener);
     }
@@ -193,7 +196,7 @@ public final class MainFrame extends ResizibleFrame {
         m_pause = new JButton();
         m_resume = new JButton();
         m_stop = new JButton();
-        
+
         m_closeB = new JButton();
         m_maximizeB = new JButton();
         m_minimizeB = new JButton();
@@ -226,12 +229,12 @@ public final class MainFrame extends ResizibleFrame {
         m_menuPanel.add(m_minimizeB);
         m_menuPanel.add(m_maximizeB);
         m_menuPanel.add(m_closeB);
-        
+
         m_buttonDLPanel.add(m_launchDL);
         m_buttonDLPanel.add(m_pause);
         m_buttonDLPanel.add(m_resume);
         m_buttonDLPanel.add(m_stop);
-        
+
         m_center.add(m_splitPanel_main, BorderLayout.CENTER);
 
         m_north.add(m_menuPanel, BorderLayout.NORTH);
@@ -244,7 +247,7 @@ public final class MainFrame extends ResizibleFrame {
         m_fileTreePanel.add(m_treeContainer, BorderLayout.CENTER);
 
         m_fileTreePanel.add(m_buttonDLPanel, BorderLayout.SOUTH);
-        
+
 
         m_informationTitlePanel.add(m_informationTitle, BorderLayout.CENTER);
         m_informationsPanel.add(m_informationTitlePanel, BorderLayout.NORTH);
@@ -324,16 +327,16 @@ public final class MainFrame extends ResizibleFrame {
 
 
         m_launchDL.setToolTipText("Lancer le telechargement des fichiers");
-        m_pause.setToolTipText("Mettre en pause le téléchargement des fichiers");
-        m_resume.setToolTipText("Reprendre le téléchargement des fichiers");
-        m_stop.setToolTipText("Interrompre le téléchargement des fichiers");
+        m_pause.setToolTipText("Mettre en pause le telechargement des fichiers");
+        m_resume.setToolTipText("Reprendre le telechargement des fichiers");
+        m_stop.setToolTipText("Interrompre le telechargement des fichiers");
 
         m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));
 
         swagMenuButton(m_closeB, "Ressources/close.png");
         swagMenuButton(m_minimizeB, "Ressources/minimize.png");
         swagMenuButton(m_maximizeB, "Ressources/maximize.png");
-        
+
         swagDLButton(m_stop, "Ressources/stop.png");
         swagDLButton(m_pause, "Ressources/pause.png");
         swagDLButton(m_resume, "Ressources/resume.png");
@@ -427,7 +430,7 @@ public final class MainFrame extends ResizibleFrame {
             Logs.exception(e);
         }
     }
-    
+
     /**
      * Add listener on components
      * Manage the action to do when a listener is triggered
