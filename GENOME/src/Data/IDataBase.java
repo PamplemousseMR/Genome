@@ -94,7 +94,7 @@ public class IDataBase implements Serializable {
      * @param _name the name of the file to load
      * @return the IDatabase loaded
      */
-    protected static IDataBase load(String _name) {
+    public static IDataBase load(String _name) {
         final File file = new File(Options.getSerializeDirectory() + File.separator + _name + Options.getSerializeExtension());
         final ObjectInputStream stream;
         if (!file.exists()) {

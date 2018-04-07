@@ -191,8 +191,23 @@ public final class GenbankOrganisms extends IDownloader {
         long currentEnqueue = 0;
         for (Object org : dataChunk) {
             try {
-                enqueueOrganism(new OrganismParser((JSONObject) org));
-                ++currentEnqueue;
+                OrganismParser currentOrg = new OrganismParser((JSONObject) org);
+                OrganismParser last = null;
+                if(m_dataQueue.size() > 0) {
+                    m_dataQueue.getLast();
+                }
+                if (last != null && currentOrg.getName().compareTo(last.getName()) == 0) {
+                    if (currentOrg.getReplicons().size() > last.getReplicons().size()) {
+                        m_dataQueue.removeLast();
+                        enqueueOrganism(currentOrg);
+                        ++currentEnqueue;
+                    }
+                } else {
+                    enqueueOrganism(currentOrg);
+                    ++currentEnqueue;
+                }
+                ++m_enqueued;
+
             } catch (JSONException e) {
                 final String message = "Unable create OrganismParser : " + org.toString();
                 Logs.warning(message);
@@ -287,7 +302,6 @@ public final class GenbankOrganisms extends IDownloader {
      */
     private void enqueueOrganism(OrganismParser _organism) {
         m_dataQueue.add(_organism);
-        ++m_enqueued;
     }
 
     /**

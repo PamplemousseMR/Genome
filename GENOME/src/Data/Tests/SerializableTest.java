@@ -77,8 +77,7 @@ class SerializableTest {
         final int nb = 2, nbRep = 200;
         DataBase db = DataBase.load("GENBANK", _dataBase -> {
             _dataBase.save();
-            DataBase loaded = DataBase.load(_dataBase.getName(), _arg -> {
-            });
+            IDataBase loaded = IDataBase.load(_dataBase.getSavedName());
             myAssertEquals(_dataBase, loaded);
         });
         db.start();
@@ -86,13 +85,7 @@ class SerializableTest {
         for (int k = 0; k < nb; k++) {
             Kingdom ki = Kingdom.load("KNG" + k, db, _kingdom -> {
                 _kingdom.save();
-                Kingdom loaded = null;
-                try {
-                    loaded = Kingdom.load(_kingdom.getName(), db, _arg -> {
-                    });
-                } catch (AddException | InvalidStateException e) {
-                    e.printStackTrace();
-                }
+                IDataBase loaded = IDataBase.load(_kingdom.getSavedName());
                 myAssertEquals(_kingdom, loaded);
             });
             ki.start();
@@ -100,13 +93,7 @@ class SerializableTest {
             for (int g = 0; g < nb; g++) {
                 Group gr = Group.load("GRP" + g, ki, _group -> {
                     _group.save();
-                    Group loaded = null;
-                    try {
-                        loaded = Group.load(_group.getName(), ki, _arg -> {
-                        });
-                    } catch (AddException | InvalidStateException e) {
-                        e.printStackTrace();
-                    }
+                    IDataBase loaded = IDataBase.load(_group.getSavedName());
                     myAssertEquals(_group, loaded);
                 });
                 gr.start();
@@ -114,56 +101,15 @@ class SerializableTest {
                 for (int s = 0; s < nb; s++) {
                     SubGroup su = SubGroup.load("SUB" + s, gr, _subGroup -> {
                         _subGroup.save();
-                        SubGroup loaded = null;
-                        try {
-                            loaded = SubGroup.load(_subGroup.getName(), gr, _arg -> {
-                            });
-                        } catch (AddException | InvalidStateException e) {
-                            e.printStackTrace();
-                        }
+                        IDataBase loaded = IDataBase.load(_subGroup.getSavedName());
                         myAssertEquals(_subGroup, loaded);
-
-                        if (nb == 2) { //TEST EN DUR DE L'UNLOAD
-                            try {
-                                loaded.start();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                            //first time to unload it
-                            try {
-                                Organism.load(_subGroup.getOrganisms().get(0).getName(), 45L, 54L, loaded, true, _arg -> {
-                                });
-                            } catch (AddException | InvalidStateException e) {
-                                e.printStackTrace();
-                            }
-                            //second time to get the last
-                            Organism loaded_child = null;
-                            try {
-                                loaded_child = Organism.load(_subGroup.getOrganisms().get(0).getName(), 45L, 54L, loaded, false, _arg -> {
-                                });
-                            } catch (AddException | InvalidStateException e) {
-                                e.printStackTrace();
-                            }
-                            myAssertEquals(loaded, loaded_child);
-                            try {
-                                loaded.stop();
-                            } catch (Exception e) {
-                                e.printStackTrace();
-                            }
-                        }
                     });
                     su.start();
 
                     for (int o = 0; o < nb; o++) {
                         Organism or = Organism.load("ORG" + o, 152753L, 1592820474201505800L, su, true, _organism -> {
                             _organism.save();
-                            Organism loaded = null;
-                            try {
-                                loaded = Organism.load(_organism.getName(), 45L, 54L, su, false, _arg -> {
-                                });
-                            } catch (AddException | InvalidStateException e) {
-                                e.printStackTrace();
-                            }
+                            IDataBase loaded = IDataBase.load(_organism.getSavedName());
                             myAssertEquals(_organism, loaded);
                             Date loadedDate = Organism.loadDate("GENBANK", _organism.getKingdomName(), _organism.getGroupName(), _organism.getSubGroupName(), _organism.getName());
                             assertEquals(_organism.getModificationDate(), loadedDate);

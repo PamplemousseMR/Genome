@@ -32,7 +32,6 @@ class GenbankOrganismsTest {
         int totalOrganism = 0;
         while (go.hasNext()) {
             OrganismParser ro = go.getNext();
-            ro.parse();
 
             assertTrue(ro.getId() != -1);
             assertTrue(ro.getName() != null, "id : " + ro.getId());

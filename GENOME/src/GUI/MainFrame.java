@@ -1,124 +1,381 @@
 package GUI;
 
-import java.awt.BorderLayout;
-import java.awt.Color;
-import java.awt.Font;
+import Utils.Logs;
 
-import javax.swing.BorderFactory;
-import javax.swing.JButton;
-import javax.swing.JFrame;
-import javax.swing.JLabel;
-import javax.swing.JPanel;
-import javax.swing.JProgressBar;
+import javax.imageio.ImageIO;
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import java.awt.*;
+import java.awt.event.ActionListener;
+import java.awt.event.MouseEvent;
 
-public class MainFrame extends JFrame
-{
-	private static final long serialVersionUID = -6768656055410219611L;
-	private static String s_TITLE="BIOINFORMATIQUE ILC. Realise par Arthur D. -- Adele M. -- Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.";
-	private JPanel m_north;
-	private JPanel m_center;
-	private JPanel m_south;
-	private JPanel m_east;
-	private JPanel m_west;
-	private JButton m_launchDL;
-	private JLabel m_titleLabel;
-	private JLabel m_titleLabel2;
-	private JProgressBar m_jpb; //Vector de progress bar si on veut en mettre plusieurs
+public final class MainFrame extends ResizibleFrame {
 
-	public MainFrame() 
-	{		
-		super(s_TITLE);
-		initFrame();
-		initComponents();
-		initLayout();
-		addComponents();
-		swagComponents();
-	}
+    protected static final Color s_DARKGRAY = new Color(32, 34, 37);
+    protected static final Color s_LIGHTGRAY = new Color(54, 57, 62);
+    protected static final Color s_BLUEGRAY = new Color(62, 68, 83);
+    private static final String s_TITLE = "GENOME";
+    private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
+    private static final Insets s_INSETS = new Insets(3, 3, 3, 3);
+    private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
+    private static final int s_DEFAULT_FRAME_WIDTH = 300;
+    private static final int s_DEFAULT_FRAME_HEIGHT = 300;
+    private static final Point s_INITIAL_LOCATION = new Point((int) s_TOOLKIT.getScreenSize().getWidth() / 2 - s_DEFAULT_FRAME_WIDTH / 2, (int) s_TOOLKIT.getScreenSize().getHeight() / 2 - s_DEFAULT_FRAME_HEIGHT / 2);
+    private static final Dimension s_INITIAL_DIMENSION = new Dimension(s_DEFAULT_FRAME_WIDTH, s_DEFAULT_FRAME_HEIGHT);
+    private static final String s_FONT = "Helvetica";
+    private static MainFrame s_mainFrame;
 
-	private void initFrame() 
-	{
-		//Sans doute possible de detecter la taille de l'ecran et d'adapter la taille de la fenetre en fonction
-		this.setVisible(true);
-		this.setSize(1000,800); 
-		this.setLocationRelativeTo(null);
-		this.setResizable(true);
-		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);  
-	}
+    private JPanel m_menuPanel;
+    private JSplitPane m_splitPanel_main;
+    private JSplitPane m_splitPanel_right;
+    private JScrollPane m_treeContainer;
+    private JScrollPane m_logContainer;
+    private JPanel m_north;
+    private JPanel m_center;
+    private JPanel m_fileTreePanel;
+    private JPanel m_informationsPanel;
+    private JPanel m_logsPanel;
+    private JPanel m_footerPanel;
 
-	private void initComponents() 
-	{
-		//Creation d'un Panel par area
-		m_north= new JPanel();
-		m_center= new JPanel();
-		m_south= new JPanel();
-		m_east= new JPanel();
-		m_west= new JPanel();
-		
-		// Components
-		m_titleLabel = new JLabel("Projet de Bio-Informatique");
-		m_titleLabel2 = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
-		m_launchDL= new JButton("Demarrer le telechargement");
-		m_jpb = new JProgressBar();
-	}
+    private JPanel m_fileTreeTitlePanel;
+    private JPanel m_informationTitlePanel;
+    private JPanel m_logsTitlePanel;
+    private JPanel m_footerTitlePanel;
 
-	// Adapter les Layout des differents Panel si besoin.
-	private void initLayout()
-	{
-		this.setLayout(new BorderLayout());
-		m_north.setLayout(new BorderLayout());
-		m_south.setLayout(new BorderLayout());
-	}
+    private JLabel m_mainTitle;
+    private JLabel m_secondTitle;
+    private JLabel m_logsTitle;
+    private JLabel m_informationTitle;
+    private JLabel m_treeTitle;
+    private JLabel m_footerTitle;
 
-	private void addComponents() 
-	{
-		this.add(m_north,BorderLayout.NORTH);
-		this.add(m_south,BorderLayout.SOUTH);
-		this.add(m_center,BorderLayout.CENTER);
-		this.add(m_east,BorderLayout.EAST);
-		this.add(m_west,BorderLayout.WEST);
-		
-		// North panel
-		m_north.add(m_titleLabel,BorderLayout.NORTH);
-		m_north.add(m_titleLabel2,BorderLayout.CENTER);
-		
-		// West panel
-		m_west.add(m_launchDL,BorderLayout.WEST);
-		
-		// South panel
-		m_south.add(m_jpb,BorderLayout.CENTER);
-	}
+    private JTextArea m_logConsole;
+    private JButton m_closeB;
+    private JButton m_maximizeB;
+    private JButton m_minimizeB;
 
-	// Apparence des composantes de l'interface
-	private void swagComponents() 
-	{
-		// Panels backgrounds
-		m_north.setBackground(new Color(32, 34, 37)); 		// Dark gray
-		m_south.setBackground(new Color(54, 57, 62)); 		// Gray
-		m_center.setBackground(new Color(54, 57, 62)); 		// Gray
-		m_west.setBackground(new Color(54, 57, 62)); 		// Gray
-		m_east.setBackground(new Color(54, 57, 62)); 		// Gray
-		
-		// Panels margin (top, left, bottom, right)
-		m_north.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		m_east.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-		m_west.setBorder(BorderFactory.createEmptyBorder(20, 20, 20, 20));
-	
-		// Labels
-		m_titleLabel.setFont(new Font("Helvetica", Font.PLAIN, 28));
-		m_titleLabel2.setFont(new Font("Helvetica", Font.PLAIN, 18));
-		m_titleLabel.setForeground(Color.WHITE);
-		m_titleLabel2.setForeground(Color.LIGHT_GRAY);
+    private DBTree m_dbTree;
+    private JButton m_launchDL;
 
-		// Progress bar
-		m_jpb.setStringPainted(true);
-		m_jpb.setString("ProgressBar");
-		m_jpb.setSize(m_south.getWidth(),( m_south.getHeight()));
-		m_jpb.setBackground(new Color(46, 184, 46)); 		// Green
-		
-		// Buttons
-		m_launchDL.setBackground(Color.LIGHT_GRAY);
-		m_launchDL.setForeground(new Color(32, 34, 37));	// Light gray
-		m_launchDL.setBorderPainted(false);
-	}
+    /**
+     * Constructor
+     */
+    private MainFrame() {
+        super(s_INITIAL_DIMENSION, s_INITIAL_LOCATION, s_TITLE);
+        initFrame();
+        initComponents();
+        initLayout();
+        addComponents();
+        swagComponents();
+        addListener();
+    }
+
+    /**
+     * Get the singleton
+     *
+     * @return the singleton
+     */
+    public static MainFrame getSingleton() {
+        if (s_mainFrame == null) {
+            s_mainFrame = new MainFrame();
+        }
+        return s_mainFrame;
+    }
+
+    /**
+     * Update JTree
+     *
+     * @param _path the path use to updateTree JTree
+     */
+    public void updateTree(String _path) {
+        m_dbTree.update(_path);
+    }
+
+    /**
+     * Add download action
+     *
+     * @param _actionListener the download action
+     */
+    public void addDownloadAction(ActionListener _actionListener) {
+        m_launchDL.addActionListener(e -> {
+            m_launchDL.setEnabled(false);
+            Thread action = new Thread(() -> {
+                _actionListener.actionPerformed(e);
+                m_launchDL.setEnabled(true);
+            });
+            action.start();
+        });
+    }
+
+    /**
+     * Display log
+     *
+     * @param _log to display
+     */
+    public void writeLog(String _log) {
+        m_logConsole.append("\n " + _log);
+        if (m_logConsole.getLineCount() > 250) //print only the last 250 lines
+        {
+            try {
+                m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(1));
+            } catch (BadLocationException e) {
+                Logs.exception(e);
+            }
+        }
+    }
+
+    /**
+     * Basic frame inits
+     */
+    private void initFrame() {
+        initIcone();
+        setUndecorated(true);
+        setVisible(true);
+        setSize((s_DIM.width / 2), (s_DIM.height / 2));
+        setLocationRelativeTo(null);
+        setResizable(true);
+        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+    }
+
+    /**
+     * Initialize the icon of the app
+     */
+    private void initIcone() {
+        try {
+            setIconImage(Toolkit.getDefaultToolkit().getImage((getClass().getResource("Ressources/logo.bioinfo.png"))));
+        } catch (Exception e) {
+            Logs.exception(e);
+        }
+    }
+
+    /**
+     * Initialize the components
+     */
+    private void initComponents() {
+        m_menuPanel = new JPanel();
+        m_north = new JPanel();
+        m_center = new JPanel();
+
+        m_fileTreePanel = new JPanel();
+        m_informationsPanel = new JPanel();
+        m_logsPanel = new JPanel();
+        m_footerPanel = new JPanel();
+        m_fileTreeTitlePanel = new JPanel();
+        m_informationTitlePanel = new JPanel();
+        m_logsTitlePanel = new JPanel();
+        m_footerTitlePanel = new JPanel();
+
+        m_logConsole = new JTextArea("", 1, 250); //1 column, 250 rows
+        m_logConsole.setEditable(false);
+
+
+        m_dbTree = new DBTree();
+        m_treeContainer = new JScrollPane(m_dbTree, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+        m_logContainer = new JScrollPane(m_logConsole, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+
+        m_splitPanel_right = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_informationsPanel, m_logsPanel);
+        m_splitPanel_main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_fileTreePanel, m_splitPanel_right);
+
+        m_mainTitle = new JLabel("   Projet de Bio-Informatique");
+        m_secondTitle = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
+        m_informationTitle = new JLabel("I	nformations");
+        m_treeTitle = new JLabel("Arborescence des fichiers");
+        m_logsTitle = new JLabel("Logs");
+        m_footerTitle = new JLabel("Application cree par -- Adele M. -- Arthur D. -- Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.");
+        m_launchDL = new JButton("Demarrer le telechargement");
+
+        m_closeB = new JButton();
+        m_maximizeB = new JButton();
+        m_minimizeB = new JButton();
+
+    }
+
+    /**
+     * Initialize layout types
+     */
+    private void initLayout() {
+        setLayout(new BorderLayout());
+        m_menuPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
+        m_center.setLayout(new BorderLayout());
+        m_north.setLayout(new BorderLayout());
+        m_fileTreePanel.setLayout(new BorderLayout());
+        m_informationsPanel.setLayout(new BorderLayout());
+        m_logsPanel.setLayout(new BorderLayout());
+        m_footerPanel.setLayout(new BorderLayout());
+    }
+
+    /**
+     * Add components into layouts
+     */
+    private void addComponents() {
+        add(m_north, BorderLayout.NORTH);
+        add(m_center, BorderLayout.CENTER);
+        add(m_footerPanel, BorderLayout.SOUTH);
+
+        m_menuPanel.add(m_minimizeB);
+        m_menuPanel.add(m_maximizeB);
+        m_menuPanel.add(m_closeB);
+
+        m_center.add(m_splitPanel_main, BorderLayout.CENTER);
+
+        m_north.add(m_menuPanel, BorderLayout.NORTH);
+        m_north.add(m_mainTitle, BorderLayout.CENTER);
+        m_north.add(m_secondTitle, BorderLayout.SOUTH);
+
+        m_fileTreeTitlePanel.add(m_treeTitle, BorderLayout.CENTER);
+        m_fileTreePanel.add(m_fileTreeTitlePanel, BorderLayout.NORTH);
+
+        m_fileTreePanel.add(m_treeContainer, BorderLayout.CENTER);
+        m_fileTreePanel.add(m_launchDL, BorderLayout.SOUTH);
+
+        m_informationTitlePanel.add(m_informationTitle, BorderLayout.CENTER);
+        m_informationsPanel.add(m_informationTitlePanel, BorderLayout.NORTH);
+
+        m_logsTitlePanel.add(m_logsTitle, BorderLayout.CENTER);
+        m_logsPanel.add(m_logsTitlePanel, BorderLayout.NORTH);
+        m_logsPanel.add(m_logContainer, BorderLayout.CENTER);
+
+        m_informationTitlePanel.add(m_informationTitle, BorderLayout.CENTER);
+        m_informationsPanel.add(m_informationTitlePanel, BorderLayout.NORTH);
+    }
+
+    /**
+     * Swag the interface
+     */
+    private void swagComponents() {
+        getRootPane().setBorder(BorderFactory.createEmptyBorder(0, 0, 0, 0));
+        m_splitPanel_right.setResizeWeight(.80d);
+        m_splitPanel_main.setResizeWeight(.15d);
+        m_splitPanel_right.setDividerSize(3);
+        m_splitPanel_main.setDividerSize(3);
+
+        m_splitPanel_main.setBorder(null);
+        m_splitPanel_right.setBorder(null);
+        m_informationsPanel.setBorder(null);
+
+
+        m_menuPanel.setBackground(s_DARKGRAY);
+        m_north.setBackground(s_DARKGRAY);     // Dark gray
+        m_center.setBackground(s_LIGHTGRAY);     // Gray
+        m_fileTreePanel.setBackground(s_LIGHTGRAY);
+
+        m_treeContainer.setOpaque(false);
+        m_treeContainer.getViewport().setBackground(s_LIGHTGRAY);
+        m_treeContainer.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+        m_treeContainer.getVerticalScrollBar().setPreferredSize(new Dimension(15, 0));
+        m_treeContainer.getVerticalScrollBar().setAutoscrolls(true);
+        m_treeContainer.getVerticalScrollBar().setBackground(s_BLUEGRAY);
+
+        m_logContainer.setOpaque(false);
+        m_logContainer.getViewport().setBackground(s_LIGHTGRAY);
+        m_logContainer.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
+        m_logContainer.getVerticalScrollBar().setPreferredSize(new Dimension(15, 0));
+        m_logContainer.getVerticalScrollBar().setAutoscrolls(true);
+        m_logContainer.getVerticalScrollBar().setBackground(s_BLUEGRAY);
+
+        m_informationsPanel.setBackground(s_LIGHTGRAY);
+        m_logsPanel.setBackground(s_LIGHTGRAY);
+        m_logConsole.setOpaque(false);
+
+        m_footerTitlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        m_footerTitlePanel.setBackground(new Color(51, 54, 63));
+
+        m_fileTreeTitlePanel.setBackground(s_BLUEGRAY);
+        m_informationTitlePanel.setBackground(s_BLUEGRAY);
+        m_logsTitlePanel.setBackground(s_BLUEGRAY);
+
+        m_mainTitle.setFont(new Font(s_FONT, Font.PLAIN, 28));
+        m_secondTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
+        m_mainTitle.setForeground(Color.WHITE);
+        m_secondTitle.setForeground(Color.LIGHT_GRAY);
+        m_secondTitle.setBorder(BorderFactory.createEmptyBorder(0, 25, 5, 5));
+        m_logsTitle.setFont(new Font(s_FONT, Font.PLAIN, 20));
+        m_logConsole.setFont(new Font(s_FONT, Font.PLAIN, 14));
+        m_logConsole.setForeground(Color.WHITE);
+        m_informationTitle.setFont(new Font(s_FONT, Font.PLAIN, 20));
+        m_treeTitle.setFont(new Font(s_FONT, Font.PLAIN, 20));
+        m_logsTitle.setForeground(Color.WHITE);
+        m_informationTitle.setForeground(Color.WHITE);
+        m_treeTitle.setForeground(Color.WHITE);
+
+        m_footerTitle.setFont(new Font(s_FONT, Font.PLAIN, 11));
+        m_footerTitle.setForeground(Color.WHITE);
+
+        m_launchDL.setBackground(Color.LIGHT_GRAY);
+        m_launchDL.setForeground(s_LIGHTGRAY);  // Light gray
+        m_launchDL.setFocusPainted(false);
+        m_launchDL.setBorderPainted(false);
+        m_launchDL.setToolTipText("Lancer le telechargement des fichiers");
+
+        m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));
+
+        swagButton(m_closeB, "Ressources/close.png");
+        swagButton(m_minimizeB, "Ressources/minimize.png");
+        swagButton(m_maximizeB, "Ressources/maximize.png");
+    }
+
+    /**
+     * Swag button
+     *
+     * @param _button button to swag
+     * @param _path   path to the icon
+     */
+    private void swagButton(JButton _button, String _path) {
+        _button.setMargin(s_INSETS);
+        _button.setBackground(s_DARKGRAY);
+        _button.setForeground(Color.WHITE);
+        _button.setFont(new Font(s_FONT, Font.BOLD, 16));
+        _button.setBorder(BorderFactory.createEmptyBorder());
+        _button.setHorizontalAlignment(SwingConstants.CENTER);
+        _button.setVerticalAlignment(SwingConstants.CENTER);
+        _button.setPreferredSize(new Dimension(30, 30));
+
+        _button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                _button.setBackground(s_BLUEGRAY);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                _button.setBackground(null);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+        });
+
+        try {
+            Image img = ImageIO.read(getClass().getResource(_path)).getScaledInstance(20, 20, Image.SCALE_DEFAULT);
+            _button.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            Logs.exception(e);
+        }
+    }
+
+    /**
+     * Add listener on components
+     * Manage the action to do when a listener is triggered
+     */
+    private void addListener() {
+        m_menuPanel.addMouseListener(this);
+        m_menuPanel.addMouseMotionListener(this);
+
+        m_closeB.addActionListener(e -> System.exit(0));
+        m_minimizeB.addActionListener(e -> setState(Frame.ICONIFIED));
+        m_maximizeB.addActionListener(e -> {
+            if (getExtendedState() == MAXIMIZED_BOTH) {
+                setExtendedState(JFrame.NORMAL);
+            } else {
+                setExtendedState(JFrame.MAXIMIZED_BOTH);
+            }
+        });
+    }
+
 }
 
