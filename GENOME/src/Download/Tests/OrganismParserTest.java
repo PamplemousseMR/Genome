@@ -36,64 +36,60 @@ class OrganismParserTest {
     static private OrganismParser m_OrganismParser;
 
     @BeforeAll
-    static void setUp() {
+    static void setUp() throws JSONException {
         String json = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
         m_OrganismParser = new OrganismParser(new JSONObject(json));
-        m_OrganismParser.parse();
     }
 
     @Test
     void organismParser() {
         {
             final String jsonFail = "{" + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)));
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)));
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
             OrganismParser fail2 = new OrganismParser(new JSONObject(jsonFail));
-            fail2.parse();
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)));
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)));
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)));
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
             OrganismParser fail6 = new OrganismParser(new JSONObject(jsonFail));
-            fail6.parse();
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_GROUP_JS + "}";
             OrganismParser fail7 = new OrganismParser(new JSONObject(jsonFail));
-            fail7.parse();
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "}";
-            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)));
         }
         {
             final String jsonFail = "{\"id\": test," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_SUBGROUP_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)));
         }
         {
             final String jsonFail = "{\"version\": test," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_ID_JS + "," + s_SUBGROUP_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)));
         }
         {
             final String jsonFail = "{}";
-            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)).parse());
+            assertThrows(JSONException.class, () -> new OrganismParser(new JSONObject(jsonFail)));
         }
     }
 
@@ -123,12 +119,11 @@ class OrganismParserTest {
     }
 
     @Test
-    void getReplicons() {
+    void getReplicons() throws JSONException {
         assertTrue(s_REPLICONS.compareTo(m_OrganismParser.getReplicons().get(0).getKey()) == 0);
         String json = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_GROUP_JS +
                 ",\"replicons\": \"DNA:NC_1256;MT:NC_1546;NC_785;test:NC_854;DNS:test\"}";
         OrganismParser parser = new OrganismParser(new JSONObject(json));
-        parser.parse();
         assertEquals(2, parser.getReplicons().size());
         assertEquals("NC_1256", parser.getReplicons().get(0).getKey());
         assertEquals("DNA", parser.getReplicons().get(0).getValue());

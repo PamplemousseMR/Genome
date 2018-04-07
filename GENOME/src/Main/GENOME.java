@@ -32,7 +32,7 @@ final class GENOME {
         Logs.setListener(_message -> MainFrame.getSingleton().writeLog(_message));
         MainFrame.getSingleton().addDownloadAction(event -> {
             try {
-                Activity.genbank(_message -> MainFrame.getSingleton().updateTree(_message));
+                Activity.genbank();
             } catch (Exception e) {
                 Logs.exception(e);
             }

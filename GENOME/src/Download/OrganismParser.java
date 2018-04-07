@@ -102,7 +102,7 @@ public final class OrganismParser {
      * @param _obj, the json object to parse
      * @throws JSONException, if an error occurred
      */
-    public OrganismParser(JSONObject _obj) {
+    public OrganismParser(JSONObject _obj) throws JSONException {
         m_object = _obj;
         m_id = -1;
         m_name = null;
@@ -112,9 +112,82 @@ public final class OrganismParser {
         m_version = -1;
         m_modificationDate = new Date();
         m_replicons = new ArrayList<>();
+        parse();
     }
 
-    public void parse() throws JSONException {
+    /**
+     * Get the id
+     *
+     * @return the id
+     */
+    public long getId() {
+        return m_id;
+    }
+
+    /**
+     * Get the name
+     *
+     * @return the name
+     */
+    public String getName() {
+        return m_name;
+    }
+
+    /**
+     * Get the kingdom name
+     *
+     * @return the kingdom name
+     */
+    public String getKingdom() {
+        return m_kingdom;
+    }
+
+    /**
+     * Get the group name
+     *
+     * @return the group name
+     */
+    public String getGroup() {
+        return m_group;
+    }
+
+    /**
+     * Get the subGroup name
+     *
+     * @return the subGroup name
+     */
+    public String getSubGroup() {
+        return m_subGroup;
+    }
+
+    /**
+     * Get the replicon's id list
+     *
+     * @return the replicon's id list
+     */
+    public ArrayList<Map.Entry<String, String>> getReplicons() {
+        return m_replicons;
+    }
+
+    /**
+     * Get the modification date
+     *
+     * @return the modification date
+     */
+    public Date getModificationDate() {
+        return m_modificationDate;
+    }
+
+    /**
+     * Get the version of the organism
+     *
+     * @return the version's number
+     */
+    public long getVersion() {
+        return m_version;
+    }
+
+    private void parse() throws JSONException {
         try {
             m_id = m_object.getLong(s_ID);
             m_name = m_object.getString(s_NAME).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
@@ -194,77 +267,5 @@ public final class OrganismParser {
             cal.set(dateTime.getYear(), dateTime.getMonthValue() - 1, dateTime.getDayOfMonth(), 0, 0, 0);
             m_modificationDate = cal.getTime();
         }
-    }
-
-    /**
-     * Get the id
-     *
-     * @return the id
-     */
-    public long getId() {
-        return m_id;
-    }
-
-    /**
-     * Get the name
-     *
-     * @return the name
-     */
-    public String getName() {
-        return m_name;
-    }
-
-    /**
-     * Get the kingdom name
-     *
-     * @return the kingdom name
-     */
-    public String getKingdom() {
-        return m_kingdom;
-    }
-
-    /**
-     * Get the group name
-     *
-     * @return the group name
-     */
-    public String getGroup() {
-        return m_group;
-    }
-
-    /**
-     * Get the subGroup name
-     *
-     * @return the subGroup name
-     */
-    public String getSubGroup() {
-        return m_subGroup;
-    }
-
-    /**
-     * Get the replicon's id list
-     *
-     * @return the replicon's id list
-     */
-    public ArrayList<Map.Entry<String, String>> getReplicons() {
-        return m_replicons;
-    }
-
-    /**
-     * Get the modification date
-     *
-     * @return the modification date
-     */
-    public Date getModificationDate() {
-        return m_modificationDate;
-    }
-
-    /**
-     * Get the version of the organism
-     *
-     * @return the version's number
-     */
-    public long getVersion() {
-        return m_version;
     }
 }
