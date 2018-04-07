@@ -322,11 +322,11 @@ public final class MainFrame extends ResizibleFrame {
         m_footerTitle.setFont(new Font(s_FONT, Font.PLAIN, 11));
         m_footerTitle.setForeground(Color.WHITE);
 
-        m_launchDL.setBackground(Color.LIGHT_GRAY);
-        m_launchDL.setForeground(s_LIGHTGRAY);  // Light gray
-        m_launchDL.setFocusPainted(false);
-        m_launchDL.setBorderPainted(false);
+
         m_launchDL.setToolTipText("Lancer le telechargement des fichiers");
+        m_pause.setToolTipText("Mettre en pause le téléchargement des fichiers");
+        m_resume.setToolTipText("Reprendre le téléchargement des fichiers");
+        m_stop.setToolTipText("Interrompre le téléchargement des fichiers");
 
         m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));
 
