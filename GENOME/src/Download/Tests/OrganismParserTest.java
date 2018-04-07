@@ -53,7 +53,7 @@ class OrganismParserTest {
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-            OrganismParser fail2 = new OrganismParser(new JSONObject(jsonFail));
+            new OrganismParser(new JSONObject(jsonFail));
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
@@ -69,11 +69,11 @@ class OrganismParserTest {
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_REPLICONS_JS + "," + s_GROUP_JS + "}";
-            OrganismParser fail6 = new OrganismParser(new JSONObject(jsonFail));
+            new OrganismParser(new JSONObject(jsonFail));
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_GROUP_JS + "}";
-            OrganismParser fail7 = new OrganismParser(new JSONObject(jsonFail));
+            new OrganismParser(new JSONObject(jsonFail));
         }
         {
             final String jsonFail = "{" + s_SUBGROUP_JS + "," + s_NAME_JS + "," + s_RELEASE_JS + "," + s_VERSION_JS + "," + s_ID_JS + "," + s_KINGDOM_JS + "," + s_MODIFICATION_JS + "," + s_REPLICONS_JS + "}";
