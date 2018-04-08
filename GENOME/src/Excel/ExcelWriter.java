@@ -172,7 +172,7 @@ public class ExcelWriter {
         XSSFRow r = _sheet.createRow(0);
         XSSFCell c = r.createCell(0);
         c.setCellValue("Trinucleotide");
-        _sheet.setColumnWidth(0,2600);
+        _sheet.setColumnWidth(0,7500);
         c = r.createCell(1);
         c.setCellValue(Statistics.StatLong.PHASE0.toString());
         _sheet.setColumnWidth(1,3000);
