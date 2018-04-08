@@ -273,6 +273,10 @@ public class Activity {
             }
         }
         m_lock.unlock();
+    }
+
+    public static void stopAndWait() {
+        stop();
         if (s_activityThread != null) {
             try {
                 s_activityThread.join();

@@ -21,7 +21,7 @@ final class GENOME {
      * Function call at the end of the program
      */
     private static void finalizeProgram() {
-        Activity.stop();
+        Activity.stopAndWait();
         Logs.info("End");
         Logs.info("Options finalized");
         Options.finalizeOptions();
@@ -30,7 +30,7 @@ final class GENOME {
     }
 
     public static void main(String[] args) {
-        Logs.setListener(_message -> MainFrame.getSingleton().writeLog(_message));
+        Logs.setListener(_message -> MainFrame.getSingleton().updateLog(_message));
         MainFrame.getSingleton().addStartAction(event -> Activity.genbank());
         MainFrame.getSingleton().addStopAction(event -> Activity.stop());
         MainFrame.getSingleton().addPauseAction(event -> Activity.pause());

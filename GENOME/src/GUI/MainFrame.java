@@ -92,28 +92,7 @@ public final class MainFrame extends ResizibleFrame {
      * @param _path the path use to updateTree JTree
      */
     public void updateTree(String _path) {
-        m_dbTree.update(_path);
-    }
-
-    /**
-     * Add download action
-     *
-     * @param _actionListener the download action
-     */
-    public void addStartAction(ActionListener _actionListener) {
-        m_launchDL.addActionListener(_actionListener);
-    }
-
-    public void addStopAction(ActionListener _actionListener) {
-        m_stop.addActionListener(_actionListener);
-    }
-
-    public void addPauseAction(ActionListener _actionListener) {
-        m_pause.addActionListener(_actionListener);
-    }
-
-    public void addResumeAction(ActionListener _actionListener) {
-        m_resume.addActionListener(_actionListener);
+        SwingUtilities.invokeLater(() -> m_dbTree.update(_path));
     }
 
     /**
@@ -121,16 +100,54 @@ public final class MainFrame extends ResizibleFrame {
      *
      * @param _log to display
      */
-    public void writeLog(String _log) {
-        m_logConsole.append("\n " + _log);
-        if (m_logConsole.getLineCount() > 250) //print only the last 250 lines
-        {
-            try {
-                m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(1));
-            } catch (BadLocationException e) {
-                Logs.exception(e);
+    public void updateLog(String _log) {
+        SwingUtilities.invokeLater(() -> {
+            m_logConsole.append("\n " + _log);
+            if (m_logConsole.getLineCount() > 250) //print only the last 250 lines
+            {
+                try {
+                    m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(1));
+                } catch (BadLocationException e) {
+                    Logs.exception(e);
+                }
             }
-        }
+        });
+    }
+
+    /**
+     * Add start action
+     *
+     * @param _actionListener the start action
+     */
+    public void addStartAction(ActionListener _actionListener) {
+        SwingUtilities.invokeLater(() -> m_launchDL.addActionListener(_actionListener));
+    }
+
+    /**
+     * Add stop action
+     *
+     * @param _actionListener the stop action
+     */
+    public void addStopAction(ActionListener _actionListener) {
+        SwingUtilities.invokeLater(() -> m_stop.addActionListener(_actionListener));
+    }
+
+    /**
+     * Add pause action
+     *
+     * @param _actionListener the pause action
+     */
+    public void addPauseAction(ActionListener _actionListener) {
+        SwingUtilities.invokeLater(() -> m_pause.addActionListener(_actionListener));
+    }
+
+    /**
+     * Add resume action
+     *
+     * @param _actionListener the resume action
+     */
+    public void addResumeAction(ActionListener _actionListener) {
+        SwingUtilities.invokeLater(() -> m_resume.addActionListener(_actionListener));
     }
 
     /**
@@ -337,10 +354,10 @@ public final class MainFrame extends ResizibleFrame {
         swagMenuButton(m_minimizeB, "Ressources/minimize.png");
         swagMenuButton(m_maximizeB, "Ressources/maximize.png");
 
-        swagDLButton(m_stop, "Ressources/stop.png");
-        swagDLButton(m_pause, "Ressources/pause.png");
-        swagDLButton(m_resume, "Ressources/resume.png");
-        swagDLButton(m_launchDL, "Ressources/play.png");
+        swagActivityButton(m_stop, "Ressources/stop.png");
+        swagActivityButton(m_pause, "Ressources/pause.png");
+        swagActivityButton(m_resume, "Ressources/resume.png");
+        swagActivityButton(m_launchDL, "Ressources/play.png");
     }
 
     /**
@@ -393,7 +410,7 @@ public final class MainFrame extends ResizibleFrame {
      * @param _button button to swag
      * @param _path   path to the icon
      */
-    private void swagDLButton(JButton _button, String _path) {
+    private void swagActivityButton(JButton _button, String _path) {
         _button.setMargin(s_INSETS);
         _button.setBackground(s_BLUEGRAY);
         _button.setForeground(Color.WHITE);
