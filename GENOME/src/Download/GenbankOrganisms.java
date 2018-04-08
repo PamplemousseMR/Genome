@@ -141,6 +141,7 @@ public final class GenbankOrganisms extends IDownloader {
         if (m_enqueued == m_totalCount) {
             Logs.info("GenbankOrganisms: Organisms download complete");
         }
+        m_enqueued = m_dataQueue.size();
     }
 
     /**
@@ -193,8 +194,8 @@ public final class GenbankOrganisms extends IDownloader {
             try {
                 OrganismParser currentOrg = new OrganismParser((JSONObject) org);
                 OrganismParser last = null;
-                if(m_dataQueue.size() > 0) {
-                    m_dataQueue.getLast();
+                if (m_dataQueue.size() > 0) {
+                    last = m_dataQueue.getLast();
                 }
                 if (last != null && currentOrg.getName().compareTo(last.getName()) == 0) {
                     if (currentOrg.getReplicons().size() > last.getReplicons().size()) {
@@ -292,7 +293,7 @@ public final class GenbankOrganisms extends IDownloader {
      * @return Total count
      */
     public int getTotalCount() {
-        return m_totalCount;
+        return m_enqueued;
     }
 
     /**

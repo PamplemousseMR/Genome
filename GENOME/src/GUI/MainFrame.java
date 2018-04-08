@@ -33,6 +33,7 @@ public final class MainFrame extends ResizibleFrame {
     private JPanel m_north;
     private JPanel m_center;
     private JPanel m_fileTreePanel;
+    private JPanel m_buttonDLPanel;
     private JPanel m_informationsPanel;
     private JPanel m_logsPanel;
     private JPanel m_footerPanel;
@@ -56,6 +57,9 @@ public final class MainFrame extends ResizibleFrame {
 
     private DBTree m_dbTree;
     private JButton m_launchDL;
+    private JButton m_pause;
+    private JButton m_resume;
+    private JButton m_stop;
 
     /**
      * Constructor
@@ -88,23 +92,7 @@ public final class MainFrame extends ResizibleFrame {
      * @param _path the path use to updateTree JTree
      */
     public void updateTree(String _path) {
-        m_dbTree.update(_path);
-    }
-
-    /**
-     * Add download action
-     *
-     * @param _actionListener the download action
-     */
-    public void addDownloadAction(ActionListener _actionListener) {
-        m_launchDL.addActionListener(e -> {
-            m_launchDL.setEnabled(false);
-            Thread action = new Thread(() -> {
-                _actionListener.actionPerformed(e);
-                m_launchDL.setEnabled(true);
-            });
-            action.start();
-        });
+        SwingUtilities.invokeLater(() -> m_dbTree.update(_path));
     }
 
     /**
@@ -112,16 +100,54 @@ public final class MainFrame extends ResizibleFrame {
      *
      * @param _log to display
      */
-    public void writeLog(String _log) {
-        m_logConsole.append("\n " + _log);
-        if (m_logConsole.getLineCount() > 250) //print only the last 250 lines
-        {
-            try {
-                m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(1));
-            } catch (BadLocationException e) {
-                Logs.exception(e);
+    public void updateLog(String _log) {
+        SwingUtilities.invokeLater(() -> {
+            m_logConsole.append("\n " + _log);
+            if (m_logConsole.getLineCount() > 250) //print only the last 250 lines
+            {
+                try {
+                    m_logConsole.replaceRange("", m_logConsole.getLineStartOffset(0), m_logConsole.getLineStartOffset(1));
+                } catch (BadLocationException e) {
+                    Logs.exception(e);
+                }
             }
-        }
+        });
+    }
+
+    /**
+     * Add start action
+     *
+     * @param _actionListener the start action
+     */
+    public void addStartAction(ActionListener _actionListener) {
+        SwingUtilities.invokeLater(() -> m_launchDL.addActionListener(_actionListener));
+    }
+
+    /**
+     * Add stop action
+     *
+     * @param _actionListener the stop action
+     */
+    public void addStopAction(ActionListener _actionListener) {
+        SwingUtilities.invokeLater(() -> m_stop.addActionListener(_actionListener));
+    }
+
+    /**
+     * Add pause action
+     *
+     * @param _actionListener the pause action
+     */
+    public void addPauseAction(ActionListener _actionListener) {
+        SwingUtilities.invokeLater(() -> m_pause.addActionListener(_actionListener));
+    }
+
+    /**
+     * Add resume action
+     *
+     * @param _actionListener the resume action
+     */
+    public void addResumeAction(ActionListener _actionListener) {
+        SwingUtilities.invokeLater(() -> m_resume.addActionListener(_actionListener));
     }
 
     /**
@@ -161,6 +187,7 @@ public final class MainFrame extends ResizibleFrame {
         m_logsPanel = new JPanel();
         m_footerPanel = new JPanel();
         m_fileTreeTitlePanel = new JPanel();
+        m_buttonDLPanel = new JPanel();
         m_informationTitlePanel = new JPanel();
         m_logsTitlePanel = new JPanel();
         m_footerTitlePanel = new JPanel();
@@ -178,11 +205,14 @@ public final class MainFrame extends ResizibleFrame {
 
         m_mainTitle = new JLabel("   Projet de Bio-Informatique");
         m_secondTitle = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
-        m_informationTitle = new JLabel("I	nformations");
+        m_informationTitle = new JLabel("Informations");
         m_treeTitle = new JLabel("Arborescence des fichiers");
         m_logsTitle = new JLabel("Logs");
         m_footerTitle = new JLabel("Application cree par -- Adele M. -- Arthur D. -- Florian H. -- Romain M. -- Romain T. -- Sami F. -- Vincent H.");
-        m_launchDL = new JButton("Demarrer le telechargement");
+        m_launchDL = new JButton();
+        m_pause = new JButton();
+        m_resume = new JButton();
+        m_stop = new JButton();
 
         m_closeB = new JButton();
         m_maximizeB = new JButton();
@@ -202,6 +232,7 @@ public final class MainFrame extends ResizibleFrame {
         m_informationsPanel.setLayout(new BorderLayout());
         m_logsPanel.setLayout(new BorderLayout());
         m_footerPanel.setLayout(new BorderLayout());
+        m_buttonDLPanel.setLayout(new GridLayout(1, 4)); //1 ligne, 4 colonnes
     }
 
     /**
@@ -216,6 +247,11 @@ public final class MainFrame extends ResizibleFrame {
         m_menuPanel.add(m_maximizeB);
         m_menuPanel.add(m_closeB);
 
+        m_buttonDLPanel.add(m_launchDL);
+        m_buttonDLPanel.add(m_pause);
+        m_buttonDLPanel.add(m_resume);
+        m_buttonDLPanel.add(m_stop);
+
         m_center.add(m_splitPanel_main, BorderLayout.CENTER);
 
         m_north.add(m_menuPanel, BorderLayout.NORTH);
@@ -226,7 +262,9 @@ public final class MainFrame extends ResizibleFrame {
         m_fileTreePanel.add(m_fileTreeTitlePanel, BorderLayout.NORTH);
 
         m_fileTreePanel.add(m_treeContainer, BorderLayout.CENTER);
-        m_fileTreePanel.add(m_launchDL, BorderLayout.SOUTH);
+
+        m_fileTreePanel.add(m_buttonDLPanel, BorderLayout.SOUTH);
+
 
         m_informationTitlePanel.add(m_informationTitle, BorderLayout.CENTER);
         m_informationsPanel.add(m_informationTitlePanel, BorderLayout.NORTH);
@@ -234,6 +272,9 @@ public final class MainFrame extends ResizibleFrame {
         m_logsTitlePanel.add(m_logsTitle, BorderLayout.CENTER);
         m_logsPanel.add(m_logsTitlePanel, BorderLayout.NORTH);
         m_logsPanel.add(m_logContainer, BorderLayout.CENTER);
+
+        m_footerTitlePanel.add(m_footerTitle, BorderLayout.CENTER);
+        m_footerPanel.add(m_footerTitlePanel, BorderLayout.CENTER);
 
         m_informationTitlePanel.add(m_informationTitle, BorderLayout.CENTER);
         m_informationsPanel.add(m_informationTitlePanel, BorderLayout.NORTH);
@@ -277,7 +318,7 @@ public final class MainFrame extends ResizibleFrame {
         m_logsPanel.setBackground(s_LIGHTGRAY);
         m_logConsole.setOpaque(false);
 
-        m_footerTitlePanel.setBorder(BorderFactory.createLineBorder(Color.BLACK));
+        m_footerTitlePanel.setBorder(null);
         m_footerTitlePanel.setBackground(new Color(51, 54, 63));
 
         m_fileTreeTitlePanel.setBackground(s_BLUEGRAY);
@@ -301,26 +342,31 @@ public final class MainFrame extends ResizibleFrame {
         m_footerTitle.setFont(new Font(s_FONT, Font.PLAIN, 11));
         m_footerTitle.setForeground(Color.WHITE);
 
-        m_launchDL.setBackground(Color.LIGHT_GRAY);
-        m_launchDL.setForeground(s_LIGHTGRAY);  // Light gray
-        m_launchDL.setFocusPainted(false);
-        m_launchDL.setBorderPainted(false);
+
         m_launchDL.setToolTipText("Lancer le telechargement des fichiers");
+        m_pause.setToolTipText("Mettre en pause le telechargement des fichiers");
+        m_resume.setToolTipText("Reprendre le telechargement des fichiers");
+        m_stop.setToolTipText("Interrompre le telechargement des fichiers");
 
         m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));
 
-        swagButton(m_closeB, "Ressources/close.png");
-        swagButton(m_minimizeB, "Ressources/minimize.png");
-        swagButton(m_maximizeB, "Ressources/maximize.png");
+        swagMenuButton(m_closeB, "Ressources/close.png");
+        swagMenuButton(m_minimizeB, "Ressources/minimize.png");
+        swagMenuButton(m_maximizeB, "Ressources/maximize.png");
+
+        swagActivityButton(m_stop, "Ressources/stop.png");
+        swagActivityButton(m_pause, "Ressources/pause.png");
+        swagActivityButton(m_resume, "Ressources/resume.png");
+        swagActivityButton(m_launchDL, "Ressources/play.png");
     }
 
     /**
-     * Swag button
+     * Swag menu button
      *
      * @param _button button to swag
      * @param _path   path to the icon
      */
-    private void swagButton(JButton _button, String _path) {
+    private void swagMenuButton(JButton _button, String _path) {
         _button.setMargin(s_INSETS);
         _button.setBackground(s_DARKGRAY);
         _button.setForeground(Color.WHITE);
@@ -339,6 +385,50 @@ public final class MainFrame extends ResizibleFrame {
             @Override
             public void mouseExited(java.awt.event.MouseEvent evt) {
                 _button.setBackground(null);
+            }
+
+            @Override
+            public void mousePressed(MouseEvent e) {
+            }
+
+            @Override
+            public void mouseReleased(MouseEvent e) {
+            }
+        });
+
+        try {
+            Image img = ImageIO.read(getClass().getResource(_path)).getScaledInstance(20, 20, Image.SCALE_DEFAULT);
+            _button.setIcon(new ImageIcon(img));
+        } catch (Exception e) {
+            Logs.exception(e);
+        }
+    }
+
+    /**
+     * Swag download button
+     *
+     * @param _button button to swag
+     * @param _path   path to the icon
+     */
+    private void swagActivityButton(JButton _button, String _path) {
+        _button.setMargin(s_INSETS);
+        _button.setBackground(s_BLUEGRAY);
+        _button.setForeground(Color.WHITE);
+        _button.setFont(new Font(s_FONT, Font.BOLD, 16));
+        _button.setBorder(BorderFactory.createEmptyBorder());
+        _button.setHorizontalAlignment(SwingConstants.CENTER);
+        _button.setVerticalAlignment(SwingConstants.CENTER);
+        _button.setPreferredSize(new Dimension(30, 30));
+
+        _button.addMouseListener(new java.awt.event.MouseAdapter() {
+            @Override
+            public void mouseEntered(java.awt.event.MouseEvent evt) {
+                _button.setBackground(s_DARKGRAY);
+            }
+
+            @Override
+            public void mouseExited(java.awt.event.MouseEvent evt) {
+                _button.setBackground(s_BLUEGRAY);
             }
 
             @Override
