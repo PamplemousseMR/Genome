@@ -6,6 +6,7 @@ import Utils.Options;
 import org.apache.poi.ss.usermodel.BorderStyle;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.FillPatternType;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.usermodel.*;
 import org.apache.poi.xssf.usermodel.extensions.XSSFCellBorder;
 
@@ -20,13 +21,14 @@ import java.util.Map;
 public class ExcelWriter {
 
     // EDIT STYLE HERE :
-    private static final XSSFColor s_PRIMARY_COLOR = new XSSFColor(new Color(32, 34, 37));
-    private static final XSSFColor s_ALTERNATING_COLOR_A = new XSSFColor(new Color(54, 57, 62));
-    private static final XSSFColor s_ALTERNATING_COLOR_B = new XSSFColor(new Color(62, 68, 83));
-    private static final XSSFColor s_BORDER_COLOR = new XSSFColor(new Color(100, 140, 100));
-    private static final XSSFColor s_FONT_COLOR = new XSSFColor(new Color(255, 255, 255));
+    private static final XSSFColor s_PRIMARY_COLOR       = new XSSFColor(new Color(70, 110, 115));
+    private static final XSSFColor s_ALTERNATING_COLOR_A = new XSSFColor(new Color(56, 125, 122));
+    private static final XSSFColor s_ALTERNATING_COLOR_B = new XSSFColor(new Color(50, 147, 111));
+    private static final XSSFColor s_BORDER_COLOR        = new XSSFColor(new Color(38, 169, 108));
+    private static final XSSFColor s_FONT_COLOR          = new XSSFColor(new Color(255, 255, 255));
     private static final String s_FONT_NAME = "Calibri";
-    private static final short s_FONT_SIZE = 11;
+    private static final short s_FONT_SIZE  = 11;
+    private static final boolean s_BOLD     = true;
 
     private XSSFWorkbook m_workbook;
 
@@ -111,6 +113,7 @@ public class ExcelWriter {
         final XSSFFont font = m_workbook.createFont();
         font.setFontHeightInPoints(s_FONT_SIZE);
         font.setFontName(s_FONT_NAME);
+        font.setBold(s_BOLD);
         font.setColor(s_FONT_COLOR);
 
         m_stylePrimaryColorBorders = m_workbook.createCellStyle();
@@ -218,54 +221,54 @@ public class ExcelWriter {
 
         r = _general_info_sheet.createRow(2);
         r.createCell(0).setCellValue("Name");
-        r.getCell(0).setCellStyle(m_styleAlternateColorBBorders);
+        r.getCell(0).setCellStyle(m_styleAlternateColorABorders);
         r.createCell(1).setCellValue(_data.getName());
-        r.getCell(1).setCellStyle(m_styleAlternateColorABorders);
+        r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
         r.createCell(5).setCellValue("Genome");
-        r.getCell(5).setCellStyle(m_styleAlternateColorBBorders);
+        r.getCell(5).setCellStyle(m_styleAlternateColorABorders);
 
         r = _general_info_sheet.createRow(4);
         r.createCell(0).setCellValue("Modification Date");
         r.createCell(1).setCellValue(new SimpleDateFormat("d MMM yyyy").format(_data.getModificationDate()));
         r.getCell(0).setCellStyle(m_styleAlternateColorABorders);
-        r.getCell(1).setCellStyle(m_styleAlternateColorABorders);
+        r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
 
         r = _general_info_sheet.createRow(6);
         r.createCell(0).setCellValue("Total number of CDS sequences");
         r.createCell(1).setCellValue(_data.getCDSNumber());
-        r.getCell(0).setCellStyle(m_styleAlternateColorBBorders);
-        r.getCell(1).setCellStyle(m_styleAlternateColorBBorders);
+        r.getCell(0).setCellStyle(m_styleAlternateColorABorders);
+        r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
 
         r = _general_info_sheet.createRow(8);
         r.createCell(0).setCellValue("Number of valid CDS");
         r.createCell(1).setCellValue(_data.getValidCDSNumber());
         r.getCell(0).setCellStyle(m_styleAlternateColorABorders);
-        r.getCell(1).setCellStyle(m_styleAlternateColorABorders);
+        r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
 
         r = _general_info_sheet.createRow(10);
         r.createCell(0).setCellValue("Number of invalid CDS");
         r.createCell(1).setCellValue(_data.getCDSNumber() - _data.getValidCDSNumber());
-        r.getCell(0).setCellStyle(m_styleAlternateColorBBorders);
-        r.getCell(1).setCellStyle(m_styleAlternateColorBBorders);
+        r.getCell(0).setCellStyle(m_styleAlternateColorABorders);
+        r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
 
         if (_data.getClass() != Organism.class) {
             r = _general_info_sheet.createRow(12);
             r.createCell(0).setCellValue("Number of Organisms");
             r.createCell(1).setCellValue(_data.getTotalOrganism());
             r.getCell(0).setCellStyle(m_styleAlternateColorABorders);
-            r.getCell(1).setCellStyle(m_styleAlternateColorABorders);
+            r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
         } else {
             r = _general_info_sheet.createRow(12);
             r.createCell(0).setCellValue("Id");
             r.createCell(1).setCellValue(((Organism) _data).getId());
-            r.getCell(0).setCellStyle(m_styleAlternateColorBBorders);
-            r.getCell(1).setCellStyle(m_styleAlternateColorBBorders);
+            r.getCell(0).setCellStyle(m_styleAlternateColorABorders);
+            r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
 
             r = _general_info_sheet.createRow(14);
             r.createCell(0).setCellValue("Version");
             r.createCell(1).setCellValue(((Organism) _data).getVersion());
             r.getCell(0).setCellStyle(m_styleAlternateColorABorders);
-            r.getCell(1).setCellStyle(m_styleAlternateColorABorders);
+            r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
         }
 
         int genomeInfoRowNumber = 3;
@@ -305,9 +308,11 @@ public class ExcelWriter {
     private void createHeaderSheet(XSSFSheet _sheet) {
         XSSFRow r = _sheet.createRow(0);
         XSSFCell c = r.createCell(0);
+
+        // TRINUC TABLE
         c.setCellValue("Trinucleotide");
-        _sheet.setColumnWidth(0, 7500);
         c.setCellStyle(m_stylePrimaryColorBorders);
+        _sheet.setColumnWidth(0, 3600);
         c = r.createCell(1);
         c.setCellValue(Statistics.StatLong.PHASE0.toString());
         _sheet.setColumnWidth(1, 3000);
@@ -344,18 +349,51 @@ public class ExcelWriter {
         c.setCellValue(Statistics.StatLong.PREF2.toString());
         _sheet.setColumnWidth(9, 3000);
         c.setCellStyle(m_stylePrimaryColorBorders);
+
+        // DINUC TABLE
+        c = r.createCell(12);
+        c.setCellValue("Dinucléotides");
+        c.setCellStyle(m_stylePrimaryColorBorders);
+        _sheet.setColumnWidth(0, 3600);
+        c = r.createCell(13);
+        c.setCellValue(Statistics.StatLong.PHASE0.toString());
+        _sheet.setColumnWidth(13, 3000);
+        c.setCellStyle(m_stylePrimaryColorBorders);
+        c = r.createCell(14);
+        c.setCellValue(Statistics.StatFloat.FREQ0.toString());
+        _sheet.setColumnWidth(14, 3000);
+        c.setCellStyle(m_stylePrimaryColorBorders);
+        c = r.createCell(15);
+        c.setCellValue(Statistics.StatLong.PHASE1.toString());
+        _sheet.setColumnWidth(15, 3000);
+        c.setCellStyle(m_stylePrimaryColorBorders);
+        c = r.createCell(16);
+        c.setCellValue(Statistics.StatFloat.FREQ1.toString());
+        _sheet.setColumnWidth(16, 3000);
+        c.setCellStyle(m_stylePrimaryColorBorders);
+        c = r.createCell(17);
+        c.setCellValue(Statistics.StatLong.PREF0.toString());
+        _sheet.setColumnWidth(17, 3000);
+        c.setCellStyle(m_stylePrimaryColorBorders);
+        c = r.createCell(18);
+        c.setCellValue(Statistics.StatLong.PREF1.toString());
+        _sheet.setColumnWidth(18, 3000);
+        c.setCellStyle(m_stylePrimaryColorBorders);
+
+
     }
 
     private void createTable(XSSFSheet _sheet, Statistics _stat) {
-        int i = 1;
         XSSFRow r;
         XSSFCell c;
+
+        // TRINUC TABLE
         XSSFCellStyle style1 = m_styleAlternateColorB;
         XSSFCellStyle style2 = m_styleAlternateColorA;
         XSSFCellStyle style3 = m_styleAlternateColorBRightBorders;
         XSSFCellStyle alternate1;
         XSSFCellStyle alternate2 = m_styleAlternateColorARightBorders;
-
+        int i = 1;
         for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
 
             // Design for color 1/2
@@ -408,30 +446,88 @@ public class ExcelWriter {
         for (int p = 1; p <= 9; p++) {
             c = r.createCell(p);
             c.setCellType(CellType.NUMERIC);
+            // JUST TO KNOW : A + P IS OKAY ONLY BECAUSE WE DON'T GO FURTHER THAN Z. REMEMBER IT
             c.setCellFormula("SUM(" + (char) ('A' + p) + "2:" + (char) ('A' + p) + "65)");
             c.setCellStyle(m_stylePrimaryColorBorders);
         }
 
-        i += 2;
-        r = _sheet.createRow(i);
-        r.createCell(0).setCellValue("Total number of CDS sequences");
-        r.createCell(1).setCellValue(_stat.getCDSNumber());
-        r.getCell(0).setCellStyle(m_stylePrimaryColorBorders);
-        r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
+        // DINUC TABLE
+        style1 = m_styleAlternateColorB;
+        style2 = m_styleAlternateColorA;
+        style3 = m_styleAlternateColorARightBorders;
+        alternate2 = m_styleAlternateColorBRightBorders;
+        i = 1;
+        for (Statistics.Dinucleotide tri : Statistics.Dinucleotide.values()) {
+
+            // Design for color 1/2
+            alternate1 = style1;
+            style1 = style2;
+            style2 = alternate1;
+            alternate1 = alternate2;
+            alternate2 = style3;
+            style3 = alternate1;
+
+            Tuple row = _stat.getDiTable()[tri.ordinal()];
+            r = _sheet.getRow(i);
+            c = r.createCell(12);
+            c.setCellValue(tri.toString());
+            c.setCellStyle(m_stylePrimaryColorLeftRightBorders);
+            c = r.createCell(13);
+            writeNumericCell(c, row.get(Statistics.StatLong.PHASE0));
+            c.setCellStyle(style1);
+            c = r.createCell(14);
+            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ0));
+            c.setCellStyle(style2);
+            c = r.createCell(15);
+            writeNumericCell(c, row.get(Statistics.StatLong.PHASE1));
+            c.setCellStyle(style1);
+            c = r.createCell(16);
+            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ1));
+            c.setCellStyle(style2);
+            c = r.createCell(17);
+            writeNumericCell(c, row.get(Statistics.StatLong.PREF0));
+            c.setCellStyle(style1);
+            c = r.createCell(18);
+            writeNumericCell(c, row.get(Statistics.StatLong.PREF1));
+            c.setCellStyle(style3);
+            i++;
+        }
+
+        r = _sheet.getRow(i);
+        c = r.createCell(12);
+        c.setCellValue("TOTAL");
+        c.setCellStyle(m_stylePrimaryColorBorders);
+        for (int p = 1; p <= 6; p++) {
+            c = r.createCell(p + 12);
+            c.setCellType(CellType.NUMERIC);
+            // JUST TO KNOW : A + P IS OKAY ONLY BECAUSE WE DON'T GO FURTHER THAN Z. REMEMBER IT
+            c.setCellFormula("SUM(" + (char) ('M' + p) + "2:" + (char) ('M' + p) + "17)");
+            c.setCellStyle(m_stylePrimaryColorBorders);
+        }
 
         i += 2;
-        r = _sheet.createRow(i);
-        r.createCell(0).setCellValue("Number of valid CDS");
-        r.createCell(1).setCellValue(_stat.getValidCDSNumber());
-        r.getCell(0).setCellStyle(m_stylePrimaryColorBorders);
-        r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
+        r = _sheet.getRow(i);
+        r.createCell(12).setCellValue("Total number of CDS sequences");
+        r.createCell(15).setCellValue(_stat.getCDSNumber());
+        r.getCell(12).setCellStyle(m_stylePrimaryColorBorders);
+        r.getCell(15).setCellStyle(m_stylePrimaryColorBorders);
+        _sheet.addMergedRegion(new CellRangeAddress(i, i, 12, 14));
 
         i += 2;
-        r = _sheet.createRow(i);
-        r.createCell(0).setCellValue("Number of invalids CDS");
-        r.createCell(1).setCellValue(_stat.getCDSNumber() - _stat.getValidCDSNumber());
-        r.getCell(0).setCellStyle(m_stylePrimaryColorBorders);
-        r.getCell(1).setCellStyle(m_stylePrimaryColorBorders);
+        r = _sheet.getRow(i);
+        r.createCell(12).setCellValue("Number of valid CDS");
+        r.createCell(15).setCellValue(_stat.getValidCDSNumber());
+        r.getCell(12).setCellStyle(m_stylePrimaryColorBorders);
+        r.getCell(15).setCellStyle(m_stylePrimaryColorBorders);
+        _sheet.addMergedRegion(new CellRangeAddress(i, i, 12, 14));
+
+        i += 2;
+        r = _sheet.getRow(i);
+        r.createCell(12).setCellValue("Number of invalids CDS");
+        r.createCell(15).setCellValue(_stat.getCDSNumber() - _stat.getValidCDSNumber());
+        r.getCell(12).setCellStyle(m_stylePrimaryColorBorders);
+        r.getCell(15).setCellStyle(m_stylePrimaryColorBorders);
+        _sheet.addMergedRegion(new CellRangeAddress(i, i, 12, 14));
     }
 }
 

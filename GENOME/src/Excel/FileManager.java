@@ -73,7 +73,7 @@ public class FileManager {
      * @throws IOException if it's impossible to create the directory
      */
     protected static String getPathFor(Kingdom _kindgom) throws IOException {
-        return createPathEnd(createPath(_kindgom.getName()), _kindgom);
+        return createPathEnd(createPath(""), _kindgom);
     }
 
     /**
@@ -84,7 +84,7 @@ public class FileManager {
      * @throws IOException if it's impossible to create the directory
      */
     protected static String getPathFor(Group _group) throws IOException {
-        String groupPath = _group.getKingdomName() + File.separator + _group.getName();
+        String groupPath = _group.getKingdomName();
         return createPathEnd(createPath(groupPath), _group);
     }
 
@@ -96,7 +96,7 @@ public class FileManager {
      * @throws IOException if it's impossible to create the directory
      */
     protected static String getPathFor(SubGroup _subGroup) throws IOException {
-        String subGroupPath = _subGroup.getKingdomName() + File.separator + _subGroup.getGroupName() + File.separator + _subGroup.getName();
+        String subGroupPath = _subGroup.getKingdomName() + File.separator + _subGroup.getGroupName();
         return createPathEnd(createPath(subGroupPath), _subGroup);
     }
 
