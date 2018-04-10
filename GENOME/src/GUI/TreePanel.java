@@ -52,6 +52,30 @@ public class TreePanel extends IPanel {
         m_tree.setEditable(true);
         m_tree.setBackground(s_LIGHTGRAY);
 
+        m_tree.setCellRenderer(new DefaultTreeCellRenderer() {
+            @Override
+            public Component getTreeCellRendererComponent(JTree tree, Object value, boolean sel, boolean exp, boolean leaf, int row, boolean hasFocus) {
+                super.getTreeCellRendererComponent(tree, value, sel, exp, leaf, row, hasFocus);
+                Node node = (Node) ((DefaultMutableTreeNode) value).getUserObject();
+
+                switch (node.getState()) {
+                    case CREATE:
+                        setForeground(s_BLUE);
+                        break;
+                    case UPDATE:
+                        setForeground(s_ORANGE);
+                        break;
+                    case FINISH:
+                        setForeground(s_GREEN);
+                        break;
+                    case DEFAULT:
+                        break;
+                }
+
+                return this;
+            }
+        });
+
         DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) m_tree.getCellRenderer();
         renderer.setTextSelectionColor(s_WHITE);
         renderer.setBackgroundSelectionColor(s_BLUEGRAY);
@@ -84,9 +108,16 @@ public class TreePanel extends IPanel {
                 progressing = progressing.getNextSibling();
             }
             if (!found) {
-                progressing = new DefaultMutableTreeNode(temp);
+                progressing = new DefaultMutableTreeNode(new Node(temp, State.CREATE));
                 actual.add(progressing);
                 m_treeModel.reload();
+            } else {
+                if (table.length == 2)
+                    resetState();
+                else if (((Node) progressing.getUserObject()).getState() == State.DEFAULT) {
+                    ((Node) progressing.getUserObject()).setState(State.UPDATE);
+                    m_treeModel.nodeChanged(progressing);
+                }
             }
             actual = progressing;
         }
@@ -106,10 +137,18 @@ public class TreePanel extends IPanel {
                 progressing = progressing.getNextSibling();
             }
             if (!found) {
-                progressing = new DefaultMutableTreeNode(temp);
+                progressing = new DefaultMutableTreeNode(new Node(temp, State.CREATE));
                 actual.add(progressing);
                 m_treeModel.insertNodeInto(progressing, actual, actual.getChildCount() - 1);
                 m_treeModel.nodeChanged(actual);
+            } else {
+                if (table.length == 3) {
+                    ((Node) progressing.getUserObject()).setState(State.FINISH);
+                    m_treeModel.nodeChanged(progressing);
+                } else if (((Node) progressing.getUserObject()).getState() == State.DEFAULT) {
+                    ((Node) progressing.getUserObject()).setState(State.UPDATE);
+                    m_treeModel.nodeChanged(progressing);
+                }
             }
             actual = progressing;
         }
@@ -129,10 +168,18 @@ public class TreePanel extends IPanel {
                 progressing = progressing.getNextSibling();
             }
             if (!found) {
-                progressing = new DefaultMutableTreeNode(temp);
+                progressing = new DefaultMutableTreeNode(new Node(temp, State.CREATE));
                 actual.add(progressing);
                 m_treeModel.insertNodeInto(progressing, actual, actual.getChildCount() - 1);
                 m_treeModel.nodeChanged(actual);
+            } else {
+                if (table.length == 4) {
+                    ((Node) progressing.getUserObject()).setState(State.FINISH);
+                    m_treeModel.nodeChanged(progressing);
+                } else if (((Node) progressing.getUserObject()).getState() == State.DEFAULT) {
+                    ((Node) progressing.getUserObject()).setState(State.UPDATE);
+                    m_treeModel.nodeChanged(progressing);
+                }
             }
             actual = progressing;
         }
@@ -152,10 +199,18 @@ public class TreePanel extends IPanel {
                 progressing = progressing.getNextSibling();
             }
             if (!found) {
-                progressing = new DefaultMutableTreeNode(temp);
+                progressing = new DefaultMutableTreeNode(new Node(temp, State.CREATE));
                 actual.add(progressing);
                 m_treeModel.insertNodeInto(progressing, actual, actual.getChildCount() - 1);
                 m_treeModel.nodeChanged(actual);
+            } else {
+                if (table.length == 5) {
+                    ((Node) progressing.getUserObject()).setState(State.FINISH);
+                    m_treeModel.nodeChanged(progressing);
+                } else if (((Node) progressing.getUserObject()).getState() == State.DEFAULT) {
+                    ((Node) progressing.getUserObject()).setState(State.UPDATE);
+                    m_treeModel.nodeChanged(progressing);
+                }
             }
             actual = progressing;
         }
@@ -175,7 +230,7 @@ public class TreePanel extends IPanel {
                 progressing = progressing.getNextSibling();
             }
             if (!found) {
-                progressing = new DefaultMutableTreeNode(temp);
+                progressing = new DefaultMutableTreeNode(new Node(temp, State.FINISH));
                 actual.add(progressing);
                 m_treeModel.insertNodeInto(progressing, actual, actual.getChildCount() - 1);
                 m_treeModel.nodeChanged(actual);
@@ -184,7 +239,7 @@ public class TreePanel extends IPanel {
     }
 
     private DefaultMutableTreeNode loadTree() {
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
+        DefaultMutableTreeNode root = new DefaultMutableTreeNode(new Node("root", State.DEFAULT));
         File path = new File(Options.getSerializeDirectory());
         if (path.exists()) {
             File[] files = path.listFiles();
@@ -207,7 +262,7 @@ public class TreePanel extends IPanel {
                         }
                         temp = table[0].substring(2, table[0].length()).replaceAll("_", " ");
                         if (!temp.equals(db.toString())) {
-                            db = new DefaultMutableTreeNode(temp);
+                            db = new DefaultMutableTreeNode(new Node(temp, State.DEFAULT));
                             root.add(db);
                         }
                     }
@@ -217,7 +272,7 @@ public class TreePanel extends IPanel {
                         }
                         temp = table[1].substring(2, table[1].length()).replaceAll("_", " ");
                         if (!temp.equals(kg.toString())) {
-                            kg = new DefaultMutableTreeNode(temp);
+                            kg = new DefaultMutableTreeNode(new Node(temp, State.DEFAULT));
                             db.add(kg);
                         }
                     }
@@ -227,7 +282,7 @@ public class TreePanel extends IPanel {
                         }
                         temp = table[2].substring(2, table[2].length()).replaceAll("_", " ");
                         if (!temp.equals(gp.toString())) {
-                            gp = new DefaultMutableTreeNode(temp);
+                            gp = new DefaultMutableTreeNode(new Node(temp, State.DEFAULT));
                             kg.add(gp);
                         }
                     }
@@ -237,7 +292,7 @@ public class TreePanel extends IPanel {
                         }
                         temp = table[3].substring(3, table[3].length()).replaceAll("_", " ");
                         if (!temp.equals(su.toString())) {
-                            su = new DefaultMutableTreeNode(temp);
+                            su = new DefaultMutableTreeNode(new Node(temp, State.DEFAULT));
                             gp.add(su);
                         }
                     }
@@ -246,7 +301,7 @@ public class TreePanel extends IPanel {
                             continue;
                         }
                         temp = table[4].substring(2, table[4].length()).replaceAll("_", " ");
-                        su.add(new DefaultMutableTreeNode(temp));
+                        su.add(new DefaultMutableTreeNode(new Node(temp, State.DEFAULT)));
                     }
                 }
             }
@@ -269,5 +324,46 @@ public class TreePanel extends IPanel {
         if (table.length >= 6)
             result += Options.getSerializationSpliter() + Options.getOrganismSerializationPrefix() + table[5].toString().replaceAll(" ", "_");
         return Options.getSerializeDirectory() + File.separator + result + Options.getSerializeExtension();
+    }
+
+    private void resetState() {
+        DefaultMutableTreeNode actual = ((DefaultMutableTreeNode) m_treeModel.getRoot()).getNextNode();
+        while (actual != null) {
+            ((Node) actual.getUserObject()).setState(State.DEFAULT);
+            m_treeModel.nodeChanged(actual);
+            actual = actual.getNextNode();
+        }
+    }
+
+    public enum State {
+        CREATE,
+        UPDATE,
+        FINISH,
+        DEFAULT
+    }
+
+    public class Node {
+
+        private State m_state;
+        private String m_name;
+
+        public Node(String _name, State _state) {
+            m_name = _name;
+            m_state = _state;
+        }
+
+        public State getState() {
+            return m_state;
+        }
+
+        public void setState(State _state) {
+            m_state = _state;
+        }
+
+        @Override
+        public String toString() {
+            return m_name;
+        }
+
     }
 }
