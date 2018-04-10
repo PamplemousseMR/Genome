@@ -126,9 +126,25 @@ public class Activity {
                     });
                     currentSubGroup.start();
 
-                    boolean stop = false;
                     int index = 0;
-                    while (!stop && go.hasNext()) {
+                    while (go.hasNext()) {
+                        m_lock.lock();
+                        {
+                            while (s_wait) {
+                                Logs.info("wait...");
+                                try {
+                                    m_cond.await();
+                                } catch (InterruptedException e) {
+                                    Logs.exception(e);
+                                }
+                            }
+                        }
+                        m_lock.unlock();
+                        synchronized (s_stopLock) {
+                            if (s_stop) {
+                                break;
+                            }
+                        }
                         MainFrame.getSingleton().updateProgresse(index++);
                         final OrganismParser organismParser = go.getNext();
                         final String organismName = organismParser.getName() + "-" + organismParser.getId();
@@ -225,21 +241,6 @@ public class Activity {
                                 }
                             }
                         });
-                        m_lock.lock();
-                        {
-                            while (s_wait) {
-                                Logs.info("wait...");
-                                try {
-                                    m_cond.await();
-                                } catch (InterruptedException e) {
-                                    Logs.exception(e);
-                                }
-                            }
-                        }
-                        m_lock.unlock();
-                        synchronized (s_stopLock) {
-                            stop = s_stop;
-                        }
                     }
 
                     currentDataBase.stop();

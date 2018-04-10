@@ -69,7 +69,7 @@ public final class Logs {
                 e.printStackTrace();
             }
         }
-        s_logsListener.logsEvent(message);
+        s_logsListener.logsEvent("Info : " + _message);
     }
 
     /**
@@ -88,7 +88,7 @@ public final class Logs {
                 e.printStackTrace();
             }
         }
-        s_logsListener.logsEvent(message);
+        s_logsListener.logsEvent("Warning : " + _message);
     }
 
     /**
@@ -101,7 +101,7 @@ public final class Logs {
         _exception.printStackTrace(new PrintWriter(errors));
 
         final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        final String header = "[" + stackTraceElements[2].getFileName() + "{ " + stackTraceElements[2].getClassName() + " : " + stackTraceElements[2].getMethodName() + "(" + stackTraceElements[2].getLineNumber() + ") } ] Exception : ";
+        final String header = "[" + stackTraceElements[2].getFileName() + "{ " + stackTraceElements[2].getClassName() + " : " + stackTraceElements[2].getMethodName() + "(" + stackTraceElements[2].getLineNumber() + ") } ] exception : ";
         final String message = header + " " + errors.toString();
         if (s_file != null) {
             try {
@@ -110,7 +110,7 @@ public final class Logs {
                 e.printStackTrace();
             }
         }
-        s_logsListener.logsEvent(message);
+        s_logsListener.logsEvent("Exception : " + errors.toString());
     }
 
     public interface LogsListener {

@@ -4,6 +4,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionListener;
 
+import static GUI.Constant.s_BLUEGRAY;
+
 public class ActivityPanel extends JPanel {
 
 
@@ -37,6 +39,7 @@ public class ActivityPanel extends JPanel {
         m_container.add(m_pause);
         m_container.add(m_resume);
         m_container.add(m_stop);
+        m_container.setBackground(s_BLUEGRAY);
         super.add(m_container);
     }
 
