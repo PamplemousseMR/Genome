@@ -100,6 +100,7 @@ public class Activity {
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
+                    MainFrame.getSingleton().setProgresseMax(go.getTotalCount());
 
                     final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
                         try {
@@ -126,7 +127,9 @@ public class Activity {
                     currentSubGroup.start();
 
                     boolean stop = false;
+                    int index = 0;
                     while (!stop && go.hasNext()) {
+                        MainFrame.getSingleton().updateProgresse(index++);
                         final OrganismParser organismParser = go.getNext();
                         final String organismName = organismParser.getName() + "-" + organismParser.getId();
 
@@ -247,6 +250,7 @@ public class Activity {
                     Logs.warning("Unable to run programme");
                     Logs.exception(e);
                 } finally {
+                    Logs.info("Finished and wait for threads");
                     threadManager.finalizeThreadManager();
                     synchronized (s_stopLock) {
                         s_stop = false;

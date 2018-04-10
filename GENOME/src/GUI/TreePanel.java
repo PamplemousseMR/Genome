@@ -9,26 +9,58 @@ import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
 import java.awt.*;
 import java.io.File;
+import java.util.Arrays;
 
-public class DBTree extends JTree {
+import static GUI.Constant.*;
 
-    private final DefaultTreeModel m_treeModel;
+public class TreePanel extends IPanel {
 
-    protected DBTree() {
-        super();
-        swagTree();
-        final DefaultMutableTreeNode root = loadTree();
-        final DefaultTreeModel model = new DefaultTreeModel(root);
-        m_treeModel = model;
-        super.setModel(model);
-        super.setRootVisible(false);
-        super.setShowsRootHandles(true);
-        super.setEditable(true);
+    private static final String s_TITLE = "Arborescence des fichiers";
 
-        addTreeSelectionListener(e -> {
+    private DefaultTreeModel m_treeModel;
+    private JTree m_tree;
+    private ScrollComponent m_scrollPane;
+
+    protected TreePanel() {
+        super(s_TITLE);
+        m_tree.addTreeSelectionListener(e -> {
             System.out.println("J'ai été selectionné " + e.getPath());
             System.out.println("fichier : " + getFileName(e.getPath()));
         });
+    }
+
+    protected void createComponent() {
+        m_tree = new JTree();
+        m_scrollPane = new ScrollComponent(m_tree);
+    }
+
+    protected void initLayout() {
+
+    }
+
+    protected void addComponents() {
+        super.add(m_scrollPane);
+    }
+
+    protected void swagComponent() {
+        final DefaultMutableTreeNode root = loadTree();
+        m_treeModel = new DefaultTreeModel(root);
+
+        m_tree.setModel(m_treeModel);
+        m_tree.setRootVisible(false);
+        m_tree.setShowsRootHandles(true);
+        m_tree.setEditable(true);
+        m_tree.setBackground(s_LIGHTGRAY);
+
+        DefaultTreeCellRenderer renderer = (DefaultTreeCellRenderer) m_tree.getCellRenderer();
+        renderer.setTextSelectionColor(s_WHITE);
+        renderer.setBackgroundSelectionColor(s_BLUEGRAY);
+        renderer.setBackgroundNonSelectionColor(s_LIGHTGRAY);
+        renderer.setTextNonSelectionColor(s_WHITE);
+        renderer.setBorderSelectionColor(s_BLACK);
+        renderer.setLeafIcon(null);
+
+        m_scrollPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
     }
 
     protected synchronized void update(String _path) {
@@ -151,24 +183,13 @@ public class DBTree extends JTree {
         }
     }
 
-    private void swagTree() {
-        setOpaque(false);
-        DefaultTreeCellRenderer renderer =
-                (DefaultTreeCellRenderer) this.getCellRenderer();
-        renderer.setTextSelectionColor(Color.WHITE);
-        renderer.setBackgroundSelectionColor(MainFrame.s_BLUEGRAY);
-        renderer.setBackgroundNonSelectionColor(MainFrame.s_LIGHTGRAY);
-        renderer.setTextNonSelectionColor(Color.WHITE);
-        renderer.setBorderSelectionColor(Color.BLACK);
-        renderer.setLeafIcon(null); //nothing is nice
-    }
-
     private DefaultMutableTreeNode loadTree() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
         File path = new File(Options.getSerializeDirectory());
         if (path.exists()) {
             File[] files = path.listFiles();
             if (files != null) {
+                Arrays.sort(files);
                 DefaultMutableTreeNode db = new DefaultMutableTreeNode("");
                 DefaultMutableTreeNode kg = new DefaultMutableTreeNode("");
                 DefaultMutableTreeNode gp = new DefaultMutableTreeNode("");
