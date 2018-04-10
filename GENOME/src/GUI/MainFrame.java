@@ -36,7 +36,9 @@ public final class MainFrame extends ResizibleFrame {
     private JSplitPane m_splitPanel_main;
     private JSplitPane m_rightContainer;
     private JPanel m_leftContainer;
+    private JPanel m_leftSouthContainer;
 
+    private JProgressBar m_progessBar;
     private TreePanel m_treePanel;
     private InformationPanel m_informationsPanel;
     private ActivityPanel m_activityPanel;
@@ -91,7 +93,7 @@ public final class MainFrame extends ResizibleFrame {
      * @param _value the value to set
      */
     public void updateProgresse(int _value) {
-        //SwingUtilities.invokeLater(() -> m_progessBar.setValue(_value));
+        SwingUtilities.invokeLater(() -> m_progessBar.setValue(_value));
     }
 
     /**
@@ -136,7 +138,7 @@ public final class MainFrame extends ResizibleFrame {
      * @param _max the max to set
      */
     public void setProgresseMax(int _max) {
-        //SwingUtilities.invokeLater(() -> m_progessBar.setMaximum(_max));
+        SwingUtilities.invokeLater(() -> m_progessBar.setMaximum(_max));
     }
 
     /**
@@ -179,12 +181,14 @@ public final class MainFrame extends ResizibleFrame {
         m_maximizeB = new JButton();
         m_minimizeB = new JButton();
 
+        m_progessBar = new JProgressBar();
         m_treePanel = new TreePanel();
         m_informationsPanel = new InformationPanel();
         m_logsPanel = new LogsPanel();
         m_activityPanel = new ActivityPanel();
 
         m_leftContainer = new JPanel();
+        m_leftSouthContainer = new JPanel();
         m_rightContainer = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_informationsPanel, m_logsPanel);
         m_splitPanel_main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_leftContainer, m_rightContainer);
     }
@@ -200,6 +204,7 @@ public final class MainFrame extends ResizibleFrame {
         m_menuPanel.setLayout(new FlowLayout(FlowLayout.RIGHT));
 
         m_leftContainer.setLayout(new BorderLayout());
+        m_leftSouthContainer.setLayout(new BorderLayout());
     }
 
     /**
@@ -220,7 +225,10 @@ public final class MainFrame extends ResizibleFrame {
 
         m_main.add(m_splitPanel_main, BorderLayout.CENTER);
         m_leftContainer.add(m_treePanel, BorderLayout.CENTER);
-        m_leftContainer.add(m_activityPanel, BorderLayout.SOUTH);
+        m_leftContainer.add(m_leftSouthContainer, BorderLayout.SOUTH);
+
+        m_leftSouthContainer.add(m_progessBar, BorderLayout.NORTH);
+        m_leftSouthContainer.add(m_activityPanel, BorderLayout.SOUTH);
     }
 
     /**
@@ -252,6 +260,8 @@ public final class MainFrame extends ResizibleFrame {
         m_leftContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
         m_activityPanel.setPreferredSize(new Dimension(120, 30));
+
+        m_progessBar.setStringPainted(true);
     }
 
     /**
