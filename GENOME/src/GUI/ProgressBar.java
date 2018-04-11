@@ -5,11 +5,10 @@ import javax.swing.plaf.basic.BasicProgressBarUI;
 import java.awt.*;
 
 import static GUI.Constant.*;
-import static GUI.Constant.s_CHARCOAL;
 
 public class ProgressBar extends JProgressBar {
 
-    protected ProgressBar(){
+    protected ProgressBar() {
         super();
         super.setUI(new BasicProgressBarUI() {
             @Override

@@ -2,11 +2,10 @@ package GUI;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 
 import static GUI.Constant.s_BLUEGRAY;
 
-public class ActivityPanel extends JPanel {
+public final class ActivityPanel extends JPanel {
 
 
     private JPanel m_container;
@@ -19,6 +18,27 @@ public class ActivityPanel extends JPanel {
         createComponent();
         initLayout();
         addComponents();
+
+        m_pause.addActionListener(e -> {
+            m_container.remove(m_pause);
+            m_container.add(m_resume, 0);
+            m_container.revalidate();
+            m_container.repaint();
+        });
+
+        m_resume.addActionListener(e -> {
+            m_container.remove(m_resume);
+            m_container.add(m_pause, 0);
+            m_container.revalidate();
+            m_container.repaint();
+        });
+
+        m_stop.addActionListener(e -> {
+            m_container.remove(0);
+            m_container.add(m_start, 0);
+            m_container.revalidate();
+            m_container.repaint();
+        });
     }
 
     protected void createComponent() {
@@ -31,13 +51,11 @@ public class ActivityPanel extends JPanel {
 
     protected void initLayout() {
         this.setLayout(new BorderLayout());
-        m_container.setLayout(new GridLayout(1, 4));
+        m_container.setLayout(new GridLayout(1, 2));
     }
 
     protected void addComponents() {
         m_container.add(m_start);
-        m_container.add(m_pause);
-        m_container.add(m_resume);
         m_container.add(m_stop);
         m_container.setBackground(s_BLUEGRAY);
         super.add(m_container);
@@ -49,7 +67,14 @@ public class ActivityPanel extends JPanel {
      * @param _actionListener the start action
      */
     protected void setStartAction(ActionListener _actionListener) {
-        m_start.addActionListener(_actionListener);
+        m_start.addActionListener(e -> {
+            if (_actionListener.actionEvent()) {
+                m_container.remove(m_start);
+                m_container.add(m_pause, 0);
+                m_container.revalidate();
+                m_container.repaint();
+            }
+        });
     }
 
     /**
@@ -58,7 +83,7 @@ public class ActivityPanel extends JPanel {
      * @param _actionListener the stop action
      */
     protected void setStopAction(ActionListener _actionListener) {
-        m_stop.addActionListener(_actionListener);
+        m_stop.addActionListener(e -> _actionListener.actionEvent());
     }
 
     /**
@@ -67,7 +92,7 @@ public class ActivityPanel extends JPanel {
      * @param _actionListener the pause action
      */
     protected void setPauseAction(ActionListener _actionListener) {
-        m_pause.addActionListener(_actionListener);
+        m_pause.addActionListener(e -> _actionListener.actionEvent());
     }
 
     /**
@@ -76,6 +101,10 @@ public class ActivityPanel extends JPanel {
      * @param _actionListener the resume action
      */
     protected void setResumeAction(ActionListener _actionListener) {
-        m_resume.addActionListener(_actionListener);
+        m_resume.addActionListener(e -> _actionListener.actionEvent());
+    }
+
+    public interface ActionListener {
+        boolean actionEvent();
     }
 }

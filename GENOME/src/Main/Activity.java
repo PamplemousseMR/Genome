@@ -79,7 +79,7 @@ public class Activity {
         return _currentSubGroup;
     }
 
-    public static void genbank() {
+    public static boolean genbank() {
         boolean run = true;
         synchronized (s_runLock) {
             if (!s_run) {
@@ -251,7 +251,7 @@ public class Activity {
                     Logs.warning("Unable to run programme");
                     Logs.exception(e);
                 } finally {
-                    Logs.info("Finished and wait for threads", true);
+                    Logs.info("Finished and wait for threads...", true);
                     threadManager.finalizeThreadManager();
                     synchronized (s_stopLock) {
                         s_stop = false;
@@ -262,13 +262,19 @@ public class Activity {
                 }
             });
             s_activityThread.start();
+            return true;
         }
+        return false;
     }
 
-    public static void stop() {
-        Logs.info("stop requested", true);
+    public static boolean stop() {
+        Logs.info("stop requested ...", true);
+        boolean ret = false;
         synchronized (s_stopLock) {
-            s_stop = true;
+            if (!s_stop) {
+                s_stop = true;
+                ret = true;
+            }
         }
         m_lock.lock();
         {
@@ -278,6 +284,7 @@ public class Activity {
             }
         }
         m_lock.unlock();
+        return ret;
     }
 
     public static void stopAndWait() {
@@ -291,27 +298,33 @@ public class Activity {
         }
     }
 
-    public static void pause() {
-        Logs.info("pause requested", true);
+    public static boolean pause() {
+        Logs.info("pause requested ...", true);
+        boolean ret = false;
         m_lock.lock();
         {
             if (!s_wait) {
                 s_wait = true;
+                ret = true;
             }
         }
         m_lock.unlock();
+        return ret;
     }
 
-    public static void resume() {
-        Logs.info("resume requested", true);
+    public static boolean resume() {
+        Logs.info("resume requested ...", true);
+        boolean ret = false;
         m_lock.lock();
         {
             if (s_wait) {
                 s_wait = false;
                 m_cond.signalAll();
+                ret = true;
             }
         }
         m_lock.unlock();
+        return ret;
     }
 
 }

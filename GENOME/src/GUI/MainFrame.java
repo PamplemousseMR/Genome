@@ -5,7 +5,6 @@ import Utils.Logs;
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.ActionListener;
 import java.awt.event.MouseEvent;
 
 import static GUI.Constant.*;
@@ -101,7 +100,7 @@ public final class MainFrame extends ResizibleFrame {
      *
      * @param _actionListener the start action
      */
-    public void setStartAction(ActionListener _actionListener) {
+    public void setStartAction(ActivityPanel.ActionListener _actionListener) {
         SwingUtilities.invokeLater(() -> m_activityPanel.setStartAction(_actionListener));
     }
 
@@ -110,7 +109,7 @@ public final class MainFrame extends ResizibleFrame {
      *
      * @param _actionListener the stop action
      */
-    public void setStopAction(ActionListener _actionListener) {
+    public void setStopAction(ActivityPanel.ActionListener _actionListener) {
         SwingUtilities.invokeLater(() -> m_activityPanel.setStopAction(_actionListener));
     }
 
@@ -119,7 +118,7 @@ public final class MainFrame extends ResizibleFrame {
      *
      * @param _actionListener the pause action
      */
-    public void setPauseAction(ActionListener _actionListener) {
+    public void setPauseAction(ActivityPanel.ActionListener _actionListener) {
         SwingUtilities.invokeLater(() -> m_activityPanel.setPauseAction(_actionListener));
     }
 
@@ -128,7 +127,7 @@ public final class MainFrame extends ResizibleFrame {
      *
      * @param _actionListener the resume action
      */
-    public void setResumeAction(ActionListener _actionListener) {
+    public void setResumeAction(ActivityPanel.ActionListener _actionListener) {
         SwingUtilities.invokeLater(() -> m_activityPanel.setResumeAction(_actionListener));
     }
 
