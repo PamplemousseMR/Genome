@@ -6,7 +6,7 @@ import java.awt.*;
 
 import static GUI.Constant.*;
 
-public class ProgressBar extends JProgressBar {
+public final class ProgressBar extends JProgressBar {
 
     protected ProgressBar() {
         super();

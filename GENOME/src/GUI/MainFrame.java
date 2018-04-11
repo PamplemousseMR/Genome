@@ -170,7 +170,7 @@ public final class MainFrame extends ResizibleFrame {
     private void initComponents() {
         m_header = new JPanel();
         m_main = new JPanel();
-        m_footer = new TitlePanel("Application cree par -- Romain M. -- Florian H. -- Vincent H. -- Sami F. -- Arthur D.  -- Romain T. -- Adele M.", 12, s_WHITE, s_DARKGRAY);
+        m_footer = new TitlePanel("Application cree par -- Romain M. -- Florian H. -- Vincent H. -- Sami F. -- Arthur D.  -- Romain T. -- Adele M.", 12, s_DARKGRAY);
 
         m_menuPanel = new JPanel();
         m_mainTitle = new JLabel("Projet de Bio-Informatique");

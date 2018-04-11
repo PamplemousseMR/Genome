@@ -13,7 +13,7 @@ import java.util.Arrays;
 
 import static GUI.Constant.*;
 
-public class TreePanel extends IPanel {
+public final class TreePanel extends IPanel {
 
     private static final String s_TITLE = "Arborescence des fichiers";
 
@@ -422,7 +422,7 @@ public class TreePanel extends IPanel {
     private class Node {
 
         private State m_state;
-        private String m_name;
+        private final String m_name;
 
         private Node(String _name, State _state) {
             m_name = _name;

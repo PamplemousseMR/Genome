@@ -2,7 +2,7 @@ package GUI;
 
 import java.awt.*;
 
-public class Constant {
+public final class Constant {
     protected static final Color s_DARKGRAY = new Color(39, 42, 49);
     protected static final Color s_LIGHTGRAY = new Color(54, 57, 62);
     protected static final Color s_BLUEGRAY = new Color(62, 68, 83);

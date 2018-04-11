@@ -8,7 +8,7 @@ import java.awt.*;
 import static GUI.Constant.s_DARKGRAY;
 import static GUI.Constant.s_LIGHTGRAY;
 
-public class ScrollComponent extends JScrollPane {
+public final class ScrollComponent extends JScrollPane {
 
     protected ScrollComponent(Component _component) {
         super(_component, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);

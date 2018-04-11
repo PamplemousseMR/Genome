@@ -9,7 +9,7 @@ import java.awt.event.MouseEvent;
 
 import static GUI.Constant.*;
 
-public class ButtonComponent extends JButton {
+public final class ButtonComponent extends JButton {
 
     protected ButtonComponent(String _path) {
         super.setMargin(s_INSETS);
