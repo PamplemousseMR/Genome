@@ -234,7 +234,7 @@ public final class MainFrame extends ResizibleFrame {
      * Swag the interface
      */
     private void swagComponents() {
-        getRootPane().setBorder(BorderFactory.createEmptyBorder());
+        getRootPane().setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
         m_menuPanel.setBackground(s_DARKGRAY);
         m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));

@@ -143,21 +143,18 @@ public final class TreePanel extends IPanel {
         m_orangeLabel.setForeground(s_WHITE);
         m_orangeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         m_orangeContainer.setBackground(s_LIGHTGRAY);
-        m_orangeContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
         m_blue.setPreferredSize(new Dimension(30, 30));
         m_blueLabel.setFont(new Font(s_FONT, Font.PLAIN, 15));
         m_blueLabel.setForeground(s_WHITE);
         m_blueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         m_blueContainer.setBackground(s_LIGHTGRAY);
-        m_blueContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
         m_green.setPreferredSize(new Dimension(30, 30));
         m_greenLabel.setFont(new Font(s_FONT, Font.PLAIN, 15));
         m_greenLabel.setForeground(s_WHITE);
         m_greenLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         m_greenContainer.setBackground(s_LIGHTGRAY);
-        m_greenContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
         m_legend.setBackground(s_LIGHTGRAY);
         m_legend.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
