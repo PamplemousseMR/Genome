@@ -11,10 +11,10 @@ final class GENOME {
      */
     private static void initializeProgram() {
         Logs.initializeLog();
-        Logs.info("Log initialized");
+        Logs.info("Log initialized", true);
         Options.initializeOptions();
-        Logs.info("Options initialized");
-        Logs.info("Begin");
+        Logs.info("Options initialized", true);
+        Logs.info("Begin", true);
     }
 
     /**
@@ -22,15 +22,15 @@ final class GENOME {
      */
     private static void finalizeProgram() {
         Activity.stopAndWait();
-        Logs.info("End");
-        Logs.info("Options finalized");
+        Logs.info("End", true);
+        Logs.info("Options finalized", true);
         Options.finalizeOptions();
-        Logs.info("Log finalized");
+        Logs.info("Log finalized", true);
         Logs.finalizeLog();
     }
 
     public static void main(String[] args) {
-        Logs.setListener(_message -> MainFrame.getSingleton().updateLog(_message));
+        Logs.setListener((_message,_type) -> MainFrame.getSingleton().updateLog(_message, _type));
         MainFrame.getSingleton().setStartAction(event -> Activity.genbank());
         MainFrame.getSingleton().setStopAction(event -> Activity.stop());
         MainFrame.getSingleton().setPauseAction(event -> Activity.pause());

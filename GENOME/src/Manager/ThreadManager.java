@@ -27,7 +27,7 @@ public final class ThreadManager {
 
         m_nbThreadMax = _nbThreadMax;
 
-        Logs.info("Number of threads : " + m_nbThreadMax);
+        Logs.info("Number of threads : " + m_nbThreadMax, true);
 
         m_threads = new ArrayList<>(m_nbThreadMax);
         m_running = true;
@@ -86,7 +86,7 @@ public final class ThreadManager {
                 Logs.exception(e);
             }
         }
-        Logs.info("Finalized");
+        Logs.info("Finalized", true);
     }
 
     /**
@@ -105,7 +105,7 @@ public final class ThreadManager {
             res = m_task.add(_iTask);
             if (res) {
                 m_condArray.signal();
-                Logs.info("Add task : " + _iTask.getName());
+                Logs.info("Add task : " + _iTask.getName(), true);
             }
         } catch (InterruptedException e) {
             Logs.warning("Unable to add task : " + _iTask.getName());
@@ -163,7 +163,7 @@ public final class ThreadManager {
                         if (m_task.size() < m_nbThreadMax + 1) {
                             m_condPush.signalAll();
                         }
-                        Logs.info("Task '" + todo.getName() + "' is chosen by thread " + m_id + " : remains " + m_task.size() + " task");
+                        Logs.info("Task '" + todo.getName() + "' is chosen by thread " + m_id + " : remains " + m_task.size() + " task", true);
                     }
 
                 }
@@ -189,7 +189,7 @@ public final class ThreadManager {
                     m_lockArray.unlock();
                     threadsInfos.append("]");
 
-                    Logs.info("Task '" + todo.getName() + " from thread " + m_id + "  is finished : " + threadsInfos);
+                    Logs.info("Task '" + todo.getName() + " from thread " + m_id + "  is finished : " + threadsInfos, true);
 
                 } else {
                     Logs.warning("No task to do by thread " + m_id);

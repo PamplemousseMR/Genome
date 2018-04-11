@@ -83,8 +83,8 @@ public final class MainFrame extends ResizibleFrame {
      *
      * @param _log to display
      */
-    public void updateLog(String _log) {
-        SwingUtilities.invokeLater(() -> m_logsPanel.updateLog(_log));
+    public void updateLog(String _log, Logs.Type _type) {
+        SwingUtilities.invokeLater(() -> m_logsPanel.updateLog(_log, _type));
     }
 
     /**

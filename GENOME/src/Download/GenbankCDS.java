@@ -64,7 +64,7 @@ public final class GenbankCDS extends IDownloader {
      * @throws OutOfMemoryException A savage out of memory appear
      */
     public void download() throws HTTPException, IOException, OutOfMemoryException {
-        Logs.info(String.format("Requesting sequence file [%s]", m_refseqId));
+        Logs.info(String.format("Requesting sequence file [%s]", m_refseqId), true);
         final BufferedReader reader;
         URL url = null;
         try {
@@ -82,7 +82,7 @@ public final class GenbankCDS extends IDownloader {
             Logs.exception(new Exception(e));
             throw new OutOfMemoryException(e.getMessage());
         }
-        Logs.info(String.format("Sequence [%s] : Request ended successfully (%d Bytes)", m_refseqId, m_data.length()));
+        Logs.info(String.format("Sequence [%s] : Request ended successfully (%d Bytes)", m_refseqId, m_data.length()), true);
     }
 
     /**

@@ -139,7 +139,7 @@ public final class GenbankOrganisms extends IDownloader {
         m_downloaded += chunkLength;
 
         if (m_enqueued == m_totalCount) {
-            Logs.info("GenbankOrganisms: Organisms download complete");
+            Logs.info("GenbankOrganisms: Organisms download complete", true);
         }
         m_enqueued = m_dataQueue.size();
     }
@@ -155,7 +155,7 @@ public final class GenbankOrganisms extends IDownloader {
      * @throws OutOfMemoryException A savage out of memory appear
      */
     private int downloadChunk(int _index) throws IOException, JSONException, HTTPException, OutOfMemoryException {
-        Logs.info(String.format("Requesting organisms [%d;%d]", _index, _index + Options.getDownloadStep()));
+        Logs.info(String.format("Requesting organisms [%d;%d]", _index, _index + Options.getDownloadStep()), true);
 
         final JSONObject json;
         try {
@@ -218,7 +218,7 @@ public final class GenbankOrganisms extends IDownloader {
         }
 
         int chunkLength = dataChunk.length();
-        Logs.info(String.format("%d/%d organisms enqueued of %d requested", currentEnqueue, chunkLength, Options.getDownloadStep()));
+        Logs.info(String.format("%d/%d organisms enqueued of %d requested", currentEnqueue, chunkLength, Options.getDownloadStep()), true);
         return chunkLength;
     }
 

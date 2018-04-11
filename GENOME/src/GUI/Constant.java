@@ -10,6 +10,7 @@ public class Constant {
     protected static final Color s_WHITE = Color.WHITE;
     protected static final Color s_BLACK = Color.BLACK;
     protected static final Color s_BLUE = new Color(104, 151, 187);
+    protected static final Color s_RED = new Color(255, 107, 104);
     protected static final Color s_ORANGE = new Color(204, 120, 50);
     protected static final Color s_GREEN = new Color(119, 183, 103);
 

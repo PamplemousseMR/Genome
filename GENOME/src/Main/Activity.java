@@ -131,7 +131,7 @@ public class Activity {
                         m_lock.lock();
                         {
                             while (s_wait) {
-                                Logs.info("wait...");
+                                Logs.info("wait...", true);
                                 try {
                                     m_cond.await();
                                 } catch (InterruptedException e) {
@@ -151,11 +151,11 @@ public class Activity {
 
                         final Date dateModif = Organism.loadDate(Options.getGenbankName(), organismParser.getKingdom(), organismParser.getGroup(), organismParser.getSubGroup(), organismName);
                         if (dateModif != null && organismParser.getModificationDate().compareTo(dateModif) <= 0) {
-                            Logs.info("Organism " + organismName + " already up to date");
+                            Logs.info("Organism " + organismName + " already up to date", false);
                             continue;
                         }
                         if (organismParser.getReplicons().size() == 0) {
-                            Logs.info("No replicon in : " + organismName);
+                            Logs.info("No replicon in : " + organismName, false);
                             continue;
                         }
 
@@ -251,7 +251,7 @@ public class Activity {
                     Logs.warning("Unable to run programme");
                     Logs.exception(e);
                 } finally {
-                    Logs.info("Finished and wait for threads");
+                    Logs.info("Finished and wait for threads", true);
                     threadManager.finalizeThreadManager();
                     synchronized (s_stopLock) {
                         s_stop = false;
@@ -266,7 +266,7 @@ public class Activity {
     }
 
     public static void stop() {
-        Logs.info("stop requested");
+        Logs.info("stop requested", true);
         synchronized (s_stopLock) {
             s_stop = true;
         }
@@ -292,7 +292,7 @@ public class Activity {
     }
 
     public static void pause() {
-        Logs.info("pause requested");
+        Logs.info("pause requested", true);
         m_lock.lock();
         {
             if (!s_wait) {
@@ -303,7 +303,7 @@ public class Activity {
     }
 
     public static void resume() {
-        Logs.info("resume requested");
+        Logs.info("resume requested", true);
         m_lock.lock();
         {
             if (s_wait) {

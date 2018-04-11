@@ -38,7 +38,7 @@ public final class LogsPanel extends IPanel {
         m_textArea.setEditable(false);
     }
 
-    protected void updateLog(String _log) {
+    protected void updateLog(String _log, Logs.Type _type) {
         m_textArea.append("\n " + _log);
         if (m_textArea.getLineCount() > 250) //print only the last 250 lines
         {
