@@ -180,16 +180,23 @@ public final class ThreadManager {
                     }
 
                     StringBuilder threadsInfos = new StringBuilder("[");
+                    int remain = 0;
+                    int runnable = 0;
                     m_lockArray.lock();
                     {
                         for (Thread t : m_threads) {
                             threadsInfos.append(t.getState()).append(", ");
+                            if (t.getState() == Thread.State.RUNNABLE || t.getState() == Thread.State.WAITING) {
+                                ++runnable;
+                            }
                         }
+                        remain = m_task.size();
                     }
                     m_lockArray.unlock();
                     threadsInfos.append("]");
 
                     Logs.info("Task '" + todo.getName() + " from thread " + m_id + "  is finished : " + threadsInfos, true);
+                    Logs.info("(" + todo.getName() + " : " + m_id + ") : remains " + remain + " task and " + runnable + " threads to wait", true);
 
                 } else {
                     Logs.warning("No task to do by thread " + m_id);

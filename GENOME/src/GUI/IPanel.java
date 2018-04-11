@@ -3,7 +3,8 @@ package GUI;
 import javax.swing.*;
 import java.awt.*;
 
-import static GUI.Constant.*;
+import static GUI.Constant.s_BLUEGRAY;
+import static GUI.Constant.s_LIGHTGRAY;
 
 public abstract class IPanel extends JPanel {
 

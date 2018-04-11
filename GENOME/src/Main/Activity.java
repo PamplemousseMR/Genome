@@ -95,6 +95,11 @@ public class Activity {
                 }
             }
             m_lock.unlock();
+            synchronized (s_stopLock) {
+                if (s_stop) {
+                    s_stop = false;
+                }
+            }
             s_activityThread = new Thread(() -> {
                 final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
@@ -126,7 +131,8 @@ public class Activity {
                     });
                     currentSubGroup.start();
 
-                    int index = 0;
+                    final Lock m_indexLock = new ReentrantLock();
+                    final int[] index = {0};
                     while (go.hasNext()) {
                         m_lock.lock();
                         {
@@ -145,17 +151,26 @@ public class Activity {
                                 break;
                             }
                         }
-                        MainFrame.getSingleton().updateProgresse(index++);
                         final OrganismParser organismParser = go.getNext();
                         final String organismName = organismParser.getName() + "-" + organismParser.getId();
 
                         final Date dateModif = Organism.loadDate(Options.getGenbankName(), organismParser.getKingdom(), organismParser.getGroup(), organismParser.getSubGroup(), organismName);
                         if (dateModif != null && organismParser.getModificationDate().compareTo(dateModif) <= 0) {
                             Logs.info("Organism " + organismName + " already up to date", false);
+                            m_indexLock.lock();
+                            {
+                                MainFrame.getSingleton().updateProgresse(++index[0]);
+                            }
+                            m_indexLock.unlock();
                             continue;
                         }
                         if (organismParser.getReplicons().size() == 0) {
                             Logs.info("No replicon in : " + organismName, false);
+                            m_indexLock.lock();
+                            {
+                                MainFrame.getSingleton().updateProgresse(++index[0]);
+                            }
+                            m_indexLock.unlock();
                             continue;
                         }
 
@@ -238,6 +253,11 @@ public class Activity {
                                         Logs.warning("Unable to finish : " + organism.getName());
                                         Logs.exception(e);
                                     }
+                                    m_indexLock.lock();
+                                    {
+                                        MainFrame.getSingleton().updateProgresse(++index[0]);
+                                    }
+                                    m_indexLock.unlock();
                                 }
                             }
                         });
@@ -273,7 +293,6 @@ public class Activity {
         synchronized (s_stopLock) {
             if (!s_stop) {
                 s_stop = true;
-                ret = true;
             }
         }
         m_lock.lock();

@@ -50,15 +50,15 @@ public final class TreePanel extends IPanel {
 
         m_orangeContainer = new JPanel();
         m_orange = new Circle(s_ORANGE);
-        m_orangeLabel = new JLabel("actualiser");
+        m_orangeLabel = new JLabel("actualisé");
 
         m_blueContainer = new JPanel();
         m_blue = new Circle(s_BLUE);
-        m_blueLabel = new JLabel("creer");
+        m_blueLabel = new JLabel("créé");
 
         m_greenContainer = new JPanel();
         m_green = new Circle(s_GREEN);
-        m_greenLabel = new JLabel("terminer");
+        m_greenLabel = new JLabel("terminé");
 
         m_tree = new JTree();
         m_scrollPane = new ScrollComponent(m_tree);
@@ -418,8 +418,8 @@ public final class TreePanel extends IPanel {
 
     private class Node {
 
-        private State m_state;
         private final String m_name;
+        private State m_state;
 
         private Node(String _name, State _state) {
             m_name = _name;
