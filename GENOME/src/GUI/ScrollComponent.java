@@ -39,7 +39,7 @@ public class ScrollComponent extends JScrollPane {
             protected void paintThumb(Graphics graphics, JComponent jComponent, Rectangle rectangle) {
                 Graphics2D g2 = (Graphics2D) graphics.create();
                 g2.setPaint(s_DARKGRAY);
-                g2.fillRoundRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height, 20, 20);
+                g2.fillRoundRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height, 5, 5);
                 g2.dispose();
             }
 
@@ -52,6 +52,7 @@ public class ScrollComponent extends JScrollPane {
             }
         });
         super.setBorder(null);
+        super.getVerticalScrollBar().setPreferredSize(new Dimension(10, Integer.MAX_VALUE));
     }
 
 }
