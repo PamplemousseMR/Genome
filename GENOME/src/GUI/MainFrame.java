@@ -4,6 +4,8 @@ import Utils.Logs;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicSplitPaneDivider;
+import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
 import java.awt.event.MouseEvent;
 
@@ -250,12 +252,40 @@ public final class MainFrame extends ResizibleFrame {
         m_header.setBackground(s_DARKGRAY);
         m_main.setBackground(s_LIGHTGRAY);
 
+        m_splitPanel_main.setUI(new BasicSplitPaneUI() {
+            @Override
+            public BasicSplitPaneDivider createDefaultDivider() {
+                return (new BasicSplitPaneDivider(this) {
+                    @Override
+                    public void paint(Graphics g) {
+                        g.setColor(s_DARKGRAY);
+                        Dimension dim = splitPane.getSize();
+                        g.fillRect(0, 0, dim.width, dim.height);
+                    }
+                });
+            }
+        });
         m_splitPanel_main.setResizeWeight(.15d);
-        m_splitPanel_main.setDividerSize(3);
+        m_splitPanel_main.setDividerSize(2);
         m_splitPanel_main.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+
+        m_rightContainer.setUI(new BasicSplitPaneUI() {
+            @Override
+            public BasicSplitPaneDivider createDefaultDivider() {
+                return (new BasicSplitPaneDivider(this) {
+                    @Override
+                    public void paint(Graphics g) {
+                        g.setColor(s_DARKGRAY);
+                        Dimension dim = splitPane.getSize();
+                        g.fillRect(0, 0, dim.width, dim.height);
+                    }
+                });
+            }
+        });
         m_rightContainer.setResizeWeight(.80d);
         m_rightContainer.setDividerSize(3);
         m_rightContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+
         m_leftContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
         m_activityPanel.setPreferredSize(new Dimension(120, 30));

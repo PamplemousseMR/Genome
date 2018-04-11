@@ -69,7 +69,7 @@ public final class ActivityPanel extends JPanel {
      */
     protected void setStopAction(ActionListener _actionListener) {
         m_stop.addActionListener(e -> {
-            if(_actionListener.actionEvent()) {
+            if (_actionListener.actionEvent()) {
                 m_container.remove(0);
                 m_container.add(m_start, 0);
                 m_container.revalidate();
@@ -85,7 +85,7 @@ public final class ActivityPanel extends JPanel {
      */
     protected void setPauseAction(ActionListener _actionListener) {
         m_pause.addActionListener(e -> {
-            if( _actionListener.actionEvent()) {
+            if (_actionListener.actionEvent()) {
                 m_container.remove(m_pause);
                 m_container.add(m_resume, 0);
                 m_container.revalidate();
@@ -101,7 +101,7 @@ public final class ActivityPanel extends JPanel {
      */
     protected void setResumeAction(ActionListener _actionListener) {
         m_resume.addActionListener(e -> {
-            if(_actionListener.actionEvent()) {
+            if (_actionListener.actionEvent()) {
                 m_container.remove(m_resume);
                 m_container.add(m_pause, 0);
                 m_container.revalidate();

@@ -40,7 +40,7 @@ public final class LogsPanel extends IPanel {
 
     protected void updateLog(String _log, Logs.Type _type) {
         m_textArea.append("\n " + _log);
-        if (m_textArea.getLineCount() > 250) //print only the last 250 lines
+        if (m_textArea.getLineCount() > 100) //print only the last 100 lines
         {
             try {
                 m_textArea.replaceRange("", m_textArea.getLineStartOffset(0), m_textArea.getLineStartOffset(1));
