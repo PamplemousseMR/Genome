@@ -20,6 +20,21 @@ public class TreePanel extends IPanel {
     private DefaultTreeModel m_treeModel;
     private JTree m_tree;
     private ScrollComponent m_scrollPane;
+    private JPanel m_legend;
+
+    private JPanel m_orangeContainer;
+    private Circle m_orange;
+    private JLabel m_orangeLabel;
+
+    private JPanel m_blueContainer;
+    private Circle m_blue;
+    private JLabel m_blueLabel;
+
+    private JPanel m_greenContainer;
+    private Circle m_green;
+    private JLabel m_greenLabel;
+
+    private JPanel m_container;
 
     protected TreePanel() {
         super(s_TITLE);
@@ -30,16 +45,53 @@ public class TreePanel extends IPanel {
     }
 
     protected void createComponent() {
+        m_container = new JPanel();
+        m_legend = new JPanel();
+
+        m_orangeContainer = new JPanel();
+        m_orange = new Circle(s_ORANGE);
+        m_orangeLabel = new JLabel("actualiser");
+
+        m_blueContainer = new JPanel();
+        m_blue = new Circle(s_BLUE);
+        m_blueLabel = new JLabel("creer");
+
+        m_greenContainer = new JPanel();
+        m_green = new Circle(s_GREEN);
+        m_greenLabel = new JLabel("terminer");
+
         m_tree = new JTree();
         m_scrollPane = new ScrollComponent(m_tree);
     }
 
     protected void initLayout() {
-
+        m_container.setLayout(new BorderLayout());
+        m_orangeContainer.setLayout(new BorderLayout());
+        m_blueContainer.setLayout(new BorderLayout());
+        m_greenContainer.setLayout(new BorderLayout());
+        m_legend.setLayout(new GridLayout(1, 3));
     }
 
     protected void addComponents() {
-        super.add(m_scrollPane);
+        m_container.add(m_scrollPane, BorderLayout.CENTER);
+        m_container.add(m_legend, BorderLayout.NORTH);
+
+        m_legend.add(m_orangeContainer);
+
+        m_orangeContainer.add(m_orange, BorderLayout.WEST);
+        m_orangeContainer.add(m_orangeLabel, BorderLayout.CENTER);
+
+        m_legend.add(m_blueContainer);
+
+        m_blueContainer.add(m_blue, BorderLayout.WEST);
+        m_blueContainer.add(m_blueLabel, BorderLayout.CENTER);
+
+        m_legend.add(m_greenContainer);
+
+        m_greenContainer.add(m_green, BorderLayout.WEST);
+        m_greenContainer.add(m_greenLabel, BorderLayout.CENTER);
+
+        super.add(m_container);
     }
 
     protected void swagComponent() {
@@ -85,6 +137,31 @@ public class TreePanel extends IPanel {
         renderer.setLeafIcon(null);
 
         m_scrollPane.setComponentOrientation(ComponentOrientation.RIGHT_TO_LEFT);
+
+        m_orange.setPreferredSize(new Dimension(30, 30));
+        m_orangeLabel.setFont(new Font(s_FONT, Font.PLAIN, 15));
+        m_orangeLabel.setForeground(s_WHITE);
+        m_orangeLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        m_orangeContainer.setBackground(s_LIGHTGRAY);
+        m_orangeContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+
+        m_blue.setPreferredSize(new Dimension(30, 30));
+        m_blueLabel.setFont(new Font(s_FONT, Font.PLAIN, 15));
+        m_blueLabel.setForeground(s_WHITE);
+        m_blueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        m_blueContainer.setBackground(s_LIGHTGRAY);
+        m_blueContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+
+        m_green.setPreferredSize(new Dimension(30, 30));
+        m_greenLabel.setFont(new Font(s_FONT, Font.PLAIN, 15));
+        m_greenLabel.setForeground(s_WHITE);
+        m_greenLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        m_greenContainer.setBackground(s_LIGHTGRAY);
+        m_greenContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+
+        m_legend.setBackground(s_LIGHTGRAY);
+        m_legend.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        m_legend.setMinimumSize(new Dimension(250, 30));
     }
 
     protected synchronized void update(String _path) {
@@ -335,28 +412,28 @@ public class TreePanel extends IPanel {
         }
     }
 
-    public enum State {
+    private enum State {
         CREATE,
         UPDATE,
         FINISH,
         DEFAULT
     }
 
-    public class Node {
+    private class Node {
 
         private State m_state;
         private String m_name;
 
-        public Node(String _name, State _state) {
+        private Node(String _name, State _state) {
             m_name = _name;
             m_state = _state;
         }
 
-        public State getState() {
+        private State getState() {
             return m_state;
         }
 
-        public void setState(State _state) {
+        private void setState(State _state) {
             m_state = _state;
         }
 
@@ -365,5 +442,25 @@ public class TreePanel extends IPanel {
             return m_name;
         }
 
+    }
+
+    private class Circle extends JPanel {
+
+        private final Color m_color;
+
+        private Circle(Color _color) {
+            super();
+            m_color = _color;
+        }
+
+        @Override
+        protected void paintComponent(Graphics g) {
+            Graphics2D g2 = (Graphics2D) g.create();
+            g2.setPaint(m_color);
+            int sx = 12, sy = 12;
+            g2.fillOval(getWidth() / 2 - sx / 2, getHeight() / 2 - sy / 2, sx, sy);
+            g2.dispose();
+            setBackground(m_color);
+        }
     }
 }

@@ -30,7 +30,7 @@ final class GENOME {
     }
 
     public static void main(String[] args) {
-        Logs.setListener((_message,_type) -> MainFrame.getSingleton().updateLog(_message, _type));
+        Logs.setListener((_message, _type) -> MainFrame.getSingleton().updateLog(_message, _type));
         MainFrame.getSingleton().setStartAction(event -> Activity.genbank());
         MainFrame.getSingleton().setStopAction(event -> Activity.stop());
         MainFrame.getSingleton().setPauseAction(event -> Activity.pause());

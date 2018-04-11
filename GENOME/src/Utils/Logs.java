@@ -69,7 +69,7 @@ public final class Logs {
                 e.printStackTrace();
             }
         }
-        if(_notify) {
+        if (_notify) {
             s_logsListener.logsEvent("Info : " + _message, Type.INFO);
         }
     }
@@ -115,13 +115,13 @@ public final class Logs {
         s_logsListener.logsEvent("Exception : " + errors.toString(), Type.EXCEPTION);
     }
 
-    public interface LogsListener {
-        void logsEvent(String _message, Type _type);
-    }
-
-    public enum Type{
+    public enum Type {
         INFO,
         WARNING,
         EXCEPTION
+    }
+
+    public interface LogsListener {
+        void logsEvent(String _message, Type _type);
     }
 }
