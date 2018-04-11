@@ -38,7 +38,7 @@ public final class MainFrame extends ResizibleFrame {
     private JPanel m_leftContainer;
     private JPanel m_leftSouthContainer;
 
-    private JProgressBar m_progessBar;
+    private ProgressBar m_progessBar;
     private TreePanel m_treePanel;
     private InformationPanel m_informationsPanel;
     private ActivityPanel m_activityPanel;
@@ -181,7 +181,7 @@ public final class MainFrame extends ResizibleFrame {
         m_maximizeB = new JButton();
         m_minimizeB = new JButton();
 
-        m_progessBar = new JProgressBar();
+        m_progessBar = new ProgressBar();
         m_treePanel = new TreePanel();
         m_informationsPanel = new InformationPanel();
         m_logsPanel = new LogsPanel();
@@ -242,7 +242,7 @@ public final class MainFrame extends ResizibleFrame {
         m_mainTitle.setFont(new Font(s_FONT, Font.PLAIN, 28));
         m_mainTitle.setForeground(s_WHITE);
         m_secondTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
-        m_secondTitle.setForeground(s_WHITE);
+        m_secondTitle.setForeground(s_BLUE);
 
         swagMenuButton(m_closeB, "Ressources/close.png");
         swagMenuButton(m_minimizeB, "Ressources/minimize.png");
@@ -260,8 +260,6 @@ public final class MainFrame extends ResizibleFrame {
         m_leftContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
         m_activityPanel.setPreferredSize(new Dimension(120, 30));
-
-        m_progessBar.setStringPainted(true);
     }
 
     /**
