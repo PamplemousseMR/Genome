@@ -25,6 +25,7 @@ public final class ProgressBar extends JProgressBar {
         super.setForeground(s_GREEN);
         super.setBackground(s_BLUEGRAY);
         super.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        super.setValue(super.getMaximum());
     }
 
 }

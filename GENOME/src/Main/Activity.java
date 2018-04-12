@@ -100,6 +100,7 @@ public class Activity {
                     s_stop = false;
                 }
             }
+            MainFrame.getSingleton().updateProgresse(0);
             s_activityThread = new Thread(() -> {
                 final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
