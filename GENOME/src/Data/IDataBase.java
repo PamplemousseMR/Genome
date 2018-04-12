@@ -97,18 +97,28 @@ public class IDataBase implements Serializable {
      */
     public static IDataBase load(String _name) {
         final File file = new File(Options.getSerializeDirectory() + File.separator + _name + Options.getSerializeExtension());
-        final ObjectInputStream stream;
+        ObjectInputStream stream = null;
+        IDataBase result = null;
         if (!file.exists()) {
             return null;
         }
         try {
             stream = new ObjectInputStream((new FileInputStream(file)));
-            return (IDataBase) stream.readObject();
+             result = (IDataBase) stream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             Logs.warning("Unable to load : " + _name);
             Logs.exception(e);
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    Logs.warning("Unable to close : " + _name);
+                    Logs.exception(e);
+                }
+            }
         }
-        return null;
+        return result;
     }
 
     /**
@@ -216,7 +226,7 @@ public class IDataBase implements Serializable {
      */
     public void save() {
         final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
-        final ObjectOutputStream stream;
+        ObjectOutputStream stream = null;
         if (file.exists()) {
             file.delete();
         }
@@ -225,10 +235,18 @@ public class IDataBase implements Serializable {
             stream = new ObjectOutputStream(new FileOutputStream(file));
             stream.writeObject(this);
             stream.flush();
-            stream.close();
         } catch (IOException e) {
             Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    Logs.warning("Unable to close : " + getSavedName());
+                    Logs.exception(e);
+                }
+            }
         }
     }
 

@@ -80,7 +80,7 @@ public final class Organism extends IDataBase {
     public static Date loadDate(String _db, String _ki, String _gp, String _sg, String _name) {
         String fileName = DataBase.s_SERIALIZATION_PREFIX + _db + Kingdom.s_SERIALIZATION_PREFIX + _ki + Group.s_SERIALIZATION_PREFIX + _gp + SubGroup.s_SERIALIZATION_PREFIX + _sg + s_SERIALIZATION_PREFIX + _name;
         final File file = new File(Options.getSerializeDirectory() + File.separator + fileName + Options.getDateModifSerializeExtension());
-        final ObjectInputStream stream;
+        ObjectInputStream stream = null;
         if (!file.exists()) {
             return null;
         }
@@ -90,6 +90,15 @@ public final class Organism extends IDataBase {
         } catch (IOException | ClassNotFoundException e) {
             Logs.warning("Unable to load : " + fileName);
             Logs.exception(e);
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    Logs.warning("Unable to close : " + fileName);
+                    Logs.exception(e);
+                }
+            }
         }
         return null;
     }
