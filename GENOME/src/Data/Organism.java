@@ -91,7 +91,7 @@ public final class Organism extends IDataBase {
             Logs.warning("Unable to load : " + fileName);
             Logs.exception(e);
         } finally {
-            if(stream != null) {
+            if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {

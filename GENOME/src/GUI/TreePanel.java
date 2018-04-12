@@ -157,9 +157,7 @@ public final class TreePanel extends IPanel {
     }
 
     protected void addTreeListener(TreeListener _treeListener) {
-        m_tree.addTreeSelectionListener(e -> {
-            _treeListener.treeEvent(getFileName(e.getPath()));
-        });
+        m_tree.addTreeSelectionListener(e -> _treeListener.treeEvent(getFileName(e.getPath())));
     }
 
     protected synchronized void update(String _path) {

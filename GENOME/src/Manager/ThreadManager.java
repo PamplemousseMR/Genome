@@ -180,7 +180,7 @@ public final class ThreadManager {
                     }
 
                     StringBuilder threadsInfos = new StringBuilder("[");
-                    int remain = 0;
+                    int remain;
                     int runnable = 0;
                     m_lockArray.lock();
                     {

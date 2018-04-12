@@ -141,7 +141,7 @@ public class Statistics implements Serializable {
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
     protected final void compute() {
-        if (m_totalTrinucleotide != 0){
+        if (m_totalTrinucleotide != 0) {
             for (Tuple row : m_trinucleotideTable) {
                 row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalTrinucleotide);
                 row.set(StatFloat.FREQ1, row.get(StatLong.PHASE1) / (float) m_totalTrinucleotide);

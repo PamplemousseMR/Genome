@@ -37,7 +37,6 @@ public final class LogsPanel extends IPanel {
         m_textPane.setForeground(s_WHITE);
         m_textPane.setEditable(false);
         m_textPane.setBorder(BorderFactory.createLineBorder(s_LIGHTGRAY, 10));
-
     }
 
     protected void updateLog(String _log, Logs.Type _type) {

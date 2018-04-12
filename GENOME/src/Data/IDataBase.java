@@ -104,12 +104,12 @@ public class IDataBase implements Serializable {
         }
         try {
             stream = new ObjectInputStream((new FileInputStream(file)));
-             result = (IDataBase) stream.readObject();
+            result = (IDataBase) stream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             Logs.warning("Unable to load : " + _name);
             Logs.exception(e);
         } finally {
-            if(stream != null) {
+            if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {
@@ -239,7 +239,7 @@ public class IDataBase implements Serializable {
             Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
         } finally {
-            if(stream != null) {
+            if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {
@@ -256,20 +256,20 @@ public class IDataBase implements Serializable {
      * @return the title string
      */
     public String getProperties() {
-        String res = "";
-        res += "Name\n";
-        res += "Total number of CDS sequences\n";
-        res += "Number of valid CDS\n";
-        res += "Number of invalid CDS\n";
-        res += "Number of organism\n";
-        res += "\n";
+        StringBuilder res = new StringBuilder();
+        res.append("Name\n");
+        res.append("Total number of CDS sequences\n");
+        res.append("Number of valid CDS\n");
+        res.append("Number of invalid CDS\n");
+        res.append("Number of organism\n");
+        res.append("\n");
 
         for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
-            res += ent.getKey() + "\n";
+            res.append(ent.getKey()).append("\n");
         }
-        res += "\n";
+        res.append("\n");
 
-        return res;
+        return res.toString();
     }
 
     /**
@@ -278,19 +278,19 @@ public class IDataBase implements Serializable {
      * @return the value string
      */
     public String getValues() {
-        String res = "";
-        res += m_name + "\n";
-        res += m_CDSNumber + "\n";
-        res += m_validCDSNumber + "\n";
-        res += (m_CDSNumber - m_validCDSNumber) + "\n";
-        res += m_totalOrganism + "\n";
-        res += "\n";
+        StringBuilder res = new StringBuilder();
+        res.append(m_name).append("\n");
+        res.append(m_CDSNumber).append("\n");
+        res.append(m_validCDSNumber).append("\n");
+        res.append(m_CDSNumber - m_validCDSNumber).append("\n");
+        res.append(m_totalOrganism).append("\n");
+        res.append("\n");
 
         for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
-            res += ent.getValue() + "\n";
+            res.append(ent.getValue()).append("\n");
         }
 
-        return res;
+        return res.toString();
     }
 
     /**
