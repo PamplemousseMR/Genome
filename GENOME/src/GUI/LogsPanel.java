@@ -60,7 +60,16 @@ public final class LogsPanel extends IPanel {
         try {
             m_textPane.getDocument().insertString(len, "\n" + _log, aset);
         } catch (BadLocationException e) {
-            Logs.exception(e);
+            Logs.exception(e);           
         }
+        if(m_textPane.getText().split("\n").length >250)
+        {
+        	try {
+				m_textPane.getDocument().remove(0, 100);
+			} catch (BadLocationException e) {
+				e.printStackTrace();
+			}
+        }
+        
     }
 }
