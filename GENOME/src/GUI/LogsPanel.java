@@ -3,7 +3,7 @@ package GUI;
 import Utils.Logs;
 
 import javax.swing.*;
-import javax.swing.text.BadLocationException;
+import javax.swing.text.*;
 import java.awt.*;
 
 import static GUI.Constant.*;
@@ -12,7 +12,7 @@ public final class LogsPanel extends IPanel {
 
     private final static String s_TITLE = "Logs";
 
-    private JTextArea m_textArea;
+    private JTextPane m_textPane;
     private ScrollComponent m_container;
 
     protected LogsPanel() {
@@ -20,8 +20,8 @@ public final class LogsPanel extends IPanel {
     }
 
     protected void createComponent() {
-        m_textArea = new JTextArea("", 1, 250); //1 column, 250 rows
-        m_container = new ScrollComponent(m_textArea);
+        m_textPane = new JTextPane();
+        m_container = new ScrollComponent(m_textPane);
     }
 
     protected void initLayout() {
@@ -32,22 +32,35 @@ public final class LogsPanel extends IPanel {
     }
 
     protected void swagComponent() {
-        m_textArea.setBackground(s_LIGHTGRAY);
-        m_textArea.setFont(new Font(s_FONT, Font.PLAIN, 14));
-        m_textArea.setForeground(s_WHITE);
-        m_textArea.setEditable(false);
+        m_textPane.setBackground(s_LIGHTGRAY);
+        m_textPane.setFont(new Font(s_FONT, Font.PLAIN, 14));
+        m_textPane.setForeground(s_WHITE);
+        m_textPane.setEditable(false);
     }
 
     protected void updateLog(String _log, Logs.Type _type) {
-        m_textArea.append("\n " + _log);
-        while (m_textArea.getLineCount() > 100) {
-            try {
-                m_textArea.replaceRange("", m_textArea.getLineStartOffset(0), m_textArea.getLineStartOffset(1));
-            } catch (BadLocationException e) {
-                Logs.exception(e);
+        Color m_logColour;
+        switch (_type) {
+            case WARNING:
+                m_logColour = s_ORANGE;
                 break;
-            }
+            case EXCEPTION:
+                m_logColour = s_RED;
+                break;
+            default:
+                m_logColour = s_WHITE;
+                break;
+        }
+        StyleContext sc = StyleContext.getDefaultStyleContext();
+        AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, m_logColour);
+
+        int len = m_textPane.getDocument().getLength();
+        m_textPane.setCaretPosition(len);
+        m_textPane.setCharacterAttributes(aset, true);
+        try {
+            m_textPane.getDocument().insertString(len, "\n" + _log, aset);
+        } catch (BadLocationException e) {
+            Logs.exception(e);
         }
     }
-
 }
