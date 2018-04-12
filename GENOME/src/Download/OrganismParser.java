@@ -238,10 +238,10 @@ public final class OrganismParser {
                                     }
                                 });
                             } else {
-                                Logs.info("Unable to get type of : '" + m_name + "' from sequence : " + sequence);
+                                Logs.info("Unable to get type of : '" + m_name + "' from sequence : " + sequence, false);
                             }
                         } else {
-                            Logs.info("Unable to get information of : '" + m_name + "' from sequence : " + sequence);
+                            Logs.info("Unable to get information of : '" + m_name + "' from sequence : " + sequence, false);
                         }
                     }
 

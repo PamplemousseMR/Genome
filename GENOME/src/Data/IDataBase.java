@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.Map;
 
 public class IDataBase implements Serializable {
     private static final long serialVersionUID = 2L;
@@ -15,7 +16,7 @@ public class IDataBase implements Serializable {
     /**
      * The name
      */
-    private transient final String m_name;
+    private final String m_name;
     /**
      * Statistics of this IDataBase
      */
@@ -96,18 +97,28 @@ public class IDataBase implements Serializable {
      */
     public static IDataBase load(String _name) {
         final File file = new File(Options.getSerializeDirectory() + File.separator + _name + Options.getSerializeExtension());
-        final ObjectInputStream stream;
+        ObjectInputStream stream = null;
+        IDataBase result = null;
         if (!file.exists()) {
             return null;
         }
         try {
             stream = new ObjectInputStream((new FileInputStream(file)));
-            return (IDataBase) stream.readObject();
+             result = (IDataBase) stream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             Logs.warning("Unable to load : " + _name);
             Logs.exception(e);
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    Logs.warning("Unable to close : " + _name);
+                    Logs.exception(e);
+                }
+            }
         }
-        return null;
+        return result;
     }
 
     /**
@@ -215,7 +226,7 @@ public class IDataBase implements Serializable {
      */
     public void save() {
         final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
-        final ObjectOutputStream stream;
+        ObjectOutputStream stream = null;
         if (file.exists()) {
             file.delete();
         }
@@ -224,11 +235,62 @@ public class IDataBase implements Serializable {
             stream = new ObjectOutputStream(new FileOutputStream(file));
             stream.writeObject(this);
             stream.flush();
-            stream.close();
         } catch (IOException e) {
             Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
+        } finally {
+            if(stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    Logs.warning("Unable to close : " + getSavedName());
+                    Logs.exception(e);
+                }
+            }
         }
+    }
+
+    /**
+     * Get title string
+     *
+     * @return the title string
+     */
+    public String getProperties() {
+        String res = "";
+        res += "Name\n";
+        res += "Total number of CDS sequences\n";
+        res += "Number of valid CDS\n";
+        res += "Number of invalid CDS\n";
+        res += "Number of organism\n";
+        res += "\n";
+
+        for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
+            res += ent.getKey() + "\n";
+        }
+        res += "\n";
+
+        return res;
+    }
+
+    /**
+     * Get value string
+     *
+     * @return the value string
+     */
+    public String getValues() {
+        String res = "";
+        res += m_name + "\n";
+        res += m_CDSNumber + "\n";
+        res += m_validCDSNumber + "\n";
+        res += (m_CDSNumber - m_validCDSNumber) + "\n";
+        res += m_totalOrganism + "\n";
+        res += "\n";
+
+        for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
+            res += ent.getValue() + "\n";
+        }
+
+        return res;
     }
 
     /**

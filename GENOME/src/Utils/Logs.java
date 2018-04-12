@@ -15,7 +15,7 @@ public final class Logs {
     /**
      * Logs listener
      */
-    private static LogsListener s_logsListener = _message -> {
+    private static LogsListener s_logsListener = (_message, _type) -> {
     };
 
     /**
@@ -58,7 +58,7 @@ public final class Logs {
      *
      * @param _message the message to print
      */
-    public static void info(String _message) {
+    public static void info(String _message, boolean _notify) {
         final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         final String header = "[" + stackTraceElements[2].getFileName() + "{ " + stackTraceElements[2].getClassName() + " : " + stackTraceElements[2].getMethodName() + "(" + stackTraceElements[2].getLineNumber() + ") } ] info : ";
         final String message = header + " " + _message;
@@ -69,7 +69,9 @@ public final class Logs {
                 e.printStackTrace();
             }
         }
-        s_logsListener.logsEvent(message);
+        if (_notify) {
+            s_logsListener.logsEvent("Info : " + _message, Type.INFO);
+        }
     }
 
     /**
@@ -88,7 +90,7 @@ public final class Logs {
                 e.printStackTrace();
             }
         }
-        s_logsListener.logsEvent(message);
+        s_logsListener.logsEvent("Warning : " + _message, Type.WARNING);
     }
 
     /**
@@ -101,7 +103,7 @@ public final class Logs {
         _exception.printStackTrace(new PrintWriter(errors));
 
         final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        final String header = "[" + stackTraceElements[2].getFileName() + "{ " + stackTraceElements[2].getClassName() + " : " + stackTraceElements[2].getMethodName() + "(" + stackTraceElements[2].getLineNumber() + ") } ] Exception : ";
+        final String header = "[" + stackTraceElements[2].getFileName() + "{ " + stackTraceElements[2].getClassName() + " : " + stackTraceElements[2].getMethodName() + "(" + stackTraceElements[2].getLineNumber() + ") } ] exception : ";
         final String message = header + " " + errors.toString();
         if (s_file != null) {
             try {
@@ -110,10 +112,16 @@ public final class Logs {
                 e.printStackTrace();
             }
         }
-        s_logsListener.logsEvent(message);
+        s_logsListener.logsEvent("Exception : " + errors.toString(), Type.EXCEPTION);
+    }
+
+    public enum Type {
+        INFO,
+        WARNING,
+        EXCEPTION
     }
 
     public interface LogsListener {
-        void logsEvent(String _message);
+        void logsEvent(String _message, Type _type);
     }
 }

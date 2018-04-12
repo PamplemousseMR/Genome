@@ -139,7 +139,7 @@ public final class GenbankOrganisms extends IDownloader {
         m_downloaded += chunkLength;
 
         if (m_enqueued == m_totalCount) {
-            Logs.info("GenbankOrganisms: Organisms download complete");
+            Logs.info("GenbankOrganisms: Organisms download complete", true);
         }
         m_enqueued = m_dataQueue.size();
     }
@@ -155,7 +155,7 @@ public final class GenbankOrganisms extends IDownloader {
      * @throws OutOfMemoryException A savage out of memory appear
      */
     private int downloadChunk(int _index) throws IOException, JSONException, HTTPException, OutOfMemoryException {
-        Logs.info(String.format("Requesting organisms [%d;%d]", _index, _index + Options.getDownloadStep()));
+        Logs.info(String.format("Requesting organisms [%d;%d]", _index, _index + Options.getDownloadStep()), true);
 
         final JSONObject json;
         try {
@@ -210,7 +210,7 @@ public final class GenbankOrganisms extends IDownloader {
                 ++m_enqueued;
 
             } catch (JSONException e) {
-                final String message = "Unable create OrganismParser : " + org.toString();
+                final String message = "Unable create OrganismParser";
                 Logs.warning(message);
                 Logs.exception(new JSONException(message, e));
                 ++m_failedOrganism;
@@ -218,7 +218,7 @@ public final class GenbankOrganisms extends IDownloader {
         }
 
         int chunkLength = dataChunk.length();
-        Logs.info(String.format("%d/%d organisms enqueued of %d requested", currentEnqueue, chunkLength, Options.getDownloadStep()));
+        Logs.info(String.format("%d/%d organisms enqueued of %d requested", currentEnqueue, chunkLength, Options.getDownloadStep()), true);
         return chunkLength;
     }
 
@@ -240,11 +240,11 @@ public final class GenbankOrganisms extends IDownloader {
             while ((line = in.readLine()) != null)
                 responseText.append(line);
         } catch (IOException | HTTPException e) {
-            Logs.warning("Unable create data : " + responseText);
+            Logs.warning("Unable create data");
             Logs.exception(e);
             throw e;
         } catch (OutOfMemoryError e) {
-            Logs.warning("Out of memory : " + responseText);
+            Logs.warning("Out of memory");
             Logs.exception(new Exception(e));
             throw new OutOfMemoryException(e.getMessage());
         }
@@ -253,7 +253,7 @@ public final class GenbankOrganisms extends IDownloader {
         try {
             obj = new JSONObject(responseText.toString());
         } catch (JSONException e) {
-            final String message = "Unable create json : " + responseText;
+            final String message = "Unable create json";
             Logs.warning(message);
             Logs.exception(new JSONException(message, e));
             throw e;

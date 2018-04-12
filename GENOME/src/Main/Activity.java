@@ -79,7 +79,7 @@ public class Activity {
         return _currentSubGroup;
     }
 
-    public static void genbank() {
+    public static boolean genbank() {
         boolean run = true;
         synchronized (s_runLock) {
             if (!s_run) {
@@ -95,11 +95,18 @@ public class Activity {
                 }
             }
             m_lock.unlock();
+            synchronized (s_stopLock) {
+                if (s_stop) {
+                    s_stop = false;
+                }
+            }
+            MainFrame.getSingleton().updateProgresseValue(0);
             s_activityThread = new Thread(() -> {
                 final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
+                    MainFrame.getSingleton().updateProgresseMax(go.getTotalCount());
 
                     final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
                         try {
@@ -125,18 +132,46 @@ public class Activity {
                     });
                     currentSubGroup.start();
 
-                    boolean stop = false;
-                    while (!stop && go.hasNext()) {
+                    final Lock m_indexLock = new ReentrantLock();
+                    final int[] index = {0};
+                    while (go.hasNext()) {
+                        m_lock.lock();
+                        {
+                            while (s_wait) {
+                                Logs.info("wait...", true);
+                                try {
+                                    m_cond.await();
+                                } catch (InterruptedException e) {
+                                    Logs.exception(e);
+                                }
+                            }
+                        }
+                        m_lock.unlock();
+                        synchronized (s_stopLock) {
+                            if (s_stop) {
+                                break;
+                            }
+                        }
                         final OrganismParser organismParser = go.getNext();
                         final String organismName = organismParser.getName() + "-" + organismParser.getId();
 
                         final Date dateModif = Organism.loadDate(Options.getGenbankName(), organismParser.getKingdom(), organismParser.getGroup(), organismParser.getSubGroup(), organismName);
                         if (dateModif != null && organismParser.getModificationDate().compareTo(dateModif) <= 0) {
-                            Logs.info("Organism " + organismName + " already up to date");
+                            Logs.info("Organism " + organismName + " already up to date", false);
+                            m_indexLock.lock();
+                            {
+                                MainFrame.getSingleton().updateProgresseValue(++index[0]);
+                            }
+                            m_indexLock.unlock();
                             continue;
                         }
                         if (organismParser.getReplicons().size() == 0) {
-                            Logs.info("No replicon in : " + organismName);
+                            Logs.info("No replicon in : " + organismName, false);
+                            m_indexLock.lock();
+                            {
+                                MainFrame.getSingleton().updateProgresseValue(++index[0]);
+                            }
+                            m_indexLock.unlock();
                             continue;
                         }
 
@@ -219,24 +254,14 @@ public class Activity {
                                         Logs.warning("Unable to finish : " + organism.getName());
                                         Logs.exception(e);
                                     }
+                                    m_indexLock.lock();
+                                    {
+                                        MainFrame.getSingleton().updateProgresseValue(++index[0]);
+                                    }
+                                    m_indexLock.unlock();
                                 }
                             }
                         });
-                        m_lock.lock();
-                        {
-                            while (s_wait) {
-                                Logs.info("wait...");
-                                try {
-                                    m_cond.await();
-                                } catch (InterruptedException e) {
-                                    Logs.exception(e);
-                                }
-                            }
-                        }
-                        m_lock.unlock();
-                        synchronized (s_stopLock) {
-                            stop = s_stop;
-                        }
                     }
 
                     currentDataBase.stop();
@@ -247,6 +272,7 @@ public class Activity {
                     Logs.warning("Unable to run programme");
                     Logs.exception(e);
                 } finally {
+                    Logs.info("Finished and wait for threads...", true);
                     threadManager.finalizeThreadManager();
                     synchronized (s_stopLock) {
                         s_stop = false;
@@ -257,13 +283,19 @@ public class Activity {
                 }
             });
             s_activityThread.start();
+            return true;
         }
+        return false;
     }
 
-    public static void stop() {
-        Logs.info("stop requested");
+    public static boolean stop() {
+        Logs.info("stop requested ...", true);
+        boolean ret = false;
         synchronized (s_stopLock) {
-            s_stop = true;
+            if (!s_stop) {
+                s_stop = true;
+                ret = true;
+            }
         }
         m_lock.lock();
         {
@@ -273,6 +305,7 @@ public class Activity {
             }
         }
         m_lock.unlock();
+        return ret;
     }
 
     public static void stopAndWait() {
@@ -286,27 +319,33 @@ public class Activity {
         }
     }
 
-    public static void pause() {
-        Logs.info("pause requested");
+    public static boolean pause() {
+        Logs.info("pause requested ...", true);
+        boolean ret = false;
         m_lock.lock();
         {
             if (!s_wait) {
                 s_wait = true;
+                ret = true;
             }
         }
         m_lock.unlock();
+        return ret;
     }
 
-    public static void resume() {
-        Logs.info("resume requested");
+    public static boolean resume() {
+        Logs.info("resume requested ...", true);
+        boolean ret = false;
         m_lock.lock();
         {
             if (s_wait) {
                 s_wait = false;
                 m_cond.signalAll();
+                ret = true;
             }
         }
         m_lock.unlock();
+        return ret;
     }
 
 }
