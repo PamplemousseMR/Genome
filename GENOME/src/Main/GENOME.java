@@ -31,10 +31,11 @@ final class GENOME {
 
     public static void main(String[] args) {
         Logs.setListener((_message, _type) -> MainFrame.getSingleton().updateLog(_message, _type));
-        MainFrame.getSingleton().setStartAction(Activity::genbank);
-        MainFrame.getSingleton().setStopAction(Activity::stop);
-        MainFrame.getSingleton().setPauseAction(Activity::pause);
-        MainFrame.getSingleton().setResumeAction(Activity::resume);
+        MainFrame.getSingleton().addStartListener(Activity::genbank);
+        MainFrame.getSingleton().addStopListener(Activity::stop);
+        MainFrame.getSingleton().addPauseListener(Activity::pause);
+        MainFrame.getSingleton().addResumeListener(Activity::resume);
+        MainFrame.getSingleton().addTreeListener(_info -> MainFrame.getSingleton().updateInformation(_info));
         initializeProgram();
         Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
     }

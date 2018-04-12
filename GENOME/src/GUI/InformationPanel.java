@@ -1,6 +1,9 @@
 package GUI;
 
+import Utils.Logs;
+
 import javax.swing.*;
+import javax.swing.text.BadLocationException;
 import java.awt.*;
 
 import static GUI.Constant.*;
@@ -33,6 +36,18 @@ public final class InformationPanel extends IPanel {
         m_textArea.setFont(new Font(s_FONT, Font.PLAIN, 14));
         m_textArea.setForeground(s_WHITE);
         m_textArea.setEditable(false);
+    }
+
+    protected void updateInformation(String _info) {
+        while (m_textArea.getLineCount() > 0) {
+            try {
+                m_textArea.replaceRange("", m_textArea.getLineStartOffset(0), m_textArea.getLineStartOffset(1));
+            } catch (BadLocationException e) {
+                Logs.exception(e);
+                break;
+            }
+        }
+        m_textArea.append(_info);
     }
 
 }

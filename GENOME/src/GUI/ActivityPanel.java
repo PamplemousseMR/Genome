@@ -49,11 +49,11 @@ public final class ActivityPanel extends JPanel {
     /**
      * Add start action
      *
-     * @param _actionListener the start action
+     * @param _activityListener the start action
      */
-    protected void setStartAction(ActionListener _actionListener) {
+    protected void addtStartListener(ActivityListener _activityListener) {
         m_start.addActionListener(e -> {
-            if (_actionListener.actionEvent()) {
+            if (_activityListener.activityEvent()) {
                 m_container.remove(m_start);
                 m_container.add(m_pause, 0);
                 m_container.revalidate();
@@ -65,11 +65,11 @@ public final class ActivityPanel extends JPanel {
     /**
      * Add stop action
      *
-     * @param _actionListener the stop action
+     * @param _activityListener the stop action
      */
-    protected void setStopAction(ActionListener _actionListener) {
+    protected void addStopListener(ActivityListener _activityListener) {
         m_stop.addActionListener(e -> {
-            if (_actionListener.actionEvent()) {
+            if (_activityListener.activityEvent()) {
                 m_container.remove(0);
                 m_container.add(m_start, 0);
                 m_container.revalidate();
@@ -81,11 +81,11 @@ public final class ActivityPanel extends JPanel {
     /**
      * Add pause action
      *
-     * @param _actionListener the pause action
+     * @param _activityListener the pause action
      */
-    protected void setPauseAction(ActionListener _actionListener) {
+    protected void addPauseListener(ActivityListener _activityListener) {
         m_pause.addActionListener(e -> {
-            if (_actionListener.actionEvent()) {
+            if (_activityListener.activityEvent()) {
                 m_container.remove(m_pause);
                 m_container.add(m_resume, 0);
                 m_container.revalidate();
@@ -97,11 +97,11 @@ public final class ActivityPanel extends JPanel {
     /**
      * Add resume action
      *
-     * @param _actionListener the resume action
+     * @param _activityListener the resume action
      */
-    protected void setResumeAction(ActionListener _actionListener) {
+    protected void addResumeListener(ActivityListener _activityListener) {
         m_resume.addActionListener(e -> {
-            if (_actionListener.actionEvent()) {
+            if (_activityListener.activityEvent()) {
                 m_container.remove(m_resume);
                 m_container.add(m_pause, 0);
                 m_container.revalidate();
@@ -110,7 +110,7 @@ public final class ActivityPanel extends JPanel {
         });
     }
 
-    public interface ActionListener {
-        boolean actionEvent();
+    public interface ActivityListener {
+        boolean activityEvent();
     }
 }

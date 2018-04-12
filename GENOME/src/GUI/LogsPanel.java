@@ -40,12 +40,12 @@ public final class LogsPanel extends IPanel {
 
     protected void updateLog(String _log, Logs.Type _type) {
         m_textArea.append("\n " + _log);
-        while (m_textArea.getLineCount() > 100) //print only the last 100 lines
-        {
+        while (m_textArea.getLineCount() > 100) {
             try {
                 m_textArea.replaceRange("", m_textArea.getLineStartOffset(0), m_textArea.getLineStartOffset(1));
             } catch (BadLocationException e) {
                 Logs.exception(e);
+                break;
             }
         }
     }

@@ -100,13 +100,13 @@ public class Activity {
                     s_stop = false;
                 }
             }
-            MainFrame.getSingleton().updateProgresse(0);
+            MainFrame.getSingleton().updateProgresseValue(0);
             s_activityThread = new Thread(() -> {
                 final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
-                    MainFrame.getSingleton().setProgresseMax(go.getTotalCount());
+                    MainFrame.getSingleton().updateProgresseMax(go.getTotalCount());
 
                     final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
                         try {
@@ -160,7 +160,7 @@ public class Activity {
                             Logs.info("Organism " + organismName + " already up to date", false);
                             m_indexLock.lock();
                             {
-                                MainFrame.getSingleton().updateProgresse(++index[0]);
+                                MainFrame.getSingleton().updateProgresseValue(++index[0]);
                             }
                             m_indexLock.unlock();
                             continue;
@@ -169,7 +169,7 @@ public class Activity {
                             Logs.info("No replicon in : " + organismName, false);
                             m_indexLock.lock();
                             {
-                                MainFrame.getSingleton().updateProgresse(++index[0]);
+                                MainFrame.getSingleton().updateProgresseValue(++index[0]);
                             }
                             m_indexLock.unlock();
                             continue;
@@ -256,7 +256,7 @@ public class Activity {
                                     }
                                     m_indexLock.lock();
                                     {
-                                        MainFrame.getSingleton().updateProgresse(++index[0]);
+                                        MainFrame.getSingleton().updateProgresseValue(++index[0]);
                                     }
                                     m_indexLock.unlock();
                                 }

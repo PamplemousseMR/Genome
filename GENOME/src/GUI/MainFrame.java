@@ -93,53 +93,71 @@ public final class MainFrame extends ResizibleFrame {
      *
      * @param _value the value to set
      */
-    public void updateProgresse(int _value) {
+    public void updateProgresseValue(int _value) {
         SwingUtilities.invokeLater(() -> m_progessBar.setValue(_value));
+    }
+
+    /**
+     * Update the information to display
+     *
+     * @param _info the info to set
+     */
+    public void updateInformation(String _info) {
+        SwingUtilities.invokeLater(() -> m_informationsPanel.updateInformation(_info));
+    }
+
+    /**
+     * Update the maximum of the progress bar
+     *
+     * @param _max the max to set
+     */
+    public void updateProgresseMax(int _max) {
+        SwingUtilities.invokeLater(() -> m_progessBar.setMaximum(_max));
+    }
+
+    /**
+     * Add tree action
+     *
+     * @param _treeListener the start action
+     */
+    public void addTreeListener(TreePanel.TreeListener _treeListener) {
+        SwingUtilities.invokeLater(() -> m_treePanel.addTreeListener(_treeListener));
     }
 
     /**
      * Add start action
      *
-     * @param _actionListener the start action
+     * @param _activityListener the start action
      */
-    public void setStartAction(ActivityPanel.ActionListener _actionListener) {
-        SwingUtilities.invokeLater(() -> m_activityPanel.setStartAction(_actionListener));
+    public void addStartListener(ActivityPanel.ActivityListener _activityListener) {
+        SwingUtilities.invokeLater(() -> m_activityPanel.addtStartListener(_activityListener));
     }
 
     /**
      * Add stop action
      *
-     * @param _actionListener the stop action
+     * @param _activityListener the stop action
      */
-    public void setStopAction(ActivityPanel.ActionListener _actionListener) {
-        SwingUtilities.invokeLater(() -> m_activityPanel.setStopAction(_actionListener));
+    public void addStopListener(ActivityPanel.ActivityListener _activityListener) {
+        SwingUtilities.invokeLater(() -> m_activityPanel.addStopListener(_activityListener));
     }
 
     /**
      * Add pause action
      *
-     * @param _actionListener the pause action
+     * @param _activityListener the pause action
      */
-    public void setPauseAction(ActivityPanel.ActionListener _actionListener) {
-        SwingUtilities.invokeLater(() -> m_activityPanel.setPauseAction(_actionListener));
+    public void addPauseListener(ActivityPanel.ActivityListener _activityListener) {
+        SwingUtilities.invokeLater(() -> m_activityPanel.addPauseListener(_activityListener));
     }
 
     /**
      * Add resume action
      *
-     * @param _actionListener the resume action
+     * @param _activityListener the resume action
      */
-    public void setResumeAction(ActivityPanel.ActionListener _actionListener) {
-        SwingUtilities.invokeLater(() -> m_activityPanel.setResumeAction(_actionListener));
-    }
-
-    /**
-     * Set the maximum of the progress bar
-     *
-     * @param _max the max to set
-     */
-    public void setProgresseMax(int _max) {
-        SwingUtilities.invokeLater(() -> m_progessBar.setMaximum(_max));
+    public void addResumeListener(ActivityPanel.ActivityListener _activityListener) {
+        SwingUtilities.invokeLater(() -> m_activityPanel.addResumeListener(_activityListener));
     }
 
     /**
@@ -175,8 +193,8 @@ public final class MainFrame extends ResizibleFrame {
         m_footer = new TitlePanel("Application cree par -- Romain M. -- Florian H. -- Vincent H. -- Sami F. -- Arthur D.  -- Romain T. -- Adele M.", 12, s_DARKGRAY);
 
         m_menuPanel = new JPanel();
-        m_mainTitle = new JLabel("Projet de Bio-Informatique");
-        m_secondTitle = new JLabel("Statistiques sur les trinucleotides dans les genes de la base GenBank");
+        m_mainTitle = new JLabel("GENOME");
+        m_secondTitle = new JLabel("Statistiques sur les genes de la base GenBank");
 
         m_closeB = new JButton();
         m_maximizeB = new JButton();

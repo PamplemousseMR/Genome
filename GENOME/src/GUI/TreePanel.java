@@ -38,10 +38,6 @@ public final class TreePanel extends IPanel {
 
     protected TreePanel() {
         super(s_TITLE);
-        m_tree.addTreeSelectionListener(e -> {
-            System.out.println("J'ai été selectionné " + e.getPath());
-            System.out.println("fichier : " + getFileName(e.getPath()));
-        });
     }
 
     protected void createComponent() {
@@ -101,7 +97,6 @@ public final class TreePanel extends IPanel {
         m_tree.setModel(m_treeModel);
         m_tree.setRootVisible(false);
         m_tree.setShowsRootHandles(true);
-        m_tree.setEditable(true);
         m_tree.setBackground(s_LIGHTGRAY);
 
         m_tree.setCellRenderer(new DefaultTreeCellRenderer() {
@@ -159,6 +154,12 @@ public final class TreePanel extends IPanel {
         m_legend.setBackground(s_LIGHTGRAY);
         m_legend.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
         m_legend.setMinimumSize(new Dimension(250, 30));
+    }
+
+    protected void addTreeListener(TreeListener _treeListener) {
+        m_tree.addTreeSelectionListener(e -> {
+            _treeListener.treeEvent(getFileName(e.getPath()));
+        });
     }
 
     protected synchronized void update(String _path) {
@@ -414,6 +415,10 @@ public final class TreePanel extends IPanel {
         UPDATE,
         FINISH,
         DEFAULT
+    }
+
+    public interface TreeListener {
+        void treeEvent(String _path);
     }
 
     private class Node {
