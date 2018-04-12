@@ -53,8 +53,8 @@ class ICallbackTest {
         organism.start();
 
         ArrayList<StringBuilder> sequences = new ArrayList<>();
-        sequences.add(new StringBuilder("ATGAAATAA"));
-        sequences.add(new StringBuilder("ATGATAA"));
+        sequences.add(new StringBuilder("ACGTACGTACGT"));
+        sequences.add(new StringBuilder("ACGTACGTACGTACG"));
         Replicon replicon = new Replicon(Statistics.Type.CHLOROPLAST, "Replicon", 2, 1, sequences);
         organism.addReplicon(replicon);
 
@@ -121,8 +121,8 @@ class ICallbackTest {
         organism.start();
 
         ArrayList<StringBuilder> sequences = new ArrayList<>();
-        sequences.add(new StringBuilder("ATGAAATAA"));
-        sequences.add(new StringBuilder("ATGATAA"));
+        sequences.add(new StringBuilder("ACGTACGTACGT"));
+        sequences.add(new StringBuilder("ACGTACGTACGTACG"));
         Replicon replicon = new Replicon(Statistics.Type.CHLOROPLAST, "Replicon", 2, 1, sequences);
         organism.addReplicon(replicon);
 

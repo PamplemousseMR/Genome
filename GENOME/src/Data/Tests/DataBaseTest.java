@@ -165,8 +165,8 @@ class DataBaseTest {
                     for (Organism o : s.getOrganisms()) {
                         o.start();
                         ArrayList<StringBuilder> sequences = new ArrayList<>();
-                        sequences.add(new StringBuilder("ATGAAATAA"));
-                        sequences.add(new StringBuilder("ATGATAA"));
+                        sequences.add(new StringBuilder("ACGTACGTACGT"));
+                        sequences.add(new StringBuilder("ACGTACGTACGTACG"));
 
                         Replicon r1 = new Replicon(Replicon.Type.CHLOROPLAST, "r1_" + o.getName(), 2, 1, sequences);
                         assertEquals(true, o.addReplicon(r1));

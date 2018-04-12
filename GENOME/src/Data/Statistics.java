@@ -4,20 +4,28 @@ import java.io.Serializable;
 import java.util.stream.IntStream;
 
 public class Statistics implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * Type of this Statistic
      */
     private final Type m_type;
     /**
-     * Array to store statistics
+     * Array to store trinucleotide statistics
      */
     private final Tuple[] m_trinucleotideTable;
     /**
-     * Number total of trinucleotide on phase 0
+     * Array to store dinucleotide statistics
+     */
+    private final Tuple[] m_dinucleotideTable;
+    /**
+     * Number total of trinucleotide
      */
     private long m_totalTrinucleotide;
+    /**
+     * Number total of dinucleotide
+     */
+    private long m_totalDinucleotide;
     /**
      * The number of CDS sequences
      */
@@ -34,7 +42,10 @@ public class Statistics implements Serializable {
         m_type = _type;
         m_trinucleotideTable = new Tuple[Trinucleotide.values().length];
         IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> m_trinucleotideTable[i] = new Tuple());
+        m_dinucleotideTable = new Tuple[Dinucleotide.values().length];
+        IntStream.range(0, Dinucleotide.values().length).parallel().forEach(i -> m_dinucleotideTable[i] = new Tuple());
         m_totalTrinucleotide = 0L;
+        m_totalDinucleotide = 0L;
         m_CDSNumber = 0L;
         m_validCDSNumber = 0L;
     }
@@ -49,19 +60,35 @@ public class Statistics implements Serializable {
     }
 
     /**
-     * get the total trinucleotide of the phase 0 number
+     * get the total trinucleotide number
      *
-     * @return the m_TotalTriPhase0
+     * @return the m_totalTrinucleotide
      */
     public final long getTotalTrinucleotide() {
         return m_totalTrinucleotide;
     }
 
     /**
+     * get the total dinucleotide number
+     *
+     * @return the m_totalDinucleotide
+     */
+    public final long getTotalDinucleotide() {
+        return m_totalDinucleotide;
+    }
+
+    /**
      * @return the m_trinucleotideTable
      */
-    public final Tuple[] getTable() {
+    public final Tuple[] getTriTable() {
         return m_trinucleotideTable;
+    }
+
+    /**
+     * @return the m_trinucleotideTable
+     */
+    public final Tuple[] getDiTable() {
+        return m_dinucleotideTable;
     }
 
     /**
@@ -89,16 +116,23 @@ public class Statistics implements Serializable {
      */
     protected final void update(Statistics _stats) {
         IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> {
-            final Trinucleotide tri = Trinucleotide.values()[i];
-            final Tuple inputRow = _stats.m_trinucleotideTable[tri.ordinal()];
-            incrementStat(tri, StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
-            incrementStat(tri, StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
-            incrementStat(tri, StatLong.PHASE2, inputRow.get(StatLong.PHASE2));
-            incrementStat(tri, StatLong.PREF0, inputRow.get(StatLong.PREF0));
-            incrementStat(tri, StatLong.PREF1, inputRow.get(StatLong.PREF1));
-            incrementStat(tri, StatLong.PREF2, inputRow.get(StatLong.PREF2));
+            final Tuple inputRow = _stats.m_trinucleotideTable[i];
+            m_trinucleotideTable[i].incr(StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
+            m_trinucleotideTable[i].incr(StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
+            m_trinucleotideTable[i].incr(StatLong.PHASE2, inputRow.get(StatLong.PHASE2));
+            m_trinucleotideTable[i].incr(StatLong.PREF0, inputRow.get(StatLong.PREF0));
+            m_trinucleotideTable[i].incr(StatLong.PREF1, inputRow.get(StatLong.PREF1));
+            m_trinucleotideTable[i].incr(StatLong.PREF2, inputRow.get(StatLong.PREF2));
+        });
+        IntStream.range(0, Dinucleotide.values().length).parallel().forEach(i -> {
+            final Tuple inputRow = _stats.m_dinucleotideTable[i];
+            m_dinucleotideTable[i].incr(StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
+            m_dinucleotideTable[i].incr(StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
+            m_dinucleotideTable[i].incr(StatLong.PREF0, inputRow.get(StatLong.PREF0));
+            m_dinucleotideTable[i].incr(StatLong.PREF1, inputRow.get(StatLong.PREF1));
         });
         m_totalTrinucleotide += _stats.m_totalTrinucleotide;
+        m_totalDinucleotide += _stats.m_totalDinucleotide;
         m_CDSNumber += _stats.m_CDSNumber;
         m_validCDSNumber += _stats.m_validCDSNumber;
     }
@@ -107,11 +141,17 @@ public class Statistics implements Serializable {
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
     protected final void compute() {
-        if (m_totalTrinucleotide != 0) {
+        if (m_totalTrinucleotide != 0){
             for (Tuple row : m_trinucleotideTable) {
                 row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalTrinucleotide);
                 row.set(StatFloat.FREQ1, row.get(StatLong.PHASE1) / (float) m_totalTrinucleotide);
                 row.set(StatFloat.FREQ2, row.get(StatLong.PHASE2) / (float) m_totalTrinucleotide);
+            }
+        }
+        if (m_totalDinucleotide != 0) {
+            for (Tuple row : m_dinucleotideTable) {
+                row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalDinucleotide);
+                row.set(StatFloat.FREQ1, row.get(StatLong.PHASE1) / (float) m_totalDinucleotide);
             }
         }
     }
@@ -127,12 +167,31 @@ public class Statistics implements Serializable {
     }
 
     /**
+     * Increment by 1 the value of a dinucleotide for a stat
+     *
+     * @param _di,   the Dinucleotide to set
+     * @param _stat, the statistic to set
+     */
+    protected final void incrementStat(Dinucleotide _di, StatLong _stat) {
+        m_dinucleotideTable[_di.ordinal()].incr(_stat, 1L);
+    }
+
+    /**
      * Increment the value of total trinucleotide by the parameter
      *
      * @param _inc, the value to increment
      */
-    protected final void incrementTotal(long _inc) {
+    protected final void incrementTriTotal(long _inc) {
         m_totalTrinucleotide += _inc;
+    }
+
+    /**
+     * Increment the value of total trinucleotide by the parameter
+     *
+     * @param _inc, the value to increment
+     */
+    protected final void incrementDiTotal(long _inc) {
+        m_totalDinucleotide += _inc;
     }
 
     /**
@@ -156,45 +215,30 @@ public class Statistics implements Serializable {
     /**
      * Unload data
      *
-     * @param _stat the data to unload
+     * @param _stats the data to unload
      */
-    protected void unload(Statistics _stat) {
-        m_totalTrinucleotide -= _stat.m_totalTrinucleotide;
-        m_CDSNumber -= _stat.m_CDSNumber;
-        m_validCDSNumber -= _stat.m_validCDSNumber;
+    protected void unload(Statistics _stats) {
+        m_totalTrinucleotide -= _stats.m_totalTrinucleotide;
+        m_totalDinucleotide -= _stats.m_totalDinucleotide;
+        m_CDSNumber -= _stats.m_CDSNumber;
+        m_validCDSNumber -= _stats.m_validCDSNumber;
         IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> {
-            final Trinucleotide tri = Trinucleotide.values()[i];
-            final Tuple inputRow = _stat.m_trinucleotideTable[i];
-            decrementStat(tri, StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
-            decrementStat(tri, StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
-            decrementStat(tri, StatLong.PHASE2, inputRow.get(StatLong.PHASE2));
-            decrementStat(tri, StatLong.PREF0, inputRow.get(StatLong.PREF0));
-            decrementStat(tri, StatLong.PREF1, inputRow.get(StatLong.PREF1));
-            decrementStat(tri, StatLong.PREF2, inputRow.get(StatLong.PREF2));
+            final Tuple inputRow = _stats.m_trinucleotideTable[i];
+            m_trinucleotideTable[i].decr(StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
+            m_trinucleotideTable[i].decr(StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
+            m_trinucleotideTable[i].decr(StatLong.PHASE2, inputRow.get(StatLong.PHASE2));
+            m_trinucleotideTable[i].decr(StatLong.PREF0, inputRow.get(StatLong.PREF0));
+            m_trinucleotideTable[i].decr(StatLong.PREF1, inputRow.get(StatLong.PREF1));
+            m_trinucleotideTable[i].decr(StatLong.PREF2, inputRow.get(StatLong.PREF2));
+        });
+        IntStream.range(0, Dinucleotide.values().length).parallel().forEach(i -> {
+            final Tuple inputRow = _stats.m_dinucleotideTable[i];
+            m_dinucleotideTable[i].decr(StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
+            m_dinucleotideTable[i].decr(StatLong.PHASE1, inputRow.get(StatLong.PHASE1));
+            m_dinucleotideTable[i].decr(StatLong.PREF0, inputRow.get(StatLong.PREF0));
+            m_dinucleotideTable[i].decr(StatLong.PREF1, inputRow.get(StatLong.PREF1));
         });
 
-    }
-
-    /**
-     * Increment the value of a trinucleotide for a stat by the parameter
-     *
-     * @param _tri,  the Trinucleotide to set
-     * @param _stat, the statistic to set
-     * @param _inc,  the value to increment
-     */
-    private void incrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
-        m_trinucleotideTable[_tri.ordinal()].incr(_stat, _inc);
-    }
-
-    /**
-     * Increment the value of a trinucleotide for a stat by the parameter
-     *
-     * @param _tri,  the Trinucleotide to set
-     * @param _stat, the statistic to set
-     * @param _inc,  the value to increment
-     */
-    private void decrementStat(Trinucleotide _tri, StatLong _stat, long _inc) {
-        m_trinucleotideTable[_tri.ordinal()].decr(_stat, _inc);
     }
 
     /**
@@ -265,6 +309,28 @@ public class Statistics implements Serializable {
         TTC,
         TTG,
         TTT
+    }
+
+    /**
+     * List of the 16 dinucleotide
+     */
+    public enum Dinucleotide {
+        AA,
+        AC,
+        AG,
+        AT,
+        CA,
+        CC,
+        CG,
+        CT,
+        GA,
+        GC,
+        GG,
+        GT,
+        TA,
+        TC,
+        TG,
+        TT
     }
 
     /**

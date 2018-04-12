@@ -21,7 +21,9 @@ class SerializableTest {
         assertNotNull(_statc);
         assertEquals(_stat.getType(), _statc.getType());
         assertEquals(_stat.getTotalTrinucleotide(), _statc.getTotalTrinucleotide());
-        myAssertEquals(_stat.getTable(), _statc.getTable());
+        assertEquals(_stat.getTotalDinucleotide(), _statc.getTotalDinucleotide());
+        myAssertEquals(_stat.getTriTable(), _statc.getTriTable());
+        myAssertEquals(_stat.getDiTable(), _statc.getDiTable());
         assertEquals(_stat.getCDSNumber(), _statc.getCDSNumber());
         assertEquals(_stat.getValidCDSNumber(), _statc.getValidCDSNumber());
     }

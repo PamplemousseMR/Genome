@@ -50,31 +50,54 @@ public final class Replicon extends Statistics {
             final Statistics temp = new Statistics(getType());
             length = sequence.length();
             idx = 0;
-            while (length - idx > 5) {
+            while (idx + 6 < length) {
                 temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx, idx + 3)), StatLong.PHASE0);
-                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 2, idx + 5)), StatLong.PHASE2);
                 temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 1, idx + 4)), StatLong.PHASE1);
-                idx += 3;
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 2, idx + 5)), StatLong.PHASE2);
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 3, idx + 6)), StatLong.PHASE0);
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 4, idx + 7)), StatLong.PHASE1);
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 5, idx + 8)), StatLong.PHASE2);
+
+                temp.incrementStat(Dinucleotide.valueOf(sequence.substring(idx, idx + 2)), StatLong.PHASE0);
+                temp.incrementStat(Dinucleotide.valueOf(sequence.substring(idx + 1, idx + 3)), StatLong.PHASE1);
+                temp.incrementStat(Dinucleotide.valueOf(sequence.substring(idx + 2, idx + 4)), StatLong.PHASE0);
+                temp.incrementStat(Dinucleotide.valueOf(sequence.substring(idx + 3, idx + 5)), StatLong.PHASE1);
+                temp.incrementStat(Dinucleotide.valueOf(sequence.substring(idx + 4, idx + 6)), StatLong.PHASE0);
+                temp.incrementStat(Dinucleotide.valueOf(sequence.substring(idx + 5, idx + 7)), StatLong.PHASE1);
+                idx += 6;
             }
-            super.incrementTotal(idx / 3);
+            super.incrementTriTotal(idx / 3);
+            super.incrementDiTotal(idx / 2);
+            if (idx + 3 < length) {
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx, idx + 3)), StatLong.PHASE0);
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 1, idx + 4)), StatLong.PHASE1);
+                temp.incrementStat(Trinucleotide.valueOf(sequence.substring(idx + 2, idx + 5)), StatLong.PHASE2);
+
+                temp.incrementStat(Dinucleotide.valueOf(sequence.substring(idx, idx + 2)), StatLong.PHASE0);
+                temp.incrementStat(Dinucleotide.valueOf(sequence.substring(idx + 1, idx + 3)), StatLong.PHASE1);
+                super.incrementTriTotal(1);
+                super.incrementDiTotal(1);
+            }
 
             long val0, val1, val2;
-            for (Tuple tuple : temp.getTable()) {
+            for (Tuple tuple : temp.getTriTable()) {
                 val0 = tuple.get(Statistics.StatLong.PHASE0);
                 val1 = tuple.get(Statistics.StatLong.PHASE1);
                 val2 = tuple.get(Statistics.StatLong.PHASE2);
-                if (val0 < val1 || val0 < val2)
-                    val0 = 0;
-                if (val1 < val0 || val1 < val2)
-                    val1 = 0;
-                if (val2 < val0 || val2 < val1)
-                    val2 = 0;
-                if (val0 != 0)
+                if (val1 <= val0 && val2 <= val0)
                     tuple.incr(Statistics.StatLong.PREF0, 1);
-                if (val1 != 0)
+                if (val0 <= val1 && val2 <= val1)
                     tuple.incr(Statistics.StatLong.PREF1, 1);
-                if (val2 != 0)
+                if (val0 <= val2 && val1 <= val2)
                     tuple.incr(Statistics.StatLong.PREF2, 1);
+            }
+            for (Tuple tuple : temp.getDiTable()) {
+                val0 = tuple.get(Statistics.StatLong.PHASE0);
+                val1 = tuple.get(Statistics.StatLong.PHASE1);
+                if (val1 <= val0)
+                    tuple.incr(Statistics.StatLong.PREF0, 1);
+                if (val0 <= val1)
+                    tuple.incr(Statistics.StatLong.PREF1, 1);
             }
             update(temp);
             super.compute();

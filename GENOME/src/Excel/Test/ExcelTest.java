@@ -392,7 +392,7 @@ class ExcelTest {
                             strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
                             strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
                             strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
-                            strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTAT");
+                            strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTATACGTACGTAG");
                             ArrayList<StringBuilder> sequences = new ArrayList<>();
                             sequences.add(strBuf);
                             Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "NC_" + r, 2, 1, sequences);

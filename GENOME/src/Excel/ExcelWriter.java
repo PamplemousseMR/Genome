@@ -201,7 +201,7 @@ public class ExcelWriter {
         XSSFCell c;
 
         for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
-            Tuple row = _stat.getTable()[tri.ordinal()];
+            Tuple row = _stat.getTriTable()[tri.ordinal()];
             r = _sheet.createRow(i);
             c = r.createCell(0);
             c.setCellValue(tri.toString());
