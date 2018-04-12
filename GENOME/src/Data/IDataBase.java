@@ -8,6 +8,7 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
+import java.util.Map;
 
 public class IDataBase implements Serializable {
     private static final long serialVersionUID = 2L;
@@ -15,7 +16,7 @@ public class IDataBase implements Serializable {
     /**
      * The name
      */
-    private transient final String m_name;
+    private final String m_name;
     /**
      * Statistics of this IDataBase
      */
@@ -229,6 +230,49 @@ public class IDataBase implements Serializable {
             Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
         }
+    }
+
+    /**
+     * Get title string
+     *
+     * @return the title string
+     */
+    public String getProperties() {
+        String res = "";
+        res += "Name\n";
+        res += "Total number of CDS sequences\n";
+        res += "Number of valid CDS\n";
+        res += "Number of invalid CDS\n";
+        res += "Number of organism\n";
+        res += "\n";
+
+        for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
+            res += ent.getKey() + "\n";
+        }
+        res += "\n";
+
+        return res;
+    }
+
+    /**
+     * Get value string
+     *
+     * @return the value string
+     */
+    public String getValues() {
+        String res = "";
+        res += m_name + "\n";
+        res += m_CDSNumber + "\n";
+        res += m_validCDSNumber + "\n";
+        res += (m_CDSNumber - m_validCDSNumber) + "\n";
+        res += m_totalOrganism + "\n";
+        res += "\n";
+
+        for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
+            res += ent.getValue() + "\n";
+        }
+
+        return res;
     }
 
     /**

@@ -1,5 +1,6 @@
 package Main;
 
+import Data.IDataBase;
 import GUI.MainFrame;
 import Utils.Logs;
 import Utils.Options;
@@ -35,7 +36,13 @@ final class GENOME {
         MainFrame.getSingleton().addStopListener(Activity::stop);
         MainFrame.getSingleton().addPauseListener(Activity::pause);
         MainFrame.getSingleton().addResumeListener(Activity::resume);
-        MainFrame.getSingleton().addTreeListener(_info -> MainFrame.getSingleton().updateInformation(_info));
+        MainFrame.getSingleton().addTreeListener(_info -> {
+            IDataBase organism = IDataBase.load(_info);
+            if (organism != null) {
+                MainFrame.getSingleton().updateInformationLeft(organism.getProperties());
+                MainFrame.getSingleton().updateInformationRight(organism.getValues());
+            }
+        });
         initializeProgram();
         Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
     }

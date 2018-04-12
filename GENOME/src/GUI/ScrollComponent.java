@@ -13,7 +13,6 @@ public final class ScrollComponent extends JScrollPane {
     protected ScrollComponent(Component _component) {
         super(_component, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
         super.setOpaque(true);
-        super.setComponentOrientation(ComponentOrientation.LEFT_TO_RIGHT);
         super.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
 
             private JButton createZeroButton() {
@@ -51,8 +50,10 @@ public final class ScrollComponent extends JScrollPane {
                 g2.dispose();
             }
         });
-        super.setBorder(null);
+        super.setBorder(BorderFactory.createEmptyBorder());
         super.getVerticalScrollBar().setPreferredSize(new Dimension(10, Integer.MAX_VALUE));
+        super.repaint();
+        super.updateUI();
     }
 
 }

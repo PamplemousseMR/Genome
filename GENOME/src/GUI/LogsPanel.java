@@ -36,6 +36,8 @@ public final class LogsPanel extends IPanel {
         m_textPane.setFont(new Font(s_FONT, Font.PLAIN, 14));
         m_textPane.setForeground(s_WHITE);
         m_textPane.setEditable(false);
+        m_textPane.setBorder(BorderFactory.createLineBorder(s_LIGHTGRAY, 10));
+
     }
 
     protected void updateLog(String _log, Logs.Type _type) {
@@ -60,16 +62,15 @@ public final class LogsPanel extends IPanel {
         try {
             m_textPane.getDocument().insertString(len, "\n" + _log, aset);
         } catch (BadLocationException e) {
-            Logs.exception(e);           
+            Logs.exception(e);
         }
-        if(m_textPane.getText().split("\n").length >250)
-        {
-        	try {
-				m_textPane.getDocument().remove(0, 100);
-			} catch (BadLocationException e) {
-				e.printStackTrace();
-			}
+        if (m_textPane.getText().split("\n").length > 250) {
+            try {
+                m_textPane.getDocument().remove(0, 100);
+            } catch (BadLocationException e) {
+                e.printStackTrace();
+            }
         }
-        
+
     }
 }

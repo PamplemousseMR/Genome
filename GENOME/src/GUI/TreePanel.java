@@ -398,7 +398,7 @@ public final class TreePanel extends IPanel {
             result += Options.getSerializationSpliter() + Options.getSubGroupSerializationPrefix() + table[4].toString().replaceAll(" ", "_");
         if (table.length >= 6)
             result += Options.getSerializationSpliter() + Options.getOrganismSerializationPrefix() + table[5].toString().replaceAll(" ", "_");
-        return Options.getSerializeDirectory() + File.separator + result + Options.getSerializeExtension();
+        return result;
     }
 
     private void resetState() {
