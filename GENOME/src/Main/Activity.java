@@ -294,6 +294,7 @@ public class Activity {
         synchronized (s_stopLock) {
             if (!s_stop) {
                 s_stop = true;
+                ret = true;
             }
         }
         m_lock.lock();
