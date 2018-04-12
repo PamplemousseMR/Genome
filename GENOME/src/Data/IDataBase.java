@@ -10,7 +10,7 @@ import java.util.Date;
 import java.util.EnumMap;
 
 public class IDataBase implements Serializable {
-    private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 2L;
 
     /**
      * The name

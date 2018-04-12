@@ -21,7 +21,7 @@ class StatisticsTest {
             float totalFreq0 = 0.0F;
             float totalFreq1 = 0.0F;
             float totalFreq2 = 0.0F;
-            for (Tuple en : stat.getTable()) {
+            for (Tuple en : stat.getTriTable()) {
                 totalPhase0 += en.get(Statistics.StatLong.PHASE0);
                 totalPhase1 += en.get(Statistics.StatLong.PHASE1);
                 totalPhase2 += en.get(Statistics.StatLong.PHASE2);
@@ -35,6 +35,20 @@ class StatisticsTest {
             assertEquals(totalPhase0, stat.getTotalTrinucleotide());
             assertEquals(totalPhase1, stat.getTotalTrinucleotide());
             assertEquals(totalPhase2, stat.getTotalTrinucleotide());
+            totalPhase0 = 0L;
+            totalPhase1 = 0L;
+            totalFreq0 = 0.0F;
+            totalFreq1 = 0.0F;
+            for (Tuple en : stat.getDiTable()) {
+                totalPhase0 += en.get(Statistics.StatLong.PHASE0);
+                totalPhase1 += en.get(Statistics.StatLong.PHASE1);
+                totalFreq0 += en.get(Statistics.StatFloat.FREQ0);
+                totalFreq1 += en.get(Statistics.StatFloat.FREQ1);
+            }
+            assertEquals(1.0F, totalFreq0, 0.000001F);
+            assertEquals(1.0F, totalFreq1, 0.000001F);
+            assertEquals(totalPhase0, stat.getTotalDinucleotide());
+            assertEquals(totalPhase1, stat.getTotalDinucleotide());
         }
         EnumMap<Statistics.Type, Long> genNumb = _dataBase.getGenomeNumber();
         long totalGenome = 0L;
@@ -436,7 +450,7 @@ class StatisticsTest {
                             strBuf.append("ATTATAAAATGAATTGCCTGACGAAAAGGGTTACCTTGATAGGGTAAATC");
                             strBuf.append("ATAAAGTTTATACTTTATTCATTAAATTATATTTAATAGAATTAAACTAT");
                             strBuf.append("TTCCAAAAGCTTCAAAAACTTTTGTGCATCGTACACTAAAATATAGATAA");
-                            strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTAT");
+                            strBuf.append("TATATATATATTTATGTATTTATATAAAAATAACTCTTATATATAGATAA");
                             ArrayList<StringBuilder> sequences = new ArrayList<>();
                             sequences.add(strBuf);
                             Replicon re = new Replicon(Statistics.Type.CHROMOSOME, "CR1", 2, 1, sequences);
