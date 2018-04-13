@@ -1,6 +1,7 @@
 package GUI;
 
 import javax.swing.*;
+import javax.swing.plaf.basic.BasicGraphicsUtils;
 import javax.swing.plaf.basic.BasicTabbedPaneUI;
 import java.awt.*;
 
@@ -13,6 +14,49 @@ public class TabbedPanel extends JTabbedPane {
         boolean contentOpaque = UIManager.getBoolean("TabbedPane.contentOpaque");
         setBorder(BorderFactory.createLineBorder(s_DARKGRAY, 10));
         setUI(new BasicTabbedPaneUI() {
+            @Override
+            protected void paintTabArea(Graphics g, int tabPlacement, int selectedIndex) {
+                g.setColor(s_LIGHTGRAY);
+                g.fillRect(0, 0, getWidth(), getHeight());
+                super.paintTabArea(g, tabPlacement, selectedIndex);
+            }
+
+            @Override
+            protected void paintFocusIndicator(Graphics g, int tabPlacement, Rectangle[] rects, int tabIndex, Rectangle iconRect, Rectangle textRect, boolean isSelected) {
+                Rectangle tabRect = rects[tabIndex];
+                if (tabPane.hasFocus() && isSelected) {
+                    int x, y, w, h;
+                    g.setColor(Color.GREEN);
+                    switch (tabPlacement) {
+                        case LEFT:
+                            x = tabRect.x + 3;
+                            y = tabRect.y + 3;
+                            w = tabRect.width - 5;
+                            h = tabRect.height - 6;
+                            break;
+                        case RIGHT:
+                            x = tabRect.x + 2;
+                            y = tabRect.y + 3;
+                            w = tabRect.width - 5;
+                            h = tabRect.height - 6;
+                            break;
+                        case BOTTOM:
+                            x = tabRect.x + 3;
+                            y = tabRect.y + 2;
+                            w = tabRect.width - 6;
+                            h = tabRect.height - 5;
+                            break;
+                        case TOP:
+                        default:
+                            x = tabRect.x + 3;
+                            y = tabRect.y + 3;
+                            w = tabRect.width - 6;
+                            h = tabRect.height - 5;
+                    }
+                    BasicGraphicsUtils.drawDashedRect(g, x, y, w, h);
+                }
+            }
+
             @Override
             protected void paintTabBorder(Graphics g, int tabPlacement, int tabIndex, int x, int y, int w, int h, boolean isSelected) {
                 g.setColor(!isSelected ? s_BLUEGRAY : s_CHARCOAL);
