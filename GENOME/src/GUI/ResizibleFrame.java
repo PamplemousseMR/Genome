@@ -13,7 +13,7 @@ public class ResizibleFrame extends JFrame implements MouseMotionListener, Mouse
     /**
      * Area inside which the action listener detects the mouse
      **/
-    private static final int cursorArea = 6;
+    private static final int s_CURSOR_AREA = 6;
     /**
      * Vertical threshold
      **/
@@ -58,21 +58,21 @@ public class ResizibleFrame extends JFrame implements MouseMotionListener, Mouse
         final int xPos = cursorLocation.x;
         final int yPos = cursorLocation.y;
 
-        if (xPos >= cursorArea && xPos <= getWidth() - cursorArea && yPos >= getHeight() - cursorArea)
+        if (xPos >= s_CURSOR_AREA && xPos <= getWidth() - s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
             setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
-        else if (xPos >= getWidth() - cursorArea && yPos >= cursorArea && yPos <= getHeight() - cursorArea)
+        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos >= s_CURSOR_AREA && yPos <= getHeight() - s_CURSOR_AREA)
             setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
-        else if (xPos <= cursorArea && yPos >= cursorArea && yPos <= getHeight() - cursorArea)
+        else if (xPos <= s_CURSOR_AREA && yPos >= s_CURSOR_AREA && yPos <= getHeight() - s_CURSOR_AREA)
             setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
-        else if (xPos >= cursorArea && xPos <= getWidth() - cursorArea && yPos <= cursorArea)
+        else if (xPos >= s_CURSOR_AREA && xPos <= getWidth() - s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
             setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
-        else if (xPos <= cursorArea && yPos <= cursorArea)
+        else if (xPos <= s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
             setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-        else if (xPos >= getWidth() - cursorArea && yPos <= cursorArea)
+        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
             setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
-        else if (xPos >= getWidth() - cursorArea && yPos >= getHeight() - cursorArea)
+        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
             setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
-        else if (xPos <= cursorArea && yPos >= getHeight() - cursorArea)
+        else if (xPos <= s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
             setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
         else
             setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
