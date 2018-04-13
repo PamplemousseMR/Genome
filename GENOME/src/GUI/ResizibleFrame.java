@@ -8,7 +8,13 @@ import java.awt.event.MouseMotionListener;
 
 public class ResizibleFrame extends JFrame implements MouseMotionListener, MouseListener {
 
+    private static final String s_TITLE = "GENOME";
     private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
+    private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
+    private static final int s_DEFAULT_FRAME_WIDTH = 300;
+    private static final int s_DEFAULT_FRAME_HEIGHT = 300;
+    private static final Point s_INITIAL_LOCATION = new Point((int) s_TOOLKIT.getScreenSize().getWidth() / 2 - s_DEFAULT_FRAME_WIDTH / 2, (int) s_TOOLKIT.getScreenSize().getHeight() / 2 - s_DEFAULT_FRAME_HEIGHT / 2);
+    private static final Dimension s_INITIAL_DIMENSION = new Dimension(s_DEFAULT_FRAME_WIDTH, s_DEFAULT_FRAME_HEIGHT);
 
     /**
      * Area inside which the action listener detects the mouse
@@ -32,19 +38,18 @@ public class ResizibleFrame extends JFrame implements MouseMotionListener, Mouse
     private Point m_start_drag;
     private Point m_start_loc;
 
-    protected ResizibleFrame(Dimension initialDimension, Point initialLocation, String frameName) {
-        super(frameName);
-        m_initialLocation = initialLocation;
-        m_minWidth = (int) initialDimension.getWidth();
-        m_minHeight = (int) initialDimension.getHeight();
+    protected ResizibleFrame() {
+        super(s_TITLE);
+        m_initialLocation = s_INITIAL_LOCATION;
+        m_minWidth = (int) s_INITIAL_DIMENSION.getWidth();
+        m_minHeight = (int) s_INITIAL_DIMENSION.getHeight();
         Init();
     }
 
     private static Point getScreenLocation(MouseEvent e, JFrame frame) {
         final Point cursor = e.getPoint();
         final Point view_location = frame.getLocationOnScreen();
-        return new Point((int) (view_location.getX() + cursor.getX()),
-                (int) (view_location.getY() + cursor.getY()));
+        return new Point((int) (view_location.getX() + cursor.getX()), (int) (view_location.getY() + cursor.getY()));
     }
 
     @Override
@@ -118,6 +123,7 @@ public class ResizibleFrame extends JFrame implements MouseMotionListener, Mouse
         m_minHeight -= s_DIFF_MIN_HEIGHT;
         setLocation(m_initialLocation);
         setUndecorated(true);
+        setSize((s_DIM.width / 2), (s_DIM.height / 2));
     }
 
     private void moveOrFullResizeFrame(MouseEvent e) {

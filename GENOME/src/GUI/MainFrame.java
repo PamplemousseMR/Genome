@@ -13,13 +13,6 @@ import static GUI.Constant.*;
 
 public final class MainFrame extends ResizibleFrame {
 
-    private static final String s_TITLE = "GENOME";
-    private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
-    private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
-    private static final int s_DEFAULT_FRAME_WIDTH = 300;
-    private static final int s_DEFAULT_FRAME_HEIGHT = 300;
-    private static final Point s_INITIAL_LOCATION = new Point((int) s_TOOLKIT.getScreenSize().getWidth() / 2 - s_DEFAULT_FRAME_WIDTH / 2, (int) s_TOOLKIT.getScreenSize().getHeight() / 2 - s_DEFAULT_FRAME_HEIGHT / 2);
-    private static final Dimension s_INITIAL_DIMENSION = new Dimension(s_DEFAULT_FRAME_WIDTH, s_DEFAULT_FRAME_HEIGHT);
     private static MainFrame s_mainFrame;
 
     private JPanel m_header;
@@ -49,7 +42,7 @@ public final class MainFrame extends ResizibleFrame {
      * Constructor
      */
     private MainFrame() {
-        super(s_INITIAL_DIMENSION, s_INITIAL_LOCATION, s_TITLE);
+        super();
         initFrame();
         initComponents();
         initLayout();
@@ -165,11 +158,8 @@ public final class MainFrame extends ResizibleFrame {
      */
     private void initFrame() {
         initIcone();
-        setUndecorated(true);
         setVisible(true);
-        setSize((s_DIM.width / 2), (s_DIM.height / 2));
         setLocationRelativeTo(null);
-        setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -254,10 +244,9 @@ public final class MainFrame extends ResizibleFrame {
      * Swag the interface
      */
     private void swagComponents() {
-        getRootPane().setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        getRootPane().setBorder(BorderFactory.createLineBorder(s_DARKGRAY, 10));
 
         m_menuPanel.setBackground(s_DARKGRAY);
-        m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));
         m_mainTitle.setFont(new Font(s_FONT, Font.PLAIN, 28));
         m_mainTitle.setForeground(s_WHITE);
         m_secondTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
@@ -269,6 +258,7 @@ public final class MainFrame extends ResizibleFrame {
 
         m_header.setBackground(s_DARKGRAY);
         m_main.setBackground(s_LIGHTGRAY);
+        m_main.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
         m_splitPanel_main.setUI(new BasicSplitPaneUI() {
             @Override

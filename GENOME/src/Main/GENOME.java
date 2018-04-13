@@ -41,7 +41,7 @@ final class GENOME {
         MainFrame.getSingleton().addTreeListener(_info -> {
             IDataBase organism = IDataBase.load(_info);
             if (organism != null) {
-                new Thread(() -> MainFrame.getSingleton().updateInformation(JDataBase.createComponent(organism))).start();
+                MainFrame.getSingleton().updateInformation(JDataBase.createComponent(organism));
             } else {
                 MainFrame.getSingleton().updateInformation(new JTextArea());
             }
