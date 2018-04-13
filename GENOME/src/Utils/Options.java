@@ -12,6 +12,10 @@ public final class Options {
      */
     private static final String s_OPTIONS_FILE_NAME = "options.ini";
     /**
+     * Maximum number of thread
+     */
+    private static final String s_MAX_THREAD = "32";
+    /**
      * Connection timeout in ms
      */
     private static final String s_DOWNLOAD_CONNECTION_TIMEOUT = "10000";
@@ -189,6 +193,10 @@ public final class Options {
                 Logs.exception(e);
             }
         }
+    }
+
+    public static int getMaxThread() {
+        return Integer.parseInt(s_MAX_THREAD);
     }
 
     public static int getDownloadStep() {

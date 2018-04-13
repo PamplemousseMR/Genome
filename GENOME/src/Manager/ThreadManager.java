@@ -8,6 +8,8 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static Utils.Options.getMaxThread;
+
 public final class ThreadManager {
 
 
@@ -25,7 +27,7 @@ public final class ThreadManager {
      */
     public ThreadManager(int _nbThreadMax) {
 
-        m_nbThreadMax = _nbThreadMax;
+        m_nbThreadMax = _nbThreadMax > getMaxThread() ? getMaxThread() : _nbThreadMax;
 
         Logs.info("Number of threads : " + m_nbThreadMax, true);
 
