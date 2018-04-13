@@ -103,10 +103,11 @@ public class Activity {
             MainFrame.getSingleton().updateProgresseValue(0);
             s_activityThread = new Thread(() -> {
                 final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
+                final int[] index = {0};
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
-                    MainFrame.getSingleton().updateProgresseMax(go.getTotalCount());
+                    MainFrame.getSingleton().updateProgresseMax(go.getTotalCount() + 1);
 
                     final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
                         try {
@@ -133,7 +134,6 @@ public class Activity {
                     currentSubGroup.start();
 
                     final Lock m_indexLock = new ReentrantLock();
-                    final int[] index = {0};
                     while (go.hasNext()) {
                         m_lock.lock();
                         {
@@ -274,12 +274,10 @@ public class Activity {
                 } finally {
                     Logs.info("Finished and wait for threads...", true);
                     threadManager.finalizeThreadManager();
-                    synchronized (s_stopLock) {
-                        s_stop = false;
-                    }
                     synchronized (s_runLock) {
                         s_run = false;
                     }
+                    MainFrame.getSingleton().updateProgresseValue(++index[0]);
                 }
             });
             s_activityThread.start();
