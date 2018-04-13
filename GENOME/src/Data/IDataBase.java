@@ -8,7 +8,6 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.Map;
 
 public class IDataBase implements Serializable {
     private static final long serialVersionUID = 2L;
@@ -248,49 +247,6 @@ public class IDataBase implements Serializable {
                 }
             }
         }
-    }
-
-    /**
-     * Get title string
-     *
-     * @return the title string
-     */
-    public String getProperties() {
-        StringBuilder res = new StringBuilder();
-        res.append("Name\n");
-        res.append("Total number of CDS sequences\n");
-        res.append("Number of valid CDS\n");
-        res.append("Number of invalid CDS\n");
-        res.append("Number of organism\n");
-        res.append("\n");
-
-        for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
-            res.append(ent.getKey()).append("\n");
-        }
-        res.append("\n");
-
-        return res.toString();
-    }
-
-    /**
-     * Get value string
-     *
-     * @return the value string
-     */
-    public String getValues() {
-        StringBuilder res = new StringBuilder();
-        res.append(m_name).append("\n");
-        res.append(m_CDSNumber).append("\n");
-        res.append(m_validCDSNumber).append("\n");
-        res.append(m_CDSNumber - m_validCDSNumber).append("\n");
-        res.append(m_totalOrganism).append("\n");
-        res.append("\n");
-
-        for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
-            res.append(ent.getValue()).append("\n");
-        }
-
-        return res.toString();
     }
 
     /**

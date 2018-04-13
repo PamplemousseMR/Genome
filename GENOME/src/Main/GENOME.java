@@ -5,6 +5,8 @@ import GUI.MainFrame;
 import Utils.Logs;
 import Utils.Options;
 
+import javax.swing.*;
+
 final class GENOME {
 
     /**
@@ -39,8 +41,9 @@ final class GENOME {
         MainFrame.getSingleton().addTreeListener(_info -> {
             IDataBase organism = IDataBase.load(_info);
             if (organism != null) {
-                MainFrame.getSingleton().updateInformationLeft(organism.getProperties());
-                MainFrame.getSingleton().updateInformationRight(organism.getValues());
+                new Thread(() -> MainFrame.getSingleton().updateInformation(JDataBase.createComponent(organism))).start();
+            } else {
+                MainFrame.getSingleton().updateInformation(new JTextArea());
             }
         });
         initializeProgram();

@@ -100,19 +100,10 @@ public final class MainFrame extends ResizibleFrame {
     /**
      * Update the information to display
      *
-     * @param _info the info to set
+     * @param _component the component to set
      */
-    public void updateInformationLeft(String _info) {
-        SwingUtilities.invokeLater(() -> m_informationsPanel.updateInformationLeft(_info));
-    }
-
-    /**
-     * Update the information to display
-     *
-     * @param _info the info to set
-     */
-    public void updateInformationRight(String _info) {
-        SwingUtilities.invokeLater(() -> m_informationsPanel.updateInformationRight(_info));
+    public void updateInformation(JComponent _component) {
+        SwingUtilities.invokeLater(() -> m_informationsPanel.updateInformation(_component));
     }
 
     /**
