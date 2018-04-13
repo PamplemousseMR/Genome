@@ -10,7 +10,7 @@ public final class InformationPanel extends IPanel {
     private static final String s_TITLE = "Informations";
 
     private JComponent m_container;
-    private ScrollComponent m_scroll;
+    private ScrollPanel m_scroll;
 
     protected InformationPanel() {
         super(s_TITLE);
@@ -25,7 +25,7 @@ public final class InformationPanel extends IPanel {
 
     protected void createComponent() {
         m_container = new JPanel();
-        m_scroll = new ScrollComponent(m_container);
+        m_scroll = new ScrollPanel(m_container);
     }
 
     protected void initLayout() {
@@ -43,7 +43,7 @@ public final class InformationPanel extends IPanel {
         super.remove(m_scroll);
         m_container = _component;
         m_container.setBorder(BorderFactory.createLineBorder(s_LIGHTGRAY, 10));
-        m_scroll = new ScrollComponent(m_container);
+        m_scroll = new ScrollPanel(m_container);
         swagComponent();
         super.add(m_scroll);
         super.repaint();

@@ -3,15 +3,14 @@ package GUI;
 
 import javax.swing.*;
 import javax.swing.plaf.basic.BasicScrollBarUI;
-import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
 
 import static GUI.Constant.s_DARKGRAY;
 import static GUI.Constant.s_LIGHTGRAY;
 
-public final class ScrollComponent extends JScrollPane {
+public final class ScrollPanel extends JScrollPane {
 
-    protected ScrollComponent(Component _component) {
+    protected ScrollPanel(Component _component) {
         super(_component, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         super.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
 

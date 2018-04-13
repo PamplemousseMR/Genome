@@ -19,7 +19,7 @@ public final class TreePanel extends IPanel {
 
     private DefaultTreeModel m_treeModel;
     private JTree m_tree;
-    private ScrollComponent m_scrollPane;
+    private ScrollPanel m_scrollPane;
     private JPanel m_legend;
 
     private JPanel m_orangeContainer;
@@ -57,7 +57,9 @@ public final class TreePanel extends IPanel {
         m_greenLabel = new JLabel("terminé");
 
         m_tree = new JTree();
-        m_scrollPane = new ScrollComponent(m_tree);
+        m_scrollPane = new ScrollPanel(m_tree);
+
+        new SmartScrollComponent(m_scrollPane);
     }
 
     protected void initLayout() {

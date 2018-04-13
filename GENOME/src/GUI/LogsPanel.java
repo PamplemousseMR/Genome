@@ -13,7 +13,7 @@ public final class LogsPanel extends IPanel {
     private final static String s_TITLE = "Logs";
 
     private JTextPane m_textPane;
-    private ScrollComponent m_container;
+    private ScrollPanel m_container;
 
     protected LogsPanel() {
         super(s_TITLE);
@@ -21,7 +21,8 @@ public final class LogsPanel extends IPanel {
 
     protected void createComponent() {
         m_textPane = new JTextPane();
-        m_container = new ScrollComponent(m_textPane);
+        m_container = new ScrollPanel(m_textPane);
+        new SmartScrollComponent(m_container);
     }
 
     protected void initLayout() {
@@ -54,9 +55,7 @@ public final class LogsPanel extends IPanel {
         }
         StyleContext sc = StyleContext.getDefaultStyleContext();
         AttributeSet aset = sc.addAttribute(SimpleAttributeSet.EMPTY, StyleConstants.Foreground, m_logColour);
-
         int len = m_textPane.getDocument().getLength();
-        m_textPane.setCaretPosition(len);
         m_textPane.setCharacterAttributes(aset, true);
         try {
             m_textPane.getDocument().insertString(len, "\n" + _log, aset);
