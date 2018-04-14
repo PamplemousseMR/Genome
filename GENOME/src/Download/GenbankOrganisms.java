@@ -132,7 +132,7 @@ public final class GenbankOrganisms extends IDownloader {
                 m_downloaded += Options.getDownloadStep();
                 m_failedOrganism += Options.getDownloadStep();
             }
-            Logs.exception(new Exception(e));
+            Logs.exception(e);
             return;
         }
 

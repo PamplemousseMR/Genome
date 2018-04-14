@@ -98,7 +98,7 @@ public final class Logs {
      *
      * @param _exception the message to print
      */
-    public static void exception(Exception _exception) {
+    public static void exception(Throwable _exception) {
         StringWriter errors = new StringWriter();
         _exception.printStackTrace(new PrintWriter(errors));
 

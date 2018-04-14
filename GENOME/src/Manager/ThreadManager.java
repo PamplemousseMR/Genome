@@ -178,7 +178,7 @@ public final class ThreadManager {
                         todo.run();
                     } catch (Throwable e) {
                         Logs.warning("Error catch in thread " + m_id + " : " + todo.getName());
-                        Logs.exception(new Exception(e));
+                        Logs.exception(e);
                     }
 
                     StringBuilder threadsInfos = new StringBuilder("[");

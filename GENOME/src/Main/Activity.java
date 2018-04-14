@@ -263,7 +263,7 @@ class Activity {
                                     Logs.exception(new Exception(e));
                                 } catch (Throwable e) {
                                     Logs.warning("Unknow error : " + organism.getName());
-                                    Logs.exception(new Exception(e));
+                                    Logs.exception(e);
                                 } finally {
                                     try {
                                         organism.stop();
