@@ -6,6 +6,8 @@ import Utils.Logs;
 import Utils.Options;
 
 import javax.swing.*;
+import java.io.File;
+import java.io.IOException;
 
 final class GENOME {
 
@@ -29,25 +31,49 @@ final class GENOME {
         Logs.info("Options finalized", true);
         Options.finalizeOptions();
         Logs.info("Log finalized", true);
+        unlock();
         Logs.finalizeLog();
     }
 
-    public static void main(String[] args) {
-        Logs.setListener((_message, _type) -> MainFrame.getSingleton().updateLog(_message, _type));
-        MainFrame.getSingleton().addStartListener(Activity::genbank);
-        MainFrame.getSingleton().addStopListener(Activity::stop);
-        MainFrame.getSingleton().addPauseListener(Activity::pause);
-        MainFrame.getSingleton().addResumeListener(Activity::resume);
-        MainFrame.getSingleton().addTreeListener(_info -> {
-            IDataBase organism = IDataBase.load(_info);
-            if (organism != null) {
-                MainFrame.getSingleton().updateInformation(JDataBase.createComponent(organism));
-            } else {
-                MainFrame.getSingleton().updateInformation(new JTextArea());
+    private static boolean lock() {
+        File mutex = new File(Options.getMutexFileName());
+        try {
+            return mutex.createNewFile();
+        } catch (IOException e) {
+            JOptionPane.showMessageDialog(null, "Problèmme de création du verrou du programme.");
+        }
+        return false;
+    }
+
+    private static void unlock() {
+        File mutex = new File(Options.getMutexFileName());
+        if (mutex.exists()) {
+            if (!mutex.delete()) {
+                Logs.warning("Enable to delete mutex file : " + Options.getMutexFileName());
             }
-        });
-        initializeProgram();
-        Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
+        }
+    }
+
+    public static void main(String[] args) {
+        if (lock()) {
+            Logs.setListener((_message, _type) -> MainFrame.getSingleton().updateLog(_message, _type));
+            MainFrame.getSingleton().addStartListener(Activity::genbank);
+            MainFrame.getSingleton().addStopListener(Activity::stop);
+            MainFrame.getSingleton().addPauseListener(Activity::pause);
+            MainFrame.getSingleton().addResumeListener(Activity::resume);
+            MainFrame.getSingleton().addTreeListener(_info -> {
+                IDataBase organism = IDataBase.load(_info);
+                if (organism != null) {
+                    MainFrame.getSingleton().updateInformation(JDataBase.createComponent(organism));
+                } else {
+                    MainFrame.getSingleton().updateInformation(new JTextArea());
+                }
+            });
+            initializeProgram();
+            Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
+        } else {
+            JOptionPane.showMessageDialog(null, "Programme en cours d'éxécution.");
+        }
     }
 
 }

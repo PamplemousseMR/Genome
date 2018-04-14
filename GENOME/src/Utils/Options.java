@@ -12,6 +12,10 @@ public final class Options {
      */
     private static String s_OPTIONS_FILE_NAME = "options.ini";
     /**
+     * Mutex file name
+     */
+    private static String s_MUTEX_FILE_NAME = "locker.mutex";
+    /**
      * Maximum number of thread
      */
     private static String s_MAX_THREAD = "32";
@@ -168,6 +172,10 @@ public final class Options {
         } catch (IOException e) {
             Logs.exception(e);
         }
+    }
+
+    public static String getMutexFileName() {
+        return s_MUTEX_FILE_NAME;
     }
 
     public static int getMaxThread() {

@@ -34,21 +34,27 @@ class JDataBase {
             swagComponent(triPanel);
 
             triPanel.add(swagComponent(new JPanel()));
-            for (Statistics.StatFloat fl : Statistics.StatFloat.values()) {
-                triPanel.add(swagComponent(new JLabel(fl.toString())));
-            }
-            for (Statistics.StatLong lo : Statistics.StatLong.values()) {
-                triPanel.add(swagComponent(new JLabel(lo.toString())));
-            }
+            triPanel.add(swagComponent(new JLabel(Statistics.StatLong.PHASE0.toString())));
+            triPanel.add(swagComponent(new JLabel(Statistics.StatFloat.FREQ0.toString())));
+            triPanel.add(swagComponent(new JLabel(Statistics.StatLong.PHASE1.toString())));
+            triPanel.add(swagComponent(new JLabel(Statistics.StatFloat.FREQ1.toString())));
+            triPanel.add(swagComponent(new JLabel(Statistics.StatLong.PHASE2.toString())));
+            triPanel.add(swagComponent(new JLabel(Statistics.StatFloat.FREQ2.toString())));
+            triPanel.add(swagComponent(new JLabel(Statistics.StatLong.PREF0.toString())));
+            triPanel.add(swagComponent(new JLabel(Statistics.StatLong.PREF1.toString())));
+            triPanel.add(swagComponent(new JLabel(Statistics.StatLong.PREF2.toString())));
             for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
                 triPanel.add(swagComponent(new JLabel(tri.toString())));
                 Tuple row = ent.getValue().getTriTable()[tri.ordinal()];
-                for (Statistics.StatFloat fl : Statistics.StatFloat.values()) {
-                    triPanel.add(swagComponent(new JLabel(String.valueOf(String.format("%.5f", row.get(fl))))));
-                }
-                for (Statistics.StatLong lo : Statistics.StatLong.values()) {
-                    triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(lo)))));
-                }
+                triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE0)))));
+                triPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ0)))));
+                triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE1)))));
+                triPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ1)))));
+                triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE2)))));
+                triPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ2)))));
+                triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF0)))));
+                triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF1)))));
+                triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF2)))));
             }
 
             JPanel diPanel = new JPanel();
@@ -66,14 +72,15 @@ class JDataBase {
                 diPanel.add(swagComponent(new JLabel(di.toString())));
                 Tuple row = ent.getValue().getTriTable()[di.ordinal()];
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE0)))));
-                diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatFloat.FREQ0)))));
+                diPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ0)))));
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE1)))));
-                diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatFloat.FREQ1)))));
+                diPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ1)))));
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF0)))));
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF1)))));
             }
 
             stat.add(swagComponent(triPanel));
+            stat.add(swagComponent(new JLabel(" ")));
             stat.add(swagComponent(diPanel));
             tabbed.add("TOTAL_" + ent.getKey().toString(), stat);
         }
