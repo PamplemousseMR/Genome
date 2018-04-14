@@ -23,38 +23,6 @@ public class TabbedPanel extends JTabbedPane {
 
             @Override
             protected void paintFocusIndicator(Graphics g, int tabPlacement, Rectangle[] rects, int tabIndex, Rectangle iconRect, Rectangle textRect, boolean isSelected) {
-                Rectangle tabRect = rects[tabIndex];
-                if (tabPane.hasFocus() && isSelected) {
-                    int x, y, w, h;
-                    g.setColor(Color.GREEN);
-                    switch (tabPlacement) {
-                        case LEFT:
-                            x = tabRect.x + 3;
-                            y = tabRect.y + 3;
-                            w = tabRect.width - 5;
-                            h = tabRect.height - 6;
-                            break;
-                        case RIGHT:
-                            x = tabRect.x + 2;
-                            y = tabRect.y + 3;
-                            w = tabRect.width - 5;
-                            h = tabRect.height - 6;
-                            break;
-                        case BOTTOM:
-                            x = tabRect.x + 3;
-                            y = tabRect.y + 2;
-                            w = tabRect.width - 6;
-                            h = tabRect.height - 5;
-                            break;
-                        case TOP:
-                        default:
-                            x = tabRect.x + 3;
-                            y = tabRect.y + 3;
-                            w = tabRect.width - 6;
-                            h = tabRect.height - 5;
-                    }
-                    BasicGraphicsUtils.drawDashedRect(g, x, y, w, h);
-                }
             }
 
             @Override
