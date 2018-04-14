@@ -35,6 +35,11 @@ final class GENOME {
         Logs.finalizeLog();
     }
 
+    /**
+     * Lock the programme
+     *
+     * @return true is the programme is lock
+     */
     private static boolean lock() {
         File mutex = new File(Options.getMutexFileName());
         try {
@@ -45,6 +50,9 @@ final class GENOME {
         return false;
     }
 
+    /**
+     * Unlock the programme
+     */
     private static void unlock() {
         File mutex = new File(Options.getMutexFileName());
         if (mutex.exists()) {
@@ -54,6 +62,11 @@ final class GENOME {
         }
     }
 
+    /**
+     * Main
+     *
+     * @param args args
+     */
     public static void main(String[] args) {
         if (lock()) {
             try {

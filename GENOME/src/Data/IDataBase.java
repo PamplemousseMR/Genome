@@ -10,6 +10,7 @@ import java.util.Date;
 import java.util.EnumMap;
 
 public class IDataBase implements Serializable {
+
     private static final long serialVersionUID = 2L;
 
     /**
@@ -74,6 +75,10 @@ public class IDataBase implements Serializable {
         m_loaded = false;
     }
 
+    /**
+     * @param _name
+     * @param _data
+     */
     IDataBase(String _name, IDataBase _data) {
         m_name = _name;
         m_modificationDate = new Date();

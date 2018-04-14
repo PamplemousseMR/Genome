@@ -13,7 +13,7 @@ import java.nio.file.Paths;
 class FileManager {
 
     /**
-     * Constructor
+     * Class constructor
      */
     private FileManager() {
     }

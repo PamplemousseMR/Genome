@@ -8,6 +8,9 @@ import static GUI.Constant.*;
 
 final class ProgressBar extends JProgressBar {
 
+    /**
+     * Class constructor
+     */
     ProgressBar() {
         super();
         super.setUI(new BasicProgressBarUI() {

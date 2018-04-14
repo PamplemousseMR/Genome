@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Arrays;
 
 public final class Tuple implements Serializable {
+
     private static final long serialVersionUID = 2L;
 
     /**

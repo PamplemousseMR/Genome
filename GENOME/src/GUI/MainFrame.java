@@ -15,49 +15,168 @@ import static GUI.Constant.*;
 
 public final class MainFrame extends JFrame implements MouseMotionListener, MouseListener {
 
+    /**
+     * Main title of the frame
+     */
     private static final String s_TITLE = "GENOME";
+
+    /**
+     * Default Toolkit of the frame
+     */
     private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
+
+    /**
+     * Dimension of the screen (mainscreen if multi-screen)
+     */
     private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
+
+    /**
+     * Default width size
+     */
     private static final int s_DEFAULT_FRAME_WIDTH = 300;
+
+    /**
+     * Default height size
+     */
     private static final int s_DEFAULT_FRAME_HEIGHT = 300;
+
+    /**
+     * Origin point to print the frame on the screen
+     */
     private static final Point s_INITIAL_LOCATION = new Point((int) s_TOOLKIT.getScreenSize().getWidth() / 2 - s_DEFAULT_FRAME_WIDTH / 2, (int) s_TOOLKIT.getScreenSize().getHeight() / 2 - s_DEFAULT_FRAME_HEIGHT / 2);
+
+    /**
+     * Default Dimension of the frame
+     */
     private static final Dimension s_INITIAL_DIMENSION = new Dimension(s_DEFAULT_FRAME_WIDTH, s_DEFAULT_FRAME_HEIGHT);
+
+    /**
+     * Hitbox area of the mouse
+     */
     private static final int s_CURSOR_AREA = 6;
 
+    /**
+     * The mainframe iself
+     */
     private static MainFrame s_mainFrame;
 
+    /**
+     * Saved location (for frame moves events)
+     */
     private final Point m_initialLocation;
+
+    /**
+     * Minimal width of the frame
+     */
     private final int m_minWidth;
+
+    /**
+     * Minimal height of the frame
+     */
     private final int m_minHeight;
 
+    /**
+     * For frame drag&drop
+     */
     private Point m_start_drag;
+
+    /**
+     * For frame drag&drop
+     */
     private Point m_start_loc;
 
+    /**
+     * Header Panel
+     */
     private JPanel m_header;
+
+    /**
+     * Main panel of the frame
+     */
     private JPanel m_main;
+
+    /**
+     * Footer Panel
+     */
     private TitlePanel m_footer;
 
+    /**
+     * Panel containing the menu
+     */
     private JPanel m_menuPanel;
+
+    /**
+     * Label containing the main title
+     */
     private JLabel m_mainTitle;
+
+    /**
+     * Label containing the second title
+     */
     private JLabel m_secondTitle;
 
+    /**
+     * Close button of the app (menu)
+     */
     private JButton m_closeB;
+
+    /**
+     * Fullscreen button (menu)
+     */
     private JButton m_maximizeB;
+
+    /**
+     * Minimize the app into the taskbar (menu)
+     */
     private JButton m_minimizeB;
 
+    /**
+     * Splitpanel betweenthe filetree and the right part
+     */
     private JSplitPane m_splitPanel_main;
+
+    /**
+     * Splipanel between the InformationPanel and the LogsPanel
+     */
     private JSplitPane m_rightContainer;
+
+    /**
+     * The main panel of left side of the jsplitpane
+     */
     private JPanel m_leftContainer;
+
+    /**
+     * Panel containing the activityPanel and the progressBar
+     */
     private JPanel m_leftSouthContainer;
 
+    /**
+     * The progressbar displaying the progress of the program
+     */
     private ProgressBar m_progessBar;
+
+    /**
+     * The panel containing the tree of files downloaded
+     */
     private TreePanel m_treePanel;
+
+    /**
+     * Thepanel containing the information of a selected file
+     */
     private InformationPanel m_informationsPanel;
+
+    /**
+     * The panel containing the buttons to control the download
+     */
     private ActivityPanel m_activityPanel;
+
+    /**
+     * The panel displaying the logs
+     */
     private LogsPanel m_logsPanel;
 
     /**
-     * Constructor
+     * Class constructor
      */
     private MainFrame() {
         super(s_TITLE);
@@ -83,7 +202,20 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         }
         return s_mainFrame;
     }
-    
+
+    /**
+     * Get the current location of the mouse on the frame
+     *
+     * @param e     the event triggered
+     * @param frame the frame to track
+     * @return the point where the event is triggered
+     */
+    private static Point getScreenLocation(MouseEvent e, JFrame frame) {
+        final Point cursor = e.getPoint();
+        final Point view_location = frame.getLocationOnScreen();
+        return new Point((int) (view_location.getX() + cursor.getX()), (int) (view_location.getY() + cursor.getY()));
+    }
+
     /**
      * Update JTree
      *
@@ -389,12 +521,11 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         });
     }
 
-    private static Point getScreenLocation(MouseEvent e, JFrame frame) {
-        final Point cursor = e.getPoint();
-        final Point view_location = frame.getLocationOnScreen();
-        return new Point((int) (view_location.getX() + cursor.getX()), (int) (view_location.getY() + cursor.getY()));
-    }
-
+    /**
+     * Move or fullscreen the frame depending of the event triggered
+     *
+     * @param e the event triggered
+     */
     private void moveOrFullResizeFrame(MouseEvent e) {
         final Object sourceObject = e.getSource();
         final Point current = getScreenLocation(e, this);
@@ -469,7 +600,7 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
     }
 
     /**
-     * Double-Click to fullscreen the Frame orto go back to the previous size of the frame
+     * Double-Click to fullscreen the Frame or to go back to the previous size of the frame
      */
     private void doubleClicktoFullScreen() {
         setExtendedState(JFrame.MAXIMIZED_BOTH);

@@ -8,6 +8,9 @@ import static GUI.Constant.*;
 
 public class TabbedPanel extends JTabbedPane {
 
+    /**
+     * Class constructor
+     */
     public TabbedPanel() {
         boolean tabsOverlapBorder = UIManager.getBoolean("TabbedPane.tabsOverlapBorder");
         boolean contentOpaque = UIManager.getBoolean("TabbedPane.contentOpaque");

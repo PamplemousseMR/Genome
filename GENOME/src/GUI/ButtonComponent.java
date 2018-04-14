@@ -11,6 +11,11 @@ import static GUI.Constant.*;
 
 final class ButtonComponent extends JButton {
 
+    /**
+     * Class constructor
+     *
+     * @param _path, the icon path
+     */
     ButtonComponent(String _path) {
         super.setMargin(s_INSETS);
         super.setBackground(s_BLUEGRAY);
@@ -48,6 +53,9 @@ final class ButtonComponent extends JButton {
         }
     }
 
+    /**
+     * Reset the color of the button
+     */
     void resetColor() {
         setBackground(s_BLUEGRAY);
     }

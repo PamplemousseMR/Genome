@@ -12,13 +12,27 @@ import static Utils.Options.getMaxThread;
 
 public final class ThreadManager {
 
-
+    /**
+     * Max number of thread
+     */
     private final int m_nbThreadMax;
+    /**
+     * True if threads are running
+     */
     private final Lock m_runningLock;
+    /**
+     * Condition to wait
+     */
     private final Lock m_lockArray;
     private final Condition m_condArray;
     private final Condition m_condPush;
+    /**
+     * Threads array
+     */
     private final ArrayList<Thread> m_threads;
+    /**
+     * Task list
+     */
     private final LinkedList<ITask> m_task;
     private volatile boolean m_running;
 

@@ -10,6 +10,11 @@ import static GUI.Constant.s_LIGHTGRAY;
 
 final class ScrollPanel extends JScrollPane {
 
+    /**
+     * Class constructor
+     *
+     * @param _component, the component to add scroll bar
+     */
     ScrollPanel(Component _component) {
         super(_component, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         super.getVerticalScrollBar().setUI(new BasicScrollBarUI() {

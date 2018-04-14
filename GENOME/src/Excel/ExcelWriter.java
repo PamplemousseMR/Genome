@@ -64,6 +64,12 @@ public class ExcelWriter {
         saveSheet(path, workbook);
     }
 
+    /**
+     * Create the excel sheet using the IDataBase
+     *
+     * @param _idataBase the database to use
+     * @return the excel sheet
+     */
     private static XSSFWorkbook writeSheet(IDataBase _idataBase) {
         final XSSFWorkbook workbook = new XSSFWorkbook();
         final XSSFSheet generalInfoSheet = workbook.createSheet(_idataBase.getName());
@@ -72,6 +78,13 @@ public class ExcelWriter {
         return workbook;
     }
 
+    /**
+     * Function do save the excel sheet
+     *
+     * @param _path     the path of the file
+     * @param _workbook the workbook to save
+     * @throws IOException if an exception appear
+     */
     private static void saveSheet(String _path, Workbook _workbook) throws IOException {
         //	Check if file exist
         final File file = new File(_path);
@@ -100,6 +113,12 @@ public class ExcelWriter {
         }
     }
 
+    /**
+     * Create the General Info Sheet of the excel file
+     *
+     * @param _general_info_sheet the sheet to write
+     * @param _data               the data to write
+     */
     private static void createGeneralInfoSheet(XSSFSheet _general_info_sheet, IDataBase _data) {
         _general_info_sheet.createRow(0).createCell(0).setCellValue("Information");
 
@@ -158,6 +177,12 @@ public class ExcelWriter {
 
     }
 
+    /**
+     * Create a sheet for statistics
+     *
+     * @param _workbook, the workbook to ad sheet
+     * @param _data,     the data use to create statistics
+     */
     private static void createStatisticsSheet(XSSFWorkbook _workbook, IDataBase _data) {
         for (Statistics stat : _data.getStatistics().values()) {
             XSSFSheet s = _workbook.createSheet(Options.getSumPrefix() + stat.getType());
@@ -166,6 +191,12 @@ public class ExcelWriter {
         }
     }
 
+    /**
+     * Create a sheet for replicon
+     *
+     * @param _workbook, the workbook to ad sheet
+     * @param _organism, the data use to create statistics
+     */
     private static void createRepliconsSheet(XSSFWorkbook _workbook, Organism _organism) {
         for (Replicon replicon : _organism.getReplicons()) {
             XSSFSheet s = _workbook.createSheet(replicon.getName());
@@ -174,6 +205,11 @@ public class ExcelWriter {
         }
     }
 
+    /**
+     * Create the header of the sheet
+     *
+     * @param _sheet the sheet requiring a header
+     */
     private static void createHeaderSheet(XSSFSheet _sheet) {
         XSSFRow r = _sheet.createRow(0);
         XSSFCell c = r.createCell(0);
@@ -199,6 +235,12 @@ public class ExcelWriter {
 
     }
 
+    /**
+     * Create the statistic table in the excel file
+     *
+     * @param _sheet the excel sheet
+     * @param _stat  the statistics to write in the sheet
+     */
     private static void createTable(XSSFSheet _sheet, Statistics _stat) {
         int i = 1;
         XSSFRow r;
@@ -255,11 +297,23 @@ public class ExcelWriter {
         r.createCell(1).setCellValue(_stat.getCDSNumber() - _stat.getValidCDSNumber());
     }
 
+    /**
+     * Write a in a cell using the numeric format
+     *
+     * @param _cell the cell to write in
+     * @param _f    the float to write in the numeric cell
+     */
     private static void writeNumericCell(XSSFCell _cell, float _f) {
         _cell.setCellValue(_f);
         _cell.setCellType(CellType.NUMERIC);
     }
 
+    /**
+     * Write a in a cell using the numeric format
+     *
+     * @param _cell the cell to write in
+     * @param _l    the long to write in the numeric cell
+     */
     private static void writeNumericCell(XSSFCell _cell, long _l) {
         _cell.setCellValue(_l);
         _cell.setCellType(CellType.NUMERIC);

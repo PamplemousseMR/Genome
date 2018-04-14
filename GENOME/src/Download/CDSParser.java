@@ -77,7 +77,7 @@ public class CDSParser {
     private long m_valid;
 
     /**
-     * Constructor
+     * Class constructor
      *
      * @param _buffer the CDS
      */
@@ -298,7 +298,7 @@ public class CDSParser {
     }
 
     /**
-     *
+     * CDS Operator
      */
     private abstract class Operator {
         private final Operator m_parent;
@@ -317,7 +317,7 @@ public class CDSParser {
     }
 
     /**
-     *
+     * Root of Operators
      */
     private final class Container extends Operator {
 
@@ -352,7 +352,7 @@ public class CDSParser {
     }
 
     /**
-     *
+     * Interval Operator
      */
     private final class IntervalOperator extends Operator {
 
@@ -384,7 +384,7 @@ public class CDSParser {
     }
 
     /**
-     *
+     * Descriptor Operator
      */
     private final class DescriptorOperator extends Operator {
 
@@ -414,7 +414,7 @@ public class CDSParser {
     }
 
     /**
-     *
+     * Complement Operator
      */
     private final class ComplementOperator extends Operator {
 
@@ -467,7 +467,7 @@ public class CDSParser {
     }
 
     /**
-     *
+     * Join Operator
      */
     private final class JoinOperator extends Operator {
 

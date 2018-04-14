@@ -31,6 +31,13 @@ class Activity {
     private static Thread s_activityThread = null;
     private static boolean s_wait = false;
 
+    /**
+     * Get difference between two date
+     *
+     * @param _startDate the start date
+     * @param _endDate   the and date
+     * @return the String displaying the difference
+     */
     private static String getDifference(Date _startDate, Date _endDate) {
         long different = _endDate.getTime() - _startDate.getTime();
 

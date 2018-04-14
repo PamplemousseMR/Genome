@@ -372,6 +372,12 @@ public class Statistics implements Serializable {
         UNKNOWN,
         UNNAMED;
 
+        /**
+         * Get the Type from a String
+         *
+         * @param _s the String to check
+         * @return the corresponding type
+         */
         public static Type isTypeOf(String _s) {
             if (_s.contains("CHLOROPLAST")) {
                 return CHLOROPLAST;

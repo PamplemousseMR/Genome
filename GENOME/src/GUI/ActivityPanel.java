@@ -8,13 +8,34 @@ import static GUI.Constant.s_CHARCOAL;
 
 public final class ActivityPanel extends JPanel {
 
-
+    /**
+     * The panel containing the component
+     */
     private JPanel m_container;
+
+    /**
+     * The button to start the program
+     */
     private ButtonComponent m_start;
+
+    /**
+     * The button to pause the execution of the program
+     */
     private ButtonComponent m_pause;
+
+    /**
+     * The button to resume the execution after a pause
+     */
     private ButtonComponent m_resume;
+
+    /**
+     * The button to stop the execution of the program
+     */
     private ButtonComponent m_stop;
 
+    /**
+     * Class constructor
+     */
     ActivityPanel() {
         createComponent();
         initLayout();
@@ -22,6 +43,9 @@ public final class ActivityPanel extends JPanel {
         swagComponent();
     }
 
+    /**
+     * Create the components of the activity panel
+     */
     private void createComponent() {
         m_container = new JPanel();
         m_start = new ButtonComponent("Ressources/play.png");
@@ -30,20 +54,29 @@ public final class ActivityPanel extends JPanel {
         m_stop = new ButtonComponent("Ressources/stop.png");
     }
 
+    /**
+     * Initialize the layout of the activity panel
+     */
     private void initLayout() {
         this.setLayout(new BorderLayout());
         m_container.setLayout(new GridLayout(1, 2));
     }
 
+    /**
+     * Add the components into the activity panel
+     */
     private void addComponents() {
         m_container.add(m_start);
         m_container.add(m_stop);
-        m_container.setBackground(s_BLUEGRAY);
         super.add(m_container);
     }
 
+    /**
+     * Make the Panel pretty
+     */
     private void swagComponent() {
         super.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        m_container.setBackground(s_BLUEGRAY);
     }
 
     /**
@@ -114,6 +147,9 @@ public final class ActivityPanel extends JPanel {
         });
     }
 
+    /**
+     * Use to set set action of each button
+     */
     public interface ActivityListener {
         boolean activityEvent();
     }

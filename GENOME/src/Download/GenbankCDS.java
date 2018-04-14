@@ -26,7 +26,7 @@ public final class GenbankCDS extends IDownloader {
     private final StringBuilder m_data;
 
     /**
-     * Constructor
+     * Class constructor
      *
      * @param _refseqId the id of the CDS
      */

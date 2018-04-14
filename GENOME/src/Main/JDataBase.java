@@ -13,6 +13,12 @@ import static GUI.InformationPanel.swagComponent;
 
 class JDataBase {
 
+    /**
+     * Create component to display an IDataBase
+     *
+     * @param _data the data to display
+     * @return the component
+     */
     static JComponent createComponent(IDataBase _data) {
 
         JPanel info = new JPanel();

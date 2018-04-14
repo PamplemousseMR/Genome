@@ -77,6 +77,16 @@ public final class Organism extends IDataBase {
         return lastOne;
     }
 
+    /**
+     * Load date
+     *
+     * @param _db   the name of the database
+     * @param _ki   the name of the kingdom
+     * @param _gp   the name of the group
+     * @param _sg   the name of the subgroup
+     * @param _name the name of the organism
+     * @return the loaded date
+     */
     public static Date loadDate(String _db, String _ki, String _gp, String _sg, String _name) {
         String fileName = DataBase.s_SERIALIZATION_PREFIX + _db + Kingdom.s_SERIALIZATION_PREFIX + _ki + Group.s_SERIALIZATION_PREFIX + _gp + SubGroup.s_SERIALIZATION_PREFIX + _sg + s_SERIALIZATION_PREFIX + _name;
         final File file = new File(Options.getSerializeDirectory() + File.separator + fileName + Options.getDateModifSerializeExtension());

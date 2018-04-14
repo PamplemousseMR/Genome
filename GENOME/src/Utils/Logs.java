@@ -115,12 +115,18 @@ public final class Logs {
         s_logsListener.logsEvent("Exception : " + errors.toString(), Type.EXCEPTION);
     }
 
+    /**
+     * Type of the log
+     */
     public enum Type {
         INFO,
         WARNING,
         EXCEPTION
     }
 
+    /**
+     * Use to get flux
+     */
     public interface LogsListener {
         void logsEvent(String _message, Type _type);
     }

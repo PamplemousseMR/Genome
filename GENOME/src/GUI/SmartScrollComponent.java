@@ -10,7 +10,6 @@ import java.awt.event.AdjustmentListener;
 class SmartScrollComponent implements AdjustmentListener {
 
     private boolean m_adjustScrollBar = true;
-
     private int m_previousValue = -1;
     private int m_previousMaximum = -1;
 
