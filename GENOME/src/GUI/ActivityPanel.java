@@ -58,6 +58,7 @@ public final class ActivityPanel extends JPanel {
                 m_container.add(m_pause, 0);
                 m_container.revalidate();
                 m_container.repaint();
+                m_pause.resetColor();
             }
         });
     }
@@ -74,6 +75,7 @@ public final class ActivityPanel extends JPanel {
                 m_container.add(m_start, 0);
                 m_container.revalidate();
                 m_container.repaint();
+                m_start.resetColor();
             }
         });
     }
@@ -90,6 +92,7 @@ public final class ActivityPanel extends JPanel {
                 m_container.add(m_resume, 0);
                 m_container.revalidate();
                 m_container.repaint();
+                m_resume.resetColor();
             }
         });
     }
@@ -106,6 +109,7 @@ public final class ActivityPanel extends JPanel {
                 m_container.add(m_pause, 0);
                 m_container.revalidate();
                 m_container.repaint();
+                m_pause.resetColor();
             }
         });
     }

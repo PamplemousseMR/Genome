@@ -50,7 +50,7 @@ public class Activity {
 
         long elapsedSeconds = different / secondsInMilli;
 
-        return elapsedDays + " day " + elapsedHours + " hours " + elapsedMinutes + " minutes "  + elapsedSeconds + " second";
+        return elapsedDays + " day " + elapsedHours + " hours " + elapsedMinutes + " minutes " + elapsedSeconds + " second";
     }
 
     private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent) throws InvalidStateException, AddException {

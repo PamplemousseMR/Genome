@@ -48,4 +48,8 @@ public final class ButtonComponent extends JButton {
         }
     }
 
+    protected void resetColor() {
+        setBackground(s_BLUEGRAY);
+    }
+
 }
