@@ -309,6 +309,9 @@ public final class TreePanel extends IPanel {
                 actual.add(progressing);
                 m_treeModel.insertNodeInto(progressing, actual, actual.getChildCount() - 1);
                 m_treeModel.nodeChanged(actual);
+            } else {
+                ((Node) progressing.getUserObject()).setState(State.FINISH);
+                m_treeModel.nodeChanged(progressing);
             }
         }
     }

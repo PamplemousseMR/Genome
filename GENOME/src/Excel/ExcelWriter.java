@@ -76,10 +76,14 @@ public class ExcelWriter {
         //	Check if file exist
         final File file = new File(_path);
         if (file.exists()) {
-            file.delete();
+            if (!file.delete()) {
+                Logs.warning("Enable to delete file : " + file.getName());
+            }
         }
         try {
-            file.createNewFile();
+            if (!file.createNewFile()) {
+                Logs.warning("Enable to create file : " + file.getName());
+            }
         } catch (IOException e) {
             Logs.exception(e);
             throw e;

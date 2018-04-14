@@ -10,106 +10,95 @@ public final class Options {
     /**
      * File's name
      */
-    private static final String s_OPTIONS_FILE_NAME = "options.ini";
+    private static String s_OPTIONS_FILE_NAME = "options.ini";
     /**
      * Maximum number of thread
      */
-    private static final String s_MAX_THREAD = "32";
+    private static String s_MAX_THREAD = "32";
     /**
      * Connection timeout in ms
      */
-    private static final String s_DOWNLOAD_CONNECTION_TIMEOUT = "10000";
+    private static String s_DOWNLOAD_CONNECTION_TIMEOUT = "10000";
     /**
      * Number of organisms to download by request
      */
-    private static final String s_DOWNLOAD_STEP_ORGANISM = "100000";
+    private static String s_DOWNLOAD_STEP_ORGANISM = "100000";
     /**
      * Base URL of genbank REST API for organism
      */
-    private static final String s_ORGANISM_BASE_URL = "https://www.ncbi.nlm.nih.gov/Structure/ngram";
+    private static String s_ORGANISM_BASE_URL = "https://www.ncbi.nlm.nih.gov/Structure/ngram";
     /**
      * Base URL of genbank REST API for CDS
      */
-    private static final String s_CDS_BASE_URL = "https://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi";
+    private static String s_CDS_BASE_URL = "https://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi";
     /**
      * Output directory for serialized data
      */
-    private static final String s_SERIALIZE_DIRECTORY = "Save";
+    private static String s_SERIALIZE_DIRECTORY = "Save";
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_SPLITER = "--";
+    private static String s_SERIALIZATION_SPLITER = "--";
     /**
      * Prefix used for Database serialization
      */
-    private static final String s_DATABASE_SERIALIZATION_PREFIX = "D_";
+    private static String s_DATABASE_SERIALIZATION_PREFIX = "D_";
     /**
      * Prefix used for Kingdom serialization
      */
-    private static final String s_KINGDOM_SERIALIZATION_PREFIX = "K_";
+    private static String s_KINGDOM_SERIALIZATION_PREFIX = "K_";
     /**
      * Prefix used for Group serialization
      */
-    private static final String s_GROUP_SERIALIZATION_PREFIX = "G_";
+    private static String s_GROUP_SERIALIZATION_PREFIX = "G_";
     /**
      * Prefix used for SubGroup serialization
      */
-    private static final String s_SUBGROUP_SERIALIZATION_PREFIX = "SG_";
+    private static String s_SUBGROUP_SERIALIZATION_PREFIX = "SG_";
     /**
      * Prefix used for Organism serialization
      */
-    private static final String s_ORGANISM_SERIALIZATION_PREFIX = "O_";
+    private static String s_ORGANISM_SERIALIZATION_PREFIX = "O_";
     /**
      * Extension used for serialization
      */
-    private static final String s_SERIALIZE_EXTENSION = s_SERIALIZATION_SPLITER + ".ser";
+    private static String s_SERIALIZE_EXTENSION = s_SERIALIZATION_SPLITER + ".ser";
     /**
      * Extension used for serialization
      */
-    private static final String s_DATEMODIF_SERIALIZE_EXTENSION = s_SERIALIZATION_SPLITER + "DATEMODIF" + s_SERIALIZE_EXTENSION;
+    private static String s_DATEMODIF_SERIALIZE_EXTENSION = s_SERIALIZATION_SPLITER + "DATEMODIF" + s_SERIALIZE_EXTENSION;
     /**
      * Directory where store excel files
      */
-    private static final String s_RESULT_DIRECTORY = "Results";
+    private static String s_RESULT_DIRECTORY = "Results";
     /**
      * Total file prefix
      */
-    private static final String s_TOTAL_PREFIX = "Total_";
+    private static String s_TOTAL_PREFIX = "Total_";
     /**
      * Sum file prefix
      */
-    private static final String s_SUM_PREFIX = "Sum_";
+    private static String s_SUM_PREFIX = "Sum_";
     /**
      * Excel file extension
      */
-    private static final String s_EXCEL_EXTENSION = ".xlsx";
+    private static String s_EXCEL_EXTENSION = ".xlsx";
     /**
      * The name of the genbank
      */
-    private static final String s_GENBANK_NAME = "Genbank";
-    /**
-     * Option's properties
-     */
-    private static Properties m_properties = null;
+    private static String s_GENBANK_NAME = "Genbank";
 
     /**
      * Open the options's file in order to read options and fill the static fields with it
      */
     public static void initializeOptions() {
         File file = new File(s_OPTIONS_FILE_NAME);
-
-        // Create file if it's not exist
-        try {
-            file.createNewFile();
-            new FileOutputStream(file, false);
-        } catch (IOException e) {
-            Logs.warning("Unable to initialize options");
-            Logs.exception(e);
+        if (!file.exists()) {
             return;
         }
 
         // Load properties
-        m_properties = new Properties();
+        Properties properties = new Properties();
         FileReader fr = null;
         try {
             fr = new FileReader(file);
@@ -119,7 +108,7 @@ public final class Options {
 
         try {
             if (fr != null) {
-                m_properties.load(fr);
+                properties.load(fr);
                 fr.close();
             }
         } catch (IOException e) {
@@ -128,15 +117,13 @@ public final class Options {
         }
 
         // Set properties to static fields
-        Set<String> keys = m_properties.stringPropertyNames();
+        Set<String> keys = properties.stringPropertyNames();
         for (String key : keys) {
-            if (m_properties.getProperty(key) != null) {
+            if (properties.getProperty(key) != null) {
                 try {
-                    Options.class.getDeclaredField(key).set(Options.class, m_properties.getProperty(key));
-                } catch (NoSuchFieldException e) {
+                    Options.class.getDeclaredField(key).set(Options.class, properties.getProperty(key));
+                } catch (NoSuchFieldException | IllegalAccessException e) {
                     Logs.exception(e);
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
                 }
             }
         }
@@ -146,52 +133,40 @@ public final class Options {
      * Write the option's file
      */
     public static void finalizeOptions() {
-        if (m_properties != null) {
-            File file = new File(s_OPTIONS_FILE_NAME);
-
-            // Create file if it's not exist
-            try {
-                file.createNewFile();
-            } catch (IOException e) {
-                Logs.exception(e);
-                return;
-            }
-
-            // Set all unmodified properties
-            for (Field field : Options.class.getDeclaredFields()) {
-                if (field.getName().compareTo("s_OPTIONS_FILE_NAME") != 0 && field.getName().compareTo("m_properties") != 0 && m_properties.getProperty(field.getName()) == null) {
-                    try {
-                        m_properties.put(field.getName(), field.get(""));
-                    } catch (IllegalArgumentException e) {
-                        Logs.exception(e);
-                    } catch (IllegalAccessException e) {
-                        e.printStackTrace();
-                    }
+        // Set all unmodified properties
+        Properties properties = new Properties();
+        for (Field field : Options.class.getDeclaredFields()) {
+            if (field.getName().compareTo("s_OPTIONS_FILE_NAME") != 0) {
+                try {
+                    properties.put(field.getName(), field.get(""));
+                } catch (IllegalArgumentException | IllegalAccessException e) {
+                    Logs.exception(e);
                 }
             }
+        }
 
-            // Write file
-            FileOutputStream out;
-            try {
-                out = new FileOutputStream(file);
-            } catch (FileNotFoundException e) {
-                Logs.exception(e);
-                return;
-            }
+        // Write file
+        File file = new File(s_OPTIONS_FILE_NAME);
+        FileOutputStream out;
+        try {
+            out = new FileOutputStream(file);
+        } catch (FileNotFoundException e) {
+            Logs.exception(e);
+            return;
+        }
 
-            try {
-                m_properties.store(out, "");
-            } catch (IOException e) {
-                Logs.exception(e);
-                return;
-            }
+        try {
+            properties.store(out, "");
+        } catch (IOException e) {
+            Logs.exception(e);
+            return;
+        }
 
-            // Close stream
-            try {
-                out.close();
-            } catch (IOException e) {
-                Logs.exception(e);
-            }
+        // Close stream
+        try {
+            out.close();
+        } catch (IOException e) {
+            Logs.exception(e);
         }
     }
 

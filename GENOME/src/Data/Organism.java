@@ -229,10 +229,14 @@ public final class Organism extends IDataBase {
         final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getDateModifSerializeExtension());
         final ObjectOutputStream stream;
         if (file.exists()) {
-            file.delete();
+            if (!file.delete()) {
+                Logs.warning("Enable to delete file : " + file.getName());
+            }
         }
         try {
-            file.createNewFile();
+            if (!file.createNewFile()) {
+                Logs.warning("Enable to create file : " + file.getName());
+            }
             stream = new ObjectOutputStream(new FileOutputStream(file));
             stream.writeObject(getModificationDate());
             stream.flush();

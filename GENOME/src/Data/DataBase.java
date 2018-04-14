@@ -2,6 +2,7 @@ package Data;
 
 import Exception.AddException;
 import Exception.InvalidStateException;
+import Utils.Logs;
 import Utils.Options;
 
 import java.io.File;
@@ -57,7 +58,11 @@ public final class DataBase extends IDataBase {
      */
     public static DataBase load(String _name, IDataBaseCallback _event) {
         final File saveFolder = new File(Options.getSerializeDirectory());
-        saveFolder.mkdir();
+        if (!saveFolder.exists()) {
+            if (!saveFolder.mkdir()) {
+                Logs.warning("Enable to create folder : " + saveFolder.getName());
+            }
+        }
         final IDataBase result = IDataBase.load(s_SERIALIZATION_PREFIX + _name);
 
         if (result == null) {

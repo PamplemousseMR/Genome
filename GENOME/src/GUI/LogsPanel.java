@@ -66,7 +66,7 @@ public final class LogsPanel extends IPanel {
             try {
                 m_textPane.getDocument().remove(0, len / 20);
             } catch (BadLocationException e) {
-                e.printStackTrace();
+                Logs.exception(e);
             }
         }
 
