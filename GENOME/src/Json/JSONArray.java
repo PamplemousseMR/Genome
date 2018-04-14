@@ -87,7 +87,7 @@ public class JSONArray implements Iterable<Object> {
     /**
      * Construct an empty JSONArray.
      */
-    public JSONArray() {
+    private JSONArray() {
         this.myArrayList = new ArrayList<>();
     }
 
@@ -198,7 +198,7 @@ public class JSONArray implements Iterable<Object> {
      *              Integer, JSONArray, JSONObject, Long, or String, or the
      *              JSONObject.NULL object.
      */
-    public void put(Object value) {
+    private void put(Object value) {
         this.myArrayList.add(value);
     }
 
@@ -288,7 +288,7 @@ public class JSONArray implements Iterable<Object> {
      * &nbsp;<small>(right bracket)</small>.
      * @throws JSONException an exception
      */
-    public String toString(int indentFactor) throws JSONException {
+    private String toString(int indentFactor) throws JSONException {
         StringWriter sw = new StringWriter();
         synchronized (sw.getBuffer()) {
             return this.write(sw, indentFactor, 0).toString();

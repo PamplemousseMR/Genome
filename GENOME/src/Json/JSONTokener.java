@@ -37,7 +37,7 @@ SOFTWARE.
  * @author JSON.org
  * @version 2014-05-03
  */
-public class JSONTokener {
+class JSONTokener {
     /**
      * Reader for the input.
      */
@@ -77,7 +77,7 @@ public class JSONTokener {
      *
      * @param reader A reader.
      */
-    public JSONTokener(Reader reader) {
+    private JSONTokener(Reader reader) {
         this.reader = reader.markSupported()
                 ? reader
                 : new BufferedReader(reader);
@@ -134,7 +134,7 @@ public class JSONTokener {
      *
      * @return true if at the end of the file and we didn't step back
      */
-    public boolean end() {
+    private boolean end() {
         return this.eof && !this.usePrevious;
     }
 
@@ -144,7 +144,7 @@ public class JSONTokener {
      * @return The next character, or 0 if past the end of the source string.
      * @throws JSONException Thrown if there is an error reading the source string.
      */
-    public char next() throws JSONException {
+    private char next() throws JSONException {
         int c;
         if (this.usePrevious) {
             this.usePrevious = false;
@@ -202,7 +202,7 @@ public class JSONTokener {
      * @throws JSONException Substring bounds error if there are not
      *                       n characters remaining in the source string.
      */
-    public String next(int n) throws JSONException {
+    private String next(int n) throws JSONException {
         if (n == 0) {
             return "";
         }
@@ -249,7 +249,7 @@ public class JSONTokener {
      * @return A String.
      * @throws JSONException Unterminated string.
      */
-    public String nextString(char quote) throws JSONException {
+    private String nextString(char quote) throws JSONException {
         char c;
         StringBuilder sb = new StringBuilder();
         for (; ; ) {
@@ -366,7 +366,7 @@ public class JSONTokener {
      * @param causedBy The throwable that caused the error.
      * @return A JSONException object, suitable for throwing
      */
-    public JSONException syntaxError(String message, Throwable causedBy) {
+    private JSONException syntaxError(String message, Throwable causedBy) {
         return new JSONException(message + this.toString(), causedBy);
     }
 

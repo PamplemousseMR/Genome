@@ -6,13 +6,13 @@ import java.awt.*;
 import static GUI.Constant.s_FONT;
 import static GUI.Constant.s_WHITE;
 
-public final class TitlePanel extends JPanel {
+final class TitlePanel extends JPanel {
 
     private final JLabel m_title;
     private final int m_size;
     private final Color m_background;
 
-    protected TitlePanel(String _title, int _size, Color _background) {
+    TitlePanel(String _title, int _size, Color _background) {
         super();
 
         m_title = new JLabel(_title);

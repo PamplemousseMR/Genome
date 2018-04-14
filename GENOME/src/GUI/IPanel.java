@@ -6,9 +6,9 @@ import java.awt.*;
 import static GUI.Constant.s_BLUEGRAY;
 import static GUI.Constant.s_LIGHTGRAY;
 
-public abstract class IPanel extends JPanel {
+abstract class IPanel extends JPanel {
 
-    protected IPanel(String _title) {
+    IPanel(String _title) {
         final TitlePanel titlePanel = new TitlePanel(_title, 20, s_BLUEGRAY);
         this.setLayout(new BorderLayout());
         this.add(titlePanel, BorderLayout.NORTH);

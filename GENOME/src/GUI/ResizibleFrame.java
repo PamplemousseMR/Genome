@@ -6,7 +6,7 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 
-public class ResizibleFrame extends JFrame implements MouseMotionListener, MouseListener {
+class ResizibleFrame extends JFrame implements MouseMotionListener, MouseListener {
 
     private static final String s_TITLE = "GENOME";
     private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
@@ -38,7 +38,7 @@ public class ResizibleFrame extends JFrame implements MouseMotionListener, Mouse
     private Point m_start_drag;
     private Point m_start_loc;
 
-    protected ResizibleFrame() {
+    ResizibleFrame() {
         super(s_TITLE);
         m_initialLocation = s_INITIAL_LOCATION;
         m_minWidth = (int) s_INITIAL_DIMENSION.getWidth();

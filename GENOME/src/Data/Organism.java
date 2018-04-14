@@ -202,7 +202,7 @@ public final class Organism extends IDataBase {
      *
      * @param _subGroup, the parent to set
      */
-    protected void setParent(SubGroup _subGroup) {
+    void setParent(SubGroup _subGroup) {
         m_parent = _subGroup;
     }
 

@@ -8,9 +8,9 @@ import java.awt.*;
 import static GUI.Constant.s_DARKGRAY;
 import static GUI.Constant.s_LIGHTGRAY;
 
-public final class ScrollPanel extends JScrollPane {
+final class ScrollPanel extends JScrollPane {
 
-    protected ScrollPanel(Component _component) {
+    ScrollPanel(Component _component) {
         super(_component, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         super.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
 

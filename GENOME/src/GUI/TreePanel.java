@@ -36,7 +36,7 @@ public final class TreePanel extends IPanel {
 
     private JPanel m_container;
 
-    protected TreePanel() {
+    TreePanel() {
         super(s_TITLE);
     }
 
@@ -158,11 +158,11 @@ public final class TreePanel extends IPanel {
         m_legend.setMinimumSize(new Dimension(250, 30));
     }
 
-    protected void addTreeListener(TreeListener _treeListener) {
+    void addTreeListener(TreeListener _treeListener) {
         m_tree.addTreeSelectionListener(e -> _treeListener.treeEvent(getFileName(e.getPath())));
     }
 
-    protected synchronized void update(String _path) {
+    synchronized void update(String _path) {
         String table[] = _path.split(Options.getSerializationSpliter());
         String temp;
         DefaultMutableTreeNode actual = (DefaultMutableTreeNode) m_treeModel.getRoot(), progressing;

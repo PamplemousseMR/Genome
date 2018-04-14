@@ -11,7 +11,7 @@ public final class Kingdom extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    protected static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getKingdomSerializationPrefix();
+    static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getKingdomSerializationPrefix();
     /**
      * Array of this Kingdom's Group
      */
@@ -113,7 +113,7 @@ public final class Kingdom extends IDataBase {
      *
      * @param _dataBase, the parent to set
      */
-    protected void setParent(DataBase _dataBase) {
+    void setParent(DataBase _dataBase) {
         m_parent = _dataBase;
     }
 
@@ -133,7 +133,7 @@ public final class Kingdom extends IDataBase {
      * @param _group, the Group to finish
      * @throws InvalidStateException if it can't be finished
      */
-    protected synchronized void finish(Group _group) throws InvalidStateException {
+    synchronized void finish(Group _group) throws InvalidStateException {
         if (super.contains(m_groups, _group) && _group.getState() != State.FINISHED) {
             for (Statistics stat : _group.getStatistics().values()) {
                 super.updateStatistics(stat);
@@ -153,7 +153,7 @@ public final class Kingdom extends IDataBase {
      * @param _group, the Group to insert
      * @throws AddException if _group are already added
      */
-    protected void addGroup(Group _group) throws AddException {
+    void addGroup(Group _group) throws AddException {
         if (super.getState() == State.STARTED) {
             if (super.contains(m_groups, _group))
                 throw new AddException("Group already added : " + _group.getName());

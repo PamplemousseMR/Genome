@@ -303,11 +303,11 @@ public class CDSParser {
     private abstract class Operator {
         private final Operator m_parent;
 
-        protected Operator(Operator _parent) {
+        Operator(Operator _parent) {
             m_parent = _parent;
         }
 
-        protected Operator getParent() {
+        Operator getParent() {
             return m_parent;
         }
 

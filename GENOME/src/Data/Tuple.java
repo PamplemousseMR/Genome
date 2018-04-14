@@ -18,7 +18,7 @@ public final class Tuple implements Serializable {
     /**
      * Class constructor
      */
-    protected Tuple() {
+    Tuple() {
         m_longs = new long[Statistics.StatLong.values().length];
         Arrays.fill(m_longs, 0L);
         m_floats = new float[Statistics.StatFloat.values().length];
@@ -51,7 +51,7 @@ public final class Tuple implements Serializable {
      * @param _stat, the enum
      * @param _val,  the value to set
      */
-    protected void set(Statistics.StatFloat _stat, float _val) {
+    void set(Statistics.StatFloat _stat, float _val) {
         m_floats[_stat.ordinal()] = _val;
     }
 
@@ -61,7 +61,7 @@ public final class Tuple implements Serializable {
      * @param _stat, the enum
      * @param _val,  the value to increment
      */
-    protected void incr(Statistics.StatLong _stat, long _val) {
+    void incr(Statistics.StatLong _stat, long _val) {
         m_longs[_stat.ordinal()] += _val;
     }
 
@@ -71,7 +71,7 @@ public final class Tuple implements Serializable {
      * @param _stat, the enum
      * @param _val,  the value to decrement
      */
-    protected void decr(Statistics.StatLong _stat, long _val) {
+    void decr(Statistics.StatLong _stat, long _val) {
         m_longs[_stat.ordinal()] -= _val;
     }
 

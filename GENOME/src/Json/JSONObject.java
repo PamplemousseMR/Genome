@@ -105,7 +105,7 @@ public class JSONObject {
     /**
      * Construct an empty JSONObject.
      */
-    public JSONObject() {
+    private JSONObject() {
         // HashMap is used on purpose to ensure that elements are unordered by
         // the specification.
         // JSON tends to be a portable transfer format to allows the container
@@ -188,7 +188,7 @@ public class JSONObject {
      * @param m A map object that can be used to initialize the contents of
      *          the JSONObject.
      */
-    public JSONObject(Map<?, ?> m) {
+    private JSONObject(Map<?, ?> m) {
         if (m == null) {
             this.map = new HashMap<>();
         } else {
@@ -225,7 +225,7 @@ public class JSONObject {
      * @param bean An object that has getter methods that should be used to make
      *             a JSONObject.
      */
-    public JSONObject(Object bean) {
+    private JSONObject(Object bean) {
         this();
         this.populateMap(bean);
     }
@@ -251,7 +251,7 @@ public class JSONObject {
      * @return A String.
      * @throws JSONException If n is a non-finite number.
      */
-    public static String numberToString(Number number) throws JSONException {
+    private static String numberToString(Number number) throws JSONException {
         if (number == null) {
             throw new JSONException("Null pointer");
         }
@@ -281,7 +281,7 @@ public class JSONObject {
      * @param string A String
      * @return A String correctly formatted for insertion in a JSON text.
      */
-    public static String quote(String string) {
+    private static String quote(String string) {
         StringWriter sw = new StringWriter();
         synchronized (sw.getBuffer()) {
             try {
@@ -293,7 +293,7 @@ public class JSONObject {
         }
     }
 
-    public static Writer quote(String string, Writer w) throws IOException {
+    private static Writer quote(String string, Writer w) throws IOException {
         if (string == null || string.length() == 0) {
             w.write("\"\"");
             return w;
@@ -358,7 +358,7 @@ public class JSONObject {
      * @param val value to test
      * @return true if the string is "-0" or if it contains '.', 'e', or 'E', false otherwise.
      */
-    protected static boolean isDecimalNotation(final String val) {
+    private static boolean isDecimalNotation(final String val) {
         return val.indexOf('.') > -1 || val.indexOf('e') > -1
                 || val.indexOf('E') > -1 || "-0".equals(val);
     }
@@ -422,7 +422,7 @@ public class JSONObject {
      * @param o The object to test.
      * @throws JSONException If o is a non-finite number.
      */
-    public static void testValidity(Object o) throws JSONException {
+    private static void testValidity(Object o) throws JSONException {
         if (o != null) {
             if (o instanceof Double) {
                 if (((Double) o).isInfinite() || ((Double) o).isNaN()) {
@@ -550,7 +550,7 @@ public class JSONObject {
      * @return The object associated with the key.
      * @throws JSONException if the key is not found.
      */
-    public Object get(String key) throws JSONException {
+    private Object get(String key) throws JSONException {
         if (key == null) {
             throw new JSONException("Null key.");
         }
@@ -663,7 +663,7 @@ public class JSONObject {
      * @return A keySet.
      * @see Map#keySet()
      */
-    public Set<String> keySet() {
+    private Set<String> keySet() {
         return this.map.keySet();
     }
 
@@ -678,7 +678,7 @@ public class JSONObject {
      * @return An Entry Set
      * @see Map#entrySet()
      */
-    protected Set<Entry<String, Object>> entrySet() {
+    private Set<Entry<String, Object>> entrySet() {
         return this.map.entrySet();
     }
 
@@ -687,7 +687,7 @@ public class JSONObject {
      *
      * @return The number of keys in the JSONObject.
      */
-    public int length() {
+    private int length() {
         return this.map.size();
     }
 
@@ -697,7 +697,7 @@ public class JSONObject {
      * @param key A key string.
      * @return An object which is the value, or null if there is no value.
      */
-    public Object opt(String key) {
+    private Object opt(String key) {
         return key == null ? null : this.map.get(key);
     }
 
@@ -774,7 +774,7 @@ public class JSONObject {
      *              types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
      *              String, or the JSONObject.NULL object.
      */
-    public void put(String key, Object value) throws JSONException {
+    private void put(String key, Object value) throws JSONException {
         if (key == null) {
             throw new NullPointerException("Null key.");
         }
@@ -791,7 +791,7 @@ public class JSONObject {
      *
      * @param key The name to be removed.
      */
-    public void remove(String key) {
+    private void remove(String key) {
         this.map.remove(key);
     }
 
@@ -885,7 +885,7 @@ public class JSONObject {
      * brace)</small>.
      * @throws JSONException If the object contains an invalid number.
      */
-    public String toString(int indentFactor) throws JSONException {
+    private String toString(int indentFactor) throws JSONException {
         StringWriter w = new StringWriter();
         synchronized (w.getBuffer()) {
             return this.write(w, indentFactor, 0).toString();
@@ -915,7 +915,7 @@ public class JSONObject {
      * @return The writer.
      * @throws JSONException an exception
      */
-    public Writer write(Writer writer, int indentFactor, int indent)
+    private Writer write(Writer writer, int indentFactor, int indent)
             throws JSONException {
         try {
             boolean commanate = false;

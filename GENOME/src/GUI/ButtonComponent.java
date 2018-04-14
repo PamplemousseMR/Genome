@@ -9,9 +9,9 @@ import java.awt.event.MouseEvent;
 
 import static GUI.Constant.*;
 
-public final class ButtonComponent extends JButton {
+final class ButtonComponent extends JButton {
 
-    protected ButtonComponent(String _path) {
+    ButtonComponent(String _path) {
         super.setMargin(s_INSETS);
         super.setBackground(s_BLUEGRAY);
         super.setForeground(s_WHITE);
@@ -48,7 +48,7 @@ public final class ButtonComponent extends JButton {
         }
     }
 
-    protected void resetColor() {
+    void resetColor() {
         setBackground(s_BLUEGRAY);
     }
 

@@ -15,14 +15,14 @@ public final class ActivityPanel extends JPanel {
     private ButtonComponent m_resume;
     private ButtonComponent m_stop;
 
-    protected ActivityPanel() {
+    ActivityPanel() {
         createComponent();
         initLayout();
         addComponents();
         swagComponent();
     }
 
-    protected void createComponent() {
+    private void createComponent() {
         m_container = new JPanel();
         m_start = new ButtonComponent("Ressources/play.png");
         m_pause = new ButtonComponent("Ressources/pause.png");
@@ -30,19 +30,19 @@ public final class ActivityPanel extends JPanel {
         m_stop = new ButtonComponent("Ressources/stop.png");
     }
 
-    protected void initLayout() {
+    private void initLayout() {
         this.setLayout(new BorderLayout());
         m_container.setLayout(new GridLayout(1, 2));
     }
 
-    protected void addComponents() {
+    private void addComponents() {
         m_container.add(m_start);
         m_container.add(m_stop);
         m_container.setBackground(s_BLUEGRAY);
         super.add(m_container);
     }
 
-    protected void swagComponent() {
+    private void swagComponent() {
         super.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
     }
 
@@ -51,7 +51,7 @@ public final class ActivityPanel extends JPanel {
      *
      * @param _activityListener the start action
      */
-    protected void addtStartListener(ActivityListener _activityListener) {
+    void addtStartListener(ActivityListener _activityListener) {
         m_start.addActionListener(e -> {
             if (_activityListener.activityEvent()) {
                 m_container.remove(m_start);
@@ -68,7 +68,7 @@ public final class ActivityPanel extends JPanel {
      *
      * @param _activityListener the stop action
      */
-    protected void addStopListener(ActivityListener _activityListener) {
+    void addStopListener(ActivityListener _activityListener) {
         m_stop.addActionListener(e -> {
             if (_activityListener.activityEvent()) {
                 m_container.remove(0);
@@ -85,7 +85,7 @@ public final class ActivityPanel extends JPanel {
      *
      * @param _activityListener the pause action
      */
-    protected void addPauseListener(ActivityListener _activityListener) {
+    void addPauseListener(ActivityListener _activityListener) {
         m_pause.addActionListener(e -> {
             if (_activityListener.activityEvent()) {
                 m_container.remove(m_pause);
@@ -102,7 +102,7 @@ public final class ActivityPanel extends JPanel {
      *
      * @param _activityListener the resume action
      */
-    protected void addResumeListener(ActivityListener _activityListener) {
+    void addResumeListener(ActivityListener _activityListener) {
         m_resume.addActionListener(e -> {
             if (_activityListener.activityEvent()) {
                 m_container.remove(m_resume);

@@ -11,9 +11,9 @@ import java.util.Map;
 
 import static GUI.InformationPanel.swagComponent;
 
-public class JDataBase {
+class JDataBase {
 
-    protected static JComponent createComponent(IDataBase _data) {
+    static JComponent createComponent(IDataBase _data) {
 
         JPanel info = new JPanel();
         info.setLayout(new GridLayout(1, 2));
@@ -108,7 +108,7 @@ public class JDataBase {
      *
      * @return the value string
      */
-    public static String getValues(IDataBase _data) {
+    private static String getValues(IDataBase _data) {
         StringBuilder res = new StringBuilder();
         res.append(_data.getName()).append("\n");
         res.append(_data.getCDSNumber()).append("\n");

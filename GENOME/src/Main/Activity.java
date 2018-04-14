@@ -20,7 +20,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Activity {
+class Activity {
 
     private static final Lock m_lock = new ReentrantLock();
     private static final Condition m_cond = m_lock.newCondition();

@@ -74,7 +74,7 @@ public class IDataBase implements Serializable {
         m_loaded = false;
     }
 
-    protected IDataBase(String _name, IDataBase _data) {
+    IDataBase(String _name, IDataBase _data) {
         m_name = _name;
         m_modificationDate = new Date();
         m_statistics = _data.m_statistics;
@@ -272,7 +272,7 @@ public class IDataBase implements Serializable {
      * @param _type, the Type of the genomes's number to get
      * @return the number of genomes
      */
-    protected final long getTypeNumber(Statistics.Type _type) {
+    final long getTypeNumber(Statistics.Type _type) {
         return m_genomeNumber.get(_type);
     }
 
@@ -281,7 +281,7 @@ public class IDataBase implements Serializable {
      *
      * @param _id, the index to set
      */
-    protected final void setIndex(int _id) {
+    final void setIndex(int _id) {
         m_index = _id;
     }
 
@@ -290,7 +290,7 @@ public class IDataBase implements Serializable {
      *
      * @param _type, the Type of the genomes to increment
      */
-    protected final void incrementGenomeNumber(Statistics.Type _type) {
+    final void incrementGenomeNumber(Statistics.Type _type) {
         m_genomeNumber.merge(_type, 1L, (v1, v2) -> v1 + v2);
     }
 
@@ -300,7 +300,7 @@ public class IDataBase implements Serializable {
      * @param _type, the Type of the genomes to increment
      * @param _inc,  the value of the increment
      */
-    protected final void incrementGenomeNumber(Statistics.Type _type, long _inc) {
+    final void incrementGenomeNumber(Statistics.Type _type, long _inc) {
         m_genomeNumber.merge(_type, _inc, (v1, v2) -> v1 + v2);
     }
 
@@ -309,7 +309,7 @@ public class IDataBase implements Serializable {
      *
      * @param _statistics, the statistic to used for update
      */
-    protected final void updateStatistics(Statistics _statistics) {
+    final void updateStatistics(Statistics _statistics) {
         m_statistics.computeIfAbsent(_statistics.getType(), k -> new Statistics(_statistics.getType()));
         m_statistics.get(_statistics.getType()).update(_statistics);
     }
@@ -317,7 +317,7 @@ public class IDataBase implements Serializable {
     /**
      * Compute statistics
      */
-    protected final void computeStatistics() {
+    final void computeStatistics() {
         m_statistics.values().parallelStream().forEach(Statistics::compute);
     }
 
@@ -329,7 +329,7 @@ public class IDataBase implements Serializable {
      * @param <E>,   the class of the array
      * @return the find success
      */
-    protected final <E> boolean contains(ArrayList<E> _arr, IDataBase _stat) {
+    final <E> boolean contains(ArrayList<E> _arr, IDataBase _stat) {
         try {
             if (_arr.get(_stat.m_index) == null) {
                 return false;
@@ -343,7 +343,7 @@ public class IDataBase implements Serializable {
     /**
      * Increment the number of finish children
      */
-    protected final void incrementFinishedChildren() {
+    final void incrementFinishedChildren() {
         ++m_finished;
     }
 
@@ -352,14 +352,14 @@ public class IDataBase implements Serializable {
      *
      * @return the number of children finished
      */
-    protected final int getFinishedChildren() {
+    final int getFinishedChildren() {
         return m_finished;
     }
 
     /**
      * Clear data
      */
-    protected final void clear() {
+    final void clear() {
         m_statistics.clear();
         m_genomeNumber.clear();
     }
@@ -369,7 +369,7 @@ public class IDataBase implements Serializable {
      *
      * @param _data, the data used to increment
      */
-    protected final void incrementGenericTotals(IDataBase _data) {
+    final void incrementGenericTotals(IDataBase _data) {
         m_CDSNumber += _data.m_CDSNumber;
         m_validCDSNumber += _data.m_validCDSNumber;
         m_totalOrganism += _data.m_totalOrganism;
@@ -380,7 +380,7 @@ public class IDataBase implements Serializable {
      *
      * @param _stat, the data used to increment
      */
-    protected final void incrementGenericTotals(Statistics _stat) {
+    final void incrementGenericTotals(Statistics _stat) {
         m_CDSNumber += _stat.getCDSNumber();
         m_validCDSNumber += _stat.getValidCDSNumber();
     }
@@ -389,7 +389,7 @@ public class IDataBase implements Serializable {
      * Set the total of underlying organism to one
      * used for initialise Organism
      */
-    protected final void setTotalOrganismToOne() {
+    final void setTotalOrganismToOne() {
         m_totalOrganism = 1L;
     }
 
@@ -398,7 +398,7 @@ public class IDataBase implements Serializable {
      *
      * @return the main part of the save path_name
      */
-    protected String getSavedName() {
+    String getSavedName() {
         return getName();
     }
 
@@ -407,7 +407,7 @@ public class IDataBase implements Serializable {
      *
      * @param _data the data to unload
      */
-    protected synchronized void unload(IDataBase _data) throws InvalidStateException {
+    synchronized void unload(IDataBase _data) throws InvalidStateException {
         if (!m_loaded)
             throw new InvalidStateException("Not loaded : " + m_name + ". Requested by : " + _data.getName());
 

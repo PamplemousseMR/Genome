@@ -38,7 +38,7 @@ public class Statistics implements Serializable {
     /**
      * Class constructor
      */
-    protected Statistics(Type _type) {
+    Statistics(Type _type) {
         m_type = _type;
         m_trinucleotideTable = new Tuple[Trinucleotide.values().length];
         IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> m_trinucleotideTable[i] = new Tuple());
@@ -114,7 +114,7 @@ public class Statistics implements Serializable {
      *
      * @param _stats, the stats use to update
      */
-    protected final void update(Statistics _stats) {
+    final void update(Statistics _stats) {
         IntStream.range(0, Trinucleotide.values().length).parallel().forEach(i -> {
             final Tuple inputRow = _stats.m_trinucleotideTable[i];
             m_trinucleotideTable[i].incr(StatLong.PHASE0, inputRow.get(StatLong.PHASE0));
@@ -140,7 +140,7 @@ public class Statistics implements Serializable {
     /**
      * Compute the frequencies and the preferences of each trinucleotide for each phases
      */
-    protected final void compute() {
+    final void compute() {
         if (m_totalTrinucleotide != 0) {
             for (Tuple row : m_trinucleotideTable) {
                 row.set(StatFloat.FREQ0, row.get(StatLong.PHASE0) / (float) m_totalTrinucleotide);
@@ -162,7 +162,7 @@ public class Statistics implements Serializable {
      * @param _tri,  the Trinucleotide to set
      * @param _stat, the statistic to set
      */
-    protected final void incrementStat(Trinucleotide _tri, StatLong _stat) {
+    final void incrementStat(Trinucleotide _tri, StatLong _stat) {
         m_trinucleotideTable[_tri.ordinal()].incr(_stat, 1L);
     }
 
@@ -172,7 +172,7 @@ public class Statistics implements Serializable {
      * @param _di,   the Dinucleotide to set
      * @param _stat, the statistic to set
      */
-    protected final void incrementStat(Dinucleotide _di, StatLong _stat) {
+    final void incrementStat(Dinucleotide _di, StatLong _stat) {
         m_dinucleotideTable[_di.ordinal()].incr(_stat, 1L);
     }
 
@@ -181,7 +181,7 @@ public class Statistics implements Serializable {
      *
      * @param _inc, the value to increment
      */
-    protected final void incrementTriTotal(long _inc) {
+    final void incrementTriTotal(long _inc) {
         m_totalTrinucleotide += _inc;
     }
 
@@ -190,7 +190,7 @@ public class Statistics implements Serializable {
      *
      * @param _inc, the value to increment
      */
-    protected final void incrementDiTotal(long _inc) {
+    final void incrementDiTotal(long _inc) {
         m_totalDinucleotide += _inc;
     }
 
@@ -199,7 +199,7 @@ public class Statistics implements Serializable {
      *
      * @param _long, the value to increment
      */
-    protected final void incrementCDS(long _long) {
+    final void incrementCDS(long _long) {
         m_CDSNumber += _long;
     }
 
@@ -208,7 +208,7 @@ public class Statistics implements Serializable {
      *
      * @param _long, the value to increment
      */
-    protected final void incrementValidCDS(long _long) {
+    final void incrementValidCDS(long _long) {
         m_validCDSNumber += _long;
     }
 
@@ -217,7 +217,7 @@ public class Statistics implements Serializable {
      *
      * @param _stats the data to unload
      */
-    protected void unload(Statistics _stats) {
+    void unload(Statistics _stats) {
         m_totalTrinucleotide -= _stats.m_totalTrinucleotide;
         m_totalDinucleotide -= _stats.m_totalDinucleotide;
         m_CDSNumber -= _stats.m_CDSNumber;

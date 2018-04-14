@@ -6,9 +6,9 @@ import java.awt.*;
 
 import static GUI.Constant.*;
 
-public final class ProgressBar extends JProgressBar {
+final class ProgressBar extends JProgressBar {
 
-    protected ProgressBar() {
+    ProgressBar() {
         super();
         super.setUI(new BasicProgressBarUI() {
             @Override

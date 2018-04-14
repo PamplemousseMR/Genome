@@ -7,7 +7,7 @@ import java.awt.*;
 import java.awt.event.AdjustmentEvent;
 import java.awt.event.AdjustmentListener;
 
-public class SmartScrollComponent implements AdjustmentListener {
+class SmartScrollComponent implements AdjustmentListener {
 
     private boolean m_adjustScrollBar = true;
 

@@ -15,7 +15,7 @@ public final class LogsPanel extends IPanel {
     private JTextPane m_textPane;
     private ScrollPanel m_container;
 
-    protected LogsPanel() {
+    LogsPanel() {
         super(s_TITLE);
     }
 
@@ -40,7 +40,7 @@ public final class LogsPanel extends IPanel {
         m_textPane.setBorder(BorderFactory.createLineBorder(s_LIGHTGRAY, 10));
     }
 
-    protected void updateLog(String _log, Logs.Type _type) {
+    void updateLog(String _log, Logs.Type _type) {
         Color m_logColour;
         switch (_type) {
             case WARNING:
