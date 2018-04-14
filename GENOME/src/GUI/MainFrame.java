@@ -16,11 +16,6 @@ import static GUI.Constant.*;
 public final class MainFrame extends JFrame implements MouseMotionListener, MouseListener {
 
     /**
-     * Main title of the frame
-     */
-    private static final String s_TITLE = "GENOME";
-
-    /**
      * Default Toolkit of the frame
      */
     private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();

@@ -2,6 +2,7 @@ package Main;
 
 import Data.IDataBase;
 import GUI.MainFrame;
+import GUI.WarningFrame;
 import Utils.Logs;
 import Utils.Options;
 
@@ -89,7 +90,7 @@ final class GENOME {
                 Logs.exception(e);
             }
         } else {
-            //WarningFrame.displayGUI();
+            new WarningFrame();
         }
     }
 

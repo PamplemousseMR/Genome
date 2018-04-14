@@ -3,6 +3,9 @@ package GUI;
 import java.awt.*;
 
 final class Constant {
+
+    static final String s_TITLE = "GENOME";
+
     static final Color s_DARKGRAY = new Color(39, 42, 49);
     static final Color s_LIGHTGRAY = new Color(54, 57, 62);
     static final Color s_BLUEGRAY = new Color(62, 68, 83);
