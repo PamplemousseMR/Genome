@@ -31,6 +31,28 @@ public class Activity {
     private static Thread s_activityThread = null;
     private static boolean s_wait = false;
 
+    private static String getDifference(Date _startDate, Date _endDate) {
+        long different = _endDate.getTime() - _startDate.getTime();
+
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = different / daysInMilli;
+        different = different % daysInMilli;
+
+        long elapsedHours = different / hoursInMilli;
+        different = different % hoursInMilli;
+
+        long elapsedMinutes = different / minutesInMilli;
+        different = different % minutesInMilli;
+
+        long elapsedSeconds = different / secondsInMilli;
+
+        return elapsedDays + " day " + elapsedHours + " hours " + elapsedMinutes + " minutes "  + elapsedSeconds + " second";
+    }
+
     private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent) throws InvalidStateException, AddException {
         _currentKingdom.stop();
         _currentKingdom = Kingdom.load(_newKingdom, _parent, _kingdom -> {
@@ -102,6 +124,7 @@ public class Activity {
             }
             MainFrame.getSingleton().updateProgresseValue(0);
             s_activityThread = new Thread(() -> {
+                Date beg = new Date();
                 final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 final int[] index = {0};
                 try {
@@ -278,6 +301,8 @@ public class Activity {
                         s_run = false;
                     }
                     MainFrame.getSingleton().updateProgresseValue(++index[0]);
+                    Date end = new Date();
+                    Logs.info("Execution time : " + getDifference(beg, end), true);
                 }
             });
             s_activityThread.start();

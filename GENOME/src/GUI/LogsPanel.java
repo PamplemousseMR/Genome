@@ -58,13 +58,13 @@ public final class LogsPanel extends IPanel {
         int len = m_textPane.getDocument().getLength();
         m_textPane.setCharacterAttributes(aset, true);
         try {
-            m_textPane.getDocument().insertString(len, _log +"\n", aset);
+            m_textPane.getDocument().insertString(len, _log + "\n", aset);
         } catch (BadLocationException e) {
             Logs.exception(e);
         }
         if (m_textPane.getText().split("\n").length > 1000) {
             try {
-                m_textPane.getDocument().remove(0, len/	20);
+                m_textPane.getDocument().remove(0, len / 20);
             } catch (BadLocationException e) {
                 e.printStackTrace();
             }
