@@ -261,7 +261,7 @@ public class CDSParser {
                             ++m_valid;
                             m_sequences.add(s);
                         }
-                    } catch (IllegalArgumentException e) {
+                    } catch (IllegalArgumentException ignored) {
                     }
 
                 }

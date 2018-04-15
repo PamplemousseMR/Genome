@@ -45,7 +45,7 @@ final class GENOME {
         File mutex = new File(Options.getMutexFileName());
         try {
             return mutex.createNewFile();
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             Logs.warning("Enable to create mutex file : " + Options.getMutexFileName());
         }
         return false;
@@ -57,8 +57,13 @@ final class GENOME {
     private static void unlock() {
         File mutex = new File(Options.getMutexFileName());
         if (mutex.exists()) {
-            if (!mutex.delete()) {
+            try {
+                if (!mutex.delete()) {
+                    Logs.warning("Enable to delete mutex file : " + Options.getMutexFileName());
+                }
+            } catch (SecurityException e) {
                 Logs.warning("Enable to delete mutex file : " + Options.getMutexFileName());
+                Logs.exception(e);
             }
         }
     }

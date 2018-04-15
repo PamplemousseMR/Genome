@@ -125,7 +125,7 @@ public final class Organism extends IDataBase {
             try {
                 if (m_replicons.get(_replicon.getIndex()) != null)
                     throw new AddException("Replicon already added : " + _replicon.getName());
-            } catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException ignored) {
             }
             _replicon.setIndex(m_replicons.size());
             return m_replicons.add(_replicon);
@@ -239,8 +239,13 @@ public final class Organism extends IDataBase {
         final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getDateModifSerializeExtension());
         final ObjectOutputStream stream;
         if (file.exists()) {
-            if (!file.delete()) {
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
                 Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
             }
         }
         try {
@@ -251,7 +256,7 @@ public final class Organism extends IDataBase {
             stream.writeObject(getModificationDate());
             stream.flush();
             stream.close();
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
         }

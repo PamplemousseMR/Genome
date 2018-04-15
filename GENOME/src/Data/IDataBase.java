@@ -236,8 +236,13 @@ public class IDataBase implements Serializable {
         final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
         ObjectOutputStream stream = null;
         if (file.exists()) {
-            if (!file.delete()) {
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
                 Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
             }
         }
         try {
@@ -247,7 +252,7 @@ public class IDataBase implements Serializable {
             stream = new ObjectOutputStream(new FileOutputStream(file));
             stream.writeObject(this);
             stream.flush();
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
         } finally {
