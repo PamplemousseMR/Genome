@@ -75,6 +75,18 @@ public final class Kingdom extends IDataBase {
     }
 
     /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if (m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a DataBase : " + getName());
+        super.start();
+    }
+
+    /**
      * In case of all Group are already finished
      *
      * @throws InvalidStateException if it can't be stopped
@@ -97,15 +109,13 @@ public final class Kingdom extends IDataBase {
     }
 
     /**
-     * Start
+     * Get the main part of the save path_name
      *
-     * @throws InvalidStateException if it can't be started
+     * @return the main part of the save path_name
      */
     @Override
-    public final void start() throws InvalidStateException {
-        if (m_parent == null)
-            throw new InvalidStateException("Unable to start without been add in a DataBase : " + getName());
-        super.start();
+    public String getSavedName() {
+        return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
     }
 
     /**
@@ -115,16 +125,6 @@ public final class Kingdom extends IDataBase {
      */
     void setParent(DataBase _dataBase) {
         m_parent = _dataBase;
-    }
-
-    /**
-     * Get the main part of the save path_name
-     *
-     * @return the main part of the save path_name
-     */
-    @Override
-    public String getSavedName() {
-        return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
     }
 
     /**

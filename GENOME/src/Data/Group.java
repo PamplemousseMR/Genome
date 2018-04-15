@@ -75,6 +75,18 @@ public final class Group extends IDataBase {
     }
 
     /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if (m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a Kingdom : " + getName());
+        super.start();
+    }
+
+    /**
      * In case of all SubGroup are already finished
      *
      * @throws InvalidStateException if it can't be stopped
@@ -106,24 +118,22 @@ public final class Group extends IDataBase {
     }
 
     /**
+     * Get the main part of the save file name
+     *
+     * @return the main part of the save path_name
+     */
+    @Override
+    public String getSavedName() {
+        return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
+    }
+
+    /**
      * Set the parent
      *
      * @param _kingdom, the parent to set
      */
     void setParent(Kingdom _kingdom) {
         m_parent = _kingdom;
-    }
-
-    /**
-     * Start
-     *
-     * @throws InvalidStateException if it can't be started
-     */
-    @Override
-    public final void start() throws InvalidStateException {
-        if (m_parent == null)
-            throw new InvalidStateException("Unable to start without been add in a Kingdom : " + getName());
-        super.start();
     }
 
     /**
@@ -144,16 +154,6 @@ public final class Group extends IDataBase {
                 end();
             }
         }
-    }
-
-    /**
-     * Get the main part of the save file name
-     *
-     * @return the main part of the save path_name
-     */
-    @Override
-    public String getSavedName() {
-        return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
     }
 
     /**

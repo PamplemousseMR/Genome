@@ -307,13 +307,13 @@ public class CDSParser {
             m_parent = _parent;
         }
 
-        Operator getParent() {
-            return m_parent;
-        }
-
         protected abstract void addOperator(Operator _op) throws OperatorException;
 
         protected abstract StringBuilder compute() throws OperatorException;
+
+        Operator getParent() {
+            return m_parent;
+        }
     }
 
     /**

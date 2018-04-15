@@ -103,19 +103,6 @@ public class JSONObject {
     private final Map<String, Object> map;
 
     /**
-     * Construct an empty JSONObject.
-     */
-    private JSONObject() {
-        // HashMap is used on purpose to ensure that elements are unordered by
-        // the specification.
-        // JSON tends to be a portable transfer format to allows the container
-        // implementations to rearrange their items for a faster element
-        // retrieval based on associative access.
-        // Therefore, an implementation mustn't rely on the order of the item.
-        this.map = new HashMap<>();
-    }
-
-    /**
      * Construct a JSONObject from a JSONTokener.
      *
      * @param x A JSONTokener object containing the source string.
@@ -183,6 +170,33 @@ public class JSONObject {
     }
 
     /**
+     * Construct a JSONObject from a source JSON text string. This is the most
+     * commonly used JSONObject constructor.
+     *
+     * @param source A string beginning with <code>{</code>&nbsp;<small>(left
+     *               brace)</small> and ending with <code>}</code>
+     *               &nbsp;<small>(right brace)</small>.
+     * @throws JSONException If there is a syntax error in the source string or a
+     *                       duplicated key.
+     */
+    public JSONObject(String source) throws JSONException {
+        this(new JSONTokener(source));
+    }
+
+    /**
+     * Construct an empty JSONObject.
+     */
+    private JSONObject() {
+        // HashMap is used on purpose to ensure that elements are unordered by
+        // the specification.
+        // JSON tends to be a portable transfer format to allows the container
+        // implementations to rearrange their items for a faster element
+        // retrieval based on associative access.
+        // Therefore, an implementation mustn't rely on the order of the item.
+        this.map = new HashMap<>();
+    }
+
+    /**
      * Construct a JSONObject from a Map.
      *
      * @param m A map object that can be used to initialize the contents of
@@ -231,17 +245,161 @@ public class JSONObject {
     }
 
     /**
-     * Construct a JSONObject from a source JSON text string. This is the most
-     * commonly used JSONObject constructor.
+     * Try to convert a string into a number, boolean, or null. If the string
+     * can't be converted, return the string.
      *
-     * @param source A string beginning with <code>{</code>&nbsp;<small>(left
-     *               brace)</small> and ending with <code>}</code>
-     *               &nbsp;<small>(right brace)</small>.
-     * @throws JSONException If there is a syntax error in the source string or a
-     *                       duplicated key.
+     * @param string A String.
+     * @return A simple JSON value.
      */
-    public JSONObject(String source) throws JSONException {
-        this(new JSONTokener(source));
+    // Changes to this method must be copied to the corresponding method in
+    // the XML class to keep full support for Android
+    public static Object stringToValue(String string) {
+        if (string.equals("")) {
+            return string;
+        }
+        if (string.equalsIgnoreCase("true")) {
+            return Boolean.TRUE;
+        }
+        if (string.equalsIgnoreCase("false")) {
+            return Boolean.FALSE;
+        }
+        if (string.equalsIgnoreCase("null")) {
+            return JSONObject.NULL;
+        }
+
+        /*
+         * If it might be a number, try converting it. If a number cannot be
+         * produced, then the value will just be a string.
+         */
+
+        char initial = string.charAt(0);
+        if ((initial >= '0' && initial <= '9') || initial == '-') {
+            try {
+                // if we want full Big Number support this block can be replaced with:
+                // return stringToNumber(string);
+                if (isDecimalNotation(string)) {
+                    Double d = Double.valueOf(string);
+                    if (!d.isInfinite() && !d.isNaN()) {
+                        return d;
+                    }
+                } else {
+                    Long myLong = Long.valueOf(string);
+                    if (string.equals(myLong.toString())) {
+                        if (myLong == myLong.intValue()) {
+                            return myLong.intValue();
+                        }
+                        return myLong;
+                    }
+                }
+            } catch (Exception ignore) {
+            }
+        }
+        return string;
+    }
+
+    /**
+     * Wrap an object, if necessary. If the object is null, return the NULL
+     * object. If it is an array or collection, wrap it in a JSONArray. If it is
+     * a map, wrap it in a JSONObject. If it is a standard property (Double,
+     * String, et al) then it is already wrapped. Otherwise, if it comes from
+     * one of the java packages, turn it into a string. And if it doesn't, try
+     * to wrap it in a JSONObject. If the wrapping fails, then null is returned.
+     *
+     * @param object The object to wrap
+     * @return The wrapped value
+     */
+    public static Object wrap(Object object) {
+        try {
+            if (object == null) {
+                return NULL;
+            }
+            if (object instanceof JSONObject || object instanceof JSONArray
+                    || NULL.equals(object) || object instanceof JSONString
+                    || object instanceof Byte || object instanceof Character
+                    || object instanceof Short || object instanceof Integer
+                    || object instanceof Long || object instanceof Boolean
+                    || object instanceof Float || object instanceof Double
+                    || object instanceof String || object instanceof BigInteger
+                    || object instanceof BigDecimal || object instanceof Enum) {
+                return object;
+            }
+
+            if (object instanceof Collection) {
+                Collection<?> coll = (Collection<?>) object;
+                return new JSONArray(coll);
+            }
+            if (object.getClass().isArray()) {
+                return new JSONArray(object);
+            }
+            if (object instanceof Map) {
+                Map<?, ?> map = (Map<?, ?>) object;
+                return new JSONObject(map);
+            }
+            Package objectPackage = object.getClass().getPackage();
+            String objectPackageName = objectPackage != null ? objectPackage
+                    .getName() : "";
+            if (objectPackageName.startsWith("java.")
+                    || objectPackageName.startsWith("javax.")
+                    || object.getClass().getClassLoader() == null) {
+                return object.toString();
+            }
+            return new JSONObject(object);
+        } catch (Exception exception) {
+            return null;
+        }
+    }
+
+    static void writeValue(Writer writer, Object value,
+                           int indentFactor, int indent) throws JSONException, IOException {
+        if (value == null) {
+            writer.write("null");
+        } else if (value instanceof JSONString) {
+            Object o;
+            try {
+                o = ((JSONString) value).toJSONString();
+            } catch (Exception e) {
+                throw new JSONException(e);
+            }
+            writer.write(o != null ? o.toString() : quote(value.toString()));
+        } else if (value instanceof Number) {
+            // not all Numbers may match actual JSON Numbers. i.e. fractions or Imaginary
+            final String numberAsString = numberToString((Number) value);
+            try {
+                // Use the BigDecimal constructor for its parser to validate the format.
+                @SuppressWarnings("unused")
+                BigDecimal testNum = new BigDecimal(numberAsString);
+                // Close enough to a JSON number that we will use it unquoted
+                writer.write(numberAsString);
+            } catch (NumberFormatException ex) {
+                // The Number value is not a valid JSON number.
+                // Instead we will quote it as a string
+                quote(numberAsString, writer);
+            }
+        } else if (value instanceof Boolean) {
+            writer.write(value.toString());
+        } else if (value instanceof Enum<?>) {
+            writer.write(quote(((Enum<?>) value).name()));
+        } else if (value instanceof JSONObject) {
+            ((JSONObject) value).write(writer, indentFactor, indent);
+        } else if (value instanceof JSONArray) {
+            ((JSONArray) value).write(writer, indentFactor, indent);
+        } else if (value instanceof Map) {
+            Map<?, ?> map = (Map<?, ?>) value;
+            new JSONObject(map).write(writer, indentFactor, indent);
+        } else if (value instanceof Collection) {
+            Collection<?> coll = (Collection<?>) value;
+            new JSONArray(coll).write(writer, indentFactor, indent);
+        } else if (value.getClass().isArray()) {
+            new JSONArray(value).write(writer, indentFactor, indent);
+        } else {
+            quote(value.toString(), writer);
+        }
+    }
+
+    static void indent(Writer writer, int indent) throws IOException {
+        for (int i = 0; i < indent; i += 1) {
+            writer.write(' ');
+        }
     }
 
     /**
@@ -364,59 +522,6 @@ public class JSONObject {
     }
 
     /**
-     * Try to convert a string into a number, boolean, or null. If the string
-     * can't be converted, return the string.
-     *
-     * @param string A String.
-     * @return A simple JSON value.
-     */
-    // Changes to this method must be copied to the corresponding method in
-    // the XML class to keep full support for Android
-    public static Object stringToValue(String string) {
-        if (string.equals("")) {
-            return string;
-        }
-        if (string.equalsIgnoreCase("true")) {
-            return Boolean.TRUE;
-        }
-        if (string.equalsIgnoreCase("false")) {
-            return Boolean.FALSE;
-        }
-        if (string.equalsIgnoreCase("null")) {
-            return JSONObject.NULL;
-        }
-
-        /*
-         * If it might be a number, try converting it. If a number cannot be
-         * produced, then the value will just be a string.
-         */
-
-        char initial = string.charAt(0);
-        if ((initial >= '0' && initial <= '9') || initial == '-') {
-            try {
-                // if we want full Big Number support this block can be replaced with:
-                // return stringToNumber(string);
-                if (isDecimalNotation(string)) {
-                    Double d = Double.valueOf(string);
-                    if (!d.isInfinite() && !d.isNaN()) {
-                        return d;
-                    }
-                } else {
-                    Long myLong = Long.valueOf(string);
-                    if (string.equals(myLong.toString())) {
-                        if (myLong == myLong.intValue()) {
-                            return myLong.intValue();
-                        }
-                        return myLong;
-                    }
-                }
-            } catch (Exception ignore) {
-            }
-        }
-        return string;
-    }
-
-    /**
      * Throw an exception if the object is a NaN or infinite number.
      *
      * @param o The object to test.
@@ -436,129 +541,6 @@ public class JSONObject {
                 }
             }
         }
-    }
-
-    /**
-     * Wrap an object, if necessary. If the object is null, return the NULL
-     * object. If it is an array or collection, wrap it in a JSONArray. If it is
-     * a map, wrap it in a JSONObject. If it is a standard property (Double,
-     * String, et al) then it is already wrapped. Otherwise, if it comes from
-     * one of the java packages, turn it into a string. And if it doesn't, try
-     * to wrap it in a JSONObject. If the wrapping fails, then null is returned.
-     *
-     * @param object The object to wrap
-     * @return The wrapped value
-     */
-    public static Object wrap(Object object) {
-        try {
-            if (object == null) {
-                return NULL;
-            }
-            if (object instanceof JSONObject || object instanceof JSONArray
-                    || NULL.equals(object) || object instanceof JSONString
-                    || object instanceof Byte || object instanceof Character
-                    || object instanceof Short || object instanceof Integer
-                    || object instanceof Long || object instanceof Boolean
-                    || object instanceof Float || object instanceof Double
-                    || object instanceof String || object instanceof BigInteger
-                    || object instanceof BigDecimal || object instanceof Enum) {
-                return object;
-            }
-
-            if (object instanceof Collection) {
-                Collection<?> coll = (Collection<?>) object;
-                return new JSONArray(coll);
-            }
-            if (object.getClass().isArray()) {
-                return new JSONArray(object);
-            }
-            if (object instanceof Map) {
-                Map<?, ?> map = (Map<?, ?>) object;
-                return new JSONObject(map);
-            }
-            Package objectPackage = object.getClass().getPackage();
-            String objectPackageName = objectPackage != null ? objectPackage
-                    .getName() : "";
-            if (objectPackageName.startsWith("java.")
-                    || objectPackageName.startsWith("javax.")
-                    || object.getClass().getClassLoader() == null) {
-                return object.toString();
-            }
-            return new JSONObject(object);
-        } catch (Exception exception) {
-            return null;
-        }
-    }
-
-    static void writeValue(Writer writer, Object value,
-                           int indentFactor, int indent) throws JSONException, IOException {
-        if (value == null) {
-            writer.write("null");
-        } else if (value instanceof JSONString) {
-            Object o;
-            try {
-                o = ((JSONString) value).toJSONString();
-            } catch (Exception e) {
-                throw new JSONException(e);
-            }
-            writer.write(o != null ? o.toString() : quote(value.toString()));
-        } else if (value instanceof Number) {
-            // not all Numbers may match actual JSON Numbers. i.e. fractions or Imaginary
-            final String numberAsString = numberToString((Number) value);
-            try {
-                // Use the BigDecimal constructor for its parser to validate the format.
-                @SuppressWarnings("unused")
-                BigDecimal testNum = new BigDecimal(numberAsString);
-                // Close enough to a JSON number that we will use it unquoted
-                writer.write(numberAsString);
-            } catch (NumberFormatException ex) {
-                // The Number value is not a valid JSON number.
-                // Instead we will quote it as a string
-                quote(numberAsString, writer);
-            }
-        } else if (value instanceof Boolean) {
-            writer.write(value.toString());
-        } else if (value instanceof Enum<?>) {
-            writer.write(quote(((Enum<?>) value).name()));
-        } else if (value instanceof JSONObject) {
-            ((JSONObject) value).write(writer, indentFactor, indent);
-        } else if (value instanceof JSONArray) {
-            ((JSONArray) value).write(writer, indentFactor, indent);
-        } else if (value instanceof Map) {
-            Map<?, ?> map = (Map<?, ?>) value;
-            new JSONObject(map).write(writer, indentFactor, indent);
-        } else if (value instanceof Collection) {
-            Collection<?> coll = (Collection<?>) value;
-            new JSONArray(coll).write(writer, indentFactor, indent);
-        } else if (value.getClass().isArray()) {
-            new JSONArray(value).write(writer, indentFactor, indent);
-        } else {
-            quote(value.toString(), writer);
-        }
-    }
-
-    static void indent(Writer writer, int indent) throws IOException {
-        for (int i = 0; i < indent; i += 1) {
-            writer.write(' ');
-        }
-    }
-
-    /**
-     * Get the value object associated with a key.
-     *
-     * @param key A key string.
-     * @return The object associated with the key.
-     * @throws JSONException if the key is not found.
-     */
-    private Object get(String key) throws JSONException {
-        if (key == null) {
-            throw new JSONException("Null key.");
-        }
-        Object object = this.opt(key);
-        if (object == null) {
-            throw new JSONException("JSONObject[" + quote(key) + "] not found.");
-        }
-        return object;
     }
 
     /**
@@ -654,6 +636,117 @@ public class JSONObject {
      */
     public boolean has(String key) {
         return this.map.containsKey(key);
+    }
+
+    /**
+     * Determine if two JSONObjects are similar.
+     * They must contain the same set of names which must be associated with
+     * similar values.
+     *
+     * @param other The other JSONObject
+     * @return true if they are equal
+     */
+    public boolean similar(Object other) {
+        try {
+            if (!(other instanceof JSONObject)) {
+                return false;
+            }
+            if (!this.keySet().equals(((JSONObject) other).keySet())) {
+                return false;
+            }
+            for (final Entry<String, ?> entry : this.entrySet()) {
+                String name = entry.getKey();
+                Object valueThis = entry.getValue();
+                Object valueOther = ((JSONObject) other).get(name);
+                if (valueThis == valueOther) {
+                    continue;
+                }
+                if (valueThis == null) {
+                    return false;
+                }
+                if (valueThis instanceof JSONObject) {
+                    if (!((JSONObject) valueThis).similar(valueOther)) {
+                        return false;
+                    }
+                } else if (valueThis instanceof JSONArray) {
+                    if (!((JSONArray) valueThis).similar(valueOther)) {
+                        return false;
+                    }
+                } else if (!valueThis.equals(valueOther)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Throwable exception) {
+            return false;
+        }
+    }
+
+    /**
+     * Make a JSON text of this JSONObject. For compactness, no whitespace is
+     * added. If this would not result in a syntactically correct JSON text,
+     * then null will be returned instead.
+     * <p><b>
+     * Warning: This method assumes that the data structure is acyclical.
+     * </b>
+     *
+     * @return a printable, displayable, portable, transmittable representation
+     * of the object, beginning with <code>{</code>&nbsp;<small>(left
+     * brace)</small> and ending with <code>}</code>&nbsp;<small>(right
+     * brace)</small>.
+     */
+    @Override
+    public String toString() {
+        try {
+            return this.toString(0);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns a java.util.Map containing all of the entries in this object.
+     * If an entry in the object is a JSONArray or JSONObject it will also
+     * be converted.
+     * <p>
+     * Warning: This method assumes that the data structure is acyclical.
+     *
+     * @return a java.util.Map containing the entries of this object
+     */
+    public Map<String, Object> toMap() {
+        Map<String, Object> results = new HashMap<>();
+        for (Entry<String, Object> entry : this.entrySet()) {
+            Object value;
+            if (entry.getValue() == null || NULL.equals(entry.getValue())) {
+                value = null;
+            } else if (entry.getValue() instanceof JSONObject) {
+                value = ((JSONObject) entry.getValue()).toMap();
+            } else if (entry.getValue() instanceof JSONArray) {
+                value = ((JSONArray) entry.getValue()).toList();
+            } else {
+                value = entry.getValue();
+            }
+            results.put(entry.getKey(), value);
+        }
+        return results;
+    }
+
+    /**
+     * Get the value object associated with a key.
+     *
+     * @param key A key string.
+     * @return The object associated with the key.
+     * @throws JSONException if the key is not found.
+     */
+    private Object get(String key) throws JSONException {
+        if (key == null) {
+            throw new JSONException("Null key.");
+        }
+        Object object = this.opt(key);
+        if (object == null) {
+            throw new JSONException("JSONObject[" + quote(key) + "] not found.");
+        }
+        return object;
     }
 
     /**
@@ -796,72 +889,6 @@ public class JSONObject {
     }
 
     /**
-     * Determine if two JSONObjects are similar.
-     * They must contain the same set of names which must be associated with
-     * similar values.
-     *
-     * @param other The other JSONObject
-     * @return true if they are equal
-     */
-    public boolean similar(Object other) {
-        try {
-            if (!(other instanceof JSONObject)) {
-                return false;
-            }
-            if (!this.keySet().equals(((JSONObject) other).keySet())) {
-                return false;
-            }
-            for (final Entry<String, ?> entry : this.entrySet()) {
-                String name = entry.getKey();
-                Object valueThis = entry.getValue();
-                Object valueOther = ((JSONObject) other).get(name);
-                if (valueThis == valueOther) {
-                    continue;
-                }
-                if (valueThis == null) {
-                    return false;
-                }
-                if (valueThis instanceof JSONObject) {
-                    if (!((JSONObject) valueThis).similar(valueOther)) {
-                        return false;
-                    }
-                } else if (valueThis instanceof JSONArray) {
-                    if (!((JSONArray) valueThis).similar(valueOther)) {
-                        return false;
-                    }
-                } else if (!valueThis.equals(valueOther)) {
-                    return false;
-                }
-            }
-            return true;
-        } catch (Throwable exception) {
-            return false;
-        }
-    }
-
-    /**
-     * Make a JSON text of this JSONObject. For compactness, no whitespace is
-     * added. If this would not result in a syntactically correct JSON text,
-     * then null will be returned instead.
-     * <p><b>
-     * Warning: This method assumes that the data structure is acyclical.
-     * </b>
-     *
-     * @return a printable, displayable, portable, transmittable representation
-     * of the object, beginning with <code>{</code>&nbsp;<small>(left
-     * brace)</small> and ending with <code>}</code>&nbsp;<small>(right
-     * brace)</small>.
-     */
-    @Override
-    public String toString() {
-        try {
-            return this.toString(0);
-        } catch (Exception e) {
-            return null;
-        }
-    }
-
-    /**
      * Make a pretty-printed JSON text of this JSONObject.
      * <p>
      * <p>If <code>indentFactor > 0</code> and the {@link JSONObject}
@@ -968,33 +995,6 @@ public class JSONObject {
         } catch (IOException exception) {
             throw new JSONException(exception);
         }
-    }
-
-    /**
-     * Returns a java.util.Map containing all of the entries in this object.
-     * If an entry in the object is a JSONArray or JSONObject it will also
-     * be converted.
-     * <p>
-     * Warning: This method assumes that the data structure is acyclical.
-     *
-     * @return a java.util.Map containing the entries of this object
-     */
-    public Map<String, Object> toMap() {
-        Map<String, Object> results = new HashMap<>();
-        for (Entry<String, Object> entry : this.entrySet()) {
-            Object value;
-            if (entry.getValue() == null || NULL.equals(entry.getValue())) {
-                value = null;
-            } else if (entry.getValue() instanceof JSONObject) {
-                value = ((JSONObject) entry.getValue()).toMap();
-            } else if (entry.getValue() instanceof JSONArray) {
-                value = ((JSONArray) entry.getValue()).toList();
-            } else {
-                value = entry.getValue();
-            }
-            results.put(entry.getKey(), value);
-        }
-        return results;
     }
 
     /**

@@ -64,21 +64,6 @@ public final class ThreadManager {
     }
 
     /**
-     * Check if the threads are running
-     *
-     * @return the running state
-     */
-    private boolean isRunning() {
-        final boolean res;
-        m_runningLock.lock();
-        {
-            res = m_running;
-        }
-        m_runningLock.unlock();
-        return res;
-    }
-
-    /**
      * Blocking method which wait until all task are finished
      */
     public void finalizeThreadManager() {
@@ -129,6 +114,21 @@ public final class ThreadManager {
         } finally {
             m_lockArray.unlock();
         }
+        return res;
+    }
+
+    /**
+     * Check if the threads are running
+     *
+     * @return the running state
+     */
+    private boolean isRunning() {
+        final boolean res;
+        m_runningLock.lock();
+        {
+            res = m_running;
+        }
+        m_runningLock.unlock();
         return res;
     }
 

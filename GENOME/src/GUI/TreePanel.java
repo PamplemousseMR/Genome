@@ -413,15 +413,15 @@ public final class TreePanel extends IPanel {
         }
     }
 
+    public interface TreeListener {
+        void treeEvent(String _path);
+    }
+
     private enum State {
         CREATE,
         UPDATE,
         FINISH,
         DEFAULT
-    }
-
-    public interface TreeListener {
-        void treeEvent(String _path);
     }
 
     private class Node {
@@ -434,17 +434,17 @@ public final class TreePanel extends IPanel {
             m_state = _state;
         }
 
+        @Override
+        public String toString() {
+            return m_name;
+        }
+
         private State getState() {
             return m_state;
         }
 
         private void setState(State _state) {
             m_state = _state;
-        }
-
-        @Override
-        public String toString() {
-            return m_name;
         }
 
     }

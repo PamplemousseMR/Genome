@@ -130,34 +130,6 @@ public class IDataBase implements Serializable {
     }
 
     /**
-     * Start
-     *
-     * @throws InvalidStateException if it can't be started
-     */
-    public void start() throws InvalidStateException {
-        if (m_state == State.STARTED)
-            throw new InvalidStateException("Already started : " + this.getName());
-        if (m_state == State.STOPPED || m_state == State.FINISHED)
-            throw new InvalidStateException("Can't restart : " + this.getName());
-        m_state = State.STARTED;
-    }
-
-    /**
-     * Stop
-     *
-     * @throws InvalidStateException if it can't be stopped
-     */
-    public synchronized void stop() throws InvalidStateException {
-        if (m_state == State.CREATED)
-            throw new InvalidStateException("Not started : " + this.getName());
-        if (m_state == State.STOPPED)
-            throw new InvalidStateException("Already stopped : " + this.getName());
-        if (m_state == State.FINISHED)
-            throw new InvalidStateException("Already finished : " + this.getName());
-        m_state = State.STOPPED;
-    }
-
-    /**
      * Get actual State
      *
      * @return the State
@@ -227,57 +199,6 @@ public class IDataBase implements Serializable {
      */
     public final long getTotalOrganism() {
         return m_totalOrganism;
-    }
-
-    /**
-     * Save this data
-     */
-    public void save() {
-        final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
-        ObjectOutputStream stream = null;
-        if (file.exists()) {
-            try {
-                if (!file.delete()) {
-                    Logs.warning("Enable to delete file : " + file.getName());
-                }
-            } catch (SecurityException e) {
-                Logs.warning("Enable to delete file : " + file.getName());
-                Logs.exception(e);
-            }
-        }
-        try {
-            if (!file.createNewFile()) {
-                Logs.warning("Enable to create file : " + file.getName());
-            }
-            stream = new ObjectOutputStream(new FileOutputStream(file));
-            stream.writeObject(this);
-            stream.flush();
-        } catch (IOException | SecurityException e) {
-            Logs.warning("Unable to save : " + getSavedName());
-            Logs.exception(e);
-        } finally {
-            if (stream != null) {
-                try {
-                    stream.close();
-                } catch (IOException e) {
-                    Logs.warning("Unable to close : " + getSavedName());
-                    Logs.exception(e);
-                }
-            }
-        }
-    }
-
-    /**
-     * Finish
-     *
-     * @throws InvalidStateException if it can't be finished
-     */
-    protected synchronized void finish() throws InvalidStateException {
-        if (m_state == State.CREATED || m_state == State.STARTED)
-            throw new InvalidStateException("Not stopped : " + this.getName());
-        if (m_state == State.FINISHED)
-            throw new InvalidStateException("Already finished : " + this.getName());
-        m_state = State.FINISHED;
     }
 
     /**
@@ -405,6 +326,85 @@ public class IDataBase implements Serializable {
      */
     final void setTotalOrganismToOne() {
         m_totalOrganism = 1L;
+    }
+
+    /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    public void start() throws InvalidStateException {
+        if (m_state == State.STARTED)
+            throw new InvalidStateException("Already started : " + this.getName());
+        if (m_state == State.STOPPED || m_state == State.FINISHED)
+            throw new InvalidStateException("Can't restart : " + this.getName());
+        m_state = State.STARTED;
+    }
+
+    /**
+     * Stop
+     *
+     * @throws InvalidStateException if it can't be stopped
+     */
+    public synchronized void stop() throws InvalidStateException {
+        if (m_state == State.CREATED)
+            throw new InvalidStateException("Not started : " + this.getName());
+        if (m_state == State.STOPPED)
+            throw new InvalidStateException("Already stopped : " + this.getName());
+        if (m_state == State.FINISHED)
+            throw new InvalidStateException("Already finished : " + this.getName());
+        m_state = State.STOPPED;
+    }
+
+    /**
+     * Save this data
+     */
+    public void save() {
+        final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
+        ObjectOutputStream stream = null;
+        if (file.exists()) {
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
+                Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
+            }
+        }
+        try {
+            if (!file.createNewFile()) {
+                Logs.warning("Enable to create file : " + file.getName());
+            }
+            stream = new ObjectOutputStream(new FileOutputStream(file));
+            stream.writeObject(this);
+            stream.flush();
+        } catch (IOException | SecurityException e) {
+            Logs.warning("Unable to save : " + getSavedName());
+            Logs.exception(e);
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    Logs.warning("Unable to close : " + getSavedName());
+                    Logs.exception(e);
+                }
+            }
+        }
+    }
+
+    /**
+     * Finish
+     *
+     * @throws InvalidStateException if it can't be finished
+     */
+    protected synchronized void finish() throws InvalidStateException {
+        if (m_state == State.CREATED || m_state == State.STARTED)
+            throw new InvalidStateException("Not stopped : " + this.getName());
+        if (m_state == State.FINISHED)
+            throw new InvalidStateException("Already finished : " + this.getName());
+        m_state = State.FINISHED;
     }
 
     /**

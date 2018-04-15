@@ -13,6 +13,37 @@ import java.io.IOException;
 final class GENOME {
 
     /**
+     * Main
+     *
+     * @param args args
+     */
+    public static void main(String[] args) {
+        if (lock()) {
+            try {
+                Logs.setListener((_message, _type) -> MainFrame.getSingleton().updateLog(_message, _type));
+                MainFrame.getSingleton().addStartListener(Activity::genbank);
+                MainFrame.getSingleton().addStopListener(Activity::stop);
+                MainFrame.getSingleton().addPauseListener(Activity::pause);
+                MainFrame.getSingleton().addResumeListener(Activity::resume);
+                MainFrame.getSingleton().addTreeListener(_info -> {
+                    IDataBase organism = IDataBase.load(_info);
+                    if (organism != null) {
+                        MainFrame.getSingleton().updateInformation(JDataBase.createComponent(organism));
+                    } else {
+                        MainFrame.getSingleton().updateInformation(new JTextArea());
+                    }
+                });
+                initializeProgram();
+                Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
+            } catch (Throwable e) {
+                Logs.exception(e);
+            }
+        } else {
+            new WarningFrame();
+        }
+    }
+
+    /**
      * Function call at the begin of the program
      */
     private static void initializeProgram() {
@@ -65,37 +96,6 @@ final class GENOME {
                 Logs.warning("Enable to delete mutex file : " + Options.getMutexFileName());
                 Logs.exception(e);
             }
-        }
-    }
-
-    /**
-     * Main
-     *
-     * @param args args
-     */
-    public static void main(String[] args) {
-        if (lock()) {
-            try {
-                Logs.setListener((_message, _type) -> MainFrame.getSingleton().updateLog(_message, _type));
-                MainFrame.getSingleton().addStartListener(Activity::genbank);
-                MainFrame.getSingleton().addStopListener(Activity::stop);
-                MainFrame.getSingleton().addPauseListener(Activity::pause);
-                MainFrame.getSingleton().addResumeListener(Activity::resume);
-                MainFrame.getSingleton().addTreeListener(_info -> {
-                    IDataBase organism = IDataBase.load(_info);
-                    if (organism != null) {
-                        MainFrame.getSingleton().updateInformation(JDataBase.createComponent(organism));
-                    } else {
-                        MainFrame.getSingleton().updateInformation(new JTextArea());
-                    }
-                });
-                initializeProgram();
-                Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
-            } catch (Throwable e) {
-                Logs.exception(e);
-            }
-        } else {
-            new WarningFrame();
         }
     }
 

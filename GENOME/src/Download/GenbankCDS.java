@@ -36,27 +36,6 @@ public final class GenbankCDS extends IDownloader {
     }
 
     /**
-     * Get the url to download the next chunk of database
-     *
-     * @return A JAVA URL instance for the next chunk of data
-     * @throws MalformedURLException On malformed Url
-     */
-    private URL getURL() throws MalformedURLException {
-        final String urlStr = String.format("%s?%s&id=%s", Options.getCDSBaseUrl(), s_REQUEST, m_refseqId);
-
-        final URL res;
-        try {
-            res = new URL(urlStr);
-        } catch (MalformedURLException e) {
-            Logs.warning("Unable to create an url : " + urlStr);
-            Logs.exception(e);
-            throw e;
-        }
-
-        return res;
-    }
-
-    /**
      * Downloads refseq file from genbank
      *
      * @throws IOException          if an IOException is throw
@@ -93,6 +72,27 @@ public final class GenbankCDS extends IDownloader {
      */
     public StringBuilder getRefseqData() {
         return m_data;
+    }
+
+    /**
+     * Get the url to download the next chunk of database
+     *
+     * @return A JAVA URL instance for the next chunk of data
+     * @throws MalformedURLException On malformed Url
+     */
+    private URL getURL() throws MalformedURLException {
+        final String urlStr = String.format("%s?%s&id=%s", Options.getCDSBaseUrl(), s_REQUEST, m_refseqId);
+
+        final URL res;
+        try {
+            res = new URL(urlStr);
+        } catch (MalformedURLException e) {
+            Logs.warning("Unable to create an url : " + urlStr);
+            Logs.exception(e);
+            throw e;
+        }
+
+        return res;
     }
 
 }

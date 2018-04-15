@@ -114,6 +114,18 @@ public final class Organism extends IDataBase {
     }
 
     /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if (m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a SubGroup : " + getName());
+        super.start();
+    }
+
+    /**
      * Add a Replicon to this Organism
      *
      * @param _replicon, the Replicon to insert
@@ -208,27 +220,6 @@ public final class Organism extends IDataBase {
     }
 
     /**
-     * Set the parent
-     *
-     * @param _subGroup, the parent to set
-     */
-    void setParent(SubGroup _subGroup) {
-        m_parent = _subGroup;
-    }
-
-    /**
-     * Start
-     *
-     * @throws InvalidStateException if it can't be started
-     */
-    @Override
-    public final void start() throws InvalidStateException {
-        if (m_parent == null)
-            throw new InvalidStateException("Unable to start without been add in a SubGroup : " + getName());
-        super.start();
-    }
-
-    /**
      * Save this organism
      */
     @Override
@@ -270,6 +261,15 @@ public final class Organism extends IDataBase {
     @Override
     public String getSavedName() {
         return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
+    }
+
+    /**
+     * Set the parent
+     *
+     * @param _subGroup, the parent to set
+     */
+    void setParent(SubGroup _subGroup) {
+        m_parent = _subGroup;
     }
 
 }

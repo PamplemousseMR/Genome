@@ -75,6 +75,18 @@ public final class SubGroup extends IDataBase {
     }
 
     /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if (m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a Group : " + getName());
+        super.start();
+    }
+
+    /**
      * In case of all Organism are already finished
      *
      * @throws InvalidStateException if it can't be sopped
@@ -115,27 +127,6 @@ public final class SubGroup extends IDataBase {
     }
 
     /**
-     * Set the parent
-     *
-     * @param _group, the parent to set
-     */
-    void setParent(Group _group) {
-        m_parent = _group;
-    }
-
-    /**
-     * Start
-     *
-     * @throws InvalidStateException if it can't be started
-     */
-    @Override
-    public final void start() throws InvalidStateException {
-        if (m_parent == null)
-            throw new InvalidStateException("Unable to start without been add in a Group : " + getName());
-        super.start();
-    }
-
-    /**
      * Get the main part of the save path_name
      *
      * @return the main part of the save path_name
@@ -143,6 +134,15 @@ public final class SubGroup extends IDataBase {
     @Override
     public String getSavedName() {
         return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
+    }
+
+    /**
+     * Set the parent
+     *
+     * @param _group, the parent to set
+     */
+    void setParent(Group _group) {
+        m_parent = _group;
     }
 
     /**

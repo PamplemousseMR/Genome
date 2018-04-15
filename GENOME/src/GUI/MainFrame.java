@@ -183,6 +183,48 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         return new Point((int) (view_location.getX() + cursor.getX()), (int) (view_location.getY() + cursor.getY()));
     }
 
+    @Override
+    public final void mouseDragged(MouseEvent e) {
+        moveOrFullResizeFrame(e);
+    }
+
+    @Override
+    public final void mouseMoved(MouseEvent e) {
+        final Point cursorLocation = e.getPoint();
+        final int xPos = cursorLocation.x;
+        final int yPos = cursorLocation.y;
+
+        if (xPos >= s_CURSOR_AREA && xPos <= getWidth() - s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos >= s_CURSOR_AREA && yPos <= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+        else if (xPos <= s_CURSOR_AREA && yPos >= s_CURSOR_AREA && yPos <= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+        else if (xPos >= s_CURSOR_AREA && xPos <= getWidth() - s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+        else if (xPos <= s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+        else if (xPos <= s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+        else
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
+
+    @Override
+    public final void mouseClicked(MouseEvent e) {
+        final Object sourceObject = e.getSource();
+        if (sourceObject instanceof JPanel) {
+            if (e.getClickCount() == 2) {
+                if (getCursor().equals(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)))
+                    doubleClicktoFullScreen();
+            }
+        }
+    }
+
     /**
      * Update JTree
      *
@@ -271,6 +313,27 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      */
     public void addResumeListener(ActivityPanel.ActivityListener _activityListener) {
         SwingUtilities.invokeLater(() -> m_activityPanel.addResumeListener(_activityListener));
+    }
+
+    /**
+     * Drag and drop the Frame
+     */
+    @Override
+    public void mousePressed(MouseEvent e) {
+        m_start_drag = getScreenLocation(e, this);
+        m_start_loc = getLocation();
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
     }
 
     /**
@@ -573,69 +636,6 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      */
     private void doubleClicktoFullScreen() {
         setExtendedState(JFrame.MAXIMIZED_BOTH);
-    }
-
-    @Override
-    public final void mouseDragged(MouseEvent e) {
-        moveOrFullResizeFrame(e);
-    }
-
-    @Override
-    public final void mouseMoved(MouseEvent e) {
-        final Point cursorLocation = e.getPoint();
-        final int xPos = cursorLocation.x;
-        final int yPos = cursorLocation.y;
-
-        if (xPos >= s_CURSOR_AREA && xPos <= getWidth() - s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
-            setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
-        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos >= s_CURSOR_AREA && yPos <= getHeight() - s_CURSOR_AREA)
-            setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
-        else if (xPos <= s_CURSOR_AREA && yPos >= s_CURSOR_AREA && yPos <= getHeight() - s_CURSOR_AREA)
-            setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
-        else if (xPos >= s_CURSOR_AREA && xPos <= getWidth() - s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
-            setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
-        else if (xPos <= s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
-            setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
-        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
-            setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
-        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
-            setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
-        else if (xPos <= s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
-            setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
-        else
-            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
-    }
-
-    @Override
-    public final void mouseClicked(MouseEvent e) {
-        final Object sourceObject = e.getSource();
-        if (sourceObject instanceof JPanel) {
-            if (e.getClickCount() == 2) {
-                if (getCursor().equals(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)))
-                    doubleClicktoFullScreen();
-            }
-        }
-    }
-
-    /**
-     * Drag and drop the Frame
-     */
-    @Override
-    public void mousePressed(MouseEvent e) {
-        m_start_drag = getScreenLocation(e, this);
-        m_start_loc = getLocation();
-    }
-
-    @Override
-    public void mouseEntered(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseExited(MouseEvent e) {
-    }
-
-    @Override
-    public void mouseReleased(MouseEvent e) {
     }
 
 }

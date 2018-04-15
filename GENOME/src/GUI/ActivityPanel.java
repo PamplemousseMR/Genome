@@ -44,42 +44,6 @@ public final class ActivityPanel extends JPanel {
     }
 
     /**
-     * Create the components of the activity panel
-     */
-    private void createComponent() {
-        m_container = new JPanel();
-        m_start = new ButtonComponent("Ressources/play.png");
-        m_pause = new ButtonComponent("Ressources/pause.png");
-        m_resume = new ButtonComponent("Ressources/resume.png");
-        m_stop = new ButtonComponent("Ressources/stop.png");
-    }
-
-    /**
-     * Initialize the layout of the activity panel
-     */
-    private void initLayout() {
-        this.setLayout(new BorderLayout());
-        m_container.setLayout(new GridLayout(1, 2));
-    }
-
-    /**
-     * Add the components into the activity panel
-     */
-    private void addComponents() {
-        m_container.add(m_start);
-        m_container.add(m_stop);
-        super.add(m_container);
-    }
-
-    /**
-     * Make the Panel pretty
-     */
-    private void swagComponent() {
-        super.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
-        m_container.setBackground(s_BLUEGRAY);
-    }
-
-    /**
      * Add start action
      *
      * @param _activityListener the start action
@@ -145,6 +109,42 @@ public final class ActivityPanel extends JPanel {
                 m_pause.resetColor();
             }
         });
+    }
+
+    /**
+     * Create the components of the activity panel
+     */
+    private void createComponent() {
+        m_container = new JPanel();
+        m_start = new ButtonComponent("Ressources/play.png");
+        m_pause = new ButtonComponent("Ressources/pause.png");
+        m_resume = new ButtonComponent("Ressources/resume.png");
+        m_stop = new ButtonComponent("Ressources/stop.png");
+    }
+
+    /**
+     * Initialize the layout of the activity panel
+     */
+    private void initLayout() {
+        this.setLayout(new BorderLayout());
+        m_container.setLayout(new GridLayout(1, 2));
+    }
+
+    /**
+     * Add the components into the activity panel
+     */
+    private void addComponents() {
+        m_container.add(m_start);
+        m_container.add(m_stop);
+        super.add(m_container);
+    }
+
+    /**
+     * Make the Panel pretty
+     */
+    private void swagComponent() {
+        super.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        m_container.setBackground(s_BLUEGRAY);
     }
 
     /**

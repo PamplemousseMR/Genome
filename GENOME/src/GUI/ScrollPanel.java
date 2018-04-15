@@ -19,15 +19,6 @@ final class ScrollPanel extends JScrollPane {
         super(_component, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_AS_NEEDED);
         super.getVerticalScrollBar().setUI(new BasicScrollBarUI() {
 
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                Dimension zeroDim = new Dimension(0, 0);
-                button.setPreferredSize(zeroDim);
-                button.setMinimumSize(zeroDim);
-                button.setMaximumSize(zeroDim);
-                return button;
-            }
-
             @Override
             protected JButton createDecreaseButton(int orientation) {
                 return createZeroButton();
@@ -52,19 +43,19 @@ final class ScrollPanel extends JScrollPane {
                 g2.setPaint(s_LIGHTGRAY);
                 g2.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 g2.dispose();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                Dimension zeroDim = new Dimension(0, 0);
+                button.setPreferredSize(zeroDim);
+                button.setMinimumSize(zeroDim);
+                button.setMaximumSize(zeroDim);
+                return button;
             }
         });
         super.getHorizontalScrollBar().setUI(new BasicScrollBarUI() {
 
-            private JButton createZeroButton() {
-                JButton button = new JButton();
-                Dimension zeroDim = new Dimension(0, 0);
-                button.setPreferredSize(zeroDim);
-                button.setMinimumSize(zeroDim);
-                button.setMaximumSize(zeroDim);
-                return button;
-            }
-
             @Override
             protected JButton createDecreaseButton(int orientation) {
                 return createZeroButton();
@@ -89,6 +80,15 @@ final class ScrollPanel extends JScrollPane {
                 g2.setPaint(s_LIGHTGRAY);
                 g2.fillRect(rectangle.x, rectangle.y, rectangle.width, rectangle.height);
                 g2.dispose();
+            }
+
+            private JButton createZeroButton() {
+                JButton button = new JButton();
+                Dimension zeroDim = new Dimension(0, 0);
+                button.setPreferredSize(zeroDim);
+                button.setMinimumSize(zeroDim);
+                button.setMaximumSize(zeroDim);
+                return button;
             }
         });
         super.getHorizontalScrollBar().setPreferredSize(new Dimension(Integer.MAX_VALUE, 10));
