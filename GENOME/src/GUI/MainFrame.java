@@ -110,17 +110,9 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      */
     private JSplitPane m_mainContainer;
     /**
-     * Last SplitPane position
-     */
-    private double m_lastMainPosition;
-    /**
      * Splipanel between the InformationPanel and the LogsPanel
      */
     private JSplitPane m_rightContainer;
-    /**
-     * Last SplitPane position
-     */
-    private double m_lastRightPosition;
     /**
      * The main panel of left side of the jsplitpane
      */
@@ -158,8 +150,6 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         m_initialLocation = s_INITIAL_LOCATION;
         m_minWidth = (int) s_INITIAL_DIMENSION.getWidth();
         m_minHeight = (int) s_INITIAL_DIMENSION.getHeight();
-        m_lastMainPosition = .3d;
-        m_lastRightPosition = .5d;
         initFrame();
         initComponents();
         initLayout();

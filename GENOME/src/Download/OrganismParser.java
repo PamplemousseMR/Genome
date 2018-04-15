@@ -190,7 +190,7 @@ public final class OrganismParser {
     /**
      * Parse the JSonObject to get all data
      *
-     * @throws JSONException
+     * @throws JSONException if it's impossible to parse data
      */
     private void parse() throws JSONException {
         try {

@@ -60,6 +60,8 @@ public class IDataBase implements Serializable {
 
     /**
      * Class constructor
+     *
+     * @param _name the name
      */
     protected IDataBase(String _name) {
         m_name = _name;
@@ -76,8 +78,10 @@ public class IDataBase implements Serializable {
     }
 
     /**
-     * @param _name
-     * @param _data
+     * C
+     *
+     * @param _name the name
+     * @param _data previous data
      */
     IDataBase(String _name, IDataBase _data) {
         m_name = _name;
