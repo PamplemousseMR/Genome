@@ -53,11 +53,11 @@ class JDataBase {
                 triPanel.add(swagComponent(new JLabel(tri.toString())));
                 Tuple row = ent.getValue().getTriTable()[tri.ordinal()];
                 triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE0)))));
-                triPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ0)))));
+                triPanel.add(swagComponent(new JLabel(String.format("%.2f", row.get(Statistics.StatFloat.FREQ0) * 100) + "%")));
                 triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE1)))));
-                triPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ1)))));
+                triPanel.add(swagComponent(new JLabel(String.format("%.2f", row.get(Statistics.StatFloat.FREQ1) * 100) + "%")));
                 triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE2)))));
-                triPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ2)))));
+                triPanel.add(swagComponent(new JLabel(String.format("%.2f", row.get(Statistics.StatFloat.FREQ2) * 100) + "%")));
                 triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF0)))));
                 triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF1)))));
                 triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF2)))));
@@ -76,11 +76,11 @@ class JDataBase {
             diPanel.add(swagComponent(new JLabel(Statistics.StatLong.PREF1.toString())));
             for (Statistics.Dinucleotide di : Statistics.Dinucleotide.values()) {
                 diPanel.add(swagComponent(new JLabel(di.toString())));
-                Tuple row = ent.getValue().getTriTable()[di.ordinal()];
+                Tuple row = ent.getValue().getDiTable()[di.ordinal()];
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE0)))));
-                diPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ0)))));
+                diPanel.add(swagComponent(new JLabel(String.format("%.2f", row.get(Statistics.StatFloat.FREQ0) * 100) + "%")));
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PHASE1)))));
-                diPanel.add(swagComponent(new JLabel(String.format("%.5f", row.get(Statistics.StatFloat.FREQ1)))));
+                diPanel.add(swagComponent(new JLabel(String.format("%.2f", row.get(Statistics.StatFloat.FREQ1) * 100) + "%")));
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF0)))));
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF1)))));
             }
