@@ -34,12 +34,12 @@ class IDownloaderTest {
 
     static class TestIDownloader extends IDownloader {
         @Override
-        public BufferedReader get(URL _url) throws IOException, HTTPException {
+        protected BufferedReader get(URL _url) throws IOException, HTTPException {
             return super.get(_url);
         }
 
         @Override
-        public void disconnect() {
+        protected void disconnect() {
             super.disconnect();
         }
     }

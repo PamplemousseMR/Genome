@@ -85,13 +85,6 @@ public class JSONArray implements Iterable<Object> {
     private final ArrayList<Object> myArrayList;
 
     /**
-     * Construct an empty JSONArray.
-     */
-    public JSONArray() {
-        this.myArrayList = new ArrayList<>();
-    }
-
-    /**
      * Construct a JSONArray from a JSONTokener.
      *
      * @param x A JSONTokener
@@ -177,6 +170,13 @@ public class JSONArray implements Iterable<Object> {
         }
     }
 
+    /**
+     * Construct an empty JSONArray.
+     */
+    private JSONArray() {
+        this.myArrayList = new ArrayList<>();
+    }
+
     @Override
     public Iterator<Object> iterator() {
         return this.myArrayList.iterator();
@@ -189,17 +189,6 @@ public class JSONArray implements Iterable<Object> {
      */
     public int length() {
         return this.myArrayList.size();
-    }
-
-    /**
-     * Append an object value. This increases the array's length by one.
-     *
-     * @param value An object value. The value should be a Boolean, Double,
-     *              Integer, JSONArray, JSONObject, Long, or String, or the
-     *              JSONObject.NULL object.
-     */
-    public void put(Object value) {
-        this.myArrayList.add(value);
     }
 
     /**
@@ -259,39 +248,6 @@ public class JSONArray implements Iterable<Object> {
             return this.toString(0);
         } catch (Exception e) {
             return null;
-        }
-    }
-
-    /**
-     * Make a pretty-printed JSON text of this JSONArray.
-     * <p>
-     * <p>If <code>indentFactor > 0</code> and the {@link JSONArray} has only
-     * one element, then the array will be output on a single line:
-     * <pre>{@code [1]}</pre>
-     *
-     * <p>If an array has 2 or more elements, then it will be output across
-     * multiple lines: <pre>{@code
-     * [
-     * 1,
-     * "value 2",
-     * 3
-     * ]
-     * }</pre>
-     * <p><b>
-     * Warning: This method assumes that the data structure is acyclical.
-     * </b>
-     *
-     * @param indentFactor The number of spaces to add to each level of indentation.
-     * @return a printable, displayable, transmittable representation of the
-     * object, beginning with <code>[</code>&nbsp;<small>(left
-     * bracket)</small> and ending with <code>]</code>
-     * &nbsp;<small>(right bracket)</small>.
-     * @throws JSONException an exception
-     */
-    public String toString(int indentFactor) throws JSONException {
-        StringWriter sw = new StringWriter();
-        synchronized (sw.getBuffer()) {
-            return this.write(sw, indentFactor, 0).toString();
         }
     }
 
@@ -388,5 +344,49 @@ public class JSONArray implements Iterable<Object> {
             }
         }
         return results;
+    }
+
+    /**
+     * Append an object value. This increases the array's length by one.
+     *
+     * @param value An object value. The value should be a Boolean, Double,
+     *              Integer, JSONArray, JSONObject, Long, or String, or the
+     *              JSONObject.NULL object.
+     */
+    private void put(Object value) {
+        this.myArrayList.add(value);
+    }
+
+    /**
+     * Make a pretty-printed JSON text of this JSONArray.
+     * <p>
+     * <p>If <code>indentFactor > 0</code> and the {@link JSONArray} has only
+     * one element, then the array will be output on a single line:
+     * <pre>{@code [1]}</pre>
+     *
+     * <p>If an array has 2 or more elements, then it will be output across
+     * multiple lines: <pre>{@code
+     * [
+     * 1,
+     * "value 2",
+     * 3
+     * ]
+     * }</pre>
+     * <p><b>
+     * Warning: This method assumes that the data structure is acyclical.
+     * </b>
+     *
+     * @param indentFactor The number of spaces to add to each level of indentation.
+     * @return a printable, displayable, transmittable representation of the
+     * object, beginning with <code>[</code>&nbsp;<small>(left
+     * bracket)</small> and ending with <code>]</code>
+     * &nbsp;<small>(right bracket)</small>.
+     * @throws JSONException an exception
+     */
+    private String toString(int indentFactor) throws JSONException {
+        StringWriter sw = new StringWriter();
+        synchronized (sw.getBuffer()) {
+            return this.write(sw, indentFactor, 0).toString();
+        }
     }
 }

@@ -20,7 +20,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-public class Activity {
+class Activity {
 
     private static final Lock m_lock = new ReentrantLock();
     private static final Condition m_cond = m_lock.newCondition();
@@ -30,54 +30,6 @@ public class Activity {
     private static Boolean s_run = false;
     private static Thread s_activityThread = null;
     private static boolean s_wait = false;
-
-    private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent) throws InvalidStateException, AddException {
-        _currentKingdom.stop();
-        _currentKingdom = Kingdom.load(_newKingdom, _parent, _kingdom -> {
-            try {
-                ExcelWriter.writeKingdom(_kingdom);
-                _kingdom.save();
-                MainFrame.getSingleton().updateTree(_kingdom.getSavedName() + Options.getSerializeExtension());
-            } catch (IOException e) {
-                Logs.warning("Unable to write excel kingdom file : " + _kingdom.getName());
-                Logs.exception(e);
-            }
-        });
-        _currentKingdom.start();
-        return _currentKingdom;
-    }
-
-    private static Group switchGroup(Group _currentGroup, String _newGroup, Kingdom _parent) throws InvalidStateException, AddException {
-        _currentGroup.stop();
-        _currentGroup = Group.load(_newGroup, _parent, _group -> {
-            try {
-                ExcelWriter.writeGroup(_group);
-                _group.save();
-                MainFrame.getSingleton().updateTree(_group.getSavedName() + Options.getSerializeExtension());
-            } catch (IOException e) {
-                Logs.warning("Unable to write excel group file : " + _group.getName());
-                Logs.exception(e);
-            }
-        });
-        _currentGroup.start();
-        return _currentGroup;
-    }
-
-    private static SubGroup switchSubGroup(SubGroup _currentSubGroup, String _newSubGroup, Group _parent) throws InvalidStateException, AddException {
-        _currentSubGroup.stop();
-        _currentSubGroup = SubGroup.load(_newSubGroup, _parent, _subGroup -> {
-            try {
-                ExcelWriter.writeSubGroup(_subGroup);
-                _subGroup.save();
-                MainFrame.getSingleton().updateTree(_subGroup.getSavedName() + Options.getSerializeExtension());
-            } catch (IOException e) {
-                Logs.warning("Unable to write excel subGroup file : " + _subGroup.getName());
-                Logs.exception(e);
-            }
-        });
-        _currentSubGroup.start();
-        return _currentSubGroup;
-    }
 
     public static boolean genbank() {
         boolean run = true;
@@ -102,11 +54,13 @@ public class Activity {
             }
             MainFrame.getSingleton().updateProgresseValue(0);
             s_activityThread = new Thread(() -> {
+                Date beg = new Date();
                 final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
+                final int[] index = {0};
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
-                    MainFrame.getSingleton().updateProgresseMax(go.getTotalCount());
+                    MainFrame.getSingleton().updateProgresseMax(go.getTotalCount() + 1);
 
                     final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
                         try {
@@ -133,7 +87,6 @@ public class Activity {
                     currentSubGroup.start();
 
                     final Lock m_indexLock = new ReentrantLock();
-                    final int[] index = {0};
                     while (go.hasNext()) {
                         m_lock.lock();
                         {
@@ -240,7 +193,7 @@ public class Activity {
                                     Logs.exception(new Exception(e));
                                 } catch (Throwable e) {
                                     Logs.warning("Unknow error : " + organism.getName());
-                                    Logs.exception(new Exception(e));
+                                    Logs.exception(e);
                                 } finally {
                                     try {
                                         organism.stop();
@@ -274,12 +227,12 @@ public class Activity {
                 } finally {
                     Logs.info("Finished and wait for threads...", true);
                     threadManager.finalizeThreadManager();
-                    synchronized (s_stopLock) {
-                        s_stop = false;
-                    }
                     synchronized (s_runLock) {
                         s_run = false;
                     }
+                    MainFrame.getSingleton().updateProgresseValue(++index[0]);
+                    Date end = new Date();
+                    Logs.info("Execution time : " + getDifference(beg, end), true);
                 }
             });
             s_activityThread.start();
@@ -346,6 +299,83 @@ public class Activity {
         }
         m_lock.unlock();
         return ret;
+    }
+
+    /**
+     * Get difference between two date
+     *
+     * @param _startDate the start date
+     * @param _endDate   the and date
+     * @return the String displaying the difference
+     */
+    private static String getDifference(Date _startDate, Date _endDate) {
+        long different = _endDate.getTime() - _startDate.getTime();
+
+        long secondsInMilli = 1000;
+        long minutesInMilli = secondsInMilli * 60;
+        long hoursInMilli = minutesInMilli * 60;
+        long daysInMilli = hoursInMilli * 24;
+
+        long elapsedDays = different / daysInMilli;
+        different = different % daysInMilli;
+
+        long elapsedHours = different / hoursInMilli;
+        different = different % hoursInMilli;
+
+        long elapsedMinutes = different / minutesInMilli;
+        different = different % minutesInMilli;
+
+        long elapsedSeconds = different / secondsInMilli;
+
+        return elapsedDays + " day " + elapsedHours + " hours " + elapsedMinutes + " minutes " + elapsedSeconds + " second";
+    }
+
+    private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent) throws InvalidStateException, AddException {
+        _currentKingdom.stop();
+        _currentKingdom = Kingdom.load(_newKingdom, _parent, _kingdom -> {
+            try {
+                ExcelWriter.writeKingdom(_kingdom);
+                _kingdom.save();
+                MainFrame.getSingleton().updateTree(_kingdom.getSavedName() + Options.getSerializeExtension());
+            } catch (IOException e) {
+                Logs.warning("Unable to write excel kingdom file : " + _kingdom.getName());
+                Logs.exception(e);
+            }
+        });
+        _currentKingdom.start();
+        return _currentKingdom;
+    }
+
+    private static Group switchGroup(Group _currentGroup, String _newGroup, Kingdom _parent) throws InvalidStateException, AddException {
+        _currentGroup.stop();
+        _currentGroup = Group.load(_newGroup, _parent, _group -> {
+            try {
+                ExcelWriter.writeGroup(_group);
+                _group.save();
+                MainFrame.getSingleton().updateTree(_group.getSavedName() + Options.getSerializeExtension());
+            } catch (IOException e) {
+                Logs.warning("Unable to write excel group file : " + _group.getName());
+                Logs.exception(e);
+            }
+        });
+        _currentGroup.start();
+        return _currentGroup;
+    }
+
+    private static SubGroup switchSubGroup(SubGroup _currentSubGroup, String _newSubGroup, Group _parent) throws InvalidStateException, AddException {
+        _currentSubGroup.stop();
+        _currentSubGroup = SubGroup.load(_newSubGroup, _parent, _subGroup -> {
+            try {
+                ExcelWriter.writeSubGroup(_subGroup);
+                _subGroup.save();
+                MainFrame.getSingleton().updateTree(_subGroup.getSavedName() + Options.getSerializeExtension());
+            } catch (IOException e) {
+                Logs.warning("Unable to write excel subGroup file : " + _subGroup.getName());
+                Logs.exception(e);
+            }
+        });
+        _currentSubGroup.start();
+        return _currentSubGroup;
     }
 
 }

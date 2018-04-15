@@ -187,6 +187,11 @@ public final class OrganismParser {
         return m_version;
     }
 
+    /**
+     * Parse the JSonObject to get all data
+     *
+     * @throws JSONException if it's impossible to parse data
+     */
     private void parse() throws JSONException {
         try {
             m_id = m_object.getLong(s_ID);

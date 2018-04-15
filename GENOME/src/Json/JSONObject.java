@@ -103,19 +103,6 @@ public class JSONObject {
     private final Map<String, Object> map;
 
     /**
-     * Construct an empty JSONObject.
-     */
-    public JSONObject() {
-        // HashMap is used on purpose to ensure that elements are unordered by
-        // the specification.
-        // JSON tends to be a portable transfer format to allows the container
-        // implementations to rearrange their items for a faster element
-        // retrieval based on associative access.
-        // Therefore, an implementation mustn't rely on the order of the item.
-        this.map = new HashMap<>();
-    }
-
-    /**
      * Construct a JSONObject from a JSONTokener.
      *
      * @param x A JSONTokener object containing the source string.
@@ -183,12 +170,39 @@ public class JSONObject {
     }
 
     /**
+     * Construct a JSONObject from a source JSON text string. This is the most
+     * commonly used JSONObject constructor.
+     *
+     * @param source A string beginning with <code>{</code>&nbsp;<small>(left
+     *               brace)</small> and ending with <code>}</code>
+     *               &nbsp;<small>(right brace)</small>.
+     * @throws JSONException If there is a syntax error in the source string or a
+     *                       duplicated key.
+     */
+    public JSONObject(String source) throws JSONException {
+        this(new JSONTokener(source));
+    }
+
+    /**
+     * Construct an empty JSONObject.
+     */
+    private JSONObject() {
+        // HashMap is used on purpose to ensure that elements are unordered by
+        // the specification.
+        // JSON tends to be a portable transfer format to allows the container
+        // implementations to rearrange their items for a faster element
+        // retrieval based on associative access.
+        // Therefore, an implementation mustn't rely on the order of the item.
+        this.map = new HashMap<>();
+    }
+
+    /**
      * Construct a JSONObject from a Map.
      *
      * @param m A map object that can be used to initialize the contents of
      *          the JSONObject.
      */
-    public JSONObject(Map<?, ?> m) {
+    private JSONObject(Map<?, ?> m) {
         if (m == null) {
             this.map = new HashMap<>();
         } else {
@@ -225,142 +239,9 @@ public class JSONObject {
      * @param bean An object that has getter methods that should be used to make
      *             a JSONObject.
      */
-    public JSONObject(Object bean) {
+    private JSONObject(Object bean) {
         this();
         this.populateMap(bean);
-    }
-
-    /**
-     * Construct a JSONObject from a source JSON text string. This is the most
-     * commonly used JSONObject constructor.
-     *
-     * @param source A string beginning with <code>{</code>&nbsp;<small>(left
-     *               brace)</small> and ending with <code>}</code>
-     *               &nbsp;<small>(right brace)</small>.
-     * @throws JSONException If there is a syntax error in the source string or a
-     *                       duplicated key.
-     */
-    public JSONObject(String source) throws JSONException {
-        this(new JSONTokener(source));
-    }
-
-    /**
-     * Produce a string from a Number.
-     *
-     * @param number A Number
-     * @return A String.
-     * @throws JSONException If n is a non-finite number.
-     */
-    public static String numberToString(Number number) throws JSONException {
-        if (number == null) {
-            throw new JSONException("Null pointer");
-        }
-        testValidity(number);
-
-        // Shave off trailing zeros and decimal point, if possible.
-
-        String string = number.toString();
-        if (string.indexOf('.') > 0 && string.indexOf('e') < 0
-                && string.indexOf('E') < 0) {
-            while (string.endsWith("0")) {
-                string = string.substring(0, string.length() - 1);
-            }
-            if (string.endsWith(".")) {
-                string = string.substring(0, string.length() - 1);
-            }
-        }
-        return string;
-    }
-
-    /**
-     * Produce a string in double quotes with backslash sequences in all the
-     * right places. A backslash will be inserted within </, producing <\/,
-     * allowing JSON text to be delivered in HTML. In JSON text, a string cannot
-     * contain a control character or an unescaped quote or backslash.
-     *
-     * @param string A String
-     * @return A String correctly formatted for insertion in a JSON text.
-     */
-    public static String quote(String string) {
-        StringWriter sw = new StringWriter();
-        synchronized (sw.getBuffer()) {
-            try {
-                return quote(string, sw).toString();
-            } catch (IOException ignored) {
-                // will never happen - we are writing to a string writer
-                return "";
-            }
-        }
-    }
-
-    public static Writer quote(String string, Writer w) throws IOException {
-        if (string == null || string.length() == 0) {
-            w.write("\"\"");
-            return w;
-        }
-
-        char b;
-        char c = 0;
-        String hhhh;
-        int i;
-        int len = string.length();
-
-        w.write('"');
-        for (i = 0; i < len; i += 1) {
-            b = c;
-            c = string.charAt(i);
-            switch (c) {
-                case '\\':
-                case '"':
-                    w.write('\\');
-                    w.write(c);
-                    break;
-                case '/':
-                    if (b == '<') {
-                        w.write('\\');
-                    }
-                    w.write(c);
-                    break;
-                case '\b':
-                    w.write("\\b");
-                    break;
-                case '\t':
-                    w.write("\\t");
-                    break;
-                case '\n':
-                    w.write("\\n");
-                    break;
-                case '\f':
-                    w.write("\\f");
-                    break;
-                case '\r':
-                    w.write("\\r");
-                    break;
-                default:
-                    if (c < ' ' || (c >= '\u0080' && c < '\u00a0')
-                            || (c >= '\u2000' && c < '\u2100')) {
-                        w.write("\\u");
-                        hhhh = Integer.toHexString(c);
-                        w.write("0000", 0, 4 - hhhh.length());
-                        w.write(hhhh);
-                    } else {
-                        w.write(c);
-                    }
-            }
-        }
-        w.write('"');
-        return w;
-    }
-
-    /**
-     * Tests if the value should be tried as a decimal. It makes no test if there are actual digits.
-     *
-     * @param val value to test
-     * @return true if the string is "-0" or if it contains '.', 'e', or 'E', false otherwise.
-     */
-    protected static boolean isDecimalNotation(final String val) {
-        return val.indexOf('.') > -1 || val.indexOf('e') > -1
-                || val.indexOf('E') > -1 || "-0".equals(val);
     }
 
     /**
@@ -414,28 +295,6 @@ public class JSONObject {
             }
         }
         return string;
-    }
-
-    /**
-     * Throw an exception if the object is a NaN or infinite number.
-     *
-     * @param o The object to test.
-     * @throws JSONException If o is a non-finite number.
-     */
-    public static void testValidity(Object o) throws JSONException {
-        if (o != null) {
-            if (o instanceof Double) {
-                if (((Double) o).isInfinite() || ((Double) o).isNaN()) {
-                    throw new JSONException(
-                            "JSON does not allow non-finite numbers.");
-                }
-            } else if (o instanceof Float) {
-                if (((Float) o).isInfinite() || ((Float) o).isNaN()) {
-                    throw new JSONException(
-                            "JSON does not allow non-finite numbers.");
-                }
-            }
-        }
     }
 
     /**
@@ -544,21 +403,144 @@ public class JSONObject {
     }
 
     /**
-     * Get the value object associated with a key.
+     * Produce a string from a Number.
      *
-     * @param key A key string.
-     * @return The object associated with the key.
-     * @throws JSONException if the key is not found.
+     * @param number A Number
+     * @return A String.
+     * @throws JSONException If n is a non-finite number.
      */
-    public Object get(String key) throws JSONException {
-        if (key == null) {
-            throw new JSONException("Null key.");
+    private static String numberToString(Number number) throws JSONException {
+        if (number == null) {
+            throw new JSONException("Null pointer");
         }
-        Object object = this.opt(key);
-        if (object == null) {
-            throw new JSONException("JSONObject[" + quote(key) + "] not found.");
+        testValidity(number);
+
+        // Shave off trailing zeros and decimal point, if possible.
+
+        String string = number.toString();
+        if (string.indexOf('.') > 0 && string.indexOf('e') < 0
+                && string.indexOf('E') < 0) {
+            while (string.endsWith("0")) {
+                string = string.substring(0, string.length() - 1);
+            }
+            if (string.endsWith(".")) {
+                string = string.substring(0, string.length() - 1);
+            }
         }
-        return object;
+        return string;
+    }
+
+    /**
+     * Produce a string in double quotes with backslash sequences in all the
+     * right places. A backslash will be inserted within </, producing <\/,
+     * allowing JSON text to be delivered in HTML. In JSON text, a string cannot
+     * contain a control character or an unescaped quote or backslash.
+     *
+     * @param string A String
+     * @return A String correctly formatted for insertion in a JSON text.
+     */
+    private static String quote(String string) {
+        StringWriter sw = new StringWriter();
+        synchronized (sw.getBuffer()) {
+            try {
+                return quote(string, sw).toString();
+            } catch (IOException ignored) {
+                // will never happen - we are writing to a string writer
+                return "";
+            }
+        }
+    }
+
+    private static Writer quote(String string, Writer w) throws IOException {
+        if (string == null || string.length() == 0) {
+            w.write("\"\"");
+            return w;
+        }
+
+        char b;
+        char c = 0;
+        String hhhh;
+        int i;
+        int len = string.length();
+
+        w.write('"');
+        for (i = 0; i < len; i += 1) {
+            b = c;
+            c = string.charAt(i);
+            switch (c) {
+                case '\\':
+                case '"':
+                    w.write('\\');
+                    w.write(c);
+                    break;
+                case '/':
+                    if (b == '<') {
+                        w.write('\\');
+                    }
+                    w.write(c);
+                    break;
+                case '\b':
+                    w.write("\\b");
+                    break;
+                case '\t':
+                    w.write("\\t");
+                    break;
+                case '\n':
+                    w.write("\\n");
+                    break;
+                case '\f':
+                    w.write("\\f");
+                    break;
+                case '\r':
+                    w.write("\\r");
+                    break;
+                default:
+                    if (c < ' ' || (c >= '\u0080' && c < '\u00a0')
+                            || (c >= '\u2000' && c < '\u2100')) {
+                        w.write("\\u");
+                        hhhh = Integer.toHexString(c);
+                        w.write("0000", 0, 4 - hhhh.length());
+                        w.write(hhhh);
+                    } else {
+                        w.write(c);
+                    }
+            }
+        }
+        w.write('"');
+        return w;
+    }
+
+    /**
+     * Tests if the value should be tried as a decimal. It makes no test if there are actual digits.
+     *
+     * @param val value to test
+     * @return true if the string is "-0" or if it contains '.', 'e', or 'E', false otherwise.
+     */
+    private static boolean isDecimalNotation(final String val) {
+        return val.indexOf('.') > -1 || val.indexOf('e') > -1
+                || val.indexOf('E') > -1 || "-0".equals(val);
+    }
+
+    /**
+     * Throw an exception if the object is a NaN or infinite number.
+     *
+     * @param o The object to test.
+     * @throws JSONException If o is a non-finite number.
+     */
+    private static void testValidity(Object o) throws JSONException {
+        if (o != null) {
+            if (o instanceof Double) {
+                if (((Double) o).isInfinite() || ((Double) o).isNaN()) {
+                    throw new JSONException(
+                            "JSON does not allow non-finite numbers.");
+                }
+            } else if (o instanceof Float) {
+                if (((Float) o).isInfinite() || ((Float) o).isNaN()) {
+                    throw new JSONException(
+                            "JSON does not allow non-finite numbers.");
+                }
+            }
+        }
     }
 
     /**
@@ -657,13 +639,124 @@ public class JSONObject {
     }
 
     /**
+     * Determine if two JSONObjects are similar.
+     * They must contain the same set of names which must be associated with
+     * similar values.
+     *
+     * @param other The other JSONObject
+     * @return true if they are equal
+     */
+    public boolean similar(Object other) {
+        try {
+            if (!(other instanceof JSONObject)) {
+                return false;
+            }
+            if (!this.keySet().equals(((JSONObject) other).keySet())) {
+                return false;
+            }
+            for (final Entry<String, ?> entry : this.entrySet()) {
+                String name = entry.getKey();
+                Object valueThis = entry.getValue();
+                Object valueOther = ((JSONObject) other).get(name);
+                if (valueThis == valueOther) {
+                    continue;
+                }
+                if (valueThis == null) {
+                    return false;
+                }
+                if (valueThis instanceof JSONObject) {
+                    if (!((JSONObject) valueThis).similar(valueOther)) {
+                        return false;
+                    }
+                } else if (valueThis instanceof JSONArray) {
+                    if (!((JSONArray) valueThis).similar(valueOther)) {
+                        return false;
+                    }
+                } else if (!valueThis.equals(valueOther)) {
+                    return false;
+                }
+            }
+            return true;
+        } catch (Throwable exception) {
+            return false;
+        }
+    }
+
+    /**
+     * Make a JSON text of this JSONObject. For compactness, no whitespace is
+     * added. If this would not result in a syntactically correct JSON text,
+     * then null will be returned instead.
+     * <p><b>
+     * Warning: This method assumes that the data structure is acyclical.
+     * </b>
+     *
+     * @return a printable, displayable, portable, transmittable representation
+     * of the object, beginning with <code>{</code>&nbsp;<small>(left
+     * brace)</small> and ending with <code>}</code>&nbsp;<small>(right
+     * brace)</small>.
+     */
+    @Override
+    public String toString() {
+        try {
+            return this.toString(0);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+
+    /**
+     * Returns a java.util.Map containing all of the entries in this object.
+     * If an entry in the object is a JSONArray or JSONObject it will also
+     * be converted.
+     * <p>
+     * Warning: This method assumes that the data structure is acyclical.
+     *
+     * @return a java.util.Map containing the entries of this object
+     */
+    public Map<String, Object> toMap() {
+        Map<String, Object> results = new HashMap<>();
+        for (Entry<String, Object> entry : this.entrySet()) {
+            Object value;
+            if (entry.getValue() == null || NULL.equals(entry.getValue())) {
+                value = null;
+            } else if (entry.getValue() instanceof JSONObject) {
+                value = ((JSONObject) entry.getValue()).toMap();
+            } else if (entry.getValue() instanceof JSONArray) {
+                value = ((JSONArray) entry.getValue()).toList();
+            } else {
+                value = entry.getValue();
+            }
+            results.put(entry.getKey(), value);
+        }
+        return results;
+    }
+
+    /**
+     * Get the value object associated with a key.
+     *
+     * @param key A key string.
+     * @return The object associated with the key.
+     * @throws JSONException if the key is not found.
+     */
+    private Object get(String key) throws JSONException {
+        if (key == null) {
+            throw new JSONException("Null key.");
+        }
+        Object object = this.opt(key);
+        if (object == null) {
+            throw new JSONException("JSONObject[" + quote(key) + "] not found.");
+        }
+        return object;
+    }
+
+    /**
      * Get a set of keys of the JSONObject. Modifying this key Set will also modify the
      * JSONObject. Use with caution.
      *
      * @return A keySet.
      * @see Map#keySet()
      */
-    public Set<String> keySet() {
+    private Set<String> keySet() {
         return this.map.keySet();
     }
 
@@ -678,7 +771,7 @@ public class JSONObject {
      * @return An Entry Set
      * @see Map#entrySet()
      */
-    protected Set<Entry<String, Object>> entrySet() {
+    private Set<Entry<String, Object>> entrySet() {
         return this.map.entrySet();
     }
 
@@ -687,7 +780,7 @@ public class JSONObject {
      *
      * @return The number of keys in the JSONObject.
      */
-    public int length() {
+    private int length() {
         return this.map.size();
     }
 
@@ -697,7 +790,7 @@ public class JSONObject {
      * @param key A key string.
      * @return An object which is the value, or null if there is no value.
      */
-    public Object opt(String key) {
+    private Object opt(String key) {
         return key == null ? null : this.map.get(key);
     }
 
@@ -774,7 +867,7 @@ public class JSONObject {
      *              types: Boolean, Double, Integer, JSONArray, JSONObject, Long,
      *              String, or the JSONObject.NULL object.
      */
-    public void put(String key, Object value) throws JSONException {
+    private void put(String key, Object value) throws JSONException {
         if (key == null) {
             throw new NullPointerException("Null key.");
         }
@@ -791,74 +884,8 @@ public class JSONObject {
      *
      * @param key The name to be removed.
      */
-    public void remove(String key) {
+    private void remove(String key) {
         this.map.remove(key);
-    }
-
-    /**
-     * Determine if two JSONObjects are similar.
-     * They must contain the same set of names which must be associated with
-     * similar values.
-     *
-     * @param other The other JSONObject
-     * @return true if they are equal
-     */
-    public boolean similar(Object other) {
-        try {
-            if (!(other instanceof JSONObject)) {
-                return false;
-            }
-            if (!this.keySet().equals(((JSONObject) other).keySet())) {
-                return false;
-            }
-            for (final Entry<String, ?> entry : this.entrySet()) {
-                String name = entry.getKey();
-                Object valueThis = entry.getValue();
-                Object valueOther = ((JSONObject) other).get(name);
-                if (valueThis == valueOther) {
-                    continue;
-                }
-                if (valueThis == null) {
-                    return false;
-                }
-                if (valueThis instanceof JSONObject) {
-                    if (!((JSONObject) valueThis).similar(valueOther)) {
-                        return false;
-                    }
-                } else if (valueThis instanceof JSONArray) {
-                    if (!((JSONArray) valueThis).similar(valueOther)) {
-                        return false;
-                    }
-                } else if (!valueThis.equals(valueOther)) {
-                    return false;
-                }
-            }
-            return true;
-        } catch (Throwable exception) {
-            return false;
-        }
-    }
-
-    /**
-     * Make a JSON text of this JSONObject. For compactness, no whitespace is
-     * added. If this would not result in a syntactically correct JSON text,
-     * then null will be returned instead.
-     * <p><b>
-     * Warning: This method assumes that the data structure is acyclical.
-     * </b>
-     *
-     * @return a printable, displayable, portable, transmittable representation
-     * of the object, beginning with <code>{</code>&nbsp;<small>(left
-     * brace)</small> and ending with <code>}</code>&nbsp;<small>(right
-     * brace)</small>.
-     */
-    @Override
-    public String toString() {
-        try {
-            return this.toString(0);
-        } catch (Exception e) {
-            return null;
-        }
     }
 
     /**
@@ -885,7 +912,7 @@ public class JSONObject {
      * brace)</small>.
      * @throws JSONException If the object contains an invalid number.
      */
-    public String toString(int indentFactor) throws JSONException {
+    private String toString(int indentFactor) throws JSONException {
         StringWriter w = new StringWriter();
         synchronized (w.getBuffer()) {
             return this.write(w, indentFactor, 0).toString();
@@ -915,7 +942,7 @@ public class JSONObject {
      * @return The writer.
      * @throws JSONException an exception
      */
-    public Writer write(Writer writer, int indentFactor, int indent)
+    private Writer write(Writer writer, int indentFactor, int indent)
             throws JSONException {
         try {
             boolean commanate = false;
@@ -968,33 +995,6 @@ public class JSONObject {
         } catch (IOException exception) {
             throw new JSONException(exception);
         }
-    }
-
-    /**
-     * Returns a java.util.Map containing all of the entries in this object.
-     * If an entry in the object is a JSONArray or JSONObject it will also
-     * be converted.
-     * <p>
-     * Warning: This method assumes that the data structure is acyclical.
-     *
-     * @return a java.util.Map containing the entries of this object
-     */
-    public Map<String, Object> toMap() {
-        Map<String, Object> results = new HashMap<>();
-        for (Entry<String, Object> entry : this.entrySet()) {
-            Object value;
-            if (entry.getValue() == null || NULL.equals(entry.getValue())) {
-                value = null;
-            } else if (entry.getValue() instanceof JSONObject) {
-                value = ((JSONObject) entry.getValue()).toMap();
-            } else if (entry.getValue() instanceof JSONArray) {
-                value = ((JSONArray) entry.getValue()).toList();
-            } else {
-                value = entry.getValue();
-            }
-            results.put(entry.getKey(), value);
-        }
-        return results;
     }
 
     /**

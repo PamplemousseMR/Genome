@@ -11,7 +11,7 @@ public final class Group extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    protected static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getGroupSerializationPrefix();
+    static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getGroupSerializationPrefix();
     /**
      * Array of this Group's SubGroups
      */
@@ -75,6 +75,18 @@ public final class Group extends IDataBase {
     }
 
     /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if (m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a Kingdom : " + getName());
+        super.start();
+    }
+
+    /**
      * In case of all SubGroup are already finished
      *
      * @throws InvalidStateException if it can't be stopped
@@ -106,24 +118,22 @@ public final class Group extends IDataBase {
     }
 
     /**
+     * Get the main part of the save file name
+     *
+     * @return the main part of the save path_name
+     */
+    @Override
+    public String getSavedName() {
+        return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
+    }
+
+    /**
      * Set the parent
      *
      * @param _kingdom, the parent to set
      */
-    protected void setParent(Kingdom _kingdom) {
+    void setParent(Kingdom _kingdom) {
         m_parent = _kingdom;
-    }
-
-    /**
-     * Start
-     *
-     * @throws InvalidStateException if it can't be started
-     */
-    @Override
-    public final void start() throws InvalidStateException {
-        if (m_parent == null)
-            throw new InvalidStateException("Unable to start without been add in a Kingdom : " + getName());
-        super.start();
     }
 
     /**
@@ -132,7 +142,7 @@ public final class Group extends IDataBase {
      * @param _subGroup, the SubGroup to finish
      * @throws InvalidStateException if it can't be finished
      */
-    protected synchronized void finish(SubGroup _subGroup) throws InvalidStateException {
+    synchronized void finish(SubGroup _subGroup) throws InvalidStateException {
         if (super.contains(m_subGroups, _subGroup) && _subGroup.getState() != State.FINISHED) {
             for (Statistics stat : _subGroup.getStatistics().values()) {
                 super.updateStatistics(stat);
@@ -147,22 +157,12 @@ public final class Group extends IDataBase {
     }
 
     /**
-     * Get the main part of the save file name
-     *
-     * @return the main part of the save path_name
-     */
-    @Override
-    public String getSavedName() {
-        return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
-    }
-
-    /**
      * Add a SubGroup to this Group
      *
      * @param _subGroup, the Subgroup to insert
      * @throws AddException if _subGroup are already added
      */
-    protected void addSubGroup(SubGroup _subGroup) throws AddException {
+    void addSubGroup(SubGroup _subGroup) throws AddException {
         if (super.getState() == State.STARTED) {
             if (super.contains(m_subGroups, _subGroup))
                 throw new AddException("SubGroup already added : " + _subGroup.getName());

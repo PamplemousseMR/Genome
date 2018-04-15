@@ -11,3 +11,4 @@ options\.ini
 log\.txt
 Results
 Save
+locker.mutex

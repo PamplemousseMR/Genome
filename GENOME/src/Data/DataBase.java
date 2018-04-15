@@ -2,6 +2,7 @@ package Data;
 
 import Exception.AddException;
 import Exception.InvalidStateException;
+import Utils.Logs;
 import Utils.Options;
 
 import java.io.File;
@@ -12,7 +13,7 @@ public final class DataBase extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    protected static final String s_SERIALIZATION_PREFIX = Options.getDatabaseSerializationPrefix();
+    static final String s_SERIALIZATION_PREFIX = Options.getDatabaseSerializationPrefix();
     /**
      * Array of this Database's Kingdom
      */
@@ -57,7 +58,11 @@ public final class DataBase extends IDataBase {
      */
     public static DataBase load(String _name, IDataBaseCallback _event) {
         final File saveFolder = new File(Options.getSerializeDirectory());
-        saveFolder.mkdir();
+        if (!saveFolder.exists()) {
+            if (!saveFolder.mkdir()) {
+                Logs.warning("Enable to create folder : " + saveFolder.getName());
+            }
+        }
         final IDataBase result = IDataBase.load(s_SERIALIZATION_PREFIX + _name);
 
         if (result == null) {
@@ -105,7 +110,7 @@ public final class DataBase extends IDataBase {
      * @param _kingdom, the Kingdom to finish
      * @throws InvalidStateException if it can't be finished
      */
-    protected synchronized void finish(Kingdom _kingdom) throws InvalidStateException {
+    synchronized void finish(Kingdom _kingdom) throws InvalidStateException {
         if (super.contains(m_kingdoms, _kingdom) && _kingdom.getState() != State.FINISHED) {
             for (Statistics stat : _kingdom.getStatistics().values()) {
                 super.updateStatistics(stat);
@@ -125,7 +130,7 @@ public final class DataBase extends IDataBase {
      * @param _kingdom, the Kingdom to insert
      * @throws AddException if _kingdom are already added
      */
-    protected void addKingdom(Kingdom _kingdom) throws AddException {
+    void addKingdom(Kingdom _kingdom) throws AddException {
         if (super.getState() == State.STARTED) {
             if (super.contains(m_kingdoms, _kingdom))
                 throw new AddException("Kingdom already added : " + _kingdom.getName());

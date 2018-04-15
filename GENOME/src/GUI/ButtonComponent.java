@@ -9,9 +9,14 @@ import java.awt.event.MouseEvent;
 
 import static GUI.Constant.*;
 
-public final class ButtonComponent extends JButton {
+final class ButtonComponent extends JButton {
 
-    protected ButtonComponent(String _path) {
+    /**
+     * Class constructor
+     *
+     * @param _path, the icon path
+     */
+    ButtonComponent(String _path) {
         super.setMargin(s_INSETS);
         super.setBackground(s_BLUEGRAY);
         super.setForeground(s_WHITE);
@@ -46,6 +51,13 @@ public final class ButtonComponent extends JButton {
         } catch (Exception e) {
             Logs.exception(e);
         }
+    }
+
+    /**
+     * Reset the color of the button
+     */
+    void resetColor() {
+        setBackground(s_BLUEGRAY);
     }
 
 }

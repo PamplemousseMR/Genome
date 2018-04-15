@@ -73,6 +73,59 @@ public final class GenbankOrganisms extends IDownloader {
     }
 
     /**
+     * Download all organism
+     *
+     * @throws MissException if the total's number of organism can't be downloaded
+     */
+    public void downloadOrganisms() throws MissException {
+        while (!downloadCompleted()) {
+            try {
+                downloadNextChunk();
+            } catch (MissException e) {
+                Logs.exception(e);
+                throw e;
+            }
+        }
+        disconnect();
+    }
+
+    /**
+     * Returns the number of failed organism
+     *
+     * @return The number of failed chunk
+     */
+    public int getFailedOrganism() {
+        return m_failedOrganism;
+    }
+
+    /**
+     * Retrieve the total number of organisms
+     *
+     * @return Total count
+     */
+    public int getTotalCount() {
+        return m_enqueued;
+    }
+
+    /**
+     * Returns true if there is more data
+     *
+     * @return True if their is more data to be processed
+     */
+    public boolean hasNext() {
+        return m_dataQueue.size() > 0;
+    }
+
+    /**
+     * Get next m_downloaded organism
+     *
+     * @return Data retrieved from Genbank
+     */
+    public OrganismParser getNext() {
+        return m_dataQueue.removeFirst();
+    }
+
+    /**
      * Get the url to download the next chunk of database
      *
      * @param _index the index to begin
@@ -132,7 +185,7 @@ public final class GenbankOrganisms extends IDownloader {
                 m_downloaded += Options.getDownloadStep();
                 m_failedOrganism += Options.getDownloadStep();
             }
-            Logs.exception(new Exception(e));
+            Logs.exception(e);
             return;
         }
 
@@ -262,65 +315,12 @@ public final class GenbankOrganisms extends IDownloader {
     }
 
     /**
-     * Download all organism
-     *
-     * @throws MissException if the total's number of organism can't be downloaded
-     */
-    public void downloadOrganisms() throws MissException {
-        while (!downloadCompleted()) {
-            try {
-                downloadNextChunk();
-            } catch (MissException e) {
-                Logs.exception(e);
-                throw e;
-            }
-        }
-        disconnect();
-    }
-
-    /**
-     * Returns the number of failed organism
-     *
-     * @return The number of failed chunk
-     */
-    public int getFailedOrganism() {
-        return m_failedOrganism;
-    }
-
-    /**
-     * Retrieve the total number of organisms
-     *
-     * @return Total count
-     */
-    public int getTotalCount() {
-        return m_enqueued;
-    }
-
-    /**
      * Add an organism to the queue
      *
      * @param _organism Organism data to enqueue
      */
     private void enqueueOrganism(OrganismParser _organism) {
         m_dataQueue.add(_organism);
-    }
-
-    /**
-     * Returns true if there is more data
-     *
-     * @return True if their is more data to be processed
-     */
-    public boolean hasNext() {
-        return m_dataQueue.size() > 0;
-    }
-
-    /**
-     * Get next m_downloaded organism
-     *
-     * @return Data retrieved from Genbank
-     */
-    public OrganismParser getNext() {
-        return m_dataQueue.removeFirst();
     }
 
 }

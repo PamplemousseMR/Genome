@@ -26,34 +26,13 @@ public final class GenbankCDS extends IDownloader {
     private final StringBuilder m_data;
 
     /**
-     * Constructor
+     * Class constructor
      *
      * @param _refseqId the id of the CDS
      */
     public GenbankCDS(String _refseqId) {
         m_refseqId = _refseqId;
         m_data = new StringBuilder();
-    }
-
-    /**
-     * Get the url to download the next chunk of database
-     *
-     * @return A JAVA URL instance for the next chunk of data
-     * @throws MalformedURLException On malformed Url
-     */
-    private URL getURL() throws MalformedURLException {
-        final String urlStr = String.format("%s?%s&id=%s", Options.getCDSBaseUrl(), s_REQUEST, m_refseqId);
-
-        final URL res;
-        try {
-            res = new URL(urlStr);
-        } catch (MalformedURLException e) {
-            Logs.warning("Unable to create an url : " + urlStr);
-            Logs.exception(e);
-            throw e;
-        }
-
-        return res;
     }
 
     /**
@@ -93,6 +72,27 @@ public final class GenbankCDS extends IDownloader {
      */
     public StringBuilder getRefseqData() {
         return m_data;
+    }
+
+    /**
+     * Get the url to download the next chunk of database
+     *
+     * @return A JAVA URL instance for the next chunk of data
+     * @throws MalformedURLException On malformed Url
+     */
+    private URL getURL() throws MalformedURLException {
+        final String urlStr = String.format("%s?%s&id=%s", Options.getCDSBaseUrl(), s_REQUEST, m_refseqId);
+
+        final URL res;
+        try {
+            res = new URL(urlStr);
+        } catch (MalformedURLException e) {
+            Logs.warning("Unable to create an url : " + urlStr);
+            Logs.exception(e);
+            throw e;
+        }
+
+        return res;
     }
 
 }

@@ -19,7 +19,7 @@ public final class TreePanel extends IPanel {
 
     private DefaultTreeModel m_treeModel;
     private JTree m_tree;
-    private ScrollComponent m_scrollPane;
+    private ScrollPanel m_scrollPane;
     private JPanel m_legend;
 
     private JPanel m_orangeContainer;
@@ -36,7 +36,7 @@ public final class TreePanel extends IPanel {
 
     private JPanel m_container;
 
-    protected TreePanel() {
+    TreePanel() {
         super(s_TITLE);
     }
 
@@ -57,7 +57,9 @@ public final class TreePanel extends IPanel {
         m_greenLabel = new JLabel("terminé");
 
         m_tree = new JTree();
-        m_scrollPane = new ScrollComponent(m_tree);
+        m_scrollPane = new ScrollPanel(m_tree);
+
+        new SmartScrollComponent(m_scrollPane);
     }
 
     protected void initLayout() {
@@ -156,13 +158,11 @@ public final class TreePanel extends IPanel {
         m_legend.setMinimumSize(new Dimension(250, 30));
     }
 
-    protected void addTreeListener(TreeListener _treeListener) {
-        m_tree.addTreeSelectionListener(e -> {
-            _treeListener.treeEvent(getFileName(e.getPath()));
-        });
+    void addTreeListener(TreeListener _treeListener) {
+        m_tree.addTreeSelectionListener(e -> _treeListener.treeEvent(getFileName(e.getPath())));
     }
 
-    protected synchronized void update(String _path) {
+    synchronized void update(String _path) {
         String table[] = _path.split(Options.getSerializationSpliter());
         String temp;
         DefaultMutableTreeNode actual = (DefaultMutableTreeNode) m_treeModel.getRoot(), progressing;
@@ -309,6 +309,9 @@ public final class TreePanel extends IPanel {
                 actual.add(progressing);
                 m_treeModel.insertNodeInto(progressing, actual, actual.getChildCount() - 1);
                 m_treeModel.nodeChanged(actual);
+            } else {
+                ((Node) progressing.getUserObject()).setState(State.FINISH);
+                m_treeModel.nodeChanged(progressing);
             }
         }
     }
@@ -410,15 +413,15 @@ public final class TreePanel extends IPanel {
         }
     }
 
+    public interface TreeListener {
+        void treeEvent(String _path);
+    }
+
     private enum State {
         CREATE,
         UPDATE,
         FINISH,
         DEFAULT
-    }
-
-    public interface TreeListener {
-        void treeEvent(String _path);
     }
 
     private class Node {
@@ -431,17 +434,17 @@ public final class TreePanel extends IPanel {
             m_state = _state;
         }
 
+        @Override
+        public String toString() {
+            return m_name;
+        }
+
         private State getState() {
             return m_state;
         }
 
         private void setState(State _state) {
             m_state = _state;
-        }
-
-        @Override
-        public String toString() {
-            return m_name;
         }
 
     }

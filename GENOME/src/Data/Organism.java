@@ -77,6 +77,16 @@ public final class Organism extends IDataBase {
         return lastOne;
     }
 
+    /**
+     * Load date
+     *
+     * @param _db   the name of the database
+     * @param _ki   the name of the kingdom
+     * @param _gp   the name of the group
+     * @param _sg   the name of the subgroup
+     * @param _name the name of the organism
+     * @return the loaded date
+     */
     public static Date loadDate(String _db, String _ki, String _gp, String _sg, String _name) {
         String fileName = DataBase.s_SERIALIZATION_PREFIX + _db + Kingdom.s_SERIALIZATION_PREFIX + _ki + Group.s_SERIALIZATION_PREFIX + _gp + SubGroup.s_SERIALIZATION_PREFIX + _sg + s_SERIALIZATION_PREFIX + _name;
         final File file = new File(Options.getSerializeDirectory() + File.separator + fileName + Options.getDateModifSerializeExtension());
@@ -91,7 +101,7 @@ public final class Organism extends IDataBase {
             Logs.warning("Unable to load : " + fileName);
             Logs.exception(e);
         } finally {
-            if(stream != null) {
+            if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {
@@ -101,6 +111,18 @@ public final class Organism extends IDataBase {
             }
         }
         return null;
+    }
+
+    /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if (m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a SubGroup : " + getName());
+        super.start();
     }
 
     /**
@@ -115,7 +137,7 @@ public final class Organism extends IDataBase {
             try {
                 if (m_replicons.get(_replicon.getIndex()) != null)
                     throw new AddException("Replicon already added : " + _replicon.getName());
-            } catch (IndexOutOfBoundsException e) {
+            } catch (IndexOutOfBoundsException ignored) {
             }
             _replicon.setIndex(m_replicons.size());
             return m_replicons.add(_replicon);
@@ -198,27 +220,6 @@ public final class Organism extends IDataBase {
     }
 
     /**
-     * Set the parent
-     *
-     * @param _subGroup, the parent to set
-     */
-    protected void setParent(SubGroup _subGroup) {
-        m_parent = _subGroup;
-    }
-
-    /**
-     * Start
-     *
-     * @throws InvalidStateException if it can't be started
-     */
-    @Override
-    public final void start() throws InvalidStateException {
-        if (m_parent == null)
-            throw new InvalidStateException("Unable to start without been add in a SubGroup : " + getName());
-        super.start();
-    }
-
-    /**
      * Save this organism
      */
     @Override
@@ -229,15 +230,24 @@ public final class Organism extends IDataBase {
         final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getDateModifSerializeExtension());
         final ObjectOutputStream stream;
         if (file.exists()) {
-            file.delete();
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
+                Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
+            }
         }
         try {
-            file.createNewFile();
+            if (!file.createNewFile()) {
+                Logs.warning("Enable to create file : " + file.getName());
+            }
             stream = new ObjectOutputStream(new FileOutputStream(file));
             stream.writeObject(getModificationDate());
             stream.flush();
             stream.close();
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
         }
@@ -251,6 +261,15 @@ public final class Organism extends IDataBase {
     @Override
     public String getSavedName() {
         return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
+    }
+
+    /**
+     * Set the parent
+     *
+     * @param _subGroup, the parent to set
+     */
+    void setParent(SubGroup _subGroup) {
+        m_parent = _subGroup;
     }
 
 }

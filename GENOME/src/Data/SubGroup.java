@@ -11,7 +11,7 @@ public final class SubGroup extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    protected static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getSubGroupSerializationPrefix();
+    static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getSubGroupSerializationPrefix();
     /**
      * Array of this SubGroup's Organisms
      */
@@ -75,6 +75,18 @@ public final class SubGroup extends IDataBase {
     }
 
     /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if (m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a Group : " + getName());
+        super.start();
+    }
+
+    /**
      * In case of all Organism are already finished
      *
      * @throws InvalidStateException if it can't be sopped
@@ -115,27 +127,6 @@ public final class SubGroup extends IDataBase {
     }
 
     /**
-     * Set the parent
-     *
-     * @param _group, the parent to set
-     */
-    protected void setParent(Group _group) {
-        m_parent = _group;
-    }
-
-    /**
-     * Start
-     *
-     * @throws InvalidStateException if it can't be started
-     */
-    @Override
-    public final void start() throws InvalidStateException {
-        if (m_parent == null)
-            throw new InvalidStateException("Unable to start without been add in a Group : " + getName());
-        super.start();
-    }
-
-    /**
      * Get the main part of the save path_name
      *
      * @return the main part of the save path_name
@@ -146,12 +137,21 @@ public final class SubGroup extends IDataBase {
     }
 
     /**
+     * Set the parent
+     *
+     * @param _group, the parent to set
+     */
+    void setParent(Group _group) {
+        m_parent = _group;
+    }
+
+    /**
      * Finish this Subgroup if it can
      *
      * @param _organism, the Organism to finish
      * @throws InvalidStateException if it can't be finished
      */
-    protected synchronized void finish(Organism _organism) throws InvalidStateException {
+    synchronized void finish(Organism _organism) throws InvalidStateException {
         if (super.contains(m_organisms, _organism) && _organism.getState() != State.FINISHED) {
             for (Statistics stat : _organism.getStatistics().values()) {
                 super.updateStatistics(stat);
@@ -171,7 +171,7 @@ public final class SubGroup extends IDataBase {
      * @param _organism, the Organism to insert
      * @throws AddException if _organism are already added
      */
-    protected void addOrganism(Organism _organism) throws AddException {
+    void addOrganism(Organism _organism) throws AddException {
         if (super.getState() == State.STARTED) {
             if (super.contains(m_organisms, _organism))
                 throw new AddException("Organism already added : " + _organism.getName());

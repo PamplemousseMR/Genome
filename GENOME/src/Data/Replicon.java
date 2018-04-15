@@ -44,7 +44,7 @@ public final class Replicon extends Statistics {
     /**
      * Compute statistics of this Replicon
      */
-    protected void computeStatistic() {
+    void computeStatistic() {
         int idx, length;
         for (StringBuilder sequence : m_sequences) {
             final Statistics temp = new Statistics(getType());
@@ -109,7 +109,7 @@ public final class Replicon extends Statistics {
      *
      * @return the local index
      */
-    protected int getIndex() {
+    int getIndex() {
         return m_index;
     }
 
@@ -118,7 +118,7 @@ public final class Replicon extends Statistics {
      *
      * @param _id, the index to set
      */
-    protected void setIndex(int _id) {
+    void setIndex(int _id) {
         m_index = _id;
     }
 

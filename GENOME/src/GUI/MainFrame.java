@@ -8,48 +8,148 @@ import javax.swing.plaf.basic.BasicSplitPaneDivider;
 import javax.swing.plaf.basic.BasicSplitPaneUI;
 import java.awt.*;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 
 import static GUI.Constant.*;
 
-public final class MainFrame extends ResizibleFrame {
+public final class MainFrame extends JFrame implements MouseMotionListener, MouseListener {
 
-    private static final String s_TITLE = "GENOME";
-    private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
+    /**
+     * Default Toolkit of the frame
+     */
     private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
+    /**
+     * Dimension of the screen (mainscreen if multi-screen)
+     */
+    private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
+    /**
+     * Default width size
+     */
     private static final int s_DEFAULT_FRAME_WIDTH = 300;
+    /**
+     * Default height size
+     */
     private static final int s_DEFAULT_FRAME_HEIGHT = 300;
+    /**
+     * Origin point to print the frame on the screen
+     */
     private static final Point s_INITIAL_LOCATION = new Point((int) s_TOOLKIT.getScreenSize().getWidth() / 2 - s_DEFAULT_FRAME_WIDTH / 2, (int) s_TOOLKIT.getScreenSize().getHeight() / 2 - s_DEFAULT_FRAME_HEIGHT / 2);
+    /**
+     * Default Dimension of the frame
+     */
     private static final Dimension s_INITIAL_DIMENSION = new Dimension(s_DEFAULT_FRAME_WIDTH, s_DEFAULT_FRAME_HEIGHT);
+
+    /**
+     * Hitbox area of the mouse
+     */
+    private static final int s_CURSOR_AREA = 6;
+    /**
+     * The mainframe iself
+     */
     private static MainFrame s_mainFrame;
 
+    /**
+     * Saved location (for frame moves events)
+     */
+    private final Point m_initialLocation;
+    /**
+     * Minimal width of the frame
+     */
+    private final int m_minWidth;
+    /**
+     * Minimal height of the frame
+     */
+    private final int m_minHeight;
+    /**
+     * For frame drag&drop
+     */
+    private Point m_start_drag;
+    /**
+     * For frame drag&drop
+     */
+    private Point m_start_loc;
+    /**
+     * Header Panel
+     */
     private JPanel m_header;
+    /**
+     * Main panel of the frame
+     */
     private JPanel m_main;
+    /**
+     * Footer Panel
+     */
     private TitlePanel m_footer;
-
+    /**
+     * Panel containing the menu
+     */
     private JPanel m_menuPanel;
+    /**
+     * Label containing the main title
+     */
     private JLabel m_mainTitle;
+    /**
+     * Label containing the second title
+     */
     private JLabel m_secondTitle;
-
+    /**
+     * Close button of the app (menu)
+     */
     private JButton m_closeB;
+    /**
+     * Fullscreen button (menu)
+     */
     private JButton m_maximizeB;
+    /**
+     * Minimize the app into the taskbar (menu)
+     */
     private JButton m_minimizeB;
-
-    private JSplitPane m_splitPanel_main;
+    /**
+     * Splitpanel betweenthe filetree and the right part
+     */
+    private JSplitPane m_mainContainer;
+    /**
+     * Splipanel between the InformationPanel and the LogsPanel
+     */
     private JSplitPane m_rightContainer;
+    /**
+     * The main panel of left side of the jsplitpane
+     */
     private JPanel m_leftContainer;
+    /**
+     * Panel containing the activityPanel and the progressBar
+     */
     private JPanel m_leftSouthContainer;
-
+    /**
+     * The progressbar displaying the progress of the program
+     */
     private ProgressBar m_progessBar;
+    /**
+     * The panel containing the tree of files downloaded
+     */
     private TreePanel m_treePanel;
+    /**
+     * Thepanel containing the information of a selected file
+     */
     private InformationPanel m_informationsPanel;
+    /**
+     * The panel containing the buttons to control the download
+     */
     private ActivityPanel m_activityPanel;
+    /**
+     * The panel displaying the logs
+     */
     private LogsPanel m_logsPanel;
 
     /**
-     * Constructor
+     * Class constructor
      */
     private MainFrame() {
-        super(s_INITIAL_DIMENSION, s_INITIAL_LOCATION, s_TITLE);
+        super(s_TITLE);
+        m_initialLocation = s_INITIAL_LOCATION;
+        m_minWidth = (int) s_INITIAL_DIMENSION.getWidth();
+        m_minHeight = (int) s_INITIAL_DIMENSION.getHeight();
         initFrame();
         initComponents();
         initLayout();
@@ -68,6 +168,61 @@ public final class MainFrame extends ResizibleFrame {
             s_mainFrame = new MainFrame();
         }
         return s_mainFrame;
+    }
+
+    /**
+     * Get the current location of the mouse on the frame
+     *
+     * @param e     the event triggered
+     * @param frame the frame to track
+     * @return the point where the event is triggered
+     */
+    private static Point getScreenLocation(MouseEvent e, JFrame frame) {
+        final Point cursor = e.getPoint();
+        final Point view_location = frame.getLocationOnScreen();
+        return new Point((int) (view_location.getX() + cursor.getX()), (int) (view_location.getY() + cursor.getY()));
+    }
+
+    @Override
+    public final void mouseDragged(MouseEvent e) {
+        moveOrFullResizeFrame(e);
+    }
+
+    @Override
+    public final void mouseMoved(MouseEvent e) {
+        final Point cursorLocation = e.getPoint();
+        final int xPos = cursorLocation.x;
+        final int yPos = cursorLocation.y;
+
+        if (xPos >= s_CURSOR_AREA && xPos <= getWidth() - s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos >= s_CURSOR_AREA && yPos <= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+        else if (xPos <= s_CURSOR_AREA && yPos >= s_CURSOR_AREA && yPos <= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+        else if (xPos >= s_CURSOR_AREA && xPos <= getWidth() - s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+        else if (xPos <= s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos <= s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+        else if (xPos >= getWidth() - s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.SE_RESIZE_CURSOR));
+        else if (xPos <= s_CURSOR_AREA && yPos >= getHeight() - s_CURSOR_AREA)
+            setCursor(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+        else
+            setCursor(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR));
+    }
+
+    @Override
+    public final void mouseClicked(MouseEvent e) {
+        final Object sourceObject = e.getSource();
+        if (sourceObject instanceof JPanel) {
+            if (e.getClickCount() == 2) {
+                if (getCursor().equals(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)))
+                    doubleClicktoFullScreen();
+            }
+        }
     }
 
     /**
@@ -100,19 +255,10 @@ public final class MainFrame extends ResizibleFrame {
     /**
      * Update the information to display
      *
-     * @param _info the info to set
+     * @param _component the component to set
      */
-    public void updateInformationLeft(String _info) {
-        SwingUtilities.invokeLater(() -> m_informationsPanel.updateInformationLeft(_info));
-    }
-
-    /**
-     * Update the information to display
-     *
-     * @param _info the info to set
-     */
-    public void updateInformationRight(String _info) {
-        SwingUtilities.invokeLater(() -> m_informationsPanel.updateInformationRight(_info));
+    public void updateInformation(JComponent _component) {
+        SwingUtilities.invokeLater(() -> m_informationsPanel.updateInformation(_component));
     }
 
     /**
@@ -170,15 +316,39 @@ public final class MainFrame extends ResizibleFrame {
     }
 
     /**
+     * Drag and drop the Frame
+     */
+    @Override
+    public void mousePressed(MouseEvent e) {
+        m_start_drag = getScreenLocation(e, this);
+        m_start_loc = getLocation();
+    }
+
+    @Override
+    public void mouseEntered(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseExited(MouseEvent e) {
+    }
+
+    @Override
+    public void mouseReleased(MouseEvent e) {
+    }
+
+    /**
      * Basic frame inits
      */
     private void initFrame() {
-        initIcone();
+        addMouseMotionListener(this);
+        addMouseListener(this);
+        setSize(m_minWidth, m_minHeight);
+        setLocation(m_initialLocation);
         setUndecorated(true);
-        setVisible(true);
         setSize((s_DIM.width / 2), (s_DIM.height / 2));
+        initIcone();
+        setVisible(true);
         setLocationRelativeTo(null);
-        setResizable(true);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
@@ -218,7 +388,7 @@ public final class MainFrame extends ResizibleFrame {
         m_leftContainer = new JPanel();
         m_leftSouthContainer = new JPanel();
         m_rightContainer = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_informationsPanel, m_logsPanel);
-        m_splitPanel_main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_leftContainer, m_rightContainer);
+        m_mainContainer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_leftContainer, m_rightContainer);
     }
 
     /**
@@ -251,7 +421,7 @@ public final class MainFrame extends ResizibleFrame {
         m_menuPanel.add(m_maximizeB);
         m_menuPanel.add(m_closeB);
 
-        m_main.add(m_splitPanel_main, BorderLayout.CENTER);
+        m_main.add(m_mainContainer, BorderLayout.CENTER);
         m_leftContainer.add(m_treePanel, BorderLayout.CENTER);
         m_leftContainer.add(m_leftSouthContainer, BorderLayout.SOUTH);
 
@@ -263,10 +433,9 @@ public final class MainFrame extends ResizibleFrame {
      * Swag the interface
      */
     private void swagComponents() {
-        getRootPane().setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        getRootPane().setBorder(BorderFactory.createLineBorder(s_DARKGRAY, 10));
 
         m_menuPanel.setBackground(s_DARKGRAY);
-        m_menuPanel.setPreferredSize(new Dimension(s_DEFAULT_FRAME_WIDTH, 35));
         m_mainTitle.setFont(new Font(s_FONT, Font.PLAIN, 28));
         m_mainTitle.setForeground(s_WHITE);
         m_secondTitle.setFont(new Font(s_FONT, Font.PLAIN, 18));
@@ -278,8 +447,9 @@ public final class MainFrame extends ResizibleFrame {
 
         m_header.setBackground(s_DARKGRAY);
         m_main.setBackground(s_LIGHTGRAY);
+        m_main.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
-        m_splitPanel_main.setUI(new BasicSplitPaneUI() {
+        m_mainContainer.setUI(new BasicSplitPaneUI() {
             @Override
             public BasicSplitPaneDivider createDefaultDivider() {
                 return (new BasicSplitPaneDivider(this) {
@@ -292,9 +462,10 @@ public final class MainFrame extends ResizibleFrame {
                 });
             }
         });
-        m_splitPanel_main.setResizeWeight(.15d);
-        m_splitPanel_main.setDividerSize(2);
-        m_splitPanel_main.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        m_mainContainer.setDividerSize(3);
+        m_mainContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        m_mainContainer.setDividerLocation(.25d);
+        m_mainContainer.setResizeWeight(0.25d);
 
         m_rightContainer.setUI(new BasicSplitPaneUI() {
             @Override
@@ -309,9 +480,10 @@ public final class MainFrame extends ResizibleFrame {
                 });
             }
         });
-        m_rightContainer.setResizeWeight(.80d);
         m_rightContainer.setDividerSize(3);
         m_rightContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        m_rightContainer.setDividerLocation(.5d);
+        m_rightContainer.setResizeWeight(0.5d);
 
         m_leftContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
@@ -379,6 +551,91 @@ public final class MainFrame extends ResizibleFrame {
                 setExtendedState(JFrame.MAXIMIZED_BOTH);
             }
         });
+    }
+
+    /**
+     * Move or fullscreen the frame depending of the event triggered
+     *
+     * @param e the event triggered
+     */
+    private void moveOrFullResizeFrame(MouseEvent e) {
+        final Object sourceObject = e.getSource();
+        final Point current = getScreenLocation(e, this);
+        final Point offset = new Point((int) current.getX() - (int) m_start_drag.getX(), (int) current.getY() - (int) m_start_drag.getY());
+
+        if (sourceObject instanceof JPanel
+                && getCursor().equals(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR)))
+            setLocation((int) (m_start_loc.getX() + offset.getX()), (int) (m_start_loc.getY() + offset.getY()));
+        else if (!getCursor().equals(Cursor.getPredefinedCursor(Cursor.DEFAULT_CURSOR))) {
+            final int oldLocationX = (int) getLocation().getX();
+            final int oldLocationY = (int) getLocation().getY();
+            int newLocationX = (int) (m_start_loc.getX() + offset.getX());
+            int newLocationY = (int) (m_start_loc.getY() + offset.getY());
+            final boolean N_Resize = getCursor().equals(Cursor.getPredefinedCursor(Cursor.N_RESIZE_CURSOR));
+            final boolean NE_Resize = getCursor().equals(Cursor.getPredefinedCursor(Cursor.NE_RESIZE_CURSOR));
+            final boolean NW_Resize = getCursor().equals(Cursor.getPredefinedCursor(Cursor.NW_RESIZE_CURSOR));
+            final boolean E_Resize = getCursor().equals(Cursor.getPredefinedCursor(Cursor.E_RESIZE_CURSOR));
+            final boolean W_Resize = getCursor().equals(Cursor.getPredefinedCursor(Cursor.W_RESIZE_CURSOR));
+            final boolean S_Resize = getCursor().equals(Cursor.getPredefinedCursor(Cursor.S_RESIZE_CURSOR));
+            final boolean SW_Resize = getCursor().equals(Cursor.getPredefinedCursor(Cursor.SW_RESIZE_CURSOR));
+            boolean setLocation = false;
+            int newWidth = e.getX();
+            int newHeight = e.getY();
+
+            if (NE_Resize) {
+                newHeight = getHeight() - (newLocationY - oldLocationY);
+                newLocationX = (int) getLocation().getX();
+                setLocation = true;
+            } else if (E_Resize) {
+                newHeight = getHeight();
+            } else if (S_Resize) {
+                newWidth = getWidth();
+            } else if (N_Resize) {
+                newLocationX = (int) getLocation().getX();
+                newWidth = getWidth();
+                newHeight = getHeight() - (newLocationY - oldLocationY);
+                setLocation = true;
+            } else if (NW_Resize) {
+                newWidth = getWidth() - (newLocationX - oldLocationX);
+                newHeight = getHeight() - (newLocationY - oldLocationY);
+                setLocation = true;
+            } else if (SW_Resize) {
+                newWidth = getWidth() - (newLocationX - oldLocationX);
+                newLocationY = (int) getLocation().getY();
+                setLocation = true;
+            }
+
+            if (W_Resize) {
+                newWidth = getWidth() - (newLocationX - oldLocationX);
+                newLocationY = (int) getLocation().getY();
+                newHeight = getHeight();
+                setLocation = true;
+            }
+
+            if (newWidth >= (int) s_TOOLKIT.getScreenSize().getWidth() || newWidth <= m_minWidth) {
+                newLocationX = oldLocationX;
+                newWidth = getWidth();
+            }
+
+            if (newHeight >= (int) s_TOOLKIT.getScreenSize().getHeight() - 30 || newHeight <= m_minHeight) {
+                newLocationY = oldLocationY;
+                newHeight = getHeight();
+            }
+
+            if (newWidth != getWidth() || newHeight != getHeight()) {
+                setSize(newWidth, newHeight);
+                if (setLocation) {
+                    setLocation(newLocationX, newLocationY);
+                }
+            }
+        }
+    }
+
+    /**
+     * Double-Click to fullscreen the Frame or to go back to the previous size of the frame
+     */
+    private void doubleClicktoFullScreen() {
+        setExtendedState(JFrame.MAXIMIZED_BOTH);
     }
 
 }

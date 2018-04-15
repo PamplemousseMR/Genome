@@ -7,62 +7,82 @@ import static GUI.Constant.*;
 
 public final class InformationPanel extends IPanel {
 
+    /**
+     * The title of the informationPanel
+     */
     private static final String s_TITLE = "Informations";
 
-    private JTextArea m_textAreaLeft;
-    private JTextArea m_textAreaRight;
-    private JSplitPane m_panel;
-    private ScrollComponent m_scroll;
+    /**
+     * The container of the informationPanel
+     */
+    private JComponent m_container;
 
-    protected InformationPanel() {
+    /**
+     * The scrollpanel of the informationPanel
+     */
+    private ScrollPanel m_scroll;
+
+    /**
+     * Class constructor
+     */
+    InformationPanel() {
         super(s_TITLE);
     }
 
-    protected void createComponent() {
-        m_textAreaLeft = new JTextArea();
-        m_textAreaRight = new JTextArea();
-        m_panel = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_textAreaLeft, m_textAreaRight);
-        m_scroll = new ScrollComponent(m_panel);
+    /**
+     * Make the component beautiful
+     *
+     * @param _component the component to modify
+     * @return the beautiful component
+     */
+    public static JComponent swagComponent(JComponent _component) {
+        _component.setBackground(s_LIGHTGRAY);
+        _component.setFont(new Font(s_FONT, Font.PLAIN, 14));
+        _component.setForeground(s_WHITE);
+        return _component;
     }
 
+    /**
+     * Create the components of the informationPanel
+     */
+    protected void createComponent() {
+        m_container = new JPanel();
+        m_scroll = new ScrollPanel(m_container);
+    }
+
+    /**
+     * Init the layout of the informationPanel
+     */
     protected void initLayout() {
     }
 
+    /**
+     * Add the component into the informationPanel
+     */
     protected void addComponents() {
         super.add(m_scroll);
     }
 
+    /**
+     * Make the Panel pretty
+     */
     protected void swagComponent() {
-        m_textAreaLeft.setBackground(s_LIGHTGRAY);
-        m_textAreaLeft.setFont(new Font(s_FONT, Font.PLAIN, 14));
-        m_textAreaLeft.setForeground(s_WHITE);
-        m_textAreaLeft.setEditable(false);
-        m_textAreaLeft.setBorder(BorderFactory.createLineBorder(s_LIGHTGRAY, 10));
-
-        m_textAreaRight.setBackground(s_LIGHTGRAY);
-        m_textAreaRight.setFont(new Font(s_FONT, Font.PLAIN, 14));
-        m_textAreaRight.setForeground(s_WHITE);
-        m_textAreaRight.setEditable(false);
-        m_textAreaRight.setBorder(BorderFactory.createLineBorder(s_LIGHTGRAY, 10));
-
-        m_panel.setResizeWeight(.50d);
-        m_panel.setDividerSize(0);
-        m_panel.setBorder(BorderFactory.createEmptyBorder());
-        m_panel.setBackground(s_LIGHTGRAY);
+        swagComponent(m_container);
     }
 
-    protected void updateInformationLeft(String _info) {
-        m_textAreaLeft.setText(null);
-        m_textAreaLeft.append(_info);
-        repaint();
-        updateUI();
+    /**
+     * Update the information present inside of the Component
+     *
+     * @param _component the component to update
+     */
+    void updateInformation(JComponent _component) {
+        super.remove(m_scroll);
+        m_container = _component;
+        m_container.setBorder(BorderFactory.createLineBorder(s_LIGHTGRAY, 10));
+        m_scroll = new ScrollPanel(m_container);
+        swagComponent();
+        super.add(m_scroll);
+        super.repaint();
+        super.updateUI();
     }
-
-    protected void updateInformationRight(String _info) {
-        m_textAreaRight.setText(null);
-        m_textAreaRight.append(_info);
-        repaint();
-        updateUI();
-    }
-
 }

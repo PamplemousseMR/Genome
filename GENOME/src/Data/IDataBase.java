@@ -8,9 +8,9 @@ import java.io.*;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.EnumMap;
-import java.util.Map;
 
 public class IDataBase implements Serializable {
+
     private static final long serialVersionUID = 2L;
 
     /**
@@ -60,6 +60,8 @@ public class IDataBase implements Serializable {
 
     /**
      * Class constructor
+     *
+     * @param _name the name
      */
     protected IDataBase(String _name) {
         m_name = _name;
@@ -75,7 +77,13 @@ public class IDataBase implements Serializable {
         m_loaded = false;
     }
 
-    protected IDataBase(String _name, IDataBase _data) {
+    /**
+     * C
+     *
+     * @param _name the name
+     * @param _data previous data
+     */
+    IDataBase(String _name, IDataBase _data) {
         m_name = _name;
         m_modificationDate = new Date();
         m_statistics = _data.m_statistics;
@@ -104,12 +112,12 @@ public class IDataBase implements Serializable {
         }
         try {
             stream = new ObjectInputStream((new FileInputStream(file)));
-             result = (IDataBase) stream.readObject();
+            result = (IDataBase) stream.readObject();
         } catch (IOException | ClassNotFoundException e) {
             Logs.warning("Unable to load : " + _name);
             Logs.exception(e);
         } finally {
-            if(stream != null) {
+            if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {
@@ -119,34 +127,6 @@ public class IDataBase implements Serializable {
             }
         }
         return result;
-    }
-
-    /**
-     * Start
-     *
-     * @throws InvalidStateException if it can't be started
-     */
-    public void start() throws InvalidStateException {
-        if (m_state == State.STARTED)
-            throw new InvalidStateException("Already started : " + this.getName());
-        if (m_state == State.STOPPED || m_state == State.FINISHED)
-            throw new InvalidStateException("Can't restart : " + this.getName());
-        m_state = State.STARTED;
-    }
-
-    /**
-     * Stop
-     *
-     * @throws InvalidStateException if it can't be stopped
-     */
-    public synchronized void stop() throws InvalidStateException {
-        if (m_state == State.CREATED)
-            throw new InvalidStateException("Not started : " + this.getName());
-        if (m_state == State.STOPPED)
-            throw new InvalidStateException("Already stopped : " + this.getName());
-        if (m_state == State.FINISHED)
-            throw new InvalidStateException("Already finished : " + this.getName());
-        m_state = State.STOPPED;
     }
 
     /**
@@ -222,24 +202,188 @@ public class IDataBase implements Serializable {
     }
 
     /**
+     * Get the number of a genome's specified type
+     *
+     * @param _type, the Type of the genomes's number to get
+     * @return the number of genomes
+     */
+    final long getTypeNumber(Statistics.Type _type) {
+        return m_genomeNumber.get(_type);
+    }
+
+    /**
+     * Set the local index
+     *
+     * @param _id, the index to set
+     */
+    final void setIndex(int _id) {
+        m_index = _id;
+    }
+
+    /**
+     * Increment by 1 the number of genome to a type
+     *
+     * @param _type, the Type of the genomes to increment
+     */
+    final void incrementGenomeNumber(Statistics.Type _type) {
+        m_genomeNumber.merge(_type, 1L, (v1, v2) -> v1 + v2);
+    }
+
+    /**
+     * Increment the number of genome of a type by the parameter
+     *
+     * @param _type, the Type of the genomes to increment
+     * @param _inc,  the value of the increment
+     */
+    final void incrementGenomeNumber(Statistics.Type _type, long _inc) {
+        m_genomeNumber.merge(_type, _inc, (v1, v2) -> v1 + v2);
+    }
+
+    /**
+     * Create statistic if it's not exist and update it
+     *
+     * @param _statistics, the statistic to used for update
+     */
+    final void updateStatistics(Statistics _statistics) {
+        m_statistics.computeIfAbsent(_statistics.getType(), k -> new Statistics(_statistics.getType()));
+        m_statistics.get(_statistics.getType()).update(_statistics);
+    }
+
+    /**
+     * Compute statistics
+     */
+    final void computeStatistics() {
+        m_statistics.values().parallelStream().forEach(Statistics::compute);
+    }
+
+    /**
+     * Return true if the array contains the IState
+     *
+     * @param _arr,  the array to search
+     * @param _stat, the IStat =e to find
+     * @param <E>,   the class of the array
+     * @return the find success
+     */
+    final <E> boolean contains(ArrayList<E> _arr, IDataBase _stat) {
+        try {
+            if (_arr.get(_stat.m_index) == null) {
+                return false;
+            }
+        } catch (IndexOutOfBoundsException e) {
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Increment the number of finish children
+     */
+    final void incrementFinishedChildren() {
+        ++m_finished;
+    }
+
+    /**
+     * Get the number of finish children
+     *
+     * @return the number of children finished
+     */
+    final int getFinishedChildren() {
+        return m_finished;
+    }
+
+    /**
+     * Clear data
+     */
+    final void clear() {
+        m_statistics.clear();
+        m_genomeNumber.clear();
+    }
+
+    /**
+     * Increment the generic totals with those of another
+     *
+     * @param _data, the data used to increment
+     */
+    final void incrementGenericTotals(IDataBase _data) {
+        m_CDSNumber += _data.m_CDSNumber;
+        m_validCDSNumber += _data.m_validCDSNumber;
+        m_totalOrganism += _data.m_totalOrganism;
+    }
+
+    /**
+     * Increment the generic totals with those of a Statistics
+     *
+     * @param _stat, the data used to increment
+     */
+    final void incrementGenericTotals(Statistics _stat) {
+        m_CDSNumber += _stat.getCDSNumber();
+        m_validCDSNumber += _stat.getValidCDSNumber();
+    }
+
+    /**
+     * Set the total of underlying organism to one
+     * used for initialise Organism
+     */
+    final void setTotalOrganismToOne() {
+        m_totalOrganism = 1L;
+    }
+
+    /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    public void start() throws InvalidStateException {
+        if (m_state == State.STARTED)
+            throw new InvalidStateException("Already started : " + this.getName());
+        if (m_state == State.STOPPED || m_state == State.FINISHED)
+            throw new InvalidStateException("Can't restart : " + this.getName());
+        m_state = State.STARTED;
+    }
+
+    /**
+     * Stop
+     *
+     * @throws InvalidStateException if it can't be stopped
+     */
+    public synchronized void stop() throws InvalidStateException {
+        if (m_state == State.CREATED)
+            throw new InvalidStateException("Not started : " + this.getName());
+        if (m_state == State.STOPPED)
+            throw new InvalidStateException("Already stopped : " + this.getName());
+        if (m_state == State.FINISHED)
+            throw new InvalidStateException("Already finished : " + this.getName());
+        m_state = State.STOPPED;
+    }
+
+    /**
      * Save this data
      */
     public void save() {
         final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
         ObjectOutputStream stream = null;
         if (file.exists()) {
-            file.delete();
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
+                Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
+            }
         }
         try {
-            file.createNewFile();
+            if (!file.createNewFile()) {
+                Logs.warning("Enable to create file : " + file.getName());
+            }
             stream = new ObjectOutputStream(new FileOutputStream(file));
             stream.writeObject(this);
             stream.flush();
-        } catch (IOException e) {
+        } catch (IOException | SecurityException e) {
             Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
         } finally {
-            if(stream != null) {
+            if (stream != null) {
                 try {
                     stream.close();
                 } catch (IOException e) {
@@ -248,49 +392,6 @@ public class IDataBase implements Serializable {
                 }
             }
         }
-    }
-
-    /**
-     * Get title string
-     *
-     * @return the title string
-     */
-    public String getProperties() {
-        String res = "";
-        res += "Name\n";
-        res += "Total number of CDS sequences\n";
-        res += "Number of valid CDS\n";
-        res += "Number of invalid CDS\n";
-        res += "Number of organism\n";
-        res += "\n";
-
-        for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
-            res += ent.getKey() + "\n";
-        }
-        res += "\n";
-
-        return res;
-    }
-
-    /**
-     * Get value string
-     *
-     * @return the value string
-     */
-    public String getValues() {
-        String res = "";
-        res += m_name + "\n";
-        res += m_CDSNumber + "\n";
-        res += m_validCDSNumber + "\n";
-        res += (m_CDSNumber - m_validCDSNumber) + "\n";
-        res += m_totalOrganism + "\n";
-        res += "\n";
-
-        for (Map.Entry<Statistics.Type, Long> ent : m_genomeNumber.entrySet()) {
-            res += ent.getValue() + "\n";
-        }
-
-        return res;
     }
 
     /**
@@ -307,138 +408,11 @@ public class IDataBase implements Serializable {
     }
 
     /**
-     * Get the number of a genome's specified type
-     *
-     * @param _type, the Type of the genomes's number to get
-     * @return the number of genomes
-     */
-    protected final long getTypeNumber(Statistics.Type _type) {
-        return m_genomeNumber.get(_type);
-    }
-
-    /**
-     * Set the local index
-     *
-     * @param _id, the index to set
-     */
-    protected final void setIndex(int _id) {
-        m_index = _id;
-    }
-
-    /**
-     * Increment by 1 the number of genome to a type
-     *
-     * @param _type, the Type of the genomes to increment
-     */
-    protected final void incrementGenomeNumber(Statistics.Type _type) {
-        m_genomeNumber.merge(_type, 1L, (v1, v2) -> v1 + v2);
-    }
-
-    /**
-     * Increment the number of genome of a type by the parameter
-     *
-     * @param _type, the Type of the genomes to increment
-     * @param _inc,  the value of the increment
-     */
-    protected final void incrementGenomeNumber(Statistics.Type _type, long _inc) {
-        m_genomeNumber.merge(_type, _inc, (v1, v2) -> v1 + v2);
-    }
-
-    /**
-     * Create statistic if it's not exist and update it
-     *
-     * @param _statistics, the statistic to used for update
-     */
-    protected final void updateStatistics(Statistics _statistics) {
-        m_statistics.computeIfAbsent(_statistics.getType(), k -> new Statistics(_statistics.getType()));
-        m_statistics.get(_statistics.getType()).update(_statistics);
-    }
-
-    /**
-     * Compute statistics
-     */
-    protected final void computeStatistics() {
-        m_statistics.values().parallelStream().forEach(Statistics::compute);
-    }
-
-    /**
-     * Return true if the array contains the IState
-     *
-     * @param _arr,  the array to search
-     * @param _stat, the IStat =e to find
-     * @param <E>,   the class of the array
-     * @return the find success
-     */
-    protected final <E> boolean contains(ArrayList<E> _arr, IDataBase _stat) {
-        try {
-            if (_arr.get(_stat.m_index) == null) {
-                return false;
-            }
-        } catch (IndexOutOfBoundsException e) {
-            return false;
-        }
-        return true;
-    }
-
-    /**
-     * Increment the number of finish children
-     */
-    protected final void incrementFinishedChildren() {
-        ++m_finished;
-    }
-
-    /**
-     * Get the number of finish children
-     *
-     * @return the number of children finished
-     */
-    protected final int getFinishedChildren() {
-        return m_finished;
-    }
-
-    /**
-     * Clear data
-     */
-    protected final void clear() {
-        m_statistics.clear();
-        m_genomeNumber.clear();
-    }
-
-    /**
-     * Increment the generic totals with those of another
-     *
-     * @param _data, the data used to increment
-     */
-    protected final void incrementGenericTotals(IDataBase _data) {
-        m_CDSNumber += _data.m_CDSNumber;
-        m_validCDSNumber += _data.m_validCDSNumber;
-        m_totalOrganism += _data.m_totalOrganism;
-    }
-
-    /**
-     * Increment the generic totals with those of a Statistics
-     *
-     * @param _stat, the data used to increment
-     */
-    protected final void incrementGenericTotals(Statistics _stat) {
-        m_CDSNumber += _stat.getCDSNumber();
-        m_validCDSNumber += _stat.getValidCDSNumber();
-    }
-
-    /**
-     * Set the total of underlying organism to one
-     * used for initialise Organism
-     */
-    protected final void setTotalOrganismToOne() {
-        m_totalOrganism = 1L;
-    }
-
-    /**
      * Get the main part of the save path_name
      *
      * @return the main part of the save path_name
      */
-    protected String getSavedName() {
+    String getSavedName() {
         return getName();
     }
 
@@ -447,7 +421,7 @@ public class IDataBase implements Serializable {
      *
      * @param _data the data to unload
      */
-    protected synchronized void unload(IDataBase _data) throws InvalidStateException {
+    synchronized void unload(IDataBase _data) throws InvalidStateException {
         if (!m_loaded)
             throw new InvalidStateException("Not loaded : " + m_name + ". Requested by : " + _data.getName());
 

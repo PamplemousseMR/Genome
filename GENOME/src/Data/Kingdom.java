@@ -11,7 +11,7 @@ public final class Kingdom extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    protected static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getKingdomSerializationPrefix();
+    static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getKingdomSerializationPrefix();
     /**
      * Array of this Kingdom's Group
      */
@@ -75,6 +75,18 @@ public final class Kingdom extends IDataBase {
     }
 
     /**
+     * Start
+     *
+     * @throws InvalidStateException if it can't be started
+     */
+    @Override
+    public final void start() throws InvalidStateException {
+        if (m_parent == null)
+            throw new InvalidStateException("Unable to start without been add in a DataBase : " + getName());
+        super.start();
+    }
+
+    /**
      * In case of all Group are already finished
      *
      * @throws InvalidStateException if it can't be stopped
@@ -97,27 +109,6 @@ public final class Kingdom extends IDataBase {
     }
 
     /**
-     * Start
-     *
-     * @throws InvalidStateException if it can't be started
-     */
-    @Override
-    public final void start() throws InvalidStateException {
-        if (m_parent == null)
-            throw new InvalidStateException("Unable to start without been add in a DataBase : " + getName());
-        super.start();
-    }
-
-    /**
-     * Set the parent
-     *
-     * @param _dataBase, the parent to set
-     */
-    protected void setParent(DataBase _dataBase) {
-        m_parent = _dataBase;
-    }
-
-    /**
      * Get the main part of the save path_name
      *
      * @return the main part of the save path_name
@@ -128,12 +119,21 @@ public final class Kingdom extends IDataBase {
     }
 
     /**
+     * Set the parent
+     *
+     * @param _dataBase, the parent to set
+     */
+    void setParent(DataBase _dataBase) {
+        m_parent = _dataBase;
+    }
+
+    /**
      * Finish this Kingdom if it can
      *
      * @param _group, the Group to finish
      * @throws InvalidStateException if it can't be finished
      */
-    protected synchronized void finish(Group _group) throws InvalidStateException {
+    synchronized void finish(Group _group) throws InvalidStateException {
         if (super.contains(m_groups, _group) && _group.getState() != State.FINISHED) {
             for (Statistics stat : _group.getStatistics().values()) {
                 super.updateStatistics(stat);
@@ -153,7 +153,7 @@ public final class Kingdom extends IDataBase {
      * @param _group, the Group to insert
      * @throws AddException if _group are already added
      */
-    protected void addGroup(Group _group) throws AddException {
+    void addGroup(Group _group) throws AddException {
         if (super.getState() == State.STARTED) {
             if (super.contains(m_groups, _group))
                 throw new AddException("Group already added : " + _group.getName());

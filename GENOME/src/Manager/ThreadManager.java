@@ -8,15 +8,31 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
+import static Utils.Options.getMaxThread;
+
 public final class ThreadManager {
 
-
+    /**
+     * Max number of thread
+     */
     private final int m_nbThreadMax;
+    /**
+     * True if threads are running
+     */
     private final Lock m_runningLock;
+    /**
+     * Condition to wait
+     */
     private final Lock m_lockArray;
     private final Condition m_condArray;
     private final Condition m_condPush;
+    /**
+     * Threads array
+     */
     private final ArrayList<Thread> m_threads;
+    /**
+     * Task list
+     */
     private final LinkedList<ITask> m_task;
     private volatile boolean m_running;
 
@@ -25,7 +41,7 @@ public final class ThreadManager {
      */
     public ThreadManager(int _nbThreadMax) {
 
-        m_nbThreadMax = _nbThreadMax;
+        m_nbThreadMax = _nbThreadMax > getMaxThread() ? getMaxThread() : _nbThreadMax;
 
         Logs.info("Number of threads : " + m_nbThreadMax, true);
 
@@ -45,21 +61,6 @@ public final class ThreadManager {
             m_threads.add(thr);
             thr.start();
         }
-    }
-
-    /**
-     * Check if the threads are running
-     *
-     * @return the running state
-     */
-    private boolean isRunning() {
-        final boolean res;
-        m_runningLock.lock();
-        {
-            res = m_running;
-        }
-        m_runningLock.unlock();
-        return res;
     }
 
     /**
@@ -113,6 +114,21 @@ public final class ThreadManager {
         } finally {
             m_lockArray.unlock();
         }
+        return res;
+    }
+
+    /**
+     * Check if the threads are running
+     *
+     * @return the running state
+     */
+    private boolean isRunning() {
+        final boolean res;
+        m_runningLock.lock();
+        {
+            res = m_running;
+        }
+        m_runningLock.unlock();
         return res;
     }
 
@@ -176,11 +192,11 @@ public final class ThreadManager {
                         todo.run();
                     } catch (Throwable e) {
                         Logs.warning("Error catch in thread " + m_id + " : " + todo.getName());
-                        Logs.exception(new Exception(e));
+                        Logs.exception(e);
                     }
 
                     StringBuilder threadsInfos = new StringBuilder("[");
-                    int remain = 0;
+                    int remain;
                     int runnable = 0;
                     m_lockArray.lock();
                     {
