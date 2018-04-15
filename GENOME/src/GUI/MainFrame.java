@@ -19,27 +19,22 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      * Default Toolkit of the frame
      */
     private static final Toolkit s_TOOLKIT = Toolkit.getDefaultToolkit();
-
     /**
      * Dimension of the screen (mainscreen if multi-screen)
      */
     private static final Dimension s_DIM = Toolkit.getDefaultToolkit().getScreenSize();
-
     /**
      * Default width size
      */
     private static final int s_DEFAULT_FRAME_WIDTH = 300;
-
     /**
      * Default height size
      */
     private static final int s_DEFAULT_FRAME_HEIGHT = 300;
-
     /**
      * Origin point to print the frame on the screen
      */
     private static final Point s_INITIAL_LOCATION = new Point((int) s_TOOLKIT.getScreenSize().getWidth() / 2 - s_DEFAULT_FRAME_WIDTH / 2, (int) s_TOOLKIT.getScreenSize().getHeight() / 2 - s_DEFAULT_FRAME_HEIGHT / 2);
-
     /**
      * Default Dimension of the frame
      */
@@ -49,7 +44,6 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      * Hitbox area of the mouse
      */
     private static final int s_CURSOR_AREA = 6;
-
     /**
      * The mainframe iself
      */
@@ -59,112 +53,98 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      * Saved location (for frame moves events)
      */
     private final Point m_initialLocation;
-
     /**
      * Minimal width of the frame
      */
     private final int m_minWidth;
-
     /**
      * Minimal height of the frame
      */
     private final int m_minHeight;
-
     /**
      * For frame drag&drop
      */
     private Point m_start_drag;
-
     /**
      * For frame drag&drop
      */
     private Point m_start_loc;
-
     /**
      * Header Panel
      */
     private JPanel m_header;
-
     /**
      * Main panel of the frame
      */
     private JPanel m_main;
-
     /**
      * Footer Panel
      */
     private TitlePanel m_footer;
-
     /**
      * Panel containing the menu
      */
     private JPanel m_menuPanel;
-
     /**
      * Label containing the main title
      */
     private JLabel m_mainTitle;
-
     /**
      * Label containing the second title
      */
     private JLabel m_secondTitle;
-
     /**
      * Close button of the app (menu)
      */
     private JButton m_closeB;
-
     /**
      * Fullscreen button (menu)
      */
     private JButton m_maximizeB;
-
     /**
      * Minimize the app into the taskbar (menu)
      */
     private JButton m_minimizeB;
-
     /**
      * Splitpanel betweenthe filetree and the right part
      */
-    private JSplitPane m_splitPanel_main;
-
+    private JSplitPane m_mainContainer;
+    /**
+     * Last SplitPane position
+     */
+    private double m_lastMainPosition;
     /**
      * Splipanel between the InformationPanel and the LogsPanel
      */
     private JSplitPane m_rightContainer;
-
+    /**
+     * Last SplitPane position
+     */
+    private double m_lastRightPosition;
     /**
      * The main panel of left side of the jsplitpane
      */
     private JPanel m_leftContainer;
-
     /**
      * Panel containing the activityPanel and the progressBar
      */
     private JPanel m_leftSouthContainer;
-
     /**
      * The progressbar displaying the progress of the program
      */
     private ProgressBar m_progessBar;
-
     /**
      * The panel containing the tree of files downloaded
      */
     private TreePanel m_treePanel;
-
     /**
      * Thepanel containing the information of a selected file
      */
     private InformationPanel m_informationsPanel;
-
     /**
      * The panel containing the buttons to control the download
      */
     private ActivityPanel m_activityPanel;
-
     /**
      * The panel displaying the logs
      */
@@ -178,6 +158,8 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         m_initialLocation = s_INITIAL_LOCATION;
         m_minWidth = (int) s_INITIAL_DIMENSION.getWidth();
         m_minHeight = (int) s_INITIAL_DIMENSION.getHeight();
+        m_lastMainPosition = .3d;
+        m_lastRightPosition = .5d;
         initFrame();
         initComponents();
         initLayout();
@@ -353,7 +335,7 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         m_leftContainer = new JPanel();
         m_leftSouthContainer = new JPanel();
         m_rightContainer = new JSplitPane(JSplitPane.VERTICAL_SPLIT, m_informationsPanel, m_logsPanel);
-        m_splitPanel_main = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_leftContainer, m_rightContainer);
+        m_mainContainer = new JSplitPane(JSplitPane.HORIZONTAL_SPLIT, m_leftContainer, m_rightContainer);
     }
 
     /**
@@ -386,7 +368,7 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         m_menuPanel.add(m_maximizeB);
         m_menuPanel.add(m_closeB);
 
-        m_main.add(m_splitPanel_main, BorderLayout.CENTER);
+        m_main.add(m_mainContainer, BorderLayout.CENTER);
         m_leftContainer.add(m_treePanel, BorderLayout.CENTER);
         m_leftContainer.add(m_leftSouthContainer, BorderLayout.SOUTH);
 
@@ -414,7 +396,7 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         m_main.setBackground(s_LIGHTGRAY);
         m_main.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
-        m_splitPanel_main.setUI(new BasicSplitPaneUI() {
+        m_mainContainer.setUI(new BasicSplitPaneUI() {
             @Override
             public BasicSplitPaneDivider createDefaultDivider() {
                 return (new BasicSplitPaneDivider(this) {
@@ -427,9 +409,9 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
                 });
             }
         });
-        m_splitPanel_main.setResizeWeight(.15d);
-        m_splitPanel_main.setDividerSize(2);
-        m_splitPanel_main.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        m_mainContainer.setDividerSize(3);
+        m_mainContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        m_mainContainer.setDividerLocation(.3d);
 
         m_rightContainer.setUI(new BasicSplitPaneUI() {
             @Override
@@ -444,9 +426,9 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
                 });
             }
         });
-        m_rightContainer.setResizeWeight(.80d);
         m_rightContainer.setDividerSize(3);
         m_rightContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
+        m_rightContainer.setDividerLocation(.5d);
 
         m_leftContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
