@@ -10,12 +10,70 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class FileManager {
+class FileManager {
 
     /**
-     * Constructor
+     * Class constructor
      */
     private FileManager() {
+    }
+
+    /**
+     * Create path for dataBase
+     *
+     * @param _data the dataBase
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
+     */
+    static String getPathFor(DataBase _data) throws IOException {
+        return createPathEnd(createPath(""), _data);
+    }
+
+    /**
+     * Create path for kingdom
+     *
+     * @param _kindgom the kingdom
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
+     */
+    static String getPathFor(Kingdom _kindgom) throws IOException {
+        return createPathEnd(createPath(""), _kindgom);
+    }
+
+    /**
+     * Create path for group
+     *
+     * @param _group the group
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
+     */
+    static String getPathFor(Group _group) throws IOException {
+        String groupPath = _group.getKingdomName();
+        return createPathEnd(createPath(groupPath), _group);
+    }
+
+    /**
+     * Create path for subGroup
+     *
+     * @param _subGroup the subGroup
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
+     */
+    static String getPathFor(SubGroup _subGroup) throws IOException {
+        String subGroupPath = _subGroup.getKingdomName() + File.separator + _subGroup.getGroupName();
+        return createPathEnd(createPath(subGroupPath), _subGroup);
+    }
+
+    /**
+     * Create path for organism
+     *
+     * @param _organism the organism
+     * @return the total path file name
+     * @throws IOException if it's impossible to create the directory
+     */
+    static String getPathFor(Organism _organism) throws IOException {
+        String organismPath = _organism.getKingdomName() + File.separator + _organism.getGroupName() + File.separator + _organism.getSubGroupName();
+        return createPath(organismPath) + File.separator + _organism.getName() + Options.getExcelExtension();
     }
 
     /**
@@ -52,63 +110,5 @@ public class FileManager {
      */
     private static String createPathEnd(String _prefix, IDataBase _idataBase) {
         return _prefix + File.separator + Options.getTotalPrefix() + _idataBase.getName() + Options.getExcelExtension();
-    }
-
-    /**
-     * Create path for dataBase
-     *
-     * @param _data the dataBase
-     * @return the total path file name
-     * @throws IOException if it's impossible to create the directory
-     */
-    protected static String getPathFor(DataBase _data) throws IOException {
-        return createPathEnd(createPath(""), _data);
-    }
-
-    /**
-     * Create path for kingdom
-     *
-     * @param _kindgom the kingdom
-     * @return the total path file name
-     * @throws IOException if it's impossible to create the directory
-     */
-    protected static String getPathFor(Kingdom _kindgom) throws IOException {
-        return createPathEnd(createPath(""), _kindgom);
-    }
-
-    /**
-     * Create path for group
-     *
-     * @param _group the group
-     * @return the total path file name
-     * @throws IOException if it's impossible to create the directory
-     */
-    protected static String getPathFor(Group _group) throws IOException {
-        String groupPath = _group.getKingdomName();
-        return createPathEnd(createPath(groupPath), _group);
-    }
-
-    /**
-     * Create path for subGroup
-     *
-     * @param _subGroup the subGroup
-     * @return the total path file name
-     * @throws IOException if it's impossible to create the directory
-     */
-    protected static String getPathFor(SubGroup _subGroup) throws IOException {
-        String subGroupPath = _subGroup.getKingdomName() + File.separator + _subGroup.getGroupName();
-        return createPathEnd(createPath(subGroupPath), _subGroup);
-    }
-
-    /**
-     * Create path for organism
-     *
-     * @param _organism the organism
-     * @return the total path file name
-     * @throws IOException if it's impossible to create the directory
-     */
-    protected static String getPathFor(Organism _organism) throws IOException {
-        String organismPath = _organism.getKingdomName() + File.separator + _organism.getGroupName() + File.separator + _organism.getSubGroupName();
-        return createPath(organismPath) + File.separator + _organism.getName() + Options.getExcelExtension();
     }
 }

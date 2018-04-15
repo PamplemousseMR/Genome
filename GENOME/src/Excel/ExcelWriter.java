@@ -21,14 +21,14 @@ import java.util.Map;
 public class ExcelWriter {
 
     // EDIT STYLE HERE :
-    private static final XSSFColor s_PRIMARY_COLOR       = new XSSFColor(new Color(70, 110, 115));
+    private static final XSSFColor s_PRIMARY_COLOR = new XSSFColor(new Color(70, 110, 115));
     private static final XSSFColor s_ALTERNATING_COLOR_A = new XSSFColor(new Color(56, 125, 122));
     private static final XSSFColor s_ALTERNATING_COLOR_B = new XSSFColor(new Color(50, 147, 111));
-    private static final XSSFColor s_BORDER_COLOR        = new XSSFColor(new Color(38, 169, 108));
-    private static final XSSFColor s_FONT_COLOR          = new XSSFColor(new Color(255, 255, 255));
+    private static final XSSFColor s_BORDER_COLOR = new XSSFColor(new Color(38, 169, 108));
+    private static final XSSFColor s_FONT_COLOR = new XSSFColor(new Color(255, 255, 255));
     private static final String s_FONT_NAME = "Calibri";
-    private static final short s_FONT_SIZE  = 11;
-    private static final boolean s_BOLD     = true;
+    private static final short s_FONT_SIZE = 11;
+    private static final boolean s_BOLD = true;
 
     private XSSFWorkbook m_workbook;
 
@@ -36,13 +36,17 @@ public class ExcelWriter {
     private XSSFCellStyle m_styleAlternateColorB;
     private XSSFCellStyle m_stylePrimaryColorBorders;
     private XSSFCellStyle m_styleAlternateColorABorders;
-    private XSSFCellStyle m_styleAlternateColorBBorders;
     private XSSFCellStyle m_stylePrimaryColorLeftRightBorders;
     private XSSFCellStyle m_styleAlternateColorARightBorders;
     private XSSFCellStyle m_styleAlternateColorBRightBorders;
 
-    private ExcelWriter(IDataBase _idateBase) {
-        writeWorkbook(_idateBase);
+    /**
+     * Class constructor
+     *
+     * @param _idataBase the data use to write
+     */
+    private ExcelWriter(IDataBase _idataBase) {
+        writeWorkbook(_idataBase);
     }
 
     /**
@@ -91,16 +95,33 @@ public class ExcelWriter {
         result.saveSheet(path);
     }
 
+    /**
+     * Write a in a cell using the numeric format
+     *
+     * @param _cell the cell to write in
+     * @param _f    the long to write in the numeric cell
+     */
     private static void writeNumericCell(XSSFCell _cell, float _f) {
         _cell.setCellValue(_f);
         _cell.setCellType(CellType.NUMERIC);
     }
 
+    /**
+     * Write a in a cell using the numeric format
+     *
+     * @param _cell the cell to write in
+     * @param _l    the long to write in the numeric cell
+     */
     private static void writeNumericCell(XSSFCell _cell, long _l) {
         _cell.setCellValue(_l);
         _cell.setCellType(CellType.NUMERIC);
     }
 
+    /**
+     * Write the workbook
+     *
+     * @param _idataBase the data to write
+     */
     private void writeWorkbook(IDataBase _idataBase) {
         m_workbook = new XSSFWorkbook();
         createStyles();
@@ -109,6 +130,9 @@ public class ExcelWriter {
         createStatisticsSheets(_idataBase);
     }
 
+    /**
+     * Create style
+     */
     private void createStyles() {
         final XSSFFont font = m_workbook.createFont();
         font.setFontHeightInPoints(s_FONT_SIZE);
@@ -168,18 +192,18 @@ public class ExcelWriter {
         m_styleAlternateColorB.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         m_styleAlternateColorB.setFont(font);
 
-        m_styleAlternateColorBBorders = m_workbook.createCellStyle();
-        m_styleAlternateColorBBorders.setFillForegroundColor(s_ALTERNATING_COLOR_B);
-        m_styleAlternateColorBBorders.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-        m_styleAlternateColorBBorders.setFont(font);
-        m_styleAlternateColorBBorders.setBorderTop(BorderStyle.MEDIUM);
-        m_styleAlternateColorBBorders.setBorderBottom(BorderStyle.MEDIUM);
-        m_styleAlternateColorBBorders.setBorderLeft(BorderStyle.MEDIUM);
-        m_styleAlternateColorBBorders.setBorderRight(BorderStyle.MEDIUM);
-        m_styleAlternateColorBBorders.setBorderColor(XSSFCellBorder.BorderSide.TOP, s_BORDER_COLOR);
-        m_styleAlternateColorBBorders.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, s_BORDER_COLOR);
-        m_styleAlternateColorBBorders.setBorderColor(XSSFCellBorder.BorderSide.LEFT, s_BORDER_COLOR);
-        m_styleAlternateColorBBorders.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, s_BORDER_COLOR);
+        XSSFCellStyle styleAlternateColorBBorders = m_workbook.createCellStyle();
+        styleAlternateColorBBorders.setFillForegroundColor(s_ALTERNATING_COLOR_B);
+        styleAlternateColorBBorders.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        styleAlternateColorBBorders.setFont(font);
+        styleAlternateColorBBorders.setBorderTop(BorderStyle.MEDIUM);
+        styleAlternateColorBBorders.setBorderBottom(BorderStyle.MEDIUM);
+        styleAlternateColorBBorders.setBorderLeft(BorderStyle.MEDIUM);
+        styleAlternateColorBBorders.setBorderRight(BorderStyle.MEDIUM);
+        styleAlternateColorBBorders.setBorderColor(XSSFCellBorder.BorderSide.TOP, s_BORDER_COLOR);
+        styleAlternateColorBBorders.setBorderColor(XSSFCellBorder.BorderSide.BOTTOM, s_BORDER_COLOR);
+        styleAlternateColorBBorders.setBorderColor(XSSFCellBorder.BorderSide.LEFT, s_BORDER_COLOR);
+        styleAlternateColorBBorders.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, s_BORDER_COLOR);
 
         m_styleAlternateColorBRightBorders = m_workbook.createCellStyle();
         m_styleAlternateColorBRightBorders.setFillForegroundColor(s_ALTERNATING_COLOR_B);
@@ -189,15 +213,30 @@ public class ExcelWriter {
         m_styleAlternateColorBRightBorders.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, s_BORDER_COLOR);
     }
 
+    /**
+     * Function do save the excel sheet
+     *
+     * @param _path the path of the file
+     * @throws IOException if an exception appear
+     */
     private void saveSheet(String _path) throws IOException {
         //	Check if file exist
         final File file = new File(_path);
         if (file.exists()) {
-            file.delete();
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
+                Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
+            }
         }
         try {
-            file.createNewFile();
-        } catch (IOException e) {
+            if (!file.createNewFile()) {
+                Logs.warning("Enable to create file : " + file.getName());
+            }
+        } catch (IOException | SecurityException e) {
             Logs.exception(e);
             throw e;
         }
@@ -213,6 +252,12 @@ public class ExcelWriter {
         }
     }
 
+    /**
+     * Create the General Info Sheet of the excel file
+     *
+     * @param _general_info_sheet the sheet to write
+     * @param _data               the data to write
+     */
     private void createGeneralInfoSheet(XSSFSheet _general_info_sheet, IDataBase _data) {
         _general_info_sheet.createRow(0).createCell(0).setCellValue("Information");
         _general_info_sheet.getRow(0).getCell(0).setCellStyle(m_stylePrimaryColorBorders);
@@ -289,6 +334,11 @@ public class ExcelWriter {
         _general_info_sheet.setColumnWidth(5, 4450);
     }
 
+    /**
+     * Create a sheet for statistics
+     *
+     * @param _data, the data use to create statistics
+     */
     private void createStatisticsSheets(IDataBase _data) {
         for (Statistics stat : _data.getStatistics().values()) {
             final XSSFSheet s = m_workbook.createSheet(Options.getSumPrefix() + stat.getType());
@@ -297,6 +347,11 @@ public class ExcelWriter {
         }
     }
 
+    /**
+     * Create a sheet for replicon
+     *
+     * @param _organism, the data use to create statistics
+     */
     private void createRepliconsSheets(Organism _organism) {
         for (Replicon replicon : _organism.getReplicons()) {
             final XSSFSheet s = m_workbook.createSheet(replicon.getName());
@@ -305,6 +360,11 @@ public class ExcelWriter {
         }
     }
 
+    /**
+     * Create the header of the sheet
+     *
+     * @param _sheet the sheet requiring a header
+     */
     private void createHeaderSheet(XSSFSheet _sheet) {
         XSSFRow r = _sheet.createRow(0);
         XSSFCell c = r.createCell(0);
@@ -383,6 +443,12 @@ public class ExcelWriter {
 
     }
 
+    /**
+     * Create the statistic table in the excel file
+     *
+     * @param _sheet the excel sheet
+     * @param _stat  the statistics to write in the sheet
+     */
     private void createTable(XSSFSheet _sheet, Statistics _stat) {
         XSSFRow r;
         XSSFCell c;
