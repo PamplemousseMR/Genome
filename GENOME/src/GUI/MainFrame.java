@@ -401,7 +401,8 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         });
         m_mainContainer.setDividerSize(3);
         m_mainContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
-        m_mainContainer.setDividerLocation(.3d);
+        m_mainContainer.setDividerLocation(.25d);
+        m_mainContainer.setResizeWeight(0.25d);
 
         m_rightContainer.setUI(new BasicSplitPaneUI() {
             @Override
@@ -419,6 +420,7 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
         m_rightContainer.setDividerSize(3);
         m_rightContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
         m_rightContainer.setDividerLocation(.5d);
+        m_rightContainer.setResizeWeight(0.5d);
 
         m_leftContainer.setBorder(BorderFactory.createLineBorder(s_CHARCOAL));
 
