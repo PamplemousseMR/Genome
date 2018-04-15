@@ -36,9 +36,18 @@ class JDataBase {
             swagComponent(stat);
 
             JPanel triPanel = new JPanel();
-            triPanel.setLayout(new GridLayout(Statistics.Trinucleotide.values().length + 1, Statistics.StatLong.values().length + Statistics.StatFloat.values().length + 1));
+            triPanel.setLayout(new GridLayout(Statistics.Trinucleotide.values().length + 2, Statistics.StatLong.values().length + Statistics.StatFloat.values().length + 1));
             swagComponent(triPanel);
 
+            long totalPhase0 = 0L;
+            long totalPhase1 = 0L;
+            long totalPhase2 = 0L;
+            float totalFreq0 = 0.0F;
+            float totalFreq1 = 0.0F;
+            float totalFreq2 = 0.0F;
+            long totalPhasePref0 = 0L;
+            long totalPhasePref1 = 0L;
+            long totalPhasePref2 = 0L;
             triPanel.add(swagComponent(new JPanel()));
             triPanel.add(swagComponent(new JLabel(Statistics.StatLong.PHASE0.toString())));
             triPanel.add(swagComponent(new JLabel(Statistics.StatFloat.FREQ0.toString())));
@@ -61,12 +70,37 @@ class JDataBase {
                 triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF0)))));
                 triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF1)))));
                 triPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF2)))));
+                totalPhase0 += row.get(Statistics.StatLong.PHASE0);
+                totalPhase1 += row.get(Statistics.StatLong.PHASE1);
+                totalPhase2 += row.get(Statistics.StatLong.PHASE2);
+                totalFreq0 += row.get(Statistics.StatFloat.FREQ0);
+                totalFreq1 += row.get(Statistics.StatFloat.FREQ1);
+                totalFreq2 += row.get(Statistics.StatFloat.FREQ2);
+                totalPhasePref0 += row.get(Statistics.StatLong.PREF0);
+                totalPhasePref1 += row.get(Statistics.StatLong.PREF1);
+                totalPhasePref2 += row.get(Statistics.StatLong.PREF2);
             }
+            triPanel.add(swagComponent(new JLabel("Total")));
+            triPanel.add(swagComponent(new JLabel(String.valueOf(totalPhase0))));
+            triPanel.add(swagComponent(new JLabel(String.valueOf(totalFreq0))));
+            triPanel.add(swagComponent(new JLabel(String.valueOf(totalPhase1))));
+            triPanel.add(swagComponent(new JLabel(String.valueOf(totalFreq1))));
+            triPanel.add(swagComponent(new JLabel(String.valueOf(totalPhase2))));
+            triPanel.add(swagComponent(new JLabel(String.valueOf(totalFreq2))));
+            triPanel.add(swagComponent(new JLabel(String.valueOf(totalPhasePref0))));
+            triPanel.add(swagComponent(new JLabel(String.valueOf(totalPhasePref1))));
+            triPanel.add(swagComponent(new JLabel(String.valueOf(totalPhasePref2))));
 
             JPanel diPanel = new JPanel();
-            diPanel.setLayout(new GridLayout(Statistics.Dinucleotide.values().length + 1, Statistics.StatLong.values().length + Statistics.StatFloat.values().length - 2));
+            diPanel.setLayout(new GridLayout(Statistics.Dinucleotide.values().length + 2, Statistics.StatLong.values().length + Statistics.StatFloat.values().length - 2));
             swagComponent(diPanel);
 
+            totalPhase0 = 0L;
+            totalPhase1 = 0L;
+            totalFreq0 = 0.0F;
+            totalFreq1 = 0.0F;
+            totalPhasePref0 = 0L;
+            totalPhasePref1 = 0L;
             diPanel.add(swagComponent(new JPanel()));
             diPanel.add(swagComponent(new JLabel(Statistics.StatLong.PHASE0.toString())));
             diPanel.add(swagComponent(new JLabel(Statistics.StatFloat.FREQ0.toString())));
@@ -83,7 +117,20 @@ class JDataBase {
                 diPanel.add(swagComponent(new JLabel(String.format("%.2f", row.get(Statistics.StatFloat.FREQ1) * 100) + "%")));
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF0)))));
                 diPanel.add(swagComponent(new JLabel(String.valueOf(row.get(Statistics.StatLong.PREF1)))));
+                totalPhase0 += row.get(Statistics.StatLong.PHASE0);
+                totalPhase1 += row.get(Statistics.StatLong.PHASE1);
+                totalFreq0 += row.get(Statistics.StatFloat.FREQ0);
+                totalFreq1 += row.get(Statistics.StatFloat.FREQ1);
+                totalPhasePref0 += row.get(Statistics.StatLong.PREF0);
+                totalPhasePref1 += row.get(Statistics.StatLong.PREF1);
             }
+            diPanel.add(swagComponent(new JLabel("Total")));
+            diPanel.add(swagComponent(new JLabel(String.valueOf(totalPhase0))));
+            diPanel.add(swagComponent(new JLabel(String.valueOf(totalFreq0))));
+            diPanel.add(swagComponent(new JLabel(String.valueOf(totalPhase1))));
+            diPanel.add(swagComponent(new JLabel(String.valueOf(totalFreq1))));
+            diPanel.add(swagComponent(new JLabel(String.valueOf(totalPhasePref0))));
+            diPanel.add(swagComponent(new JLabel(String.valueOf(totalPhasePref1))));
 
             stat.add(swagComponent(triPanel));
             stat.add(swagComponent(new JLabel(" ")));
