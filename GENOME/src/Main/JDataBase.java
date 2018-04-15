@@ -4,6 +4,7 @@ import Data.IDataBase;
 import Data.Statistics;
 import Data.Tuple;
 import GUI.TabbedPanel;
+import Utils.Options;
 
 import javax.swing.*;
 import java.awt.*;
@@ -135,7 +136,7 @@ class JDataBase {
             stat.add(swagComponent(triPanel));
             stat.add(swagComponent(new JLabel(" ")));
             stat.add(swagComponent(diPanel));
-            tabbed.add("TOTAL_" + ent.getKey().toString(), stat);
+            tabbed.add(Options.getSumPrefix() + ent.getKey().toString(), stat);
         }
 
         return tabbed;
