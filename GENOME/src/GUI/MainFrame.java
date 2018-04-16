@@ -226,6 +226,13 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
     }
 
     /**
+     * Reset JTree
+     */
+    public void resetTree() {
+        SwingUtilities.invokeLater(() -> m_treePanel.resetTree());
+    }
+
+    /**
      * Update JTree
      *
      * @param _path the path use to updateTree JTree

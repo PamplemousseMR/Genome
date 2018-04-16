@@ -37,6 +37,10 @@ class GlobalTest {
                         }
                     }
                 }
+
+                @Override
+                public void cancel() {
+                }
             }));
 
             assertTrue(thr.pushTask(new ITask("" + i) {
@@ -51,11 +55,15 @@ class GlobalTest {
                         }
                     }
                 }
+
+                @Override
+                public void cancel() {
+                }
             }));
         }
 
         // Blocked until all tasks are finished
-        thr.finalizeThreadManager();
+        thr.finalizeThreadManager(false);
 
         for (ArrayList<Boolean> li : results) {
             assertEquals(10, li.size());

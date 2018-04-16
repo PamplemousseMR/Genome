@@ -79,6 +79,27 @@ public final class Logs {
      *
      * @param _message the message to print
      */
+    public static void notice(String _message, boolean _notify) {
+        final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
+        final String header = "[" + stackTraceElements[2].getFileName() + "{ " + stackTraceElements[2].getClassName() + " : " + stackTraceElements[2].getMethodName() + "(" + stackTraceElements[2].getLineNumber() + ") } ] info : ";
+        final String message = header + " " + _message;
+        if (s_file != null) {
+            try {
+                s_file.write(message + "\n");
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        if (_notify) {
+            s_logsListener.logsEvent("Notice : " + _message, Type.NOTICE);
+        }
+    }
+
+    /**
+     * Print a message in the log file
+     *
+     * @param _message the message to print
+     */
     public static void warning(String _message) {
         final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
         final String header = "[" + stackTraceElements[2].getFileName() + "{ " + stackTraceElements[2].getClassName() + " : " + stackTraceElements[2].getMethodName() + "(" + stackTraceElements[2].getLineNumber() + ") } ] warning : ";
@@ -120,6 +141,7 @@ public final class Logs {
      */
     public enum Type {
         INFO,
+        NOTICE,
         WARNING,
         EXCEPTION
     }

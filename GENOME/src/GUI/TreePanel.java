@@ -187,9 +187,10 @@ public final class TreePanel extends IPanel {
                 actual.add(progressing);
                 m_treeModel.reload();
             } else {
-                if (table.length == 2)
-                    resetState();
-                else if (((Node) progressing.getUserObject()).getState() == State.DEFAULT) {
+                if (table.length == 2) {
+                    ((Node) progressing.getUserObject()).setState(State.FINISH);
+                    m_treeModel.nodeChanged(progressing);
+                } else if (((Node) progressing.getUserObject()).getState() == State.DEFAULT) {
                     ((Node) progressing.getUserObject()).setState(State.UPDATE);
                     m_treeModel.nodeChanged(progressing);
                 }
@@ -404,7 +405,7 @@ public final class TreePanel extends IPanel {
         return result;
     }
 
-    private void resetState() {
+    void resetTree() {
         DefaultMutableTreeNode actual = ((DefaultMutableTreeNode) m_treeModel.getRoot()).getNextNode();
         while (actual != null) {
             ((Node) actual.getUserObject()).setState(State.DEFAULT);
@@ -413,15 +414,15 @@ public final class TreePanel extends IPanel {
         }
     }
 
-    public interface TreeListener {
-        void treeEvent(String _path);
-    }
-
     private enum State {
         CREATE,
         UPDATE,
         FINISH,
         DEFAULT
+    }
+
+    public interface TreeListener {
+        void treeEvent(String _path);
     }
 
     private class Node {

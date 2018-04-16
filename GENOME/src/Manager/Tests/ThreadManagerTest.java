@@ -23,7 +23,7 @@ class ThreadManagerTest {
 
     @AfterAll
     static void finalizeThreadManager() {
-        assertTimeout(Duration.ofSeconds(1), () -> threadManager.finalizeThreadManager());
+        assertTimeout(Duration.ofSeconds(1), () -> threadManager.finalizeThreadManager(false));
     }
 
     @Test
@@ -31,6 +31,10 @@ class ThreadManagerTest {
         assertTrue(threadManager.pushTask(new ITask("") {
             @Override
             public void run() {
+            }
+
+            @Override
+            public void cancel() {
             }
         }));
     }
