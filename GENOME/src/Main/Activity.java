@@ -20,43 +20,49 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-class Activity {
+final class Activity {
 
-    private static final Lock m_lock = new ReentrantLock();
-    private static final Condition m_cond = m_lock.newCondition();
-    private static final Object s_stopLock = new Object();
-    private static final Object s_runLock = new Object();
+    private static final Lock s_LOCK = new ReentrantLock();
+    private static final Condition s_COND = s_LOCK.newCondition();
+    private static final Object s_STOP_LOCK = new Object();
+    private static final Object s_RUN_LOCK = new Object();
     private static Boolean s_stop = false;
     private static Boolean s_run = false;
     private static Thread s_activityThread = null;
     private static boolean s_wait = false;
 
+    /**
+     * Run main activity
+     *
+     * @return true if activity is started
+     */
     public static boolean genbank() {
         boolean run = true;
-        synchronized (s_runLock) {
+        synchronized (s_RUN_LOCK) {
             if (!s_run) {
                 run = false;
                 s_run = true;
             }
         }
         if (!run) {
-            m_lock.lock();
+            s_LOCK.lock();
             {
                 if (s_wait) {
                     s_wait = false;
                 }
             }
-            m_lock.unlock();
-            synchronized (s_stopLock) {
+            s_LOCK.unlock();
+            synchronized (s_STOP_LOCK) {
                 if (s_stop) {
                     s_stop = false;
                 }
             }
             MainFrame.getSingleton().updateProgresseValue(0);
+            MainFrame.getSingleton().resetTree();
             s_activityThread = new Thread(() -> {
                 Date beg = new Date();
-                final ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 final int[] index = {0};
+                ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
@@ -88,19 +94,8 @@ class Activity {
 
                     final Lock m_indexLock = new ReentrantLock();
                     while (go.hasNext()) {
-                        m_lock.lock();
-                        {
-                            while (s_wait) {
-                                Logs.info("wait...", true);
-                                try {
-                                    m_cond.await();
-                                } catch (InterruptedException e) {
-                                    Logs.exception(e);
-                                }
-                            }
-                        }
-                        m_lock.unlock();
-                        synchronized (s_stopLock) {
+                        wait(Activity.class.toString());
+                        synchronized (s_STOP_LOCK) {
                             if (s_stop) {
                                 break;
                             }
@@ -163,6 +158,7 @@ class Activity {
                                         return;
                                     }
                                     for (Map.Entry<String, String> ent : organismParser.getReplicons()) {
+                                        Activity.wait(getName());
                                         final GenbankCDS cdsDownloader = new GenbankCDS(ent.getKey());
                                         try {
                                             cdsDownloader.download();
@@ -227,7 +223,7 @@ class Activity {
                 } finally {
                     Logs.info("Finished and wait for threads...", true);
                     threadManager.finalizeThreadManager();
-                    synchronized (s_runLock) {
+                    synchronized (s_RUN_LOCK) {
                         s_run = false;
                     }
                     MainFrame.getSingleton().updateProgresseValue(++index[0]);
@@ -241,26 +237,34 @@ class Activity {
         return false;
     }
 
+    /**
+     * Send stop request
+     *
+     * @return if true if success
+     */
     public static boolean stop() {
         Logs.info("stop requested ...", true);
         boolean ret = false;
-        synchronized (s_stopLock) {
+        synchronized (s_STOP_LOCK) {
             if (!s_stop) {
                 s_stop = true;
                 ret = true;
             }
         }
-        m_lock.lock();
+        s_LOCK.lock();
         {
             if (s_wait) {
                 s_wait = false;
-                m_cond.signalAll();
+                s_COND.signalAll();
             }
         }
-        m_lock.unlock();
+        s_LOCK.unlock();
         return ret;
     }
 
+    /**
+     * Send stop request and wait all threads
+     */
     public static void stopAndWait() {
         stop();
         if (s_activityThread != null) {
@@ -272,33 +276,63 @@ class Activity {
         }
     }
 
+    /**
+     * Send pause request
+     *
+     * @return if true if success
+     */
     public static boolean pause() {
         Logs.info("pause requested ...", true);
         boolean ret = false;
-        m_lock.lock();
+        s_LOCK.lock();
         {
             if (!s_wait) {
                 s_wait = true;
                 ret = true;
             }
         }
-        m_lock.unlock();
+        s_LOCK.unlock();
         return ret;
     }
 
+    /**
+     * Send resume request
+     *
+     * @return if true if success
+     */
     public static boolean resume() {
         Logs.info("resume requested ...", true);
         boolean ret = false;
-        m_lock.lock();
+        s_LOCK.lock();
         {
             if (s_wait) {
                 s_wait = false;
-                m_cond.signalAll();
+                s_COND.signalAll();
                 ret = true;
             }
         }
-        m_lock.unlock();
+        s_LOCK.unlock();
         return ret;
+    }
+
+    /**
+     * Wait if requested
+     *
+     * @param _name the name of the task
+     */
+    private static void wait(String _name) {
+        s_LOCK.lock();
+        {
+            while (s_wait) {
+                Logs.info(_name + " : wait...", true);
+                try {
+                    s_COND.await();
+                } catch (InterruptedException e) {
+                    Logs.exception(e);
+                }
+            }
+        }
+        s_LOCK.unlock();
     }
 
     /**

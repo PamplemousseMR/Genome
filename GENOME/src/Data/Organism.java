@@ -18,19 +18,19 @@ public final class Organism extends IDataBase {
     /**
      * Array of this organism's Replicon
      */
-    private transient final ArrayList<Replicon> m_replicons;
+    private transient final ArrayList<Replicon> m_REPLICONS;
     /**
      * The id of this organism
      */
-    private transient final long m_id;
+    private transient final long m_ID;
     /**
      * The version of the organism
      */
-    private transient final long m_version;
+    private transient final long m_VERSION;
     /**
      * Event to call when compute are finished
      */
-    private transient final IOrganismCallback m_event;
+    private transient IOrganismCallback m_event;
     /**
      * Reference to the parent
      */
@@ -46,9 +46,9 @@ public final class Organism extends IDataBase {
      */
     private Organism(String _name, long _id, long _version, IOrganismCallback _event) {
         super(_name);
-        m_id = _id;
-        m_version = _version;
-        m_replicons = new ArrayList<>();
+        m_ID = _id;
+        m_VERSION = _version;
+        m_REPLICONS = new ArrayList<>();
         m_parent = null;
         m_event = _event;
         super.setTotalOrganismToOne();
@@ -135,12 +135,12 @@ public final class Organism extends IDataBase {
     public boolean addReplicon(Replicon _replicon) throws AddException {
         if (super.getState() == State.STARTED) {
             try {
-                if (m_replicons.get(_replicon.getIndex()) != null)
+                if (m_REPLICONS.get(_replicon.getIndex()) != null)
                     throw new AddException("Replicon already added : " + _replicon.getName());
             } catch (IndexOutOfBoundsException ignored) {
             }
-            _replicon.setIndex(m_replicons.size());
-            return m_replicons.add(_replicon);
+            _replicon.setIndex(m_REPLICONS.size());
+            return m_REPLICONS.add(_replicon);
         } else return false;
     }
 
@@ -151,8 +151,8 @@ public final class Organism extends IDataBase {
      */
     @Override
     public void finish() throws InvalidStateException {
-        m_replicons.parallelStream().forEach(Replicon::computeStatistic);
-        for (Replicon rep : m_replicons) {
+        m_REPLICONS.parallelStream().forEach(Replicon::computeStatistic);
+        for (Replicon rep : m_REPLICONS) {
             super.updateStatistics(rep);
             super.incrementGenomeNumber(rep.getType());
             super.incrementGenericTotals(rep);
@@ -161,17 +161,17 @@ public final class Organism extends IDataBase {
         m_event.finish(this);
         m_parent.finish(this);
         super.finish();
-        m_replicons.clear();
+        m_REPLICONS.clear();
         super.clear();
     }
 
     /**
      * Get the replicons Organism
      *
-     * @return the m_replicons
+     * @return the m_REPLICONS
      */
     public ArrayList<Replicon> getReplicons() {
-        return m_replicons;
+        return m_REPLICONS;
     }
 
     /**
@@ -207,7 +207,7 @@ public final class Organism extends IDataBase {
      * @return the version's number
      */
     public long getVersion() {
-        return m_version;
+        return m_VERSION;
     }
 
     /**
@@ -216,7 +216,7 @@ public final class Organism extends IDataBase {
      * @return the id's number
      */
     public long getId() {
-        return m_id;
+        return m_ID;
     }
 
     /**
