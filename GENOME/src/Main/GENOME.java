@@ -20,7 +20,17 @@ final class GENOME {
     public static void main(String[] args) {
         if (lock()) {
             try {
-                Logs.setListener((_message, _type) -> MainFrame.getSingleton().updateLog(_message, _type));
+                Logs.setListener((_message, _type) -> {
+                    MainFrame.getSingleton().updateLog(_message, _type);
+                    switch (_type) {
+                        case EXCEPTION:
+                            System.err.println(_message);
+                            break;
+                        default:
+                            System.out.println(_message);
+                            break;
+                    }
+                });
                 MainFrame.getSingleton().addStartListener(Activity::genbank);
                 MainFrame.getSingleton().addStopListener(Activity::stop);
                 MainFrame.getSingleton().addPauseListener(Activity::pause);

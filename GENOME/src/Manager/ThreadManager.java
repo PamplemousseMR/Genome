@@ -76,10 +76,10 @@ public final class ThreadManager {
         m_lockArray.lock();
         {
             if (_cancel) {
-                Logs.info("Cancel requested", true);
+                Logs.notice("Cancel requested", true);
                 while (!m_task.isEmpty()) {
                     ITask task = m_task.removeFirst();
-                    Logs.info("Cancel : " + task.getName(), true);
+                    Logs.notice("Cancel : " + task.getName(), true);
                     task.cancel();
                 }
             }
@@ -95,7 +95,7 @@ public final class ThreadManager {
                 Logs.exception(e);
             }
         }
-        Logs.info("Finalized", true);
+        Logs.notice("Finalized", true);
     }
 
     /**

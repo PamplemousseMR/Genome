@@ -45,6 +45,7 @@ final class Activity {
             }
         }
         if (!run) {
+            Logs.notice("Start", true);
             s_LOCK.lock();
             {
                 if (s_wait) {
@@ -98,7 +99,7 @@ final class Activity {
                         wait(Activity.class.toString());
                         synchronized (s_STOP_LOCK) {
                             if (s_stop) {
-                                Logs.info("Stop main loop", true);
+                                Logs.notice("Stop main loop", true);
                                 cancel = true;
                                 break;
                             }
@@ -237,14 +238,14 @@ final class Activity {
                     Logs.warning("Unable to run programme");
                     Logs.exception(e);
                 } finally {
-                    Logs.info("Finished and wait for threads...", true);
+                    Logs.notice("Finished and wait for threads...", true);
                     threadManager.finalizeThreadManager(cancel);
                     synchronized (s_RUN_LOCK) {
                         s_run = false;
                     }
                     MainFrame.getSingleton().updateProgresseValue(++index[0]);
                     Date end = new Date();
-                    Logs.info("Execution time : " + getDifference(beg, end), true);
+                    Logs.notice("Execution time : " + getDifference(beg, end), true);
                 }
             });
             s_activityThread.start();
@@ -259,22 +260,22 @@ final class Activity {
      * @return if true if success
      */
     public static boolean stop() {
-        Logs.info("stop requested ...", true);
         boolean ret = false;
         synchronized (s_STOP_LOCK) {
             if (!s_stop) {
+                Logs.notice("stop requested ...", true);
                 s_stop = true;
                 ret = true;
+                s_LOCK.lock();
+                {
+                    if (s_wait) {
+                        s_wait = false;
+                        s_COND.signalAll();
+                    }
+                }
+                s_LOCK.unlock();
             }
         }
-        s_LOCK.lock();
-        {
-            if (s_wait) {
-                s_wait = false;
-                s_COND.signalAll();
-            }
-        }
-        s_LOCK.unlock();
         return ret;
     }
 
@@ -298,11 +299,11 @@ final class Activity {
      * @return if true if success
      */
     public static boolean pause() {
-        Logs.info("pause requested ...", true);
         boolean ret = false;
         s_LOCK.lock();
         {
             if (!s_wait) {
+                Logs.notice("pause requested ...", true);
                 s_wait = true;
                 ret = true;
             }
@@ -317,11 +318,11 @@ final class Activity {
      * @return if true if success
      */
     public static boolean resume() {
-        Logs.info("resume requested ...", true);
         boolean ret = false;
         s_LOCK.lock();
         {
             if (s_wait) {
+                Logs.notice("resume requested ...", true);
                 s_wait = false;
                 s_COND.signalAll();
                 ret = true;
@@ -340,7 +341,7 @@ final class Activity {
         s_LOCK.lock();
         {
             while (s_wait) {
-                Logs.info(_name + " : wait...", true);
+                Logs.notice(_name + " : wait...", true);
                 try {
                     s_COND.await();
                 } catch (InterruptedException e) {

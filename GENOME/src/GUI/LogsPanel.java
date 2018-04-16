@@ -80,6 +80,9 @@ public final class LogsPanel extends IPanel {
             case EXCEPTION:
                 m_logColour = s_RED;
                 break;
+            case NOTICE:
+                m_logColour = s_BLUE;
+                break;
             default:
                 m_logColour = s_WHITE;
                 break;
