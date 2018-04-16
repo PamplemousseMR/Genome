@@ -30,4 +30,9 @@ public abstract class ITask implements Runnable {
      */
     @Override
     public abstract void run();
+
+    /**
+     * Task to cancel
+     */
+    public abstract void cancel();
 }

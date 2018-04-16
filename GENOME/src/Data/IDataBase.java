@@ -437,6 +437,25 @@ public class IDataBase implements Serializable {
     }
 
     /**
+     * Reset all values
+     *
+     * @throws InvalidStateException if it's finished
+     */
+    void cancel() throws InvalidStateException {
+        if (getState() == State.CREATED || getState() == State.STARTED || getState() == State.STOPPED) {
+            m_modificationDate.setTime(0);
+            m_statistics.clear();
+            m_genomeNumber.clear();
+            m_CDSNumber = 0L;
+            m_validCDSNumber = 0L;
+            m_totalOrganism = 0L;
+            m_finished = 0;
+        } else {
+            throw new InvalidStateException("Impossible to cancel finished Organism : " + this.getName());
+        }
+    }
+
+    /**
      * Type of each State
      */
     public enum State {

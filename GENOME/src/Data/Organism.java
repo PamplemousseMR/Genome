@@ -35,6 +35,10 @@ public final class Organism extends IDataBase {
      * Reference to the parent
      */
     private transient SubGroup m_parent;
+    /**
+     * True if it's canceled
+     */
+    private boolean m_cancel;
 
     /**
      * Class constructor
@@ -51,6 +55,7 @@ public final class Organism extends IDataBase {
         m_REPLICONS = new ArrayList<>();
         m_parent = null;
         m_event = _event;
+        m_cancel = false;
         super.setTotalOrganismToOne();
     }
 
@@ -119,7 +124,7 @@ public final class Organism extends IDataBase {
      * @throws InvalidStateException if it can't be started
      */
     @Override
-    public final void start() throws InvalidStateException {
+    public synchronized void start() throws InvalidStateException {
         if (m_parent == null)
             throw new InvalidStateException("Unable to start without been add in a SubGroup : " + getName());
         super.start();
@@ -133,6 +138,9 @@ public final class Organism extends IDataBase {
      * @throws AddException if it _replicon are already added
      */
     public boolean addReplicon(Replicon _replicon) throws AddException {
+        if (m_cancel) {
+            throw new AddException("Impossible to add replicon to a canceled Organism");
+        }
         if (super.getState() == State.STARTED) {
             try {
                 if (m_REPLICONS.get(_replicon.getIndex()) != null)
@@ -150,7 +158,7 @@ public final class Organism extends IDataBase {
      * @throws InvalidStateException if it can't be finished
      */
     @Override
-    public void finish() throws InvalidStateException {
+    public synchronized void finish() throws InvalidStateException {
         m_REPLICONS.parallelStream().forEach(Replicon::computeStatistic);
         for (Replicon rep : m_REPLICONS) {
             super.updateStatistics(rep);
@@ -261,6 +269,19 @@ public final class Organism extends IDataBase {
     @Override
     public String getSavedName() {
         return m_parent.getSavedName() + s_SERIALIZATION_PREFIX + getName();
+    }
+
+    /**
+     * Cancel
+     *
+     * @throws InvalidStateException if it's finished
+     */
+    public void cancel() throws InvalidStateException {
+        super.cancel();
+        m_event = _organism -> {
+        };
+        m_REPLICONS.clear();
+        m_cancel = true;
     }
 
     /**

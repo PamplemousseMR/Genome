@@ -80,7 +80,7 @@ public final class Group extends IDataBase {
      * @throws InvalidStateException if it can't be started
      */
     @Override
-    public final void start() throws InvalidStateException {
+    public synchronized void start() throws InvalidStateException {
         if (m_parent == null)
             throw new InvalidStateException("Unable to start without been add in a Kingdom : " + getName());
         super.start();

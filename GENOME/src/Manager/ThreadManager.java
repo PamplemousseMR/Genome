@@ -66,7 +66,7 @@ public final class ThreadManager {
     /**
      * Blocking method which wait until all task are finished
      */
-    public void finalizeThreadManager() {
+    public void finalizeThreadManager(boolean _cancel) {
         m_runningLock.lock();
         {
             m_running = false;
@@ -75,6 +75,14 @@ public final class ThreadManager {
 
         m_lockArray.lock();
         {
+            if (_cancel) {
+                Logs.info("Cancel requested", true);
+                while (!m_task.isEmpty()) {
+                    ITask task = m_task.removeFirst();
+                    Logs.info("Cancel : " + task.getName(), true);
+                    task.cancel();
+                }
+            }
             m_condArray.signalAll();
         }
         m_lockArray.unlock();

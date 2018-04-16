@@ -62,6 +62,7 @@ final class Activity {
             s_activityThread = new Thread(() -> {
                 Date beg = new Date();
                 final int[] index = {0};
+                boolean cancel = false;
                 ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
@@ -97,6 +98,8 @@ final class Activity {
                         wait(Activity.class.toString());
                         synchronized (s_STOP_LOCK) {
                             if (s_stop) {
+                                Logs.info("Stop main loop", true);
+                                cancel = true;
                                 break;
                             }
                         }
@@ -137,12 +140,12 @@ final class Activity {
                         Organism organism = Organism.load(organismName, organismParser.getId(), organismParser.getVersion(), currentSubGroup, true, _organism -> {
                             try {
                                 ExcelWriter.writeOrganism(_organism);
-                                _organism.save();
-                                MainFrame.getSingleton().updateTree(_organism.getSavedName() + Options.getSerializeExtension());
                             } catch (IOException e) {
                                 Logs.warning("Unable to write excel file : " + _organism.getName());
                                 Logs.exception(e);
                             }
+                            _organism.save();
+                            MainFrame.getSingleton().updateTree(_organism.getSavedName() + Options.getSerializeExtension());
                         });
 
                         // Thread
@@ -210,6 +213,19 @@ final class Activity {
                                     m_indexLock.unlock();
                                 }
                             }
+
+                            @Override
+                            public void cancel() {
+                                try {
+                                    organism.start();
+                                    organism.stop();
+                                    organism.cancel();
+                                    organism.finish();
+                                } catch (InvalidStateException e) {
+                                    Logs.warning("Unable to cancel : " + organism.getName());
+                                    Logs.exception(e);
+                                }
+                            }
                         });
                     }
 
@@ -222,7 +238,7 @@ final class Activity {
                     Logs.exception(e);
                 } finally {
                     Logs.info("Finished and wait for threads...", true);
-                    threadManager.finalizeThreadManager();
+                    threadManager.finalizeThreadManager(cancel);
                     synchronized (s_RUN_LOCK) {
                         s_run = false;
                     }
@@ -369,12 +385,12 @@ final class Activity {
         _currentKingdom = Kingdom.load(_newKingdom, _parent, _kingdom -> {
             try {
                 ExcelWriter.writeKingdom(_kingdom);
-                _kingdom.save();
-                MainFrame.getSingleton().updateTree(_kingdom.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel kingdom file : " + _kingdom.getName());
                 Logs.exception(e);
             }
+            _kingdom.save();
+            MainFrame.getSingleton().updateTree(_kingdom.getSavedName() + Options.getSerializeExtension());
         });
         _currentKingdom.start();
         return _currentKingdom;
@@ -385,12 +401,12 @@ final class Activity {
         _currentGroup = Group.load(_newGroup, _parent, _group -> {
             try {
                 ExcelWriter.writeGroup(_group);
-                _group.save();
-                MainFrame.getSingleton().updateTree(_group.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel group file : " + _group.getName());
                 Logs.exception(e);
             }
+            _group.save();
+            MainFrame.getSingleton().updateTree(_group.getSavedName() + Options.getSerializeExtension());
         });
         _currentGroup.start();
         return _currentGroup;
@@ -401,12 +417,12 @@ final class Activity {
         _currentSubGroup = SubGroup.load(_newSubGroup, _parent, _subGroup -> {
             try {
                 ExcelWriter.writeSubGroup(_subGroup);
-                _subGroup.save();
-                MainFrame.getSingleton().updateTree(_subGroup.getSavedName() + Options.getSerializeExtension());
             } catch (IOException e) {
                 Logs.warning("Unable to write excel subGroup file : " + _subGroup.getName());
                 Logs.exception(e);
             }
+            _subGroup.save();
+            MainFrame.getSingleton().updateTree(_subGroup.getSavedName() + Options.getSerializeExtension());
         });
         _currentSubGroup.start();
         return _currentSubGroup;
