@@ -9,8 +9,17 @@ import java.awt.event.AdjustmentListener;
 
 class SmartScrollComponent implements AdjustmentListener {
 
+    /**
+     * True if the scroll bar must be adjusted
+     */
     private boolean m_adjustScrollBar = true;
+    /**
+     * Value use to adjust
+     */
     private int m_previousValue = -1;
+    /**
+     * Value use to adjust
+     */
     private int m_previousMaximum = -1;
 
     /**
@@ -31,6 +40,11 @@ class SmartScrollComponent implements AdjustmentListener {
         }
     }
 
+    /**
+     * Invoked when the value of the adjustable has changed.
+     *
+     * @param e the event to be processed
+     */
     @Override
     public void adjustmentValueChanged(final AdjustmentEvent e) {
         SwingUtilities.invokeLater(() -> checkScrollBar(e));

@@ -12,7 +12,7 @@ import java.util.Map;
 
 import static GUI.InformationPanel.swagComponent;
 
-class JDataBase {
+final class JDataBase {
 
     /**
      * Create component to display an IDataBase

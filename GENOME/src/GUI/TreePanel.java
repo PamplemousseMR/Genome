@@ -36,10 +36,16 @@ public final class TreePanel extends IPanel {
 
     private JPanel m_container;
 
+    /**
+     * Class constructor
+     */
     TreePanel() {
         super(s_TITLE);
     }
 
+    /**
+     * Create the components of the panel
+     */
     protected void createComponent() {
         m_container = new JPanel();
         m_legend = new JPanel();
@@ -62,6 +68,9 @@ public final class TreePanel extends IPanel {
         new SmartScrollComponent(m_scrollPane);
     }
 
+    /**
+     * Init the layouts of the panel
+     */
     protected void initLayout() {
         m_container.setLayout(new BorderLayout());
         m_orangeContainer.setLayout(new BorderLayout());
@@ -70,6 +79,9 @@ public final class TreePanel extends IPanel {
         m_legend.setLayout(new GridLayout(1, 3));
     }
 
+    /**
+     * Add the components into the panel
+     */
     protected void addComponents() {
         m_container.add(m_scrollPane, BorderLayout.CENTER);
         m_container.add(m_legend, BorderLayout.NORTH);
@@ -92,6 +104,9 @@ public final class TreePanel extends IPanel {
         super.add(m_container);
     }
 
+    /**
+     * Make components of the panel pretty
+     */
     protected void swagComponent() {
         final DefaultMutableTreeNode root = loadTree();
         m_treeModel = new DefaultTreeModel(root);
@@ -158,10 +173,20 @@ public final class TreePanel extends IPanel {
         m_legend.setMinimumSize(new Dimension(250, 30));
     }
 
+    /**
+     * Add listener
+     *
+     * @param _treeListener action to call
+     */
     void addTreeListener(TreeListener _treeListener) {
         m_tree.addTreeSelectionListener(e -> _treeListener.treeEvent(getFileName(e.getPath())));
     }
 
+    /**
+     * Update tree with nwe path
+     *
+     * @param _path the path to add
+     */
     synchronized void update(String _path) {
         String table[] = _path.split(Options.getSerializationSpliter());
         String temp;
@@ -317,6 +342,23 @@ public final class TreePanel extends IPanel {
         }
     }
 
+    /**
+     * Reset tree node status
+     */
+    void resetTree() {
+        DefaultMutableTreeNode actual = ((DefaultMutableTreeNode) m_treeModel.getRoot()).getNextNode();
+        while (actual != null) {
+            ((Node) actual.getUserObject()).setState(State.DEFAULT);
+            m_treeModel.nodeChanged(actual);
+            actual = actual.getNextNode();
+        }
+    }
+
+    /**
+     * Initial load
+     *
+     * @return the default mutable tree node
+     */
     private DefaultMutableTreeNode loadTree() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(new Node("root", State.DEFAULT));
         File path = new File(Options.getSerializeDirectory());
@@ -389,6 +431,12 @@ public final class TreePanel extends IPanel {
 
     }
 
+    /**
+     * Get file real path
+     *
+     * @param _path the path
+     * @return the real path
+     */
     private String getFileName(TreePath _path) {
         String result = "";
         Object[] table = _path.getPath();
@@ -405,15 +453,9 @@ public final class TreePanel extends IPanel {
         return result;
     }
 
-    void resetTree() {
-        DefaultMutableTreeNode actual = ((DefaultMutableTreeNode) m_treeModel.getRoot()).getNextNode();
-        while (actual != null) {
-            ((Node) actual.getUserObject()).setState(State.DEFAULT);
-            m_treeModel.nodeChanged(actual);
-            actual = actual.getNextNode();
-        }
-    }
-
+    /**
+     * State of each node
+     */
     private enum State {
         CREATE,
         UPDATE,
@@ -421,6 +463,9 @@ public final class TreePanel extends IPanel {
         DEFAULT
     }
 
+    /**
+     * Tree listener
+     */
     public interface TreeListener {
         void treeEvent(String _path);
     }

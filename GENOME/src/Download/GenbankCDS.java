@@ -19,20 +19,20 @@ public final class GenbankCDS extends IDownloader {
     /**
      * ID of the CDS
      */
-    private final String m_refseqId;
+    private final String m_ID;
     /**
      * String buffer used to store result
      */
-    private final StringBuilder m_data;
+    private final StringBuilder m_DATA;
 
     /**
      * Class constructor
      *
-     * @param _refseqId the id of the CDS
+     * @param _id the id of the CDS
      */
-    public GenbankCDS(String _refseqId) {
-        m_refseqId = _refseqId;
-        m_data = new StringBuilder();
+    public GenbankCDS(String _id) {
+        m_ID = _id;
+        m_DATA = new StringBuilder();
     }
 
     /**
@@ -43,25 +43,25 @@ public final class GenbankCDS extends IDownloader {
      * @throws OutOfMemoryException A savage out of memory appear
      */
     public void download() throws HTTPException, IOException, OutOfMemoryException {
-        Logs.info(String.format("Requesting sequence file [%s]", m_refseqId), true);
+        Logs.info(String.format("Requesting sequence file [%s]", m_ID), true);
         final BufferedReader reader;
         URL url = null;
         try {
             url = getURL();
             reader = get(url);
             for (int c; (c = reader.read()) != -1; ) {
-                m_data.append((char) c);
+                m_DATA.append((char) c);
             }
         } catch (HTTPException | IOException e) {
-            Logs.warning("Unable to get data : " + m_refseqId + " : " + url);
+            Logs.warning("Unable to get data : " + m_ID + " : " + url);
             Logs.exception(e);
             throw e;
         } catch (OutOfMemoryError e) {
-            Logs.warning("Out of memory : " + m_refseqId + " : " + url);
+            Logs.warning("Out of memory : " + m_ID + " : " + url);
             Logs.exception(new Exception(e));
             throw new OutOfMemoryException(e.getMessage());
         }
-        Logs.info(String.format("Sequence [%s] : Request ended successfully (%d Bytes)", m_refseqId, m_data.length()), true);
+        Logs.info(String.format("Sequence [%s] : Request ended successfully (%d Bytes)", m_ID, m_DATA.length()), true);
     }
 
     /**
@@ -71,7 +71,7 @@ public final class GenbankCDS extends IDownloader {
      * @return Refseq data as a string
      */
     public StringBuilder getRefseqData() {
-        return m_data;
+        return m_DATA;
     }
 
     /**
@@ -81,7 +81,7 @@ public final class GenbankCDS extends IDownloader {
      * @throws MalformedURLException On malformed Url
      */
     private URL getURL() throws MalformedURLException {
-        final String urlStr = String.format("%s?%s&id=%s", Options.getCDSBaseUrl(), s_REQUEST, m_refseqId);
+        final String urlStr = String.format("%s?%s&id=%s", Options.getCDSBaseUrl(), s_REQUEST, m_ID);
 
         final URL res;
         try {

@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.IntStream;
 
-public class CDSParser {
+public final class CDSParser {
 
     /**
      * Key used to get CDS
@@ -50,23 +50,23 @@ public class CDSParser {
     /**
      * Sequences
      */
-    private final ArrayList<StringBuilder> m_sequences;
+    private final ArrayList<StringBuilder> m_SEQUENCES;
     /**
      * Name
      */
-    private final String m_name;
+    private final String m_NAME;
     /**
      * Initial buffer
      */
-    private final StringBuilder m_buffer;
+    private final StringBuilder m_BUFFER;
     /**
      * List of CDS
      */
-    private final ArrayList<StringBuilder> m_cdsList;
+    private final ArrayList<StringBuilder> m_CDSLIST;
     /**
      * Full sequences
      */
-    private final StringBuilder m_origin;
+    private final StringBuilder m_ORIGIN;
     /**
      * Total of CDS
      */
@@ -82,13 +82,13 @@ public class CDSParser {
      * @param _buffer the CDS
      */
     public CDSParser(StringBuilder _buffer, String _name) {
-        m_buffer = _buffer;
-        m_name = _name;
+        m_BUFFER = _buffer;
+        m_NAME = _name;
         m_total = 0;
         m_valid = 0;
-        m_cdsList = new ArrayList<>();
-        m_origin = new StringBuilder();
-        m_sequences = new ArrayList<>();
+        m_CDSLIST = new ArrayList<>();
+        m_ORIGIN = new StringBuilder();
+        m_SEQUENCES = new ArrayList<>();
     }
 
     /**
@@ -100,39 +100,39 @@ public class CDSParser {
             int originIndex = -s_CDS_KEY.length();
             int begIndex = -s_ORIGIN_KEY.length();
             int endIndex;
-            while ((originIndex = m_buffer.indexOf(s_CDS_KEY, originIndex + s_CDS_KEY.length())) != -1) {
+            while ((originIndex = m_BUFFER.indexOf(s_CDS_KEY, originIndex + s_CDS_KEY.length())) != -1) {
 
                 begIndex = originIndex;
-                endIndex = m_buffer.indexOf("\n", begIndex);
-                StringBuilder cds = new StringBuilder(m_buffer.substring(begIndex + s_CDS_KEY.length(), endIndex).toUpperCase());
+                endIndex = m_BUFFER.indexOf("\n", begIndex);
+                StringBuilder cds = new StringBuilder(m_BUFFER.substring(begIndex + s_CDS_KEY.length(), endIndex).toUpperCase());
 
                 long open = cds.codePoints().filter(ch -> ch == '(').count();
                 long close = cds.codePoints().filter(ch -> ch == ')').count();
                 while (open != close) {
                     begIndex = endIndex + 1;
-                    endIndex = m_buffer.indexOf("\n", begIndex);
-                    String temp = m_buffer.substring(begIndex, endIndex).toUpperCase();
+                    endIndex = m_BUFFER.indexOf("\n", begIndex);
+                    String temp = m_BUFFER.substring(begIndex, endIndex).toUpperCase();
                     cds.append(temp);
                     open += temp.codePoints().filter(ch -> ch == '(').count();
                     close += temp.codePoints().filter(ch -> ch == ')').count();
                 }
-                m_cdsList.add(cds);
+                m_CDSLIST.add(cds);
 
             }
 
-            begIndex = m_buffer.indexOf(s_ORIGIN_KEY, begIndex);
-            endIndex = m_buffer.indexOf(s_ORIGIN_END_KEY, begIndex);
+            begIndex = m_BUFFER.indexOf(s_ORIGIN_KEY, begIndex);
+            endIndex = m_BUFFER.indexOf(s_ORIGIN_END_KEY, begIndex);
             Pattern pattern = Pattern.compile(s_ADN_REGEX, Pattern.CASE_INSENSITIVE);
-            Matcher m = pattern.matcher(m_buffer.substring(begIndex + s_ORIGIN_KEY.length(), endIndex));
+            Matcher m = pattern.matcher(m_BUFFER.substring(begIndex + s_ORIGIN_KEY.length(), endIndex));
             while (m.find()) {
-                m_origin.append(m.group(0).toUpperCase());
+                m_ORIGIN.append(m.group(0).toUpperCase());
             }
 
-            m_total = m_cdsList.size();
+            m_total = m_CDSLIST.size();
             parseCDS();
 
         } catch (StringIndexOutOfBoundsException e) {
-            String message = "Unable to parse data " + m_name + " : " + m_buffer;
+            String message = "Unable to parse data " + m_NAME + " : " + m_BUFFER;
             Logs.warning(message);
             Logs.exception(e);
             throw new OperatorException(message);
@@ -163,7 +163,7 @@ public class CDSParser {
      * @return the sequences
      */
     public ArrayList<StringBuilder> getSequences() {
-        return m_sequences;
+        return m_SEQUENCES;
     }
 
     /**
@@ -174,7 +174,7 @@ public class CDSParser {
         Pattern descriptor = Pattern.compile(s_DESCRIPTOR_REGEX, Pattern.CASE_INSENSITIVE);
         Pattern number = Pattern.compile(s_NUMBER_REGEX, Pattern.CASE_INSENSITIVE);
 
-        for (StringBuilder sb : m_cdsList) {
+        for (StringBuilder sb : m_CDSLIST) {
 
             Operator operator = new Container();
             try {
@@ -199,7 +199,7 @@ public class CDSParser {
                         } catch (NumberFormatException | IndexOutOfBoundsException e) {
                             Logs.warning("Unable to create IntervalOperator");
                             Logs.exception(e);
-                            throw new OperatorException("Unable to parse " + m_name + " : " + sb + " at : " + op);
+                            throw new OperatorException("Unable to parse " + m_NAME + " : " + sb + " at : " + op);
                         }
 
                     } else if (op.contains(s_COMPLEMENT_KEY)) {
@@ -232,17 +232,17 @@ public class CDSParser {
                             } catch (NumberFormatException | IndexOutOfBoundsException e) {
                                 Logs.warning("Unable to create DescriptorOperator");
                                 Logs.exception(e);
-                                throw new OperatorException("Unable to parse " + m_name + " : " + sb + " at : " + op);
+                                throw new OperatorException("Unable to parse " + m_NAME + " : " + sb + " at : " + op);
                             }
 
                         } else {
-                            throw new IException("Unable to parse " + m_name + " : " + sb + " at : " + op);
+                            throw new IException("Unable to parse " + m_NAME + " : " + sb + " at : " + op);
                         }
                     }
 
                 }
             } catch (OperatorException e) {
-                Logs.warning("Unable to parse " + m_name + " : " + sb);
+                Logs.warning("Unable to parse " + m_NAME + " : " + sb);
                 Logs.exception(e);
                 continue;
             } catch (IException e) {
@@ -259,7 +259,7 @@ public class CDSParser {
                         StopTrinucleotide.valueOf(s.substring(s.length() - 3, s.length()));
                         if (s.codePoints().parallel().filter(c -> c != 'A' && c != 'T' && c != 'C' && c != 'G').count() == 0) {
                             ++m_valid;
-                            m_sequences.add(s);
+                            m_SEQUENCES.add(s);
                         }
                     } catch (IllegalArgumentException ignored) {
                     }
@@ -267,7 +267,7 @@ public class CDSParser {
                 }
 
             } catch (OperatorException e) {
-                Logs.warning("Unable to compute " + m_name + ": " + sb);
+                Logs.warning("Unable to compute " + m_NAME + ": " + sb);
                 Logs.exception(e);
             }
         }
@@ -373,9 +373,9 @@ public class CDSParser {
         @Override
         protected StringBuilder compute() throws OperatorException {
             try {
-                return new StringBuilder(m_origin.substring(m_begin, m_end));
+                return new StringBuilder(m_ORIGIN.substring(m_begin, m_end));
             } catch (StringIndexOutOfBoundsException e) {
-                final String message = "Bad index : " + m_origin + " to " + m_end;
+                final String message = "Bad index : " + m_ORIGIN + " to " + m_end;
                 Logs.warning(message);
                 Logs.exception(e);
                 throw new OperatorException(message);
@@ -403,7 +403,7 @@ public class CDSParser {
         @Override
         protected StringBuilder compute() throws OperatorException {
             try {
-                return new StringBuilder("" + m_origin.charAt(m_index));
+                return new StringBuilder("" + m_ORIGIN.charAt(m_index));
             } catch (StringIndexOutOfBoundsException e) {
                 final String message = "Bad index : " + m_index;
                 Logs.warning(message);

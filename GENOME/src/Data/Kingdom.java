@@ -15,11 +15,11 @@ public final class Kingdom extends IDataBase {
     /**
      * Array of this Kingdom's Group
      */
-    private transient final ArrayList<Group> m_groups;
+    private transient final ArrayList<Group> m_GROUPS;
     /**
      * Event to call when compute are finished
      */
-    private transient final IKingdomCallback m_event;
+    private transient final IKingdomCallback m_EVENT;
     /**
      * Reference to the parent
      */
@@ -33,9 +33,9 @@ public final class Kingdom extends IDataBase {
      */
     private Kingdom(String _name, IKingdomCallback _event) {
         super(_name);
-        m_groups = new ArrayList<>();
+        m_GROUPS = new ArrayList<>();
         m_parent = null;
-        m_event = _event;
+        m_EVENT = _event;
     }
 
     /**
@@ -47,9 +47,9 @@ public final class Kingdom extends IDataBase {
      */
     private Kingdom(String _name, IDataBase _data, IKingdomCallback _event) {
         super(_name, _data);
-        m_groups = new ArrayList<>();
+        m_GROUPS = new ArrayList<>();
         m_parent = null;
-        m_event = _event;
+        m_EVENT = _event;
     }
 
     /**
@@ -94,7 +94,7 @@ public final class Kingdom extends IDataBase {
     @Override
     public synchronized void stop() throws InvalidStateException {
         super.stop();
-        if (super.getFinishedChildren() == m_groups.size()) {
+        if (super.getFinishedChildren() == m_GROUPS.size()) {
             end();
         }
     }
@@ -102,10 +102,10 @@ public final class Kingdom extends IDataBase {
     /**
      * Get the Group of this Kingdom
      *
-     * @return the m_groups
+     * @return the m_GROUPS
      */
     public ArrayList<Group> getGroups() {
-        return m_groups;
+        return m_GROUPS;
     }
 
     /**
@@ -134,14 +134,14 @@ public final class Kingdom extends IDataBase {
      * @throws InvalidStateException if it can't be finished
      */
     synchronized void finish(Group _group) throws InvalidStateException {
-        if (super.contains(m_groups, _group) && _group.getState() != State.FINISHED) {
+        if (super.contains(m_GROUPS, _group) && _group.getState() != State.FINISHED) {
             for (Statistics stat : _group.getStatistics().values()) {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _group.getTypeNumber(stat.getType()));
             }
             super.incrementGenericTotals(_group);
             super.incrementFinishedChildren();
-            if (getState() == State.STOPPED && super.getFinishedChildren() == m_groups.size()) {
+            if (getState() == State.STOPPED && super.getFinishedChildren() == m_GROUPS.size()) {
                 end();
             }
         }
@@ -155,11 +155,11 @@ public final class Kingdom extends IDataBase {
      */
     void addGroup(Group _group) throws AddException {
         if (super.getState() == State.STARTED) {
-            if (super.contains(m_groups, _group))
+            if (super.contains(m_GROUPS, _group))
                 throw new AddException("Group already added : " + _group.getName());
-            _group.setIndex(m_groups.size());
+            _group.setIndex(m_GROUPS.size());
             _group.setParent(this);
-            m_groups.add(_group);
+            m_GROUPS.add(_group);
         }
     }
 
@@ -170,10 +170,10 @@ public final class Kingdom extends IDataBase {
      */
     private void end() throws InvalidStateException {
         super.computeStatistics();
-        m_event.finish(this);
+        m_EVENT.finish(this);
         m_parent.finish(this);
         super.finish();
-        m_groups.clear();
+        m_GROUPS.clear();
         super.clear();
     }
 

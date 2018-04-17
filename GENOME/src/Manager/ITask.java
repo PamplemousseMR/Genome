@@ -5,7 +5,7 @@ public abstract class ITask implements Runnable {
     /**
      * ITask's name
      */
-    private final String m_name;
+    private final String m_NAME;
 
     /**
      * Class constructor
@@ -13,7 +13,7 @@ public abstract class ITask implements Runnable {
      * @param _name, the name
      */
     public ITask(String _name) {
-        m_name = _name;
+        m_NAME = _name;
     }
 
     /**
@@ -22,7 +22,7 @@ public abstract class ITask implements Runnable {
      * @return the name
      */
     public String getName() {
-        return m_name;
+        return m_NAME;
     }
 
     /**

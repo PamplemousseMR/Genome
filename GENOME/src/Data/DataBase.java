@@ -17,11 +17,11 @@ public final class DataBase extends IDataBase {
     /**
      * Array of this Database's Kingdom
      */
-    private transient final ArrayList<Kingdom> m_kingdoms;
+    private transient final ArrayList<Kingdom> m_KINGDOM;
     /**
      * Event to call when compute are finished
      */
-    private transient final IDataBaseCallback m_event;
+    private transient final IDataBaseCallback m_EVENT;
 
     /**
      * Class constructor
@@ -31,8 +31,8 @@ public final class DataBase extends IDataBase {
      */
     private DataBase(String _name, IDataBaseCallback _event) {
         super(_name);
-        m_kingdoms = new ArrayList<>();
-        m_event = _event;
+        m_KINGDOM = new ArrayList<>();
+        m_EVENT = _event;
     }
 
     /**
@@ -44,8 +44,8 @@ public final class DataBase extends IDataBase {
      */
     private DataBase(String _name, IDataBase _data, IDataBaseCallback _event) {
         super(_name, _data);
-        m_kingdoms = new ArrayList<>();
-        m_event = _event;
+        m_KINGDOM = new ArrayList<>();
+        m_EVENT = _event;
     }
 
     /**
@@ -75,10 +75,10 @@ public final class DataBase extends IDataBase {
     /**
      * Get the Kingdoms of this DataBase
      *
-     * @return the m_kingdoms
+     * @return the m_KINGDOM
      */
     public ArrayList<Kingdom> getKingdoms() {
-        return m_kingdoms;
+        return m_KINGDOM;
     }
 
     /**
@@ -89,7 +89,7 @@ public final class DataBase extends IDataBase {
     @Override
     public synchronized void stop() throws InvalidStateException {
         super.stop();
-        if (super.getFinishedChildren() == m_kingdoms.size()) {
+        if (super.getFinishedChildren() == m_KINGDOM.size()) {
             end();
         }
     }
@@ -111,14 +111,14 @@ public final class DataBase extends IDataBase {
      * @throws InvalidStateException if it can't be finished
      */
     synchronized void finish(Kingdom _kingdom) throws InvalidStateException {
-        if (super.contains(m_kingdoms, _kingdom) && _kingdom.getState() != State.FINISHED) {
+        if (super.contains(m_KINGDOM, _kingdom) && _kingdom.getState() != State.FINISHED) {
             for (Statistics stat : _kingdom.getStatistics().values()) {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _kingdom.getTypeNumber(stat.getType()));
             }
             super.incrementGenericTotals(_kingdom);
             incrementFinishedChildren();
-            if (super.getState() == IDataBase.State.STOPPED && super.getFinishedChildren() == m_kingdoms.size()) {
+            if (super.getState() == IDataBase.State.STOPPED && super.getFinishedChildren() == m_KINGDOM.size()) {
                 end();
             }
         }
@@ -132,11 +132,11 @@ public final class DataBase extends IDataBase {
      */
     void addKingdom(Kingdom _kingdom) throws AddException {
         if (super.getState() == State.STARTED) {
-            if (super.contains(m_kingdoms, _kingdom))
+            if (super.contains(m_KINGDOM, _kingdom))
                 throw new AddException("Kingdom already added : " + _kingdom.getName());
-            _kingdom.setIndex(m_kingdoms.size());
+            _kingdom.setIndex(m_KINGDOM.size());
             _kingdom.setParent(this);
-            m_kingdoms.add(_kingdom);
+            m_KINGDOM.add(_kingdom);
         }
     }
 
@@ -147,9 +147,9 @@ public final class DataBase extends IDataBase {
      */
     private void end() throws InvalidStateException {
         super.computeStatistics();
-        m_event.finish(this);
+        m_EVENT.finish(this);
         super.finish();
-        m_kingdoms.clear();
+        m_KINGDOM.clear();
         super.clear();
     }
 

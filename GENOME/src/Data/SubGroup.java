@@ -15,11 +15,11 @@ public final class SubGroup extends IDataBase {
     /**
      * Array of this SubGroup's Organisms
      */
-    private transient final ArrayList<Organism> m_organisms;
+    private transient final ArrayList<Organism> m_ORGANISM;
     /**
      * Event to call when compute are finished
      */
-    private transient final ISubGroupCallback m_event;
+    private transient final ISubGroupCallback m_EVENT;
     /**
      * Reference to the parent
      */
@@ -33,9 +33,9 @@ public final class SubGroup extends IDataBase {
      */
     private SubGroup(String _name, ISubGroupCallback _event) {
         super(_name);
-        m_organisms = new ArrayList<>();
+        m_ORGANISM = new ArrayList<>();
         m_parent = null;
-        m_event = _event;
+        m_EVENT = _event;
     }
 
     /**
@@ -47,9 +47,9 @@ public final class SubGroup extends IDataBase {
      */
     private SubGroup(String _name, IDataBase _data, ISubGroupCallback _event) {
         super(_name, _data);
-        m_organisms = new ArrayList<>();
+        m_ORGANISM = new ArrayList<>();
         m_parent = null;
-        m_event = _event;
+        m_EVENT = _event;
     }
 
     /**
@@ -94,7 +94,7 @@ public final class SubGroup extends IDataBase {
     @Override
     public synchronized void stop() throws InvalidStateException {
         super.stop();
-        if (super.getFinishedChildren() == m_organisms.size()) {
+        if (super.getFinishedChildren() == m_ORGANISM.size()) {
             end();
         }
     }
@@ -105,7 +105,7 @@ public final class SubGroup extends IDataBase {
      * @return the m_groups
      */
     public ArrayList<Organism> getOrganisms() {
-        return m_organisms;
+        return m_ORGANISM;
     }
 
     /**
@@ -152,14 +152,14 @@ public final class SubGroup extends IDataBase {
      * @throws InvalidStateException if it can't be finished
      */
     synchronized void finish(Organism _organism) throws InvalidStateException {
-        if (super.contains(m_organisms, _organism) && _organism.getState() != State.FINISHED) {
+        if (super.contains(m_ORGANISM, _organism) && _organism.getState() != State.FINISHED) {
             for (Statistics stat : _organism.getStatistics().values()) {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _organism.getTypeNumber(stat.getType()));
             }
             super.incrementGenericTotals(_organism);
             super.incrementFinishedChildren();
-            if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_organisms.size()) {
+            if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_ORGANISM.size()) {
                 end();
             }
         }
@@ -173,11 +173,11 @@ public final class SubGroup extends IDataBase {
      */
     void addOrganism(Organism _organism) throws AddException {
         if (super.getState() == State.STARTED) {
-            if (super.contains(m_organisms, _organism))
+            if (super.contains(m_ORGANISM, _organism))
                 throw new AddException("Organism already added : " + _organism.getName());
-            _organism.setIndex(m_organisms.size());
+            _organism.setIndex(m_ORGANISM.size());
             _organism.setParent(this);
-            m_organisms.add(_organism);
+            m_ORGANISM.add(_organism);
         }
     }
 
@@ -188,10 +188,10 @@ public final class SubGroup extends IDataBase {
      */
     private void end() throws InvalidStateException {
         super.computeStatistics();
-        m_event.finish(this);
+        m_EVENT.finish(this);
         m_parent.finish(this);
         super.finish();
-        m_organisms.clear();
+        m_ORGANISM.clear();
         super.clear();
     }
 }

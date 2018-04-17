@@ -62,11 +62,11 @@ public final class OrganismParser {
     /**
      * Object to parse
      */
-    private final JSONObject m_object;
+    private final JSONObject m_OBJECT;
     /**
      * List of replicon's ID of this organism
      */
-    private final ArrayList<Map.Entry<String, String>> m_replicons;
+    private final ArrayList<Map.Entry<String, String>> m_REPLICONS;
     /**
      * ID of this organism
      */
@@ -103,7 +103,7 @@ public final class OrganismParser {
      * @throws JSONException, if an error occurred
      */
     public OrganismParser(JSONObject _obj) throws JSONException {
-        m_object = _obj;
+        m_OBJECT = _obj;
         m_id = -1;
         m_name = null;
         m_kingdom = null;
@@ -111,7 +111,7 @@ public final class OrganismParser {
         m_subGroup = null;
         m_version = -1;
         m_modificationDate = new Date();
-        m_replicons = new ArrayList<>();
+        m_REPLICONS = new ArrayList<>();
         parse();
     }
 
@@ -166,7 +166,7 @@ public final class OrganismParser {
      * @return the replicon's id list
      */
     public ArrayList<Map.Entry<String, String>> getReplicons() {
-        return m_replicons;
+        return m_REPLICONS;
     }
 
     /**
@@ -187,6 +187,14 @@ public final class OrganismParser {
         return m_version;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() != OrganismParser.class)
+            return false;
+        OrganismParser orgObj = (OrganismParser) obj;
+        return m_kingdom.equals(orgObj.m_kingdom) && m_group.equals(orgObj.m_group) && m_subGroup.equals(orgObj.m_subGroup) && m_name.equals(orgObj.m_name);
+    }
+
     /**
      * Parse the JSonObject to get all data
      *
@@ -194,14 +202,14 @@ public final class OrganismParser {
      */
     private void parse() throws JSONException {
         try {
-            m_id = m_object.getLong(s_ID);
-            m_name = m_object.getString(s_NAME).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
-            m_kingdom = m_object.getString(s_KINGDOM).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
-            m_group = m_object.getString(s_GROUP).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
-            m_subGroup = m_object.getString(s_SUBGROUP).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
-            m_version = m_object.getLong(s_VERSION);
+            m_id = m_OBJECT.getLong(s_ID);
+            m_name = m_OBJECT.getString(s_NAME).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
+            m_kingdom = m_OBJECT.getString(s_KINGDOM).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
+            m_group = m_OBJECT.getString(s_GROUP).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
+            m_subGroup = m_OBJECT.getString(s_SUBGROUP).replaceAll("[^a-zA-Z0-9]+", "_").toLowerCase();
+            m_version = m_OBJECT.getLong(s_VERSION);
         } catch (JSONException e) {
-            final String message = "Unable to get basic data : " + m_object;
+            final String message = "Unable to get basic data : " + m_OBJECT;
             Logs.warning(message);
             Logs.exception(new JSONException(message, e));
             throw e;
@@ -210,11 +218,11 @@ public final class OrganismParser {
         LocalDateTime dateTime = null;
         try {
             // Replicons formatting
-            if (m_object.has(s_REPLICON)) {
+            if (m_OBJECT.has(s_REPLICON)) {
                 final Pattern patternNC = Pattern.compile(s_NC_REGEX, Pattern.CASE_INSENSITIVE);
                 final Pattern patternType = Pattern.compile(s_TYPE_REGEX, Pattern.CASE_INSENSITIVE);
 
-                for (String sequence : m_object.getString(s_REPLICON).split(";")) {
+                for (String sequence : m_OBJECT.getString(s_REPLICON).split(";")) {
                     sequence = sequence.toUpperCase();
                     final Matcher mNC = patternNC.matcher(sequence);
 
@@ -226,7 +234,7 @@ public final class OrganismParser {
                             final String sequenceInfo = data[0];
                             final Matcher mType = patternType.matcher(sequenceInfo);
                             if (mType.find()) {
-                                m_replicons.add(new Map.Entry<String, String>() {
+                                m_REPLICONS.add(new Map.Entry<String, String>() {
                                     @Override
                                     public String getKey() {
                                         return sequenceId;
@@ -255,13 +263,13 @@ public final class OrganismParser {
 
             // Dates formatting
             final DateTimeFormatter format = DateTimeFormatter.ISO_DATE_TIME;
-            if (m_object.has(s_MODIFICATION_DATE)) {
-                dateTime = LocalDateTime.parse(m_object.getString(s_MODIFICATION_DATE), format);
-            } else if (m_object.has(s_RELEASE_DATE)) {
-                dateTime = LocalDateTime.parse(m_object.getString(s_RELEASE_DATE), format);
+            if (m_OBJECT.has(s_MODIFICATION_DATE)) {
+                dateTime = LocalDateTime.parse(m_OBJECT.getString(s_MODIFICATION_DATE), format);
+            } else if (m_OBJECT.has(s_RELEASE_DATE)) {
+                dateTime = LocalDateTime.parse(m_OBJECT.getString(s_RELEASE_DATE), format);
             }
         } catch (JSONException e) {
-            final String message = "Unable to get specifics data : " + m_object;
+            final String message = "Unable to get specifics data : " + m_OBJECT;
             Logs.warning(message);
             Logs.exception(new JSONException(message, e));
             throw e;
