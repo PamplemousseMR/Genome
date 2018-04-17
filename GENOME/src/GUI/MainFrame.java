@@ -52,15 +52,15 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
     /**
      * Saved location (for frame moves events)
      */
-    private final Point m_initialLocation;
+    private final Point m_INITIAL_LOCATION;
     /**
      * Minimal width of the frame
      */
-    private final int m_minWidth;
+    private final int m_MIN_WIDTH;
     /**
      * Minimal height of the frame
      */
-    private final int m_minHeight;
+    private final int m_MIN_HEIGHT;
     /**
      * For frame drag&drop
      */
@@ -147,9 +147,9 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      */
     private MainFrame() {
         super(s_TITLE);
-        m_initialLocation = s_INITIAL_LOCATION;
-        m_minWidth = (int) s_INITIAL_DIMENSION.getWidth();
-        m_minHeight = (int) s_INITIAL_DIMENSION.getHeight();
+        m_INITIAL_LOCATION = s_INITIAL_LOCATION;
+        m_MIN_WIDTH = (int) s_INITIAL_DIMENSION.getWidth();
+        m_MIN_HEIGHT = (int) s_INITIAL_DIMENSION.getHeight();
         initFrame();
         initComponents();
         initLayout();
@@ -349,8 +349,8 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
     private void initFrame() {
         addMouseMotionListener(this);
         addMouseListener(this);
-        setSize(m_minWidth, m_minHeight);
-        setLocation(m_initialLocation);
+        setSize(m_MIN_WIDTH, m_MIN_HEIGHT);
+        setLocation(m_INITIAL_LOCATION);
         setUndecorated(true);
         setSize((s_DIM.width / 2), (s_DIM.height / 2));
         initIcone();
@@ -619,12 +619,12 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
                 setLocation = true;
             }
 
-            if (newWidth >= (int) s_TOOLKIT.getScreenSize().getWidth() || newWidth <= m_minWidth) {
+            if (newWidth >= (int) s_TOOLKIT.getScreenSize().getWidth() || newWidth <= m_MIN_WIDTH) {
                 newLocationX = oldLocationX;
                 newWidth = getWidth();
             }
 
-            if (newHeight >= (int) s_TOOLKIT.getScreenSize().getHeight() - 30 || newHeight <= m_minHeight) {
+            if (newHeight >= (int) s_TOOLKIT.getScreenSize().getHeight() - 30 || newHeight <= m_MIN_HEIGHT) {
                 newLocationY = oldLocationY;
                 newHeight = getHeight();
             }

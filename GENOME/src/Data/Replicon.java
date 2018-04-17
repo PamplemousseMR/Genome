@@ -7,11 +7,11 @@ public final class Replicon extends Statistics {
     /**
      * The name
      */
-    private transient final String m_name;
+    private transient final String m_NAME;
     /**
      * Array of all the sequences of this Replicon
      */
-    private transient final ArrayList<StringBuilder> m_sequences;
+    private transient final ArrayList<StringBuilder> m_SEQUENCES;
     /**
      * Local index
      */
@@ -25,8 +25,8 @@ public final class Replicon extends Statistics {
      */
     public Replicon(Type _type, String _name, long _total, long _valid, ArrayList<StringBuilder> _sequences) {
         super(_type);
-        m_name = _name;
-        m_sequences = _sequences;
+        m_NAME = _name;
+        m_SEQUENCES = _sequences;
         m_index = -1;
         super.incrementCDS(_total);
         super.incrementValidCDS(_valid);
@@ -35,10 +35,10 @@ public final class Replicon extends Statistics {
     /**
      * Get the name
      *
-     * @return the m_name
+     * @return the m_NAME
      */
     public String getName() {
-        return m_name;
+        return m_NAME;
     }
 
     /**
@@ -46,7 +46,7 @@ public final class Replicon extends Statistics {
      */
     void computeStatistic() {
         int idx, length;
-        for (StringBuilder sequence : m_sequences) {
+        for (StringBuilder sequence : m_SEQUENCES) {
             final Statistics temp = new Statistics(getType());
             length = sequence.length();
             idx = 0;

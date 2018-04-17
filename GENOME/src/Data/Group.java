@@ -15,11 +15,11 @@ public final class Group extends IDataBase {
     /**
      * Array of this Group's SubGroups
      */
-    private transient final ArrayList<SubGroup> m_subGroups;
+    private transient final ArrayList<SubGroup> m_SUBGROUP;
     /**
      * Event to call when compute are finished
      */
-    private transient final IGroupCallback m_event;
+    private transient final IGroupCallback m_EVENT;
     /**
      * Reference to the parent
      */
@@ -33,9 +33,9 @@ public final class Group extends IDataBase {
      */
     private Group(String _name, IGroupCallback _event) {
         super(_name);
-        m_subGroups = new ArrayList<>();
+        m_SUBGROUP = new ArrayList<>();
         m_parent = null;
-        m_event = _event;
+        m_EVENT = _event;
     }
 
     /**
@@ -47,9 +47,9 @@ public final class Group extends IDataBase {
      */
     private Group(String _name, IDataBase _data, IGroupCallback _event) {
         super(_name, _data);
-        m_subGroups = new ArrayList<>();
+        m_SUBGROUP = new ArrayList<>();
         m_parent = null;
-        m_event = _event;
+        m_EVENT = _event;
     }
 
     /**
@@ -94,7 +94,7 @@ public final class Group extends IDataBase {
     @Override
     public synchronized void stop() throws InvalidStateException {
         super.stop();
-        if (getFinishedChildren() == m_subGroups.size()) {
+        if (getFinishedChildren() == m_SUBGROUP.size()) {
             end();
         }
     }
@@ -102,10 +102,10 @@ public final class Group extends IDataBase {
     /**
      * Get the Subgroups of this Group
      *
-     * @return the m_subGroups
+     * @return the m_SUBGROUP
      */
     public ArrayList<SubGroup> getSubGroups() {
-        return m_subGroups;
+        return m_SUBGROUP;
     }
 
     /**
@@ -143,14 +143,14 @@ public final class Group extends IDataBase {
      * @throws InvalidStateException if it can't be finished
      */
     synchronized void finish(SubGroup _subGroup) throws InvalidStateException {
-        if (super.contains(m_subGroups, _subGroup) && _subGroup.getState() != State.FINISHED) {
+        if (super.contains(m_SUBGROUP, _subGroup) && _subGroup.getState() != State.FINISHED) {
             for (Statistics stat : _subGroup.getStatistics().values()) {
                 super.updateStatistics(stat);
                 super.incrementGenomeNumber(stat.getType(), _subGroup.getTypeNumber(stat.getType()));
             }
             super.incrementGenericTotals(_subGroup);
             super.incrementFinishedChildren();
-            if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_subGroups.size()) {
+            if (super.getState() == State.STOPPED && super.getFinishedChildren() == m_SUBGROUP.size()) {
                 end();
             }
         }
@@ -164,11 +164,11 @@ public final class Group extends IDataBase {
      */
     void addSubGroup(SubGroup _subGroup) throws AddException {
         if (super.getState() == State.STARTED) {
-            if (super.contains(m_subGroups, _subGroup))
+            if (super.contains(m_SUBGROUP, _subGroup))
                 throw new AddException("SubGroup already added : " + _subGroup.getName());
-            _subGroup.setIndex(m_subGroups.size());
+            _subGroup.setIndex(m_SUBGROUP.size());
             _subGroup.setParent(this);
-            m_subGroups.add(_subGroup);
+            m_SUBGROUP.add(_subGroup);
         }
     }
 
@@ -179,10 +179,10 @@ public final class Group extends IDataBase {
      */
     private void end() throws InvalidStateException {
         super.computeStatistics();
-        m_event.finish(this);
+        m_EVENT.finish(this);
         m_parent.finish(this);
         super.finish();
-        m_subGroups.clear();
+        m_SUBGROUP.clear();
         super.clear();
     }
 }

@@ -44,7 +44,7 @@ public final class GenbankOrganisms extends IDownloader {
     /**
      * Queue of retrieved organisms
      */
-    private final LinkedList<OrganismParser> m_dataQueue;
+    private final LinkedList<OrganismParser> m_DATAQUEUE;
     /**
      * Currently downloaded
      */
@@ -73,7 +73,7 @@ public final class GenbankOrganisms extends IDownloader {
         m_downloaded = 0;
         m_totalCount = -1;
         m_enqueued = 0;
-        m_dataQueue = new LinkedList<>();
+        m_DATAQUEUE = new LinkedList<>();
         m_currentList = new HashMap<>();
     }
 
@@ -110,7 +110,7 @@ public final class GenbankOrganisms extends IDownloader {
      * @return True if their is more data to be processed
      */
     public boolean hasNext() {
-        return m_dataQueue.size() > 0;
+        return m_DATAQUEUE.size() > 0;
     }
 
     /**
@@ -119,7 +119,7 @@ public final class GenbankOrganisms extends IDownloader {
      * @return Data retrieved from Genbank
      */
     public OrganismParser getNext() {
-        return m_dataQueue.removeFirst();
+        return m_DATAQUEUE.removeFirst();
     }
 
     /**
@@ -321,7 +321,7 @@ public final class GenbankOrganisms extends IDownloader {
      * Push the working list at the end of the final list
      */
     private void pushList() {
-        m_dataQueue.addAll(m_currentList.values());
+        m_DATAQUEUE.addAll(m_currentList.values());
         m_currentList = new HashMap<>();
     }
 

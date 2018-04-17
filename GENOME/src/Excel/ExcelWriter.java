@@ -18,7 +18,7 @@ import java.text.SimpleDateFormat;
 import java.util.Map;
 
 
-public class ExcelWriter {
+public final class ExcelWriter {
 
     // EDIT STYLE HERE :
     private static final XSSFColor s_PRIMARY_COLOR = new XSSFColor(new Color(104, 151, 187));

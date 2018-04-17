@@ -16,23 +16,23 @@ public class IDataBase implements Serializable {
     /**
      * The name
      */
-    private final String m_name;
+    private final String m_NAME;
     /**
      * Statistics of this IDataBase
      */
-    private final EnumMap<Statistics.Type, Statistics> m_statistics;
+    private final EnumMap<Statistics.Type, Statistics> m_STATISTICS;
     /**
      * Array of values of each Replicon's type
      */
-    private final EnumMap<Statistics.Type, Long> m_genomeNumber;
+    private final EnumMap<Statistics.Type, Long> m_GENOME_NUMBER;
     /**
      * Last modification's date
      */
-    private transient final Date m_modificationDate;
+    private transient final Date m_MODIFICATIONDATE;
     /**
      * Is the Data loaded or not
      */
-    private transient final Boolean m_loaded;
+    private transient final Boolean m_LOADED;
     /**
      * The number of CDS sequences
      */
@@ -64,17 +64,17 @@ public class IDataBase implements Serializable {
      * @param _name the name
      */
     protected IDataBase(String _name) {
-        m_name = _name;
-        m_modificationDate = new Date();
-        m_statistics = new EnumMap<>(Statistics.Type.class);
-        m_genomeNumber = new EnumMap<>(Statistics.Type.class);
+        m_NAME = _name;
+        m_MODIFICATIONDATE = new Date();
+        m_STATISTICS = new EnumMap<>(Statistics.Type.class);
+        m_GENOME_NUMBER = new EnumMap<>(Statistics.Type.class);
         m_CDSNumber = 0L;
         m_validCDSNumber = 0L;
         m_totalOrganism = 0L;
         m_state = State.CREATED;
         m_index = -1;
         m_finished = 0;
-        m_loaded = false;
+        m_LOADED = false;
     }
 
     /**
@@ -84,17 +84,17 @@ public class IDataBase implements Serializable {
      * @param _data previous data
      */
     IDataBase(String _name, IDataBase _data) {
-        m_name = _name;
-        m_modificationDate = new Date();
-        m_statistics = _data.m_statistics;
-        m_genomeNumber = _data.m_genomeNumber;
+        m_NAME = _name;
+        m_MODIFICATIONDATE = new Date();
+        m_STATISTICS = _data.m_STATISTICS;
+        m_GENOME_NUMBER = _data.m_GENOME_NUMBER;
         m_CDSNumber = _data.m_CDSNumber;
         m_validCDSNumber = _data.m_validCDSNumber;
         m_totalOrganism = _data.m_totalOrganism;
         m_state = State.CREATED;
         m_index = -1;
         m_finished = 0;
-        m_loaded = true;
+        m_LOADED = true;
     }
 
     /**
@@ -141,19 +141,19 @@ public class IDataBase implements Serializable {
     /**
      * Get the last modification's date
      *
-     * @return the m_modificationDate
+     * @return the m_MODIFICATIONDATE
      */
     public final Date getModificationDate() {
-        return m_modificationDate;
+        return m_MODIFICATIONDATE;
     }
 
     /**
      * Get the name
      *
-     * @return the m_name
+     * @return the m_NAME
      */
     public final String getName() {
-        return m_name;
+        return m_NAME;
     }
 
     /**
@@ -162,7 +162,7 @@ public class IDataBase implements Serializable {
      * @return the statistics
      */
     public final EnumMap<Statistics.Type, Statistics> getStatistics() {
-        return m_statistics;
+        return m_STATISTICS;
     }
 
     /**
@@ -171,7 +171,7 @@ public class IDataBase implements Serializable {
      * @return the number of each Genome's Type
      */
     public final EnumMap<Statistics.Type, Long> getGenomeNumber() {
-        return m_genomeNumber;
+        return m_GENOME_NUMBER;
     }
 
     /**
@@ -208,7 +208,7 @@ public class IDataBase implements Serializable {
      * @return the number of genomes
      */
     final long getTypeNumber(Statistics.Type _type) {
-        return m_genomeNumber.get(_type);
+        return m_GENOME_NUMBER.get(_type);
     }
 
     /**
@@ -226,7 +226,7 @@ public class IDataBase implements Serializable {
      * @param _type, the Type of the genomes to increment
      */
     final void incrementGenomeNumber(Statistics.Type _type) {
-        m_genomeNumber.merge(_type, 1L, (v1, v2) -> v1 + v2);
+        m_GENOME_NUMBER.merge(_type, 1L, (v1, v2) -> v1 + v2);
     }
 
     /**
@@ -236,7 +236,7 @@ public class IDataBase implements Serializable {
      * @param _inc,  the value of the increment
      */
     final void incrementGenomeNumber(Statistics.Type _type, long _inc) {
-        m_genomeNumber.merge(_type, _inc, (v1, v2) -> v1 + v2);
+        m_GENOME_NUMBER.merge(_type, _inc, (v1, v2) -> v1 + v2);
     }
 
     /**
@@ -245,15 +245,15 @@ public class IDataBase implements Serializable {
      * @param _statistics, the statistic to used for update
      */
     final void updateStatistics(Statistics _statistics) {
-        m_statistics.computeIfAbsent(_statistics.getType(), k -> new Statistics(_statistics.getType()));
-        m_statistics.get(_statistics.getType()).update(_statistics);
+        m_STATISTICS.computeIfAbsent(_statistics.getType(), k -> new Statistics(_statistics.getType()));
+        m_STATISTICS.get(_statistics.getType()).update(_statistics);
     }
 
     /**
      * Compute statistics
      */
     final void computeStatistics() {
-        m_statistics.values().parallelStream().forEach(Statistics::compute);
+        m_STATISTICS.values().parallelStream().forEach(Statistics::compute);
     }
 
     /**
@@ -295,8 +295,8 @@ public class IDataBase implements Serializable {
      * Clear data
      */
     final void clear() {
-        m_statistics.clear();
-        m_genomeNumber.clear();
+        m_STATISTICS.clear();
+        m_GENOME_NUMBER.clear();
     }
 
     /**
@@ -422,17 +422,17 @@ public class IDataBase implements Serializable {
      * @param _data the data to unload
      */
     synchronized void unload(IDataBase _data) throws InvalidStateException {
-        if (!m_loaded)
-            throw new InvalidStateException("Not loaded : " + m_name + ". Requested by : " + _data.getName());
+        if (!m_LOADED)
+            throw new InvalidStateException("Not loaded : " + m_NAME + ". Requested by : " + _data.getName());
 
         m_CDSNumber -= _data.m_CDSNumber;
         m_validCDSNumber -= _data.m_validCDSNumber;
         m_totalOrganism -= _data.m_totalOrganism;
 
-        for (Statistics stat : _data.m_statistics.values()) {
+        for (Statistics stat : _data.m_STATISTICS.values()) {
             Statistics.Type type = stat.getType();
-            m_statistics.get(type).unload(stat);
-            m_genomeNumber.put(type, m_genomeNumber.get(type) - _data.m_genomeNumber.get(type));
+            m_STATISTICS.get(type).unload(stat);
+            m_GENOME_NUMBER.put(type, m_GENOME_NUMBER.get(type) - _data.m_GENOME_NUMBER.get(type));
         }
     }
 
@@ -443,9 +443,9 @@ public class IDataBase implements Serializable {
      */
     void cancel() throws InvalidStateException {
         if (getState() == State.CREATED || getState() == State.STARTED || getState() == State.STOPPED) {
-            m_modificationDate.setTime(0);
-            m_statistics.clear();
-            m_genomeNumber.clear();
+            m_MODIFICATIONDATE.setTime(0);
+            m_STATISTICS.clear();
+            m_GENOME_NUMBER.clear();
             m_CDSNumber = 0L;
             m_validCDSNumber = 0L;
             m_totalOrganism = 0L;
