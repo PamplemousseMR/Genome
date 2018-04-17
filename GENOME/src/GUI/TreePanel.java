@@ -317,6 +317,15 @@ public final class TreePanel extends IPanel {
         }
     }
 
+    void resetTree() {
+        DefaultMutableTreeNode actual = ((DefaultMutableTreeNode) m_treeModel.getRoot()).getNextNode();
+        while (actual != null) {
+            ((Node) actual.getUserObject()).setState(State.DEFAULT);
+            m_treeModel.nodeChanged(actual);
+            actual = actual.getNextNode();
+        }
+    }
+
     private DefaultMutableTreeNode loadTree() {
         DefaultMutableTreeNode root = new DefaultMutableTreeNode(new Node("root", State.DEFAULT));
         File path = new File(Options.getSerializeDirectory());
@@ -403,15 +412,6 @@ public final class TreePanel extends IPanel {
         if (table.length >= 6)
             result += Options.getSerializationSpliter() + Options.getOrganismSerializationPrefix() + table[5].toString().replaceAll(" ", "_");
         return result;
-    }
-
-    void resetTree() {
-        DefaultMutableTreeNode actual = ((DefaultMutableTreeNode) m_treeModel.getRoot()).getNextNode();
-        while (actual != null) {
-            ((Node) actual.getUserObject()).setState(State.DEFAULT);
-            m_treeModel.nodeChanged(actual);
-            actual = actual.getNextNode();
-        }
     }
 
     private enum State {

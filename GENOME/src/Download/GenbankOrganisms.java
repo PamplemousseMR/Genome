@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
 import java.util.LinkedList;
 
 public final class GenbankOrganisms extends IDownloader {
@@ -57,9 +58,13 @@ public final class GenbankOrganisms extends IDownloader {
      */
     private int m_enqueued;
     /**
-     * Number of failed organism
+     * Current PATH of a working list
      */
-    private int m_failedOrganism;
+    private String m_currentPath = "";
+    /**
+     * Working list, smaller than the final list
+     */
+    private HashMap<String, OrganismParser> m_currentList;
 
     /**
      * Class constructor
@@ -68,8 +73,8 @@ public final class GenbankOrganisms extends IDownloader {
         m_downloaded = 0;
         m_totalCount = -1;
         m_enqueued = 0;
-        m_failedOrganism = 0;
         m_dataQueue = new LinkedList<>();
+        m_currentList = new HashMap<>();
     }
 
     /**
@@ -86,16 +91,8 @@ public final class GenbankOrganisms extends IDownloader {
                 throw e;
             }
         }
+        pushList();
         disconnect();
-    }
-
-    /**
-     * Returns the number of failed organism
-     *
-     * @return The number of failed chunk
-     */
-    public int getFailedOrganism() {
-        return m_failedOrganism;
     }
 
     /**
@@ -183,7 +180,6 @@ public final class GenbankOrganisms extends IDownloader {
                 throw new MissException("Unable to find the total number of organism");
             } else {
                 m_downloaded += Options.getDownloadStep();
-                m_failedOrganism += Options.getDownloadStep();
             }
             Logs.exception(e);
             return;
@@ -191,10 +187,9 @@ public final class GenbankOrganisms extends IDownloader {
 
         m_downloaded += chunkLength;
 
-        if (m_enqueued == m_totalCount) {
+        if (m_downloaded >= m_totalCount) {
             Logs.info("GenbankOrganisms: Organisms download complete", true);
         }
-        m_enqueued = m_dataQueue.size();
     }
 
     /**
@@ -246,27 +241,13 @@ public final class GenbankOrganisms extends IDownloader {
         for (Object org : dataChunk) {
             try {
                 OrganismParser currentOrg = new OrganismParser((JSONObject) org);
-                OrganismParser last = null;
-                if (m_dataQueue.size() > 0) {
-                    last = m_dataQueue.getLast();
-                }
-                if (last != null && currentOrg.getName().compareTo(last.getName()) == 0) {
-                    if (currentOrg.getReplicons().size() > last.getReplicons().size()) {
-                        m_dataQueue.removeLast();
-                        enqueueOrganism(currentOrg);
-                        ++currentEnqueue;
-                    }
-                } else {
-                    enqueueOrganism(currentOrg);
+                if (enqueueOrganism(currentOrg)) {
                     ++currentEnqueue;
                 }
-                ++m_enqueued;
-
             } catch (JSONException e) {
                 final String message = "Unable create OrganismParser";
                 Logs.warning(message);
                 Logs.exception(new JSONException(message, e));
-                ++m_failedOrganism;
             }
         }
 
@@ -319,8 +300,29 @@ public final class GenbankOrganisms extends IDownloader {
      *
      * @param _organism Organism data to enqueue
      */
-    private void enqueueOrganism(OrganismParser _organism) {
-        m_dataQueue.add(_organism);
+    private boolean enqueueOrganism(OrganismParser _organism) {
+        if (!m_currentPath.equals(_organism.getKingdom() + "-" + _organism.getGroup() + "-" + _organism.getSubGroup())) {
+            pushList();
+            m_currentPath = _organism.getKingdom() + "-" + _organism.getGroup() + "-" + _organism.getSubGroup();
+        }
+        OrganismParser last = m_currentList.get(_organism.getName());
+        if (last != null) {
+            if (_organism.getReplicons().size() > last.getReplicons().size())
+                m_currentList.put(_organism.getName(), _organism);
+            return false;
+        } else {
+            m_currentList.put(_organism.getName(), _organism);
+            ++m_enqueued;
+            return true;
+        }
+    }
+
+    /**
+     * Push the working list at the end of the final list
+     */
+    private void pushList() {
+        m_dataQueue.addAll(m_currentList.values());
+        m_currentList = new HashMap<>();
     }
 
 }

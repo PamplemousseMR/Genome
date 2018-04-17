@@ -24,6 +24,7 @@ class GenbankOrganismsTest {
         ArrayList<String> kingdom = new ArrayList<>();
         ArrayList<ArrayList<String>> group = new ArrayList<>();
         ArrayList<ArrayList<String>> subgroup = new ArrayList<>();
+        ArrayList<ArrayList<String>> name = new ArrayList<>();
 
         String lastKingdom = "";
         String lastGroup = "";
@@ -58,14 +59,22 @@ class GenbankOrganismsTest {
                 group.get(group.size() - 1).add(gro);
                 subgroup.add(new ArrayList<>());
                 subgroup.get(subgroup.size() - 1).add(sub);
+                name.add(new ArrayList<>());
+                name.get(name.size() - 1).add(ro.getName());
             } else {
                 if (gro.compareTo(lastGroup) != 0) {
                     group.get(group.size() - 1).add(gro);
                     subgroup.add(new ArrayList<>());
                     subgroup.get(subgroup.size() - 1).add(sub);
+                    name.add(new ArrayList<>());
+                    name.get(name.size() - 1).add(ro.getName());
                 } else {
                     if (sub.compareTo(lastSubGroup) != 0) {
                         subgroup.get(subgroup.size() - 1).add(sub);
+                        name.add(new ArrayList<>());
+                        name.get(name.size() - 1).add(ro.getName());
+                    } else {
+                        name.get(name.size() - 1).add(ro.getName());
                     }
                 }
             }
@@ -109,7 +118,19 @@ class GenbankOrganismsTest {
             assertTrue(subSorted);
         }
 
-        totalOrganism += go.getFailedOrganism();
+        for (ArrayList<String> arr : name) {
+            boolean nameUnique = true;
+            for (int i = 0; i < arr.size(); ++i) {
+                for (int j = 0; j < arr.size(); ++j) {
+                    if (j != i) {
+                        if (arr.get(i).compareTo(arr.get(j)) == 0) {
+                            nameUnique = false;
+                        }
+                    }
+                }
+            }
+            assertTrue(nameUnique);
+        }
 
         assertEquals(totalOrganism, go.getTotalCount());
     }

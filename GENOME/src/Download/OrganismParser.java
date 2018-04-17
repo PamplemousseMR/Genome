@@ -187,6 +187,14 @@ public final class OrganismParser {
         return m_version;
     }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj.getClass() != OrganismParser.class)
+            return false;
+        OrganismParser orgObj = (OrganismParser) obj;
+        return m_kingdom.equals(orgObj.m_kingdom) && m_group.equals(orgObj.m_group) && m_subGroup.equals(orgObj.m_subGroup) && m_name.equals(orgObj.m_name);
+    }
+
     /**
      * Parse the JSonObject to get all data
      *
