@@ -60,16 +60,16 @@ final class Activity {
                 }
             }
             MainFrame.getSingleton().updateProgresseValue(0);
+            MainFrame.getSingleton().updateProgresseMax(100);
             MainFrame.getSingleton().resetTree();
             s_activityThread = new Thread(() -> {
                 Date beg = new Date();
-                final int[] index = {0};
+                final double[] index = {0.0};
                 boolean cancel = false;
                 ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
-                    MainFrame.getSingleton().updateProgresseMax(go.getTotalCount() + 1);
 
                     final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
                         try {
@@ -113,7 +113,7 @@ final class Activity {
                             Logs.info("Organism " + organismName + " already up to date", false);
                             m_indexLock.lock();
                             {
-                                MainFrame.getSingleton().updateProgresseValue(++index[0]);
+                                MainFrame.getSingleton().updateProgresseValue((int) ((++index[0] / go.getTotalCount()) * 100));
                             }
                             m_indexLock.unlock();
                             continue;
@@ -122,7 +122,7 @@ final class Activity {
                             Logs.info("No replicon in : " + organismName, false);
                             m_indexLock.lock();
                             {
-                                MainFrame.getSingleton().updateProgresseValue(++index[0]);
+                                MainFrame.getSingleton().updateProgresseValue((int) ((++index[0] / go.getTotalCount()) * 100));
                             }
                             m_indexLock.unlock();
                             continue;
@@ -218,7 +218,7 @@ final class Activity {
                                     }
                                     m_indexLock.lock();
                                     {
-                                        MainFrame.getSingleton().updateProgresseValue(++index[0]);
+                                        MainFrame.getSingleton().updateProgresseValue((int) ((++index[0] / go.getTotalCount()) * 100));
                                     }
                                     m_indexLock.unlock();
                                 }
@@ -252,7 +252,6 @@ final class Activity {
                     synchronized (s_RUN_LOCK) {
                         s_run = false;
                     }
-                    MainFrame.getSingleton().updateProgresseValue(++index[0]);
                     Date end = new Date();
                     Logs.notice("Execution time : " + getDifference(beg, end), true);
                 }
