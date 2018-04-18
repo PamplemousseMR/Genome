@@ -36,6 +36,30 @@ public final class Options {
      */
     private static String s_CDS_BASE_URL = "https://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi";
     /**
+     * Set to true to save full sequences
+     */
+    private static String s_SAVE_GENOME = "false";
+    /**
+     * Extension used for save genome
+     */
+    private static String s_GENOME_EXTENSION = ".txt";
+    /**
+     * Prefix used for save full sequences
+     */
+    private static String s_GENOME_DIRECTORY = "Genome";
+    /**
+     * Set to true to save gene
+     */
+    private static String s_SAVE_GENE = "false";
+    /**
+     * Extension used for save gene
+     */
+    private static String s_GENE_EXTENSION = ".txt";
+    /**
+     * Prefix used for save gene
+     */
+    private static String s_GENE_DIRECTORY = "Gene";
+    /**
      * Output directory for serialized data
      */
     private static String s_SERIALIZE_DIRECTORY = "Save";
@@ -196,6 +220,30 @@ public final class Options {
 
     public static String getCDSBaseUrl() {
         return s_CDS_BASE_URL;
+    }
+
+    public static boolean getSaveGenome() {
+        return Boolean.valueOf(s_SAVE_GENOME);
+    }
+
+    public static String getGeneDirectory() {
+        return System.getProperty("user.dir") + File.separator + s_GENE_DIRECTORY;
+    }
+
+    public static String getGeneExtension() {
+        return s_GENE_EXTENSION;
+    }
+
+    public static boolean getSaveGene() {
+        return Boolean.valueOf(s_SAVE_GENE);
+    }
+
+    public static String getGenomeDirectory() {
+        return System.getProperty("user.dir") + File.separator + s_GENOME_DIRECTORY;
+    }
+
+    public static String getGenomeExtension() {
+        return s_GENOME_EXTENSION;
     }
 
     public static String getSerializeDirectory() {

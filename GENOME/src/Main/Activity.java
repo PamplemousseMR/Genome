@@ -13,6 +13,7 @@ import Manager.ThreadManager;
 import Utils.Logs;
 import Utils.Options;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
@@ -174,6 +175,14 @@ final class Activity {
                                         final CDSParser cdsParser = new CDSParser(cdsDownloader.getRefseqData(), ent.getKey());
                                         try {
                                             cdsParser.parse();
+                                            if (Options.getSaveGenome()) {
+                                                final String path = Options.getGenomeDirectory() + File.separator + organismParser.getKingdom() + File.separator + organismParser.getGroup() + File.separator + organismParser.getSubGroup() + File.separator + organismParser.getName();
+                                                cdsParser.saveGenome(path);
+                                            }
+                                            if (Options.getSaveGene()) {
+                                                final String path = Options.getGeneDirectory() + File.separator + organismParser.getKingdom() + File.separator + organismParser.getGroup() + File.separator + organismParser.getSubGroup() + File.separator + organismParser.getName();
+                                                cdsParser.saveGene(path);
+                                            }
                                         } catch (OperatorException e) {
                                             Logs.warning("Unable to parse : " + ent.getKey());
                                             Logs.exception(e);
