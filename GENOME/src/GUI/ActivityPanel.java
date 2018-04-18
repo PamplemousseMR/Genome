@@ -67,13 +67,12 @@ public final class ActivityPanel extends JPanel {
      */
     void addStopListener(ActivityListener _activityListener) {
         m_stop.addActionListener(e -> {
-            if (_activityListener.activityEvent()) {
-                m_container.remove(0);
-                m_container.add(m_start, 0);
-                m_container.revalidate();
-                m_container.repaint();
-                m_start.resetColor();
-            }
+            _activityListener.activityEvent();
+            m_container.remove(0);
+            m_container.add(m_start, 0);
+            m_container.revalidate();
+            m_container.repaint();
+            m_start.resetColor();
         });
     }
 
@@ -90,6 +89,12 @@ public final class ActivityPanel extends JPanel {
                 m_container.revalidate();
                 m_container.repaint();
                 m_resume.resetColor();
+            } else {
+                m_container.remove(0);
+                m_container.add(m_start, 0);
+                m_container.revalidate();
+                m_container.repaint();
+                m_start.resetColor();
             }
         });
     }
@@ -107,6 +112,12 @@ public final class ActivityPanel extends JPanel {
                 m_container.revalidate();
                 m_container.repaint();
                 m_pause.resetColor();
+            } else {
+                m_container.remove(0);
+                m_container.add(m_start, 0);
+                m_container.revalidate();
+                m_container.repaint();
+                m_start.resetColor();
             }
         });
     }
