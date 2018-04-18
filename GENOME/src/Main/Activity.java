@@ -179,6 +179,10 @@ final class Activity {
                                                 final String path = Options.getGenomeDirectory() + File.separator + organismParser.getKingdom() + File.separator + organismParser.getGroup() + File.separator + organismParser.getSubGroup() + File.separator + organismParser.getName();
                                                 cdsParser.saveGenome(path);
                                             }
+                                            if (Options.getSaveGene()) {
+                                                final String path = Options.getGeneDirectory() + File.separator + organismParser.getKingdom() + File.separator + organismParser.getGroup() + File.separator + organismParser.getSubGroup() + File.separator + organismParser.getName();
+                                                cdsParser.saveGene(path);
+                                            }
                                         } catch (OperatorException e) {
                                             Logs.warning("Unable to parse : " + ent.getKey());
                                             Logs.exception(e);

@@ -48,6 +48,18 @@ public final class Options {
      */
     private static String s_GENOME_DIRECTORY = "Genome";
     /**
+     * Set to true to save gene
+     */
+    private static String s_SAVE_GENE = "false";
+    /**
+     * Extension used for save gene
+     */
+    private static String s_GENE_EXTENSION = ".txt";
+    /**
+     * Prefix used for save gene
+     */
+    private static String s_GENE_DIRECTORY = "Gene";
+    /**
      * Output directory for serialized data
      */
     private static String s_SERIALIZE_DIRECTORY = "Save";
@@ -212,6 +224,18 @@ public final class Options {
 
     public static boolean getSaveGenome() {
         return Boolean.valueOf(s_SAVE_GENOME);
+    }
+
+    public static String getGeneDirectory() {
+        return System.getProperty("user.dir") + File.separator + s_GENE_DIRECTORY;
+    }
+
+    public static String getGeneExtension() {
+        return s_GENE_EXTENSION;
+    }
+
+    public static boolean getSaveGene() {
+        return Boolean.valueOf(s_SAVE_GENE);
     }
 
     public static String getGenomeDirectory() {

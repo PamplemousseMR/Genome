@@ -230,6 +230,63 @@ public final class CDSParser {
     }
 
     /**
+     * Save gene
+     *
+     * @param _path the path where save data
+     */
+    public void saveGene(String _path) {
+        for (int i = 0; i < m_SEQUENCES.size(); ++i) {
+            String path = _path + File.separator + m_NAME + "_" + i + Options.getGeneExtension();
+            Logs.info("Save sequence " + path, false);
+
+            final Path Path = Paths.get(path);
+            if (Files.notExists(Path)) {
+                try {
+                    Files.createDirectories(Path);
+                } catch (IOException e) {
+                    final String message = "Unable to create the path : " + path;
+                    Logs.warning(message);
+                    Logs.exception(new IOException(message, e));
+                    return;
+                }
+            }
+
+            final File file = new File(path);
+            if (file.exists()) {
+                try {
+                    if (!file.delete()) {
+                        Logs.warning("Enable to delete file : " + path);
+                    }
+                } catch (SecurityException e) {
+                    Logs.warning("Enable to delete file : " + path);
+                    Logs.exception(e);
+                }
+            }
+            BufferedWriter stream = null;
+            try {
+                if (!file.createNewFile()) {
+                    Logs.warning("Enable to create file : " + path);
+                }
+                stream = new BufferedWriter(new FileWriter(file));
+                stream.write(m_SEQUENCES.get(i).toString());
+                stream.flush();
+            } catch (IOException | SecurityException e) {
+                Logs.warning("Unable to save : " + path);
+                Logs.exception(e);
+            } finally {
+                if (stream != null) {
+                    try {
+                        stream.close();
+                    } catch (IOException e) {
+                        Logs.warning("Unable to close : " + path);
+                        Logs.exception(e);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
      * Parse the buffer
      */
     private void parseCDS() {
