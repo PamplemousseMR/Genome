@@ -23,8 +23,8 @@ import java.util.concurrent.locks.ReentrantLock;
 
 final class Activity {
 
-    private static final Lock s_LOCK = new ReentrantLock();
-    private static final Condition s_COND = s_LOCK.newCondition();
+    private static final Lock s_WAIT_LOCK = new ReentrantLock();
+    private static final Condition s_COND = s_WAIT_LOCK.newCondition();
     private static final Object s_STOP_LOCK = new Object();
     private static final Object s_RUN_LOCK = new Object();
     private static Boolean s_stop = false;
@@ -47,13 +47,13 @@ final class Activity {
         }
         if (!run) {
             Logs.notice("Start", true);
-            s_LOCK.lock();
+            s_WAIT_LOCK.lock();
             {
                 if (s_wait) {
                     s_wait = false;
                 }
             }
-            s_LOCK.unlock();
+            s_WAIT_LOCK.unlock();
             synchronized (s_STOP_LOCK) {
                 if (s_stop) {
                     s_stop = false;
@@ -270,19 +270,27 @@ final class Activity {
      */
     public static boolean stop() {
         boolean ret = false;
-        synchronized (s_STOP_LOCK) {
-            if (!s_stop) {
-                Logs.notice("stop requested ...", true);
-                s_stop = true;
-                ret = true;
-                s_LOCK.lock();
-                {
-                    if (s_wait) {
-                        s_wait = false;
-                        s_COND.signalAll();
+        boolean run = false;
+        synchronized (s_RUN_LOCK) {
+            if (s_run) {
+                run = true;
+            }
+        }
+        if (run) {
+            synchronized (s_STOP_LOCK) {
+                if (!s_stop) {
+                    Logs.notice("stop requested ...", true);
+                    s_stop = true;
+                    ret = true;
+                    s_WAIT_LOCK.lock();
+                    {
+                        if (s_wait) {
+                            s_wait = false;
+                            s_COND.signalAll();
+                        }
                     }
+                    s_WAIT_LOCK.unlock();
                 }
-                s_LOCK.unlock();
             }
         }
         return ret;
@@ -309,15 +317,23 @@ final class Activity {
      */
     public static boolean pause() {
         boolean ret = false;
-        s_LOCK.lock();
-        {
-            if (!s_wait) {
-                Logs.notice("pause requested ...", true);
-                s_wait = true;
-                ret = true;
+        boolean run = false;
+        synchronized (s_RUN_LOCK) {
+            if (s_run) {
+                run = true;
             }
         }
-        s_LOCK.unlock();
+        if (run) {
+            s_WAIT_LOCK.lock();
+            {
+                if (!s_wait) {
+                    Logs.notice("pause requested ...", true);
+                    s_wait = true;
+                    ret = true;
+                }
+            }
+            s_WAIT_LOCK.unlock();
+        }
         return ret;
     }
 
@@ -328,16 +344,24 @@ final class Activity {
      */
     public static boolean resume() {
         boolean ret = false;
-        s_LOCK.lock();
-        {
-            if (s_wait) {
-                Logs.notice("resume requested ...", true);
-                s_wait = false;
-                s_COND.signalAll();
-                ret = true;
+        boolean run = false;
+        synchronized (s_RUN_LOCK) {
+            if (s_run) {
+                run = true;
             }
         }
-        s_LOCK.unlock();
+        if (run) {
+            s_WAIT_LOCK.lock();
+            {
+                if (s_wait) {
+                    Logs.notice("resume requested ...", true);
+                    s_wait = false;
+                    s_COND.signalAll();
+                    ret = true;
+                }
+            }
+            s_WAIT_LOCK.unlock();
+        }
         return ret;
     }
 
@@ -347,7 +371,7 @@ final class Activity {
      * @param _name the name of the task
      */
     private static void wait(String _name) {
-        s_LOCK.lock();
+        s_WAIT_LOCK.lock();
         {
             while (s_wait) {
                 Logs.notice(_name + " : wait...", true);
@@ -358,7 +382,7 @@ final class Activity {
                 }
             }
         }
-        s_LOCK.unlock();
+        s_WAIT_LOCK.unlock();
     }
 
     /**
