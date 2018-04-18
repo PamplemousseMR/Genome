@@ -3,7 +3,15 @@ package Download;
 import Exception.IException;
 import Exception.OperatorException;
 import Utils.Logs;
+import Utils.Options;
 
+import java.io.BufferedWriter;
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -164,6 +172,61 @@ public final class CDSParser {
      */
     public ArrayList<StringBuilder> getSequences() {
         return m_SEQUENCES;
+    }
+
+    /**
+     * Save full genome
+     *
+     * @param _path the path where save data
+     */
+    public void saveGenome(String _path) {
+        _path += File.separator + m_NAME + Options.getGenomeExtension();
+        Logs.info("Save sequence " + _path, false);
+
+        final Path Path = Paths.get(_path);
+        if (Files.notExists(Path)) {
+            try {
+                Files.createDirectories(Path);
+            } catch (IOException e) {
+                final String message = "Unable to create the path : " + _path;
+                Logs.warning(message);
+                Logs.exception(new IOException(message, e));
+                return;
+            }
+        }
+
+        final File file = new File(_path);
+        if (file.exists()) {
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + _path);
+                }
+            } catch (SecurityException e) {
+                Logs.warning("Enable to delete file : " + _path);
+                Logs.exception(e);
+            }
+        }
+        BufferedWriter stream = null;
+        try {
+            if (!file.createNewFile()) {
+                Logs.warning("Enable to create file : " + _path);
+            }
+            stream = new BufferedWriter(new FileWriter(file));
+            stream.write(m_ORIGIN.toString());
+            stream.flush();
+        } catch (IOException | SecurityException e) {
+            Logs.warning("Unable to save : " + _path);
+            Logs.exception(e);
+        } finally {
+            if (stream != null) {
+                try {
+                    stream.close();
+                } catch (IOException e) {
+                    Logs.warning("Unable to close : " + _path);
+                    Logs.exception(e);
+                }
+            }
+        }
     }
 
     /**
