@@ -37,9 +37,14 @@ public final class ExcelWriter {
     private XSSFCellStyle m_stylePrimaryColorBorders;
     private XSSFCellStyle m_styleAlternateColorABorders;
     private XSSFCellStyle m_styleAlternateColorBBorders;
+    private XSSFCellStyle m_styleAlternateColorAFloat;
+    private XSSFCellStyle m_styleAlternateColorBFloat;
+
     private XSSFCellStyle m_stylePrimaryColorLeftRightBorders;
     private XSSFCellStyle m_styleAlternateColorARightBorders;
     private XSSFCellStyle m_styleAlternateColorBRightBorders;
+    private short m_formatLong;
+    private short m_formatFloat;
 
     /**
      * Class constructor
@@ -102,7 +107,7 @@ public final class ExcelWriter {
      * @param _cell the cell to write in
      * @param _f    the long to write in the numeric cell
      */
-    private static void writeNumericCell(XSSFCell _cell, float _f) {
+    private void writeNumericCell(XSSFCell _cell, float _f) {
         _cell.setCellValue(_f);
         _cell.setCellType(CellType.NUMERIC);
     }
@@ -113,8 +118,8 @@ public final class ExcelWriter {
      * @param _cell the cell to write in
      * @param _l    the long to write in the numeric cell
      */
-    private static void writeNumericCell(XSSFCell _cell, long _l) {
-        _cell.setCellValue(_l);
+    private void writeNumericCell(XSSFCell _cell, long _l) {
+        _cell.setCellValue(_l * 100);
         _cell.setCellType(CellType.NUMERIC);
     }
 
@@ -168,6 +173,12 @@ public final class ExcelWriter {
         m_styleAlternateColorA.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         m_styleAlternateColorA.setFont(font);
 
+        m_styleAlternateColorAFloat = m_workbook.createCellStyle();
+        m_styleAlternateColorAFloat.setFillForegroundColor(s_ALTERNATING_COLOR_A);
+        m_styleAlternateColorAFloat.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        m_styleAlternateColorAFloat.setFont(font);
+        m_styleAlternateColorAFloat.setDataFormat(m_workbook.createDataFormat().getFormat("0.00"));
+
         m_styleAlternateColorABorders = m_workbook.createCellStyle();
         m_styleAlternateColorABorders.setFillForegroundColor(s_ALTERNATING_COLOR_A);
         m_styleAlternateColorABorders.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -206,6 +217,12 @@ public final class ExcelWriter {
         m_styleAlternateColorB.setFillPattern(FillPatternType.SOLID_FOREGROUND);
         m_styleAlternateColorB.setFont(font);
 
+        m_styleAlternateColorBFloat = m_workbook.createCellStyle();
+        m_styleAlternateColorBFloat.setFillForegroundColor(s_ALTERNATING_COLOR_B);
+        m_styleAlternateColorBFloat.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+        m_styleAlternateColorBFloat.setFont(font);
+        m_styleAlternateColorBFloat.setDataFormat(m_workbook.createDataFormat().getFormat("0.00"));
+
         XSSFCellStyle styleAlternateColorBBorders = m_workbook.createCellStyle();
         styleAlternateColorBBorders.setFillForegroundColor(s_ALTERNATING_COLOR_B);
         styleAlternateColorBBorders.setFillPattern(FillPatternType.SOLID_FOREGROUND);
@@ -225,6 +242,10 @@ public final class ExcelWriter {
         m_styleAlternateColorBRightBorders.setFont(font);
         m_styleAlternateColorBRightBorders.setBorderRight(BorderStyle.MEDIUM);
         m_styleAlternateColorBRightBorders.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, s_BORDER_COLOR);
+
+        m_formatFloat = m_workbook.createDataFormat().getFormat("0.##%");
+        m_styleAlternateColorAFloat.setDataFormat(m_formatFloat);
+        m_styleAlternateColorBFloat.setDataFormat(m_formatFloat);
     }
 
     /**
@@ -473,6 +494,8 @@ public final class ExcelWriter {
         XSSFCellStyle style3 = m_styleAlternateColorARightBorders;
         XSSFCellStyle alternate1;
         XSSFCellStyle alternate2 = m_styleAlternateColorBRightBorders;
+        XSSFCellStyle styleFloat1 = m_styleAlternateColorBFloat;
+        XSSFCellStyle styleFloat2 = m_styleAlternateColorAFloat;
         int i = 1;
         for (Statistics.Trinucleotide tri : Statistics.Trinucleotide.values()) {
 
@@ -483,37 +506,48 @@ public final class ExcelWriter {
             alternate1 = alternate2;
             alternate2 = style3;
             style3 = alternate1;
+            alternate1 = styleFloat1;
+            styleFloat1 = styleFloat2;
+            styleFloat2 = alternate1;
 
             Tuple row = _stat.getTriTable()[tri.ordinal()];
             r = _sheet.createRow(i);
             c = r.createCell(0);
             c.setCellValue(tri.toString());
             c.setCellStyle(m_stylePrimaryColorLeftRightBorders);
+
             c = r.createCell(1);
-            c.setCellStyle(style1);
             writeNumericCell(c, row.get(Statistics.StatLong.PHASE0));
+            c.setCellStyle(style1);
+
             c = r.createCell(2);
-            c.setCellStyle(style1);
             writeNumericCell(c, row.get(Statistics.StatFloat.FREQ0));
+            c.setCellStyle(styleFloat1);
+
             c = r.createCell(3);
-            c.setCellStyle(style1);
             writeNumericCell(c, row.get(Statistics.StatLong.PHASE1));
             c.setCellStyle(style1);
+
             c = r.createCell(4);
             writeNumericCell(c, row.get(Statistics.StatFloat.FREQ1));
-            c.setCellStyle(style1);
+            c.setCellStyle(styleFloat1);
+
             c = r.createCell(5);
             writeNumericCell(c, row.get(Statistics.StatLong.PHASE2));
             c.setCellStyle(style1);
+
             c = r.createCell(6);
             writeNumericCell(c, row.get(Statistics.StatFloat.FREQ2));
-            c.setCellStyle(style1);
+            c.setCellStyle(styleFloat1);
+
             c = r.createCell(7);
             writeNumericCell(c, row.get(Statistics.StatLong.PREF0));
             c.setCellStyle(style2);
+
             c = r.createCell(8);
             writeNumericCell(c, row.get(Statistics.StatLong.PREF1));
             c.setCellStyle(style2);
+
             c = r.createCell(9);
             writeNumericCell(c, row.get(Statistics.StatLong.PREF2));
             c.setCellStyle(style3);
@@ -528,7 +562,7 @@ public final class ExcelWriter {
             c = r.createCell(p);
             c.setCellType(CellType.NUMERIC);
             // JUST TO KNOW : A + P IS OKAY ONLY BECAUSE WE DON'T GO FURTHER THAN Z. REMEMBER IT
-            c.setCellFormula("SUM(" + (char) ('A' + p) + "2:" + (char) ('A' + p) + "65)");
+            c.setCellFormula("SUM(" + (char) ('A' + p) + "2:" + (char) ('A' + p) + "65)*100");
             c.setCellStyle(m_stylePrimaryColorBorders);
         }
 
@@ -537,6 +571,8 @@ public final class ExcelWriter {
         style2 = m_styleAlternateColorA;
         style3 = m_styleAlternateColorARightBorders;
         alternate2 = m_styleAlternateColorBRightBorders;
+        styleFloat1 = m_styleAlternateColorBFloat;
+        styleFloat2 = m_styleAlternateColorAFloat;
         i = 1;
         for (Statistics.Dinucleotide tri : Statistics.Dinucleotide.values()) {
 
@@ -547,27 +583,36 @@ public final class ExcelWriter {
             alternate1 = alternate2;
             alternate2 = style3;
             style3 = alternate1;
+            alternate1 = styleFloat1;
+            styleFloat1 = styleFloat2;
+            styleFloat2 = alternate1;
 
             Tuple row = _stat.getDiTable()[tri.ordinal()];
             r = _sheet.getRow(i);
             c = r.createCell(12);
             c.setCellValue(tri.toString());
             c.setCellStyle(m_stylePrimaryColorLeftRightBorders);
+
             c = r.createCell(13);
             writeNumericCell(c, row.get(Statistics.StatLong.PHASE0));
             c.setCellStyle(style1);
+
             c = r.createCell(14);
             writeNumericCell(c, row.get(Statistics.StatFloat.FREQ0));
-            c.setCellStyle(style1);
+            c.setCellStyle(styleFloat1);
+
             c = r.createCell(15);
             writeNumericCell(c, row.get(Statistics.StatLong.PHASE1));
             c.setCellStyle(style1);
+
             c = r.createCell(16);
             writeNumericCell(c, row.get(Statistics.StatFloat.FREQ1));
-            c.setCellStyle(style1);
+            c.setCellStyle(styleFloat1);
+
             c = r.createCell(17);
             writeNumericCell(c, row.get(Statistics.StatLong.PREF0));
             c.setCellStyle(style2);
+
             c = r.createCell(18);
             writeNumericCell(c, row.get(Statistics.StatLong.PREF1));
             c.setCellStyle(style3);
@@ -582,7 +627,7 @@ public final class ExcelWriter {
             c = r.createCell(p + 12);
             c.setCellType(CellType.NUMERIC);
             // JUST TO KNOW : A + P IS OKAY ONLY BECAUSE WE DON'T GO FURTHER THAN Z. REMEMBER IT
-            c.setCellFormula("SUM(" + (char) ('M' + p) + "2:" + (char) ('M' + p) + "17)");
+            c.setCellFormula("SUM(" + (char) ('M' + p) + "2:" + (char) ('M' + p) + "17)*100");
             c.setCellStyle(m_stylePrimaryColorBorders);
         }
 
