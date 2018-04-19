@@ -46,7 +46,7 @@ public final class Options {
     /**
      * Prefix used for save full sequences
      */
-    private static String s_GENOME_DIRECTORY = "Genome";
+    private static String s_GENOME_DIRECTORY = "Genomes";
     /**
      * Set to true to save gene
      */
@@ -58,7 +58,7 @@ public final class Options {
     /**
      * Prefix used for save gene
      */
-    private static String s_GENE_DIRECTORY = "Gene";
+    private static String s_GENE_DIRECTORY = "Genes";
     /**
      * Output directory for serialized data
      */
