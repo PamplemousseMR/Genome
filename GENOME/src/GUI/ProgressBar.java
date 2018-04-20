@@ -24,6 +24,8 @@ final class ProgressBar extends JProgressBar {
                 return s_BLUE;
             }
         });
+        super.setMaximum(0);
+        super.addChangeListener(e -> setString(String.format("%d / %d", getValue(), getMaximum())));
         super.setStringPainted(true);
         super.setForeground(s_GREEN);
         super.setBackground(s_BLUEGRAY);
