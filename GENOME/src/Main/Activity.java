@@ -161,7 +161,7 @@ final class Activity {
                                         } catch (HTTPException | IOException | OutOfMemoryException e) {
                                             Logs.warning("Unable to download : " + ent.getKey());
                                             Logs.exception(e);
-                                            continue;
+                                            throw e;
                                         }
                                         final CDSParser cdsParser = new CDSParser(cdsDownloader.getRefseqData(), ent.getKey());
                                         try {
@@ -177,7 +177,7 @@ final class Activity {
                                         } catch (OperatorException e) {
                                             Logs.warning("Unable to parse : " + ent.getKey());
                                             Logs.exception(e);
-                                            continue;
+                                            throw e;
                                         }
 
                                         final Replicon replicon = new Replicon(Statistics.Type.isTypeOf(ent.getValue()), ent.getKey(), cdsParser.getTotal(), cdsParser.getValid(), cdsParser.getSequences());
@@ -186,14 +186,29 @@ final class Activity {
                                         } catch (AddException e) {
                                             Logs.warning("Unable to add replicon : " + replicon.getName());
                                             Logs.exception(e);
+                                            throw e;
                                         }
                                     }
                                 } catch (OutOfMemoryError e) {
-                                    Logs.warning("Memory error : " + organism.getName());
+                                    Logs.warning("Memory error from organism : " + organism.getName());
                                     Logs.exception(new Exception(e));
+                                    try {
+                                        organism.cancel();
+                                        Logs.info("Cancel organism : " + organism.getName(), true);
+                                    } catch (InvalidStateException e1) {
+                                        Logs.warning("Unable to cancel : " + organism.getName());
+                                        Logs.exception(e);
+                                    }
                                 } catch (Throwable e) {
-                                    Logs.warning("Unknow error : " + organism.getName());
+                                    Logs.warning("Error from organism : " + organism.getName());
                                     Logs.exception(e);
+                                    try {
+                                        organism.cancel();
+                                        Logs.info("Cancel organism : " + organism.getName(), true);
+                                    } catch (InvalidStateException e1) {
+                                        Logs.warning("Unable to cancel : " + organism.getName());
+                                        Logs.exception(e);
+                                    }
                                 } finally {
                                     try {
                                         organism.stop();
