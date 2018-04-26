@@ -22,7 +22,7 @@ public final class Options {
     /**
      * Connection timeout in ms
      */
-    private static String s_DOWNLOAD_CONNECTION_TIMEOUT = "10000";
+    private static String s_DOWNLOAD_CONNECTION_TIMEOUT = "30000";
     /**
      * Number of organisms to download by request
      */

@@ -243,7 +243,7 @@ public final class ExcelWriter {
         m_styleAlternateColorBRightBorders.setBorderRight(BorderStyle.MEDIUM);
         m_styleAlternateColorBRightBorders.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, s_BORDER_COLOR);
 
-        m_formatFloat = m_workbook.createDataFormat().getFormat("0.##%");
+        m_formatFloat = m_workbook.createDataFormat().getFormat("0.##");
         m_styleAlternateColorAFloat.setDataFormat(m_formatFloat);
         m_styleAlternateColorBFloat.setDataFormat(m_formatFloat);
     }
@@ -521,7 +521,7 @@ public final class ExcelWriter {
             c.setCellStyle(style1);
 
             c = r.createCell(2);
-            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ0));
+            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ0) * 100);
             c.setCellStyle(styleFloat1);
 
             c = r.createCell(3);
@@ -529,7 +529,7 @@ public final class ExcelWriter {
             c.setCellStyle(style1);
 
             c = r.createCell(4);
-            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ1));
+            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ1) * 100);
             c.setCellStyle(styleFloat1);
 
             c = r.createCell(5);
@@ -537,7 +537,7 @@ public final class ExcelWriter {
             c.setCellStyle(style1);
 
             c = r.createCell(6);
-            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ2));
+            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ2) * 100);
             c.setCellStyle(styleFloat1);
 
             c = r.createCell(7);
@@ -562,7 +562,7 @@ public final class ExcelWriter {
             c = r.createCell(p);
             c.setCellType(CellType.NUMERIC);
             // JUST TO KNOW : A + P IS OKAY ONLY BECAUSE WE DON'T GO FURTHER THAN Z. REMEMBER IT
-            c.setCellFormula("SUM(" + (char) ('A' + p) + "2:" + (char) ('A' + p) + "65)*100");
+            c.setCellFormula("SUM(" + (char) ('A' + p) + "2:" + (char) ('A' + p) + "65)");
             c.setCellStyle(m_stylePrimaryColorBorders);
         }
 
@@ -598,7 +598,7 @@ public final class ExcelWriter {
             c.setCellStyle(style1);
 
             c = r.createCell(14);
-            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ0));
+            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ0) * 100);
             c.setCellStyle(styleFloat1);
 
             c = r.createCell(15);
@@ -606,7 +606,7 @@ public final class ExcelWriter {
             c.setCellStyle(style1);
 
             c = r.createCell(16);
-            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ1));
+            writeNumericCell(c, row.get(Statistics.StatFloat.FREQ1) * 100);
             c.setCellStyle(styleFloat1);
 
             c = r.createCell(17);
@@ -627,7 +627,7 @@ public final class ExcelWriter {
             c = r.createCell(p + 12);
             c.setCellType(CellType.NUMERIC);
             // JUST TO KNOW : A + P IS OKAY ONLY BECAUSE WE DON'T GO FURTHER THAN Z. REMEMBER IT
-            c.setCellFormula("SUM(" + (char) ('M' + p) + "2:" + (char) ('M' + p) + "17)*100");
+            c.setCellFormula("SUM(" + (char) ('M' + p) + "2:" + (char) ('M' + p) + "17)");
             c.setCellStyle(m_stylePrimaryColorBorders);
         }
 

@@ -241,6 +241,10 @@ public final class GenbankOrganisms extends IDownloader {
         for (Object org : dataChunk) {
             try {
                 OrganismParser currentOrg = new OrganismParser((JSONObject) org);
+                if (currentOrg.getReplicons().size() == 0) {
+                    Logs.info("No replicon in : " + currentOrg.getName(), false);
+                    continue;
+                }
                 if (enqueueOrganism(currentOrg)) {
                     ++currentEnqueue;
                 }

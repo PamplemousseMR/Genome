@@ -60,16 +60,16 @@ final class Activity {
                 }
             }
             MainFrame.getSingleton().updateProgresseValue(0);
-            MainFrame.getSingleton().updateProgresseMax(100);
             MainFrame.getSingleton().resetTree();
             s_activityThread = new Thread(() -> {
                 Date beg = new Date();
-                final double[] index = {0.0};
+                final int[] index = {0};
                 boolean cancel = false;
                 ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
+                    MainFrame.getSingleton().updateProgresseMax(go.getTotalCount());
 
                     final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
                         try {
@@ -113,16 +113,7 @@ final class Activity {
                             Logs.info("Organism " + organismName + " already up to date", false);
                             m_indexLock.lock();
                             {
-                                MainFrame.getSingleton().updateProgresseValue((int) ((++index[0] / go.getTotalCount()) * 100));
-                            }
-                            m_indexLock.unlock();
-                            continue;
-                        }
-                        if (organismParser.getReplicons().size() == 0) {
-                            Logs.info("No replicon in : " + organismName, false);
-                            m_indexLock.lock();
-                            {
-                                MainFrame.getSingleton().updateProgresseValue((int) ((++index[0] / go.getTotalCount()) * 100));
+                                MainFrame.getSingleton().updateProgresseValue(++index[0]);
                             }
                             m_indexLock.unlock();
                             continue;
@@ -170,7 +161,7 @@ final class Activity {
                                         } catch (HTTPException | IOException | OutOfMemoryException e) {
                                             Logs.warning("Unable to download : " + ent.getKey());
                                             Logs.exception(e);
-                                            continue;
+                                            throw e;
                                         }
                                         final CDSParser cdsParser = new CDSParser(cdsDownloader.getRefseqData(), ent.getKey());
                                         try {
@@ -186,7 +177,7 @@ final class Activity {
                                         } catch (OperatorException e) {
                                             Logs.warning("Unable to parse : " + ent.getKey());
                                             Logs.exception(e);
-                                            continue;
+                                            throw e;
                                         }
 
                                         final Replicon replicon = new Replicon(Statistics.Type.isTypeOf(ent.getValue()), ent.getKey(), cdsParser.getTotal(), cdsParser.getValid(), cdsParser.getSequences());
@@ -195,14 +186,29 @@ final class Activity {
                                         } catch (AddException e) {
                                             Logs.warning("Unable to add replicon : " + replicon.getName());
                                             Logs.exception(e);
+                                            throw e;
                                         }
                                     }
                                 } catch (OutOfMemoryError e) {
-                                    Logs.warning("Memory error : " + organism.getName());
+                                    Logs.warning("Memory error from organism : " + organism.getName());
                                     Logs.exception(new Exception(e));
+                                    try {
+                                        organism.cancel();
+                                        Logs.info("Cancel organism : " + organism.getName(), true);
+                                    } catch (InvalidStateException e1) {
+                                        Logs.warning("Unable to cancel : " + organism.getName());
+                                        Logs.exception(e);
+                                    }
                                 } catch (Throwable e) {
-                                    Logs.warning("Unknow error : " + organism.getName());
+                                    Logs.warning("Error from organism : " + organism.getName());
                                     Logs.exception(e);
+                                    try {
+                                        organism.cancel();
+                                        Logs.info("Cancel organism : " + organism.getName(), true);
+                                    } catch (InvalidStateException e1) {
+                                        Logs.warning("Unable to cancel : " + organism.getName());
+                                        Logs.exception(e);
+                                    }
                                 } finally {
                                     try {
                                         organism.stop();
@@ -218,7 +224,7 @@ final class Activity {
                                     }
                                     m_indexLock.lock();
                                     {
-                                        MainFrame.getSingleton().updateProgresseValue((int) ((++index[0] / go.getTotalCount()) * 100));
+                                        MainFrame.getSingleton().updateProgresseValue(++index[0]);
                                     }
                                     m_indexLock.unlock();
                                 }
