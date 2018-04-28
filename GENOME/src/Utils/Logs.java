@@ -81,7 +81,7 @@ public final class Logs {
      */
     public static void notice(String _message, boolean _notify) {
         final StackTraceElement[] stackTraceElements = Thread.currentThread().getStackTrace();
-        final String header = "[" + stackTraceElements[2].getFileName() + "{ " + stackTraceElements[2].getClassName() + " : " + stackTraceElements[2].getMethodName() + "(" + stackTraceElements[2].getLineNumber() + ") } ] info : ";
+        final String header = "[" + stackTraceElements[2].getFileName() + "{ " + stackTraceElements[2].getClassName() + " : " + stackTraceElements[2].getMethodName() + "(" + stackTraceElements[2].getLineNumber() + ") } ] notice : ";
         final String message = header + " " + _message;
         if (s_file != null) {
             try {

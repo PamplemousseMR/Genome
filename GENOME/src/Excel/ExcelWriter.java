@@ -43,8 +43,6 @@ public final class ExcelWriter {
     private XSSFCellStyle m_stylePrimaryColorLeftRightBorders;
     private XSSFCellStyle m_styleAlternateColorARightBorders;
     private XSSFCellStyle m_styleAlternateColorBRightBorders;
-    private short m_formatLong;
-    private short m_formatFloat;
 
     /**
      * Class constructor
@@ -243,9 +241,9 @@ public final class ExcelWriter {
         m_styleAlternateColorBRightBorders.setBorderRight(BorderStyle.MEDIUM);
         m_styleAlternateColorBRightBorders.setBorderColor(XSSFCellBorder.BorderSide.RIGHT, s_BORDER_COLOR);
 
-        m_formatFloat = m_workbook.createDataFormat().getFormat("0.##");
-        m_styleAlternateColorAFloat.setDataFormat(m_formatFloat);
-        m_styleAlternateColorBFloat.setDataFormat(m_formatFloat);
+        short formatFloat = m_workbook.createDataFormat().getFormat("0.##");
+        m_styleAlternateColorAFloat.setDataFormat(formatFloat);
+        m_styleAlternateColorBFloat.setDataFormat(formatFloat);
     }
 
     /**

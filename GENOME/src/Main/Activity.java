@@ -63,6 +63,7 @@ final class Activity {
             MainFrame.getSingleton().resetTree();
             s_activityThread = new Thread(() -> {
                 Date beg = new Date();
+                final int[] fail = {0};
                 final int[] index = {0};
                 boolean cancel = false;
                 ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
@@ -95,7 +96,7 @@ final class Activity {
                     });
                     currentSubGroup.start();
 
-                    final Lock m_indexLock = new ReentrantLock();
+                    final Object m_indexLock = new Object();
                     while (go.hasNext()) {
                         wait(Activity.class.toString());
                         synchronized (s_STOP_LOCK) {
@@ -111,11 +112,9 @@ final class Activity {
                         final Date dateModif = Organism.loadDate(Options.getGenbankName(), organismParser.getKingdom(), organismParser.getGroup(), organismParser.getSubGroup(), organismName);
                         if (dateModif != null && organismParser.getModificationDate().compareTo(dateModif) <= 0) {
                             Logs.info("Organism " + organismName + " already up to date", false);
-                            m_indexLock.lock();
-                            {
+                            synchronized (m_indexLock) {
                                 MainFrame.getSingleton().updateProgresseValue(++index[0]);
                             }
-                            m_indexLock.unlock();
                             continue;
                         }
 
@@ -195,6 +194,9 @@ final class Activity {
                                     try {
                                         organism.cancel();
                                         Logs.info("Cancel organism : " + organism.getName(), true);
+                                        synchronized (m_indexLock) {
+                                            ++fail[0];
+                                        }
                                     } catch (InvalidStateException e1) {
                                         Logs.warning("Unable to cancel : " + organism.getName());
                                         Logs.exception(e);
@@ -205,6 +207,9 @@ final class Activity {
                                     try {
                                         organism.cancel();
                                         Logs.info("Cancel organism : " + organism.getName(), true);
+                                        synchronized (m_indexLock) {
+                                            ++fail[0];
+                                        }
                                     } catch (InvalidStateException e1) {
                                         Logs.warning("Unable to cancel : " + organism.getName());
                                         Logs.exception(e);
@@ -222,11 +227,9 @@ final class Activity {
                                         Logs.warning("Unable to finish : " + organism.getName());
                                         Logs.exception(e);
                                     }
-                                    m_indexLock.lock();
-                                    {
+                                    synchronized (m_indexLock) {
                                         MainFrame.getSingleton().updateProgresseValue(++index[0]);
                                     }
-                                    m_indexLock.unlock();
                                 }
                             }
 
@@ -252,6 +255,9 @@ final class Activity {
                 } catch (InvalidStateException | AddException | MissException e) {
                     Logs.warning("Unable to run programme");
                     Logs.exception(e);
+                } catch (Throwable e) {
+                    Logs.warning("Unable to run programme, unexpected error");
+                    Logs.exception(e);
                 } finally {
                     Logs.notice("Finished and wait for threads...", true);
                     threadManager.finalizeThreadManager(cancel);
@@ -260,6 +266,7 @@ final class Activity {
                     }
                     Date end = new Date();
                     Logs.notice("Execution time : " + getDifference(beg, end), true);
+                    Logs.notice("Failled organisms : " + fail[0], true);
                 }
             });
             s_activityThread.start();

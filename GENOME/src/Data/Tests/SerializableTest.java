@@ -3,6 +3,7 @@ package Data.Tests;
 import Data.*;
 import Exception.AddException;
 import Exception.InvalidStateException;
+import Utils.Logs;
 import Utils.Options;
 import org.junit.jupiter.api.Test;
 
@@ -64,11 +65,15 @@ class SerializableTest {
             File[] files = path.listFiles();
             if (files != null) {
                 for (File f : files) {
-                    f.delete();
+                    if (!f.delete()) {
+                        Logs.warning("Enable to delete file : " + f.getName());
+                    }
                 }
             }
         } else {
-            path.mkdir();
+            if (!path.mkdir()) {
+                Logs.warning("Enable to create dir : " + path);
+            }
         }
     }
 
