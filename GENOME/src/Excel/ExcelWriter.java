@@ -43,7 +43,6 @@ public final class ExcelWriter {
     private XSSFCellStyle m_stylePrimaryColorLeftRightBorders;
     private XSSFCellStyle m_styleAlternateColorARightBorders;
     private XSSFCellStyle m_styleAlternateColorBRightBorders;
-    private short m_formatLong;
     private short m_formatFloat;
 
     /**
