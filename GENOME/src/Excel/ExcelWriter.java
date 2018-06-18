@@ -117,7 +117,7 @@ public final class ExcelWriter {
      * @param _l    the long to write in the numeric cell
      */
     private void writeNumericCell(XSSFCell _cell, long _l) {
-        _cell.setCellValue(_l * 100);
+        _cell.setCellValue(_l);
         _cell.setCellType(CellType.NUMERIC);
     }
 
