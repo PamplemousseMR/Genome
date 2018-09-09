@@ -2,6 +2,10 @@
 
 Statistics computed from NCBI gene bank.
 
+## Travis
+
+[![Build Status](https://travis-ci.com/PamplemousseMR/Genome.svg?branch=master)](https://travis-ci.com/PamplemousseMR/Genome)
+
 ## Getting Started
 
 These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
