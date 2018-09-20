@@ -14,3 +14,9 @@ Save
 Genome
 Gene
 locker.mutex
+
+lib/
+
+GENOME\.iml
+
+\.DS_Store
