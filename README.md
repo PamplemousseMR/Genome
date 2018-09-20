@@ -1,59 +1,87 @@
-# Application cree par -- Romain M. -- Florian H. -- Vincent H. -- Sami F. -- Arthur D.  -- Romain T. -- Adele M.
+# Genome
 
-# Configuration:
+Statistics computed from NCBI gene bank.
 
-- Un fichier option.ini qui permet a l'utilisateur de regler un certain nombre de parametres:
-	- s_SAVE_GENE=false : mettre a true pour sauvegarder les genes des organismes
-	- s_DOWNLOAD_STEP_ORGANISM=100000 : Valeur du pas de telechargement des organismes
-	- s_SERIALIZE_DIRECTORY=Save : Nom du repertoire de serialisation pour java
-	- s_TOTAL_PREFIX=Total_ : Prefixe des fichiers excel pour une famille (sous-groupe ou groupe ou kingdom)
-	- s_EXCEL_EXTENSION=.xlsx : Extension des fichiers de statistiques
-	- s_GENBANK_NAME=Genbank : Nom de la racine de l'arborescence pour la sauvegarde
-	- s_KINGDOM_SERIALIZATION_PREFIX=K_ : Prefixe permettant de faire du parsing plus rapidement (indique le prefixe du kingdom)
-	- s_SUBGROUP_SERIALIZATION_PREFIX=SG_ : Prefixe permettant de faire du parsing plus rapidement (indique le prefixe du sous-groupe)
-	- s_DATEMODIF_SERIALIZE_EXTENSION=--DATEMODIF--.ser : Extension pour les fichiers de serialisation des dates de mises a jour des organismes
-	- s_MAX_THREAD=32 : Nombre maximum de thread a utiliser (ne depassera jamais 4 fois le nombre de coeur de la machine, quelque soit la valeur indiquee)
-	- s_GENE_EXTENSION=.txt : Extension des fichiers de sauvegarde des genes des organismes
-	- s_GROUP_SERIALIZATION_PREFIX=G_ : Prefixe permettant de faire du parsing plus rapidement (indique le prefixe du groupe)
-	- s_SAVE_GENOME=false : A mettre a true pour sauvegarder le genome des organismes
-	- s_GENOME_DIRECTORY=Genomes : Nom du repertoire de sauvegarde des genomes
-	- s_CDS_BASE_URL=https\://www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi : URL de base pour telecharger un CDS
-	- s_GENE_DIRECTORY=Genes : Nom du repertoire de sauvegarde des genes des organismes
-	- s_DOWNLOAD_CONNECTION_TIMEOUT=30000 : Timeout pour telechargement
-	- s_RESULT_DIRECTORY=Results : Nom du repertoire de resultat des fichiers excel
-	- s_DATABASE_SERIALIZATION_PREFIX=D_ : Prefixe permettant de faire du parsing plus rapidement (indique le prefixe de la base de donnees)
-	- s_ORGANISM_BASE_URL=https\://www.ncbi.nlm.nih.gov/Structure/ngram : URL pour telecharger la liste des organismes presents sur GenBank
-	- s_SERIALIZATION_SPLITER=-- : Spliter pour parser plus rapidement la serialisation
-	- s_SUM_PREFIX=Sum_ : Prefixe utilise pour els sommes dans les fichiers excel
-	- s_MUTEX_FILE_NAME=locker.mutex : Nom du fichier de verrou de l'application pour empêcher plusieurs executions simultanees
-	- s_GENOME_EXTENSION=.txt : Extension des fichiers de genome
-	- s_ORGANISM_SERIALIZATION_PREFIX=O_ : Prefixe permettant de faire du parsing plus rapidement (indique le prefixe des organismes)
-	- s_SERIALIZE_EXTENSION=--.ser : Extension des fichiers de serialisation
+## Travis
 
-- Ce fichier est lu au debut de l'execution et est utilise pour toute la duree de vie de programme. S'il n'existe pas (s'il est supprime par erreur), il est regenere a l'arrêt de l'application avec les valeurs par defaut.
+[![Build Status](https://travis-ci.com/ResnaHF/Genome.svg?branch=master)](https://travis-ci.com/ResnaHF/Genome)
 
-# Fichiers et repertoires utilises par le programme
-	
-- Results : repertoire des fichiers excel
-- Save: repertoire des fichiers de serialisation
-- options.ini : fichier des options configurables par l'utilisateur
-- log.txt : fichier contenant les logs complets generes lors de l'execution
-- locker.mutex : Fichier de verrou de l'application pour empêcher plusieurs executions simultanees. Une fenêtre speciale s'affiche en cas de tentative.
+## Getting Started
 
-# Affichage de l'interface: 
+These instructions will get you a copy of the project up and running on your local machine for development and testing purposes.
 
-- L'arbre: Affiche en temps reel l'arborescence des fichiers avec un code couleur 
-	- blanc: fichiers/dossiers actuellement enregistres
-	- orange: fichier/dossiers en cours d'actualisation
-	- bleu: fichiers/dossiers qui sont en cours de telechargement
-	- vert: fichiers/dossiers dont le telechargement et les mises a jour sont termines
-- Une barre de progression qui montre l'avancement du telechargement en fonction du nombre d'organisme. Le total ne comptabilise pas les doublons et les organismes qui ne possedent pas de replicons de type NC_.
-- Les logs: Affichage des principaux logs pour l'utilisateur
-- Les informations: Affichage des donnees pour un organisme ou une famille selectionne dans l'arbre
+### Prerequisites
 
-# Utilisation de l'interface:
+- [apache poi](https://poi.apache.org/) : A Java API for Microsoft Documents.
 
-- Un bouton "demarrer le telechargement". Une fois lance, devient un bouton de pause.
-- Un bouton "pause" qui envoie une requête de pause a tous les threads de telechargement/calcul du programme pour les mettre en pause. Ce bouton devient ensuite un bouton de relance
-- Un bouton "relance" pour reveiller les threads en pause et reprendre le deroulement de l'application.
-- Un bouton "stop" pour stopper proprement a tout moment l'execution du programme. Envoie une requête d'arrêt a tous les threads de telechargement/calcul du programme. Le programme attend la terminaison des actions en cours pour garantir un etat stable des fichiers.
+## Configuration:
+
+- An option.ini file that allows the user to set a number of parameters:
+	- s_SAVE_GENE = false: set a true to save the genes of organisms
+	- s_DOWNLOAD_STEP_ORGANISM = 100000: Value of the download step of organisms
+	- s_SERIALIZE_DIRECTORY = Save: Name of the serialization directory for java
+	- s_TOTAL_PREFIX = Total_: Prefix of excel files for a family (subgroup or group or kingdom)
+	- s_EXCEL_EXTENSION = .xlsx: Extension of the statistics files
+	- s_GENBANK_NAME = Genbank: Name of the tree root for backup
+	- s_KINGDOM_SERIALIZATION_PREFIX = K_: Prefix allowing to parse faster (indicates the prefix of the kingdom)
+	- s_SUBGROUP_SERIALIZATION_PREFIX = SG_: Prefix allowing to do parsing more quickly (indicates the subgroup prefix)
+	- s_DATEMODIF_SERIALIZE_EXTENSION = - DATEMODIF -. ser: Extension for the files of serialization of the dates of updates of the organisms
+	- s_MAX_THREAD = 32: Maximum number of threads to use (will never exceed 4 times the core number of the machine, whatever the value indicated)
+	- s_GENE_EXTENSION = .txt: Extension of the files of safeguard of the genes of the organisms
+	- s_GROUP_SERIALIZATION_PREFIX = G_: Prefix allowing to do parsing more quickly (indicates the prefix of the group)
+	- s_SAVE_GENOME = false: Set to true to save the genome of organisms
+	- s_GENOME_DIRECTORY = Genomes: Genomes backup directory name
+	- s_CDS_BASE_URL = https \: //www.ncbi.nlm.nih.gov/sviewer/viewer.fcgi: Base URL to download a CDS
+	- s_GENE_DIRECTORY = Genes: Name of the backup directory of the genes of the organisms
+	- s_DOWNLOAD_CONNECTION_TIMEOUT = 30000: Timeout for download
+	- s_RESULT_DIRECTORY = Results: Name of the result directory of the excel files
+	- s_DATABASE_SERIALIZATION_PREFIX = D_: Prefix allowing to do parsing more quickly (indicates the prefix of the database)
+	- s_ORGANISM_BASE_URL = https \: //www.ncbi.nlm.nih.gov/Structure/ngram: URL to download the list of organizations on GenBank
+	- s_SERIALIZATION_SPLITER = -: Spliter to parse faster serialization
+	- s_SUM_PREFIX = Sum_: Prefix uses for sums in excel files
+	- s_MUTEX_FILE_NAME = locker.mutex: Name of application lock file to prevent multiple simultaneous executions
+	- s_GENOME_EXTENSION = .txt: Extension of genome files
+	- s_ORGANISM_SERIALIZATION_PREFIX = O_: Prefix allowing to do parsing more quickly (indicates the prefix of organisms)
+	- s_SERIALIZE_EXTENSION = -. ser: Extension of the serialization files
+
+- This file is read at the beginning of the execution and is used for the entire program life. If it does not exist (if it is deleted by mistake), it is regenerated when the application is stopped with the default values.
+
+## Files and directories used by the program
+
+- Results: directory of excel files
+- Save: directory of the serialization files
+- options.ini: user configurable options file
+- log.txt: file containing the complete logs generated during the execution
+- locker.mutex: Application lock file to prevent multiple simultaneous executions. A special window is displayed when an attempt is made.
+
+## Display of the interface:
+
+- Tree: Displays in real time the file tree with a color code
+	- white: files / folders currently registered
+	- orange: file / folders being updated
+	- blue: files / folders that are being downloaded
+	- green: files / folders whose download and updates are completed
+- A progress bar that shows the progress of the download based on the number of organizations. The total does not count duplicates and organisms that do not have NC_ replicons.
+- Logs: Display of the main logs for the user
+- Information: Display of data for an organism or a selected family in the tree
+
+## Using the interface:
+
+- A button "start the download". Once launched, becomes a pause button.
+- A "pause" button that sends a pause request to all program download / calculation threads to pause them. This button then becomes a reminder button
+- A "restart" button to wake the threads in pause and resume the progress of the application.
+- A "stop" button to stop the execution of the program at any time. Sends a shutdown request to all program download / calculation threads. The program waits for the termination of the current actions to guarantee a stable state of the files.
+
+## Authors
+
+* **MANCIAUX Romain** - *Initial work* - [PamplemousseMR](https://github.com/PamplemousseMR).
+* **HANSER Florian** - *Initial work* - [ResnaHF](https://github.com/ResnaHF).
+* **HARTMEYER Vincent** - *Initial work* - [Sayux](https://github.com/Sayux).
+* **FETAIMIA Sami** - *Initial work*.
+* **DELRUE Arthur** - *Initial work* - [ArtLeQuint](https://github.com/ArtLeQuint).
+* **TEULE Romain** - *Initial work* - [romainTeule](https://github.com/romainTeule).
+* **MENANTEAU Adele** - *Initial work* - [Amistery](https://github.com/Amistery).
+
+## License
+
+This project is licensed under the GNU Lesser General Public License v3.0 - see the [LICENSE.md](LICENSE.md) file for details.
