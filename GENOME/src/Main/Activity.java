@@ -132,7 +132,7 @@ final class Activity {
                         Organism organism = Organism.load(organismName, organismParser.getId(), organismParser.getVersion(), currentSubGroup, true, _organism -> {
                             try {
                                 ExcelWriter.writeOrganism(_organism);
-                            } catch (IOException e) {
+                            } catch (IOException | NoClassDefFoundError e) {
                                 Logs.warning("Unable to write excel file : " + _organism.getName());
                                 Logs.exception(e);
                             }
