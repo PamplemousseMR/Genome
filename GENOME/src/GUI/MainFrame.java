@@ -45,7 +45,7 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      */
     private static final int s_CURSOR_AREA = 6;
     /**
-     * The mainframe iself
+     * The mainframe itself
      */
     private static MainFrame s_mainFrame;
 

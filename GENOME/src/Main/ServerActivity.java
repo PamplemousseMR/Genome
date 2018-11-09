@@ -5,9 +5,7 @@ import Download.CDSParser;
 import Download.GenbankCDS;
 import Download.GenbankOrganisms;
 import Download.OrganismParser;
-import Excel.ExcelWriter;
 import Exception.*;
-import GUI.MainFrame;
 import Manager.ITask;
 import Manager.ThreadManager;
 import Utils.Logs;
@@ -21,7 +19,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-final class Activity {
+final class ServerActivity {
 
     private static final Lock s_WAIT_LOCK = new ReentrantLock();
     private static final Condition s_COND = s_WAIT_LOCK.newCondition();
@@ -59,8 +57,6 @@ final class Activity {
                     s_stop = false;
                 }
             }
-            MainFrame.getSingleton().updateProgresseValue(0);
-            MainFrame.getSingleton().resetTree();
             s_activityThread = new Thread(() -> {
                 Date beg = new Date();
                 final int[] fail = {0};
@@ -70,17 +66,9 @@ final class Activity {
                 try {
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
-                    MainFrame.getSingleton().updateProgresseMax(go.getTotalCount());
 
                     final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
-                        try {
-                            ExcelWriter.writeDatabase(_dataBase);
                             _dataBase.save();
-                            MainFrame.getSingleton().updateTree(_dataBase.getSavedName() + Options.getSerializeExtension());
-                        } catch (IOException e) {
-                            Logs.warning("Unable to write excel database file : " + _dataBase.getName());
-                            Logs.exception(e);
-                        }
                     });
                     currentDataBase.start();
 
@@ -98,7 +86,7 @@ final class Activity {
 
                     final Object m_indexLock = new Object();
                     while (go.hasNext()) {
-                        wait(Activity.class.toString());
+                        wait(ServerActivity.class.toString());
                         synchronized (s_STOP_LOCK) {
                             if (s_stop) {
                                 Logs.notice("Stop main loop", true);
@@ -112,9 +100,6 @@ final class Activity {
                         final Date dateModif = Organism.loadDate(Options.getGenbankName(), organismParser.getKingdom(), organismParser.getGroup(), organismParser.getSubGroup(), organismName);
                         if (dateModif != null && organismParser.getModificationDate().compareTo(dateModif) <= 0) {
                             Logs.info("Organism " + organismName + " already up to date", false);
-                            synchronized (m_indexLock) {
-                                MainFrame.getSingleton().updateProgresseValue(++index[0]);
-                            }
                             continue;
                         }
 
@@ -130,14 +115,7 @@ final class Activity {
                         }
 
                         Organism organism = Organism.load(organismName, organismParser.getId(), organismParser.getVersion(), currentSubGroup, true, _organism -> {
-                            try {
-                                ExcelWriter.writeOrganism(_organism);
-                            } catch (IOException | NoClassDefFoundError e) {
-                                Logs.warning("Unable to write excel file : " + _organism.getName());
-                                Logs.exception(e);
-                            }
                             _organism.save();
-                            MainFrame.getSingleton().updateTree(_organism.getSavedName() + Options.getSerializeExtension());
                         });
 
                         // Thread
@@ -153,7 +131,7 @@ final class Activity {
                                         return;
                                     }
                                     for (Map.Entry<String, String> ent : organismParser.getReplicons()) {
-                                        Activity.wait(getName());
+                                        ServerActivity.wait(getName());
                                         final GenbankCDS cdsDownloader = new GenbankCDS(ent.getKey());
                                         try {
                                             cdsDownloader.download();
@@ -226,9 +204,6 @@ final class Activity {
                                     } catch (InvalidStateException e) {
                                         Logs.warning("Unable to finish : " + organism.getName());
                                         Logs.exception(e);
-                                    }
-                                    synchronized (m_indexLock) {
-                                        MainFrame.getSingleton().updateProgresseValue(++index[0]);
                                     }
                                 }
                             }
@@ -429,14 +404,7 @@ final class Activity {
     private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent) throws InvalidStateException, AddException {
         _currentKingdom.stop();
         _currentKingdom = Kingdom.load(_newKingdom, _parent, _kingdom -> {
-            try {
-                ExcelWriter.writeKingdom(_kingdom);
-            } catch (IOException e) {
-                Logs.warning("Unable to write excel kingdom file : " + _kingdom.getName());
-                Logs.exception(e);
-            }
             _kingdom.save();
-            MainFrame.getSingleton().updateTree(_kingdom.getSavedName() + Options.getSerializeExtension());
         });
         _currentKingdom.start();
         return _currentKingdom;
@@ -445,14 +413,7 @@ final class Activity {
     private static Group switchGroup(Group _currentGroup, String _newGroup, Kingdom _parent) throws InvalidStateException, AddException {
         _currentGroup.stop();
         _currentGroup = Group.load(_newGroup, _parent, _group -> {
-            try {
-                ExcelWriter.writeGroup(_group);
-            } catch (IOException e) {
-                Logs.warning("Unable to write excel group file : " + _group.getName());
-                Logs.exception(e);
-            }
             _group.save();
-            MainFrame.getSingleton().updateTree(_group.getSavedName() + Options.getSerializeExtension());
         });
         _currentGroup.start();
         return _currentGroup;
@@ -461,14 +422,7 @@ final class Activity {
     private static SubGroup switchSubGroup(SubGroup _currentSubGroup, String _newSubGroup, Group _parent) throws InvalidStateException, AddException {
         _currentSubGroup.stop();
         _currentSubGroup = SubGroup.load(_newSubGroup, _parent, _subGroup -> {
-            try {
-                ExcelWriter.writeSubGroup(_subGroup);
-            } catch (IOException e) {
-                Logs.warning("Unable to write excel subGroup file : " + _subGroup.getName());
-                Logs.exception(e);
-            }
             _subGroup.save();
-            MainFrame.getSingleton().updateTree(_subGroup.getSavedName() + Options.getSerializeExtension());
         });
         _currentSubGroup.start();
         return _currentSubGroup;
