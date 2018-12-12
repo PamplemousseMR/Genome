@@ -57,10 +57,10 @@ public class WarningFrame extends JFrame {
         initIcone();
         setResizable(false);
         setSize(830, 180);
-        setVisible(true);
         setLocationRelativeTo(null);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         add(panel);
+        setVisible(true);
     }
 
     /**
