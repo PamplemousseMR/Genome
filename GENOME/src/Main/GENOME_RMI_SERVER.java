@@ -1,16 +1,13 @@
 package Main;
 
-import Data.IDataBase;
-import GUI.MainFrame;
-import GUI.WarningFrame;
+import Console.Console;
 import Utils.Logs;
 import Utils.Options;
 
-import javax.swing.*;
 import java.io.File;
 import java.io.IOException;
 
-final class GENOME {
+final class GENOME_RMI_SERVER {
 
     /**
      * Main
@@ -21,7 +18,6 @@ final class GENOME {
         if (lock()) {
             try {
                 Logs.setListener((_message, _type) -> {
-                    MainFrame.getSingleton().updateLog(_message, _type);
                     switch (_type) {
                         case EXCEPTION:
                             System.err.println(_message);
@@ -31,25 +27,16 @@ final class GENOME {
                             break;
                     }
                 });
-                MainFrame.getSingleton().addStartListener(GenomeActivity::genbank);
-                MainFrame.getSingleton().addStopListener(GenomeActivity::stop);
-                MainFrame.getSingleton().addPauseListener(GenomeActivity::pause);
-                MainFrame.getSingleton().addResumeListener(GenomeActivity::resume);
-                MainFrame.getSingleton().addTreeListener(_info -> {
-                    IDataBase organism = IDataBase.load(_info);
-                    if (organism != null) {
-                        MainFrame.getSingleton().updateInformation(JDataBase.createComponent(organism));
-                    } else {
-                        MainFrame.getSingleton().updateInformation(new JTextArea());
-                    }
-                });
                 initializeProgram();
-                Runtime.getRuntime().addShutdownHook(new Thread(GENOME::finalizeProgram));
+                Runtime.getRuntime().addShutdownHook(new Thread(GENOME_RMI_SERVER::finalizeProgram));
+                Console.getSingleton().addStartListener(GenomeRMIServerActivity::genbank);
+                Console.getSingleton().addStopListener(GenomeRMIServerActivity::stop);
+                Console.getSingleton().addPauseListener(GenomeRMIServerActivity::pause);
+                Console.getSingleton().addResumeListener(GenomeRMIServerActivity::resume);
+                Console.getSingleton().run();
             } catch (Throwable e) {
                 Logs.exception(e);
             }
-        } else {
-            new WarningFrame();
         }
     }
 
@@ -68,7 +55,7 @@ final class GENOME {
      * Function call at the end of the program
      */
     private static void finalizeProgram() {
-        GenomeActivity.stopAndWait();
+        GenomeRMIServerActivity.stopAndWait();
         Logs.info("End", true);
         Logs.info("Options finalized", true);
         Options.finalizeOptions();

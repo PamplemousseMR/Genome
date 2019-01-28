@@ -45,7 +45,7 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      */
     private static final int s_CURSOR_AREA = 6;
     /**
-     * The mainframe iself
+     * The mainframe itself
      */
     private static MainFrame s_mainFrame;
 
@@ -376,7 +376,7 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
     private void initComponents() {
         m_header = new JPanel();
         m_main = new JPanel();
-        m_footer = new TitlePanel("Application cree par -- Romain M. -- Florian H. -- Vincent H. -- Sami F. -- Arthur D.  -- Romain T. -- Adele M.", 12, s_DARKGRAY);
+        m_footer = new TitlePanel("Application cree par -- Romain M. -- Florian H. -- Vincent H. -- Caty G. F. -- Adele M.", 12, s_DARKGRAY);
 
         m_menuPanel = new JPanel();
         m_mainTitle = new JLabel("GENOME");
