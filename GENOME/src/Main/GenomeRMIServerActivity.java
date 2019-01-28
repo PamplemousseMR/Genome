@@ -19,7 +19,7 @@ import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 
-final class ServerActivity {
+final class GenomeRMIServerActivity {
 
     private static final Lock s_WAIT_LOCK = new ReentrantLock();
     private static final Condition s_COND = s_WAIT_LOCK.newCondition();
@@ -68,7 +68,7 @@ final class ServerActivity {
                     go.downloadOrganisms();
 
                     final DataBase currentDataBase = DataBase.load(Options.getGenbankName(), _dataBase -> {
-                            _dataBase.save();
+                        _dataBase.save();
                     });
                     currentDataBase.start();
 
@@ -86,7 +86,7 @@ final class ServerActivity {
 
                     final Object m_indexLock = new Object();
                     while (go.hasNext()) {
-                        wait(ServerActivity.class.toString());
+                        wait(GenomeRMIServerActivity.class.toString());
                         synchronized (s_STOP_LOCK) {
                             if (s_stop) {
                                 Logs.notice("Stop main loop", true);
@@ -131,7 +131,7 @@ final class ServerActivity {
                                         return;
                                     }
                                     for (Map.Entry<String, String> ent : organismParser.getReplicons()) {
-                                        ServerActivity.wait(getName());
+                                        GenomeRMIServerActivity.wait(getName());
                                         final GenbankCDS cdsDownloader = new GenbankCDS(ent.getKey());
                                         try {
                                             cdsDownloader.download();
