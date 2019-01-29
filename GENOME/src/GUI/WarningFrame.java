@@ -126,7 +126,7 @@ public class WarningFrame extends JFrame {
      */
     private void initIcone() {
         try {
-            setIconImage(Toolkit.getDefaultToolkit().getImage((getClass().getResource("Ressources/logo.bioinfo.png"))));
+            setIconImage(Toolkit.getDefaultToolkit().getImage((getClass().getResource("Ressources/logo.png"))));
         } catch (Exception e) {
             Logs.exception(e);
         }
