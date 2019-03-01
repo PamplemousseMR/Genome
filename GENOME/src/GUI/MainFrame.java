@@ -364,7 +364,7 @@ public final class MainFrame extends JFrame implements MouseMotionListener, Mous
      */
     private void initIcone() {
         try {
-            setIconImage(Toolkit.getDefaultToolkit().getImage((getClass().getResource("Ressources/logo.bioinfo.png"))));
+            setIconImage(Toolkit.getDefaultToolkit().getImage((getClass().getResource("Ressources/logo.png"))));
         } catch (Exception e) {
             Logs.exception(e);
         }
