@@ -58,7 +58,7 @@ public final class OrganismParser {
     /**
      * Regex used tu get good CDS type
      */
-    private static final String s_TYPE_REGEX = "(CHLOROPLAST)|(CHROMOSOME)|(PLASMID)|(SEGMENT)|(SEGMEN)|(LINKAGE)|(PLASTID)|(CIRCLE)|(PLTD)|(UNKNOWN)|(UNNAMED)|(MITOCHONDRION)|(MT)|(DNA)|(DN)|(RNA)|(RN)";
+    private static final String s_TYPE_REGEX = "(CHLOROPLAST)|(CHROMOSOME)|(PLASMID)|(SEGMENT)|(SEGMEN)|(LINKAGE)|(PLASTID)|(CIRCLE)|(PLTD)|(UNKNOWN)|(UNNAMED)|(MITOCHONDRION)|(MT)|(DNA)|(DN)|(RNA)|(RN)|(^1)|(^2)|(^3)|(^4)|(^5)|(^6)|(^7)|(^8)|(^9)|(^A)|(^B)|(^C)|(^D)|(^E)|(^F)|(^G)|(^H)|(^I)|(^J)|(^K)|(^L)|(^M)|(^N)|(^O)|(^P)|(^Q)|(^R)|(^S)|(^T)|(^U)|(^V)|(^W)|(^X)|(^Z)";
     /**
      * Object to parse
      */
@@ -231,7 +231,7 @@ public final class OrganismParser {
 
                         final String[] data = sequence.split(":");
                         if (data.length == 2) {
-                            final String sequenceInfo = data[0];
+                            final String sequenceInfo = data[0].trim();
                             final Matcher mType = patternType.matcher(sequenceInfo);
                             if (mType.find()) {
                                 m_REPLICONS.add(new Map.Entry<String, String>() {
