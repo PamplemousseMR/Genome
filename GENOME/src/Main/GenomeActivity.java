@@ -68,6 +68,7 @@ final class GenomeActivity {
                 boolean cancel = false;
                 ThreadManager threadManager = new ThreadManager(Runtime.getRuntime().availableProcessors() * 4);
                 try {
+                    // Get organisms list
                     final GenbankOrganisms go = new GenbankOrganisms();
                     go.downloadOrganisms();
                     MainFrame.getSingleton().updateProgresseMax(go.getTotalCount());
@@ -96,6 +97,7 @@ final class GenomeActivity {
                     });
                     currentSubGroup.start();
 
+                    // Each organism
                     final Object m_indexLock = new Object();
                     while (go.hasNext()) {
                         wait(GenomeActivity.class.toString());
@@ -109,6 +111,7 @@ final class GenomeActivity {
                         final OrganismParser organismParser = go.getNext();
                         final String organismName = organismParser.getName() + "-" + organismParser.getId();
 
+                        // Check if it need to be updated
                         final Date dateModif = Organism.loadDate(Options.getGenbankName(), organismParser.getKingdom(), organismParser.getGroup(), organismParser.getSubGroup(), organismName);
                         if (dateModif != null && organismParser.getModificationDate().compareTo(dateModif) <= 0) {
                             Logs.info("Organism " + organismName + " already up to date", false);
@@ -118,6 +121,7 @@ final class GenomeActivity {
                             continue;
                         }
 
+                        // Check if the subgroup need to be switched
                         if (organismParser.getKingdom().compareTo(currentKingdom.getName()) != 0) {
                             currentKingdom = switchKingdom(currentKingdom, organismParser.getKingdom(), currentDataBase);
                             currentGroup = switchGroup(currentGroup, organismParser.getGroup(), currentKingdom);
@@ -129,6 +133,7 @@ final class GenomeActivity {
                             currentSubGroup = switchSubGroup(currentSubGroup, organismParser.getSubGroup(), currentGroup);
                         }
 
+                        // Load the organism (if it already exist, unload data from the parent)
                         Organism organism = Organism.load(organismName, organismParser.getId(), organismParser.getVersion(), currentSubGroup, true, _organism -> {
                             try {
                                 ExcelWriter.writeOrganism(_organism);
