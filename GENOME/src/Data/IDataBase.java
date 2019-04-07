@@ -395,6 +395,24 @@ public class IDataBase implements Serializable {
     }
 
     /**
+     * Unsave this data
+     */
+    public void unsave() {
+        final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getSerializeExtension());
+        ObjectOutputStream stream = null;
+        if (file.exists()) {
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
+                Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
+            }
+        }
+    }
+
+    /**
      * Finish
      *
      * @throws InvalidStateException if it can't be finished

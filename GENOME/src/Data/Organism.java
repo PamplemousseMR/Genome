@@ -262,6 +262,26 @@ public final class Organism extends IDataBase {
     }
 
     /**
+     * Unsave this organism
+     */
+    @Override
+    public void unsave() {
+        super.unsave();
+
+        final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getDateModifSerializeExtension());
+        if (file.exists()) {
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
+                Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
+            }
+        }
+    }
+
+    /**
      * Get the main part of the save path_name
      *
      * @return the main part of the save path_name

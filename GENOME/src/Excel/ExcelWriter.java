@@ -63,12 +63,28 @@ public final class ExcelWriter {
     }
 
     /**
+     * Function call to unwrite database's Excel workbook
+     */
+    public static void unwriteDatabase(DataBase _data) throws IOException {
+        final String path = FileManager.getPathFor(_data);
+        unsaveSheet(path);
+    }
+
+    /**
      * Function call to write kingdom summary in Excel workbook
      */
     public static void writeKingdom(Kingdom _kingdom) throws IOException {
         final String path = FileManager.getPathFor(_kingdom);
         final ExcelWriter result = new ExcelWriter(_kingdom);
         result.saveSheet(path);
+    }
+
+    /**
+     * Function call to write kingdom's Excel workbook
+     */
+    public static void unwriteKingdom(Kingdom _kingdom) throws IOException {
+        final String path = FileManager.getPathFor(_kingdom);
+        unsaveSheet(path);
     }
 
     /**
@@ -81,12 +97,28 @@ public final class ExcelWriter {
     }
 
     /**
+     * Function call to unwrite group's Excel workbook
+     */
+    public static void unwriteGroup(Group _group) throws IOException {
+        final String path = FileManager.getPathFor(_group);
+        unsaveSheet(path);
+    }
+
+    /**
      * Function call to write subgroup summary in Excel workbook
      */
     public static void writeSubGroup(SubGroup _subGroup) throws IOException {
         final String path = FileManager.getPathFor(_subGroup);
         final ExcelWriter result = new ExcelWriter(_subGroup);
         result.saveSheet(path);
+    }
+
+    /**
+     * Function call to unwrite subgroup's Excel workbook
+     */
+    public static void unwriteSubGroup(SubGroup _subGroup) throws IOException {
+        final String path = FileManager.getPathFor(_subGroup);
+        unsaveSheet(path);
     }
 
     /**
@@ -97,6 +129,35 @@ public final class ExcelWriter {
         final ExcelWriter result = new ExcelWriter(_organism);
         result.createRepliconsSheets(_organism);
         result.saveSheet(path);
+    }
+
+    /**
+     * Function call to unwrite organism's Excel workbook
+     */
+    public static void unwriteOrganism(Organism _organism) throws IOException {
+        final String path = FileManager.getPathFor(_organism);
+        unsaveSheet(path);
+    }
+
+    /**
+     * Function to unsave the excel sheet
+     *
+     * @param _path the path of the file
+     * @throws IOException if an exception appear
+     */
+    private static void unsaveSheet(String _path) {
+        //	Check if file exist
+        final File file = new File(_path);
+        if (file.exists()) {
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
+                Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
+            }
+        }
     }
 
     /**
@@ -247,7 +308,7 @@ public final class ExcelWriter {
     }
 
     /**
-     * Function do save the excel sheet
+     * Function to save the excel sheet
      *
      * @param _path the path of the file
      * @throws IOException if an exception appear
