@@ -11,7 +11,7 @@ public final class SubGroup extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getSubGroupSerializationPrefix();
+    public static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getSubGroupSerializationPrefix();
     /**
      * Array of this SubGroup's Organisms
      */

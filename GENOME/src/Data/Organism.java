@@ -14,7 +14,7 @@ public final class Organism extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getOrganismSerializationPrefix();
+    public static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getOrganismSerializationPrefix();
     /**
      * Array of this organism's Replicon
      */

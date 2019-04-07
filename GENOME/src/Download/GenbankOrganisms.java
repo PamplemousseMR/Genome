@@ -255,6 +255,25 @@ public final class GenbankOrganisms extends IDownloader {
             }
         }
 
+        m_DATAQUEUE.sort((_o1, _o2) -> {
+            int k = _o1.getKingdom().compareTo(_o2.getKingdom());
+            if (k == 0) {
+                int g = _o1.getGroup().compareTo(_o2.getGroup());
+                if (g == 0) {
+                    int s = _o1.getSubGroup().compareTo(_o2.getSubGroup());
+                    if (s == 0) {
+                        return (_o1.getName() + "-" + _o1.getId()).compareTo(_o2.getName() + "-" + _o2.getId());
+                    } else {
+                        return s;
+                    }
+                } else {
+                    return g;
+                }
+            } else {
+                return k;
+            }
+        });
+
         int chunkLength = dataChunk.length();
         Logs.info(String.format("%d/%d organisms enqueued of %d requested", currentEnqueue, chunkLength, Options.getDownloadStep()), true);
         return chunkLength;

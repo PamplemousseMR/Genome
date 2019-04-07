@@ -65,7 +65,7 @@ public class IDownloader {
             }
         } else {
             m_connection.disconnect();
-            final String message = "Unable to download data : status " + String.valueOf(statusCode);
+            final String message = "Unable to download data : status " + statusCode;
             Logs.warning(message);
             throw new HTTPException(message);
         }

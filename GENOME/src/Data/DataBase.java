@@ -13,7 +13,7 @@ public final class DataBase extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    static final String s_SERIALIZATION_PREFIX = Options.getDatabaseSerializationPrefix();
+    public static final String s_SERIALIZATION_PREFIX = Options.getDatabaseSerializationPrefix();
     /**
      * Array of this Database's Kingdom
      */
