@@ -30,6 +30,10 @@ public final class TreePanel extends IPanel {
     private Circle m_blue;
     private JLabel m_blueLabel;
 
+    private JPanel m_redContainer;
+    private Circle m_red;
+    private JLabel m_redLabel;
+
     private JPanel m_greenContainer;
     private Circle m_green;
     private JLabel m_greenLabel;
@@ -58,6 +62,10 @@ public final class TreePanel extends IPanel {
         m_blue = new Circle(s_BLUE);
         m_blueLabel = new JLabel("créé");
 
+        m_redContainer = new JPanel();
+        m_red = new Circle(s_RED);
+        m_redLabel = new JLabel("suprimé");
+
         m_greenContainer = new JPanel();
         m_green = new Circle(s_GREEN);
         m_greenLabel = new JLabel("terminé");
@@ -75,8 +83,9 @@ public final class TreePanel extends IPanel {
         m_container.setLayout(new BorderLayout());
         m_orangeContainer.setLayout(new BorderLayout());
         m_blueContainer.setLayout(new BorderLayout());
+        m_redContainer.setLayout(new BorderLayout());
         m_greenContainer.setLayout(new BorderLayout());
-        m_legend.setLayout(new GridLayout(1, 3));
+        m_legend.setLayout(new GridLayout(1, 4));
     }
 
     /**
@@ -95,6 +104,11 @@ public final class TreePanel extends IPanel {
 
         m_blueContainer.add(m_blue, BorderLayout.WEST);
         m_blueContainer.add(m_blueLabel, BorderLayout.CENTER);
+
+        m_legend.add(m_redContainer);
+
+        m_redContainer.add(m_red, BorderLayout.WEST);
+        m_redContainer.add(m_redLabel, BorderLayout.CENTER);
 
         m_legend.add(m_greenContainer);
 
@@ -164,6 +178,12 @@ public final class TreePanel extends IPanel {
         m_blueLabel.setForeground(s_WHITE);
         m_blueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         m_blueContainer.setBackground(s_LIGHTGRAY);
+
+        m_red.setPreferredSize(new Dimension(30, 30));
+        m_redLabel.setFont(new Font(s_FONT, Font.PLAIN, 15));
+        m_redLabel.setForeground(s_WHITE);
+        m_redLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        m_redContainer.setBackground(s_LIGHTGRAY);
 
         m_green.setPreferredSize(new Dimension(30, 30));
         m_greenLabel.setFont(new Font(s_FONT, Font.PLAIN, 15));
