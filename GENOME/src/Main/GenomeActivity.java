@@ -168,7 +168,7 @@ final class GenomeActivity {
                         final String organismName = organismParser.getName() + "-" + organismParser.getId();
 
                         String currentRemoteFileName = DataBase.s_SERIALIZATION_PREFIX + Options.getGenbankName() + Kingdom.s_SERIALIZATION_PREFIX + organismParser.getKingdom() + Group.s_SERIALIZATION_PREFIX + organismParser.getGroup() + SubGroup.s_SERIALIZATION_PREFIX + organismParser.getSubGroup() + Organism.s_SERIALIZATION_PREFIX + organismName + Options.getSerializeExtension();
-                        // delete local files
+                        // Delete local files
                         while (currentLocalFileName != null && currentLocalFileName.compareTo(currentRemoteFileName) < 0) {
                             String[] table = currentLocalFileName.split(Options.getSerializationSpliter());
                             String localKingdom = table[1].substring(2);
@@ -270,7 +270,7 @@ final class GenomeActivity {
                             MainFrame.getSingleton().updateTree(_organism.getSavedName() + Options.getSerializeExtension());
                         });
 
-                        // Thread
+                        // Thread, download CDS
                         threadManager.pushTask(new ITask(organismName) {
                             @Override
                             public void run() {
