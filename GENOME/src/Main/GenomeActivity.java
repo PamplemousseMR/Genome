@@ -378,10 +378,10 @@ final class GenomeActivity {
                         });
                     }
 
-                    currentDataBase.stop();
-                    currentKingdom.stop();
-                    currentGroup.stop();
                     currentSubGroup.stop();
+                    currentGroup.stop();
+                    currentKingdom.stop();
+                    currentDataBase.stop();
                 } catch (InvalidStateException | AddException | MissException e) {
                     Logs.warning("Unable to run programme");
                     Logs.exception(e);
