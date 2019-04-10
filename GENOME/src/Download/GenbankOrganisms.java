@@ -40,7 +40,7 @@ public final class GenbankOrganisms extends IDownloader {
     /**
      * request
      */
-    private static final String s_REQUEST = "[display( id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_)].from(GenomeAssemblies).sort(lineage,asc)";
+    private static final String s_REQUEST = "[display(genome_id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_)].from(GenomeAssemblies).sort(lineage,asc)";
     /**
      * Queue of retrieved organisms
      */
@@ -328,6 +328,7 @@ public final class GenbankOrganisms extends IDownloader {
             pushList();
             m_currentPath = _organism.getKingdom() + "-" + _organism.getGroup() + "-" + _organism.getSubGroup();
         }
+        // Avoid duplicated organism
         OrganismParser last = m_currentList.get(_organism.getName());
         if (last != null) {
             if (_organism.getReplicons().size() > last.getReplicons().size())
