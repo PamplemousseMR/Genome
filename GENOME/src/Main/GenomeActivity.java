@@ -86,6 +86,7 @@ final class GenomeActivity {
                                 Matcher m = pattern.matcher(file.getName());
                                 return !m.find();
                             });
+                            // Sort local files with the same method than the GenbankOrganism
                             files.sort((_o1, _o2) -> {
                                 String[] table1 = _o1.getName().split(Options.getSerializationSpliter());
                                 String kingdom1 = table1[1].substring(2);
@@ -175,6 +176,7 @@ final class GenomeActivity {
                             String localGroup = table[2].substring(2);
                             String localSubGroup = table[3].substring(3);
                             String localOrganism = table[4].substring(2);
+
                             // Check if the subgroup need to be switched
                             if (localKingdom.compareTo(currentKingdom.getName()) != 0) {
                                 currentKingdom = switchKingdom(currentKingdom, localKingdom, currentDataBase);
@@ -186,40 +188,10 @@ final class GenomeActivity {
                             } else if (localSubGroup.compareTo(currentSubGroup.getName()) != 0) {
                                 currentSubGroup = switchSubGroup(currentSubGroup, localSubGroup, currentGroup);
                             }
+
+                            // Delete the organism
                             Logs.info("Delete organism : " + localOrganism + ". Current remote : " + organismName, true);
-
-                            // Load organism to delete
-                            Organism organism = Organism.load(localOrganism, 0L, 0L, currentSubGroup, true, _organism -> {
-                            });
-
-                            // Start
-                            try {
-                                organism.start();
-                            } catch (InvalidStateException e) {
-                                Logs.warning("Unable to start : " + organism.getName());
-                                Logs.exception(e);
-                                return;
-                            }
-
-                            // Delete local files
-                            organism.unsave();
-                            try {
-                                ExcelWriter.unwriteOrganism(organism);
-                            } catch (IOException | NoClassDefFoundError e) {
-                                Logs.warning("Unable to unwrite excel file : " + organism.getName());
-                                Logs.exception(e);
-                            }
-                            MainFrame.getSingleton().removeTree(organism.getSavedName() + Options.getSerializeExtension());
-
-                            // End
-                            try {
-                                organism.stop();
-                                organism.cancel();
-                                organism.finish();
-                            } catch (InvalidStateException e) {
-                                Logs.warning("Unable to cancel : " + organism.getName());
-                                Logs.exception(e);
-                            }
+                            deleteOrganism(currentLocalFileName, currentSubGroup);
 
                             // Get next local file
                             if (filesIt.hasNext()) {
@@ -377,6 +349,37 @@ final class GenomeActivity {
                             }
                         });
                     }
+                    // Delete finale local files
+                    while (currentLocalFileName != null) {
+                        String[] table = currentLocalFileName.split(Options.getSerializationSpliter());
+                        String localKingdom = table[1].substring(2);
+                        String localGroup = table[2].substring(2);
+                        String localSubGroup = table[3].substring(3);
+                        String localOrganism = table[4].substring(2);
+
+                        // Check if the subgroup need to be switched
+                        if (localKingdom.compareTo(currentKingdom.getName()) != 0) {
+                            currentKingdom = switchKingdom(currentKingdom, localKingdom, currentDataBase);
+                            currentGroup = switchGroup(currentGroup, localGroup, currentKingdom);
+                            currentSubGroup = switchSubGroup(currentSubGroup, localSubGroup, currentGroup);
+                        } else if (localGroup.compareTo(currentGroup.getName()) != 0) {
+                            currentGroup = switchGroup(currentGroup, localGroup, currentKingdom);
+                            currentSubGroup = switchSubGroup(currentSubGroup, localSubGroup, currentGroup);
+                        } else if (localSubGroup.compareTo(currentSubGroup.getName()) != 0) {
+                            currentSubGroup = switchSubGroup(currentSubGroup, localSubGroup, currentGroup);
+                        }
+
+                        // Delete the organism
+                        Logs.info("Delete finale organism : " + localOrganism, true);
+                        deleteOrganism(currentLocalFileName, currentSubGroup);
+
+                        // Get next local file
+                        if (filesIt.hasNext()) {
+                            currentLocalFileName = filesIt.next().getName();
+                        } else {
+                            currentLocalFileName = null;
+                        }
+                    }
 
                     currentSubGroup.stop();
                     currentGroup.stop();
@@ -525,6 +528,44 @@ final class GenomeActivity {
             }
         }
         s_WAIT_LOCK.unlock();
+    }
+
+    private static void deleteOrganism(String _fileName, SubGroup _subGroup) throws AddException, InvalidStateException {
+        String[] table = _fileName.split(Options.getSerializationSpliter());
+        String organismName = table[4].substring(2);
+
+        // Load the organism to delete, it will unload data from it's parent
+        Organism organism = Organism.load(organismName, 0L, 0L, _subGroup, true, _organism -> {
+        });
+
+        // Start it
+        try {
+            organism.start();
+        } catch (InvalidStateException e) {
+            Logs.warning("Unable to start : " + organism.getName());
+            Logs.exception(e);
+            return;
+        }
+
+        // Delete local files
+        organism.unsave();
+        try {
+            ExcelWriter.unwriteOrganism(organism);
+        } catch (IOException | NoClassDefFoundError e) {
+            Logs.warning("Unable to unwrite excel file : " + organism.getName());
+            Logs.exception(e);
+        }
+        MainFrame.getSingleton().removeTree(organism.getSavedName() + Options.getSerializeExtension());
+
+        // End
+        try {
+            organism.stop();
+            organism.cancel();
+            organism.finish();
+        } catch (InvalidStateException e) {
+            Logs.warning("Unable to cancel : " + organism.getName());
+            Logs.exception(e);
+        }
     }
 
     /**
