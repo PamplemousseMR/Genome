@@ -14,7 +14,7 @@ public final class Organism extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    private static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getOrganismSerializationPrefix();
+    public static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getOrganismSerializationPrefix();
     /**
      * Array of this organism's Replicon
      */
@@ -258,6 +258,26 @@ public final class Organism extends IDataBase {
         } catch (IOException | SecurityException e) {
             Logs.warning("Unable to save : " + getSavedName());
             Logs.exception(e);
+        }
+    }
+
+    /**
+     * Unsave this organism
+     */
+    @Override
+    public void unsave() {
+        super.unsave();
+
+        final File file = new File(Options.getSerializeDirectory() + File.separator + getSavedName() + Options.getDateModifSerializeExtension());
+        if (file.exists()) {
+            try {
+                if (!file.delete()) {
+                    Logs.warning("Enable to delete file : " + file.getName());
+                }
+            } catch (SecurityException e) {
+                Logs.warning("Enable to delete file : " + file.getName());
+                Logs.exception(e);
+            }
         }
     }
 

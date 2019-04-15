@@ -30,6 +30,10 @@ public final class TreePanel extends IPanel {
     private Circle m_blue;
     private JLabel m_blueLabel;
 
+    private JPanel m_redContainer;
+    private Circle m_red;
+    private JLabel m_redLabel;
+
     private JPanel m_greenContainer;
     private Circle m_green;
     private JLabel m_greenLabel;
@@ -58,6 +62,10 @@ public final class TreePanel extends IPanel {
         m_blue = new Circle(s_BLUE);
         m_blueLabel = new JLabel("créé");
 
+        m_redContainer = new JPanel();
+        m_red = new Circle(s_RED);
+        m_redLabel = new JLabel("suprimé");
+
         m_greenContainer = new JPanel();
         m_green = new Circle(s_GREEN);
         m_greenLabel = new JLabel("terminé");
@@ -75,8 +83,9 @@ public final class TreePanel extends IPanel {
         m_container.setLayout(new BorderLayout());
         m_orangeContainer.setLayout(new BorderLayout());
         m_blueContainer.setLayout(new BorderLayout());
+        m_redContainer.setLayout(new BorderLayout());
         m_greenContainer.setLayout(new BorderLayout());
-        m_legend.setLayout(new GridLayout(1, 3));
+        m_legend.setLayout(new GridLayout(1, 4));
     }
 
     /**
@@ -95,6 +104,11 @@ public final class TreePanel extends IPanel {
 
         m_blueContainer.add(m_blue, BorderLayout.WEST);
         m_blueContainer.add(m_blueLabel, BorderLayout.CENTER);
+
+        m_legend.add(m_redContainer);
+
+        m_redContainer.add(m_red, BorderLayout.WEST);
+        m_redContainer.add(m_redLabel, BorderLayout.CENTER);
 
         m_legend.add(m_greenContainer);
 
@@ -132,6 +146,9 @@ public final class TreePanel extends IPanel {
                     case FINISH:
                         setForeground(s_GREEN);
                         break;
+                    case DELETE:
+                        setForeground(s_RED);
+                        break;
                     case DEFAULT:
                         break;
                 }
@@ -162,6 +179,12 @@ public final class TreePanel extends IPanel {
         m_blueLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
         m_blueContainer.setBackground(s_LIGHTGRAY);
 
+        m_red.setPreferredSize(new Dimension(30, 30));
+        m_redLabel.setFont(new Font(s_FONT, Font.PLAIN, 15));
+        m_redLabel.setForeground(s_WHITE);
+        m_redLabel.setAlignmentX(Component.LEFT_ALIGNMENT);
+        m_redContainer.setBackground(s_LIGHTGRAY);
+
         m_green.setPreferredSize(new Dimension(30, 30));
         m_greenLabel.setFont(new Font(s_FONT, Font.PLAIN, 15));
         m_greenLabel.setForeground(s_WHITE);
@@ -187,8 +210,8 @@ public final class TreePanel extends IPanel {
      *
      * @param _path the path to add
      */
-    synchronized void update(String _path) {
-        String table[] = _path.split(Options.getSerializationSpliter());
+    synchronized void updateTree(String _path) {
+        String[] table = _path.split(Options.getSerializationSpliter());
         String temp;
         DefaultMutableTreeNode actual = (DefaultMutableTreeNode) m_treeModel.getRoot(), progressing;
         Boolean found;
@@ -196,7 +219,7 @@ public final class TreePanel extends IPanel {
             if (!table[0].startsWith(Options.getDatabaseSerializationPrefix())) {
                 return;
             }
-            temp = table[0].substring(2, table[0].length()).replaceAll("_", " ");
+            temp = table[0].substring(2).replaceAll("_", " ");
             int nbChild = actual.getChildCount();
             progressing = actual.getNextNode();
             found = false;
@@ -226,7 +249,7 @@ public final class TreePanel extends IPanel {
             if (!table[1].startsWith(Options.getKingdomSerializationPrefix())) {
                 return;
             }
-            temp = table[1].substring(2, table[1].length()).replaceAll("_", " ");
+            temp = table[1].substring(2).replaceAll("_", " ");
             int nbChild = actual.getChildCount();
             progressing = actual.getNextNode();
             found = false;
@@ -257,7 +280,7 @@ public final class TreePanel extends IPanel {
             if (!table[2].startsWith(Options.getGroupSerializationPrefix())) {
                 return;
             }
-            temp = table[2].substring(2, table[2].length()).replaceAll("_", " ");
+            temp = table[2].substring(2).replaceAll("_", " ");
             int nbChild = actual.getChildCount();
             progressing = actual.getNextNode();
             found = false;
@@ -288,7 +311,7 @@ public final class TreePanel extends IPanel {
             if (!table[3].startsWith(Options.getSubGroupSerializationPrefix())) {
                 return;
             }
-            temp = table[3].substring(3, table[3].length()).replaceAll("_", " ");
+            temp = table[3].substring(3).replaceAll("_", " ");
             int nbChild = actual.getChildCount();
             progressing = actual.getNextNode();
             found = false;
@@ -319,7 +342,7 @@ public final class TreePanel extends IPanel {
             if (!table[4].startsWith(Options.getOrganismSerializationPrefix())) {
                 return;
             }
-            temp = table[4].substring(2, table[4].length()).replaceAll("_", " ");
+            temp = table[4].substring(2).replaceAll("_", " ");
             int nbChild = actual.getChildCount();
             progressing = actual.getNextNode();
             found = false;
@@ -337,6 +360,132 @@ public final class TreePanel extends IPanel {
                 m_treeModel.nodeChanged(actual);
             } else {
                 ((Node) progressing.getUserObject()).setState(State.FINISH);
+                m_treeModel.nodeChanged(progressing);
+            }
+        }
+    }
+
+    /**
+     * Update tree with nwe path
+     *
+     * @param _path the path to add
+     */
+    synchronized void removeTree(String _path) {
+        String[] table = _path.split(Options.getSerializationSpliter());
+        String temp;
+        DefaultMutableTreeNode actual = (DefaultMutableTreeNode) m_treeModel.getRoot(), progressing;
+        Boolean found;
+        if (table.length >= 2) {
+            if (!table[0].startsWith(Options.getDatabaseSerializationPrefix())) {
+                return;
+            }
+            temp = table[0].substring(2).replaceAll("_", " ");
+            int nbChild = actual.getChildCount();
+            progressing = actual.getNextNode();
+            found = false;
+            for (int i = 0; i < nbChild; ++i) {
+                if (progressing.toString().equals(temp)) {
+                    found = true;
+                    break;
+                }
+                progressing = progressing.getNextSibling();
+            }
+            if (!found) {
+                return;
+            } else if (table.length == 2) {
+                ((Node) progressing.getUserObject()).setState(State.DELETE);
+                m_treeModel.nodeChanged(progressing);
+            }
+            actual = progressing;
+        }
+        if (table.length >= 3) {
+            if (!table[1].startsWith(Options.getKingdomSerializationPrefix())) {
+                return;
+            }
+            temp = table[1].substring(2).replaceAll("_", " ");
+            int nbChild = actual.getChildCount();
+            progressing = actual.getNextNode();
+            found = false;
+            for (int i = 0; i < nbChild; ++i) {
+                if (progressing.toString().equals(temp)) {
+                    found = true;
+                    break;
+                }
+                progressing = progressing.getNextSibling();
+            }
+            if (!found) {
+                return;
+            } else if (table.length == 3) {
+                ((Node) progressing.getUserObject()).setState(State.DELETE);
+                m_treeModel.nodeChanged(progressing);
+            }
+            actual = progressing;
+        }
+        if (table.length >= 4) {
+            if (!table[2].startsWith(Options.getGroupSerializationPrefix())) {
+                return;
+            }
+            temp = table[2].substring(2).replaceAll("_", " ");
+            int nbChild = actual.getChildCount();
+            progressing = actual.getNextNode();
+            found = false;
+            for (int i = 0; i < nbChild; ++i) {
+                if (progressing.toString().equals(temp)) {
+                    found = true;
+                    break;
+                }
+                progressing = progressing.getNextSibling();
+            }
+            if (!found) {
+                return;
+            } else if (table.length == 4) {
+                ((Node) progressing.getUserObject()).setState(State.DELETE);
+                m_treeModel.nodeChanged(progressing);
+            }
+            actual = progressing;
+        }
+        if (table.length >= 5) {
+            if (!table[3].startsWith(Options.getSubGroupSerializationPrefix())) {
+                return;
+            }
+            temp = table[3].substring(3).replaceAll("_", " ");
+            int nbChild = actual.getChildCount();
+            progressing = actual.getNextNode();
+            found = false;
+            for (int i = 0; i < nbChild; ++i) {
+                if (progressing.toString().equals(temp)) {
+                    found = true;
+                    break;
+                }
+                progressing = progressing.getNextSibling();
+            }
+            if (!found) {
+                return;
+            } else if (table.length == 5) {
+                ((Node) progressing.getUserObject()).setState(State.DELETE);
+                m_treeModel.nodeChanged(progressing);
+            }
+            actual = progressing;
+        }
+        if (table.length >= 6) {
+            if (!table[4].startsWith(Options.getOrganismSerializationPrefix())) {
+                return;
+            }
+            temp = table[4].substring(2).replaceAll("_", " ");
+            int nbChild = actual.getChildCount();
+            progressing = actual.getNextNode();
+            found = false;
+            for (int i = 0; i < nbChild; ++i) {
+                if (progressing.toString().equals(temp)) {
+                    found = true;
+                    break;
+                }
+                progressing = progressing.getNextSibling();
+            }
+            if (!found) {
+                return;
+            } else {
+                ((Node) progressing.getUserObject()).setState(State.DELETE);
                 m_treeModel.nodeChanged(progressing);
             }
         }
@@ -375,13 +524,13 @@ public final class TreePanel extends IPanel {
                         continue;
                     }
 
-                    String table[] = f.getName().split(Options.getSerializationSpliter());
+                    String[] table = f.getName().split(Options.getSerializationSpliter());
                     String temp;
                     if (table.length >= 2) {
                         if (!table[0].startsWith(Options.getDatabaseSerializationPrefix())) {
                             continue;
                         }
-                        temp = table[0].substring(2, table[0].length()).replaceAll("_", " ");
+                        temp = table[0].substring(2).replaceAll("_", " ");
                         if (!temp.equals(db.toString())) {
                             db = new DefaultMutableTreeNode(new Node(temp, State.DEFAULT));
                             root.add(db);
@@ -391,7 +540,7 @@ public final class TreePanel extends IPanel {
                         if (!table[1].startsWith(Options.getKingdomSerializationPrefix())) {
                             continue;
                         }
-                        temp = table[1].substring(2, table[1].length()).replaceAll("_", " ");
+                        temp = table[1].substring(2).replaceAll("_", " ");
                         if (!temp.equals(kg.toString())) {
                             kg = new DefaultMutableTreeNode(new Node(temp, State.DEFAULT));
                             db.add(kg);
@@ -401,7 +550,7 @@ public final class TreePanel extends IPanel {
                         if (!table[2].startsWith(Options.getGroupSerializationPrefix())) {
                             continue;
                         }
-                        temp = table[2].substring(2, table[2].length()).replaceAll("_", " ");
+                        temp = table[2].substring(2).replaceAll("_", " ");
                         if (!temp.equals(gp.toString())) {
                             gp = new DefaultMutableTreeNode(new Node(temp, State.DEFAULT));
                             kg.add(gp);
@@ -411,7 +560,7 @@ public final class TreePanel extends IPanel {
                         if (!table[3].startsWith(Options.getSubGroupSerializationPrefix())) {
                             continue;
                         }
-                        temp = table[3].substring(3, table[3].length()).replaceAll("_", " ");
+                        temp = table[3].substring(3).replaceAll("_", " ");
                         if (!temp.equals(su.toString())) {
                             su = new DefaultMutableTreeNode(new Node(temp, State.DEFAULT));
                             gp.add(su);
@@ -421,7 +570,7 @@ public final class TreePanel extends IPanel {
                         if (!table[4].startsWith(Options.getOrganismSerializationPrefix())) {
                             continue;
                         }
-                        temp = table[4].substring(2, table[4].length()).replaceAll("_", " ");
+                        temp = table[4].substring(2).replaceAll("_", " ");
                         su.add(new DefaultMutableTreeNode(new Node(temp, State.DEFAULT)));
                     }
                 }
@@ -460,6 +609,7 @@ public final class TreePanel extends IPanel {
         CREATE,
         UPDATE,
         FINISH,
+        DELETE,
         DEFAULT
     }
 

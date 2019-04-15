@@ -40,7 +40,7 @@ public final class GenbankOrganisms extends IDownloader {
     /**
      * request
      */
-    private static final String s_REQUEST = "[display( id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_)].from(GenomeAssemblies).sort(lineage,asc)";
+    private static final String s_REQUEST = "[display(genome_id,organism,kingdom,group,subgroup,replicons,release_date,modify_date,_version_)].from(GenomeAssemblies).sort(lineage,asc)";
     /**
      * Queue of retrieved organisms
      */
@@ -92,6 +92,25 @@ public final class GenbankOrganisms extends IDownloader {
             }
         }
         pushList();
+        // Sort the list to ensure that data are sorted
+        m_DATAQUEUE.sort((_o1, _o2) -> {
+            int k = _o1.getKingdom().compareTo(_o2.getKingdom());
+            if (k == 0) {
+                int g = _o1.getGroup().compareTo(_o2.getGroup());
+                if (g == 0) {
+                    int s = _o1.getSubGroup().compareTo(_o2.getSubGroup());
+                    if (s == 0) {
+                        return (_o1.getName() + "-" + _o1.getId()).compareTo(_o2.getName() + "-" + _o2.getId());
+                    } else {
+                        return s;
+                    }
+                } else {
+                    return g;
+                }
+            } else {
+                return k;
+            }
+        });
         disconnect();
     }
 
@@ -309,6 +328,7 @@ public final class GenbankOrganisms extends IDownloader {
             pushList();
             m_currentPath = _organism.getKingdom() + "-" + _organism.getGroup() + "-" + _organism.getSubGroup();
         }
+        // Avoid duplicated organism
         OrganismParser last = m_currentList.get(_organism.getName());
         if (last != null) {
             if (_organism.getReplicons().size() > last.getReplicons().size())

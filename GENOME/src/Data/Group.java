@@ -11,7 +11,7 @@ public final class Group extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getGroupSerializationPrefix();
+    public static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getGroupSerializationPrefix();
     /**
      * Array of this Group's SubGroups
      */

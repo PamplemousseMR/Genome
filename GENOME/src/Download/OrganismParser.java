@@ -22,7 +22,7 @@ public final class OrganismParser {
     /**
      * Key to get the id
      */
-    private static final String s_ID = "id";
+    private static final String s_ID = "genome_id";
     /**
      * Key to get the name
      */

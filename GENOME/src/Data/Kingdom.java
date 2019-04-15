@@ -11,7 +11,7 @@ public final class Kingdom extends IDataBase {
     /**
      * Prefix used for serialization
      */
-    static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getKingdomSerializationPrefix();
+    public static final String s_SERIALIZATION_PREFIX = Options.getSerializationSpliter() + Options.getKingdomSerializationPrefix();
     /**
      * Array of this Kingdom's Group
      */
