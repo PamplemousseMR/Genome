@@ -600,14 +600,26 @@ final class GenomeActivity {
     private static Kingdom switchKingdom(Kingdom _currentKingdom, String _newKingdom, DataBase _parent) throws InvalidStateException, AddException {
         _currentKingdom.stop();
         _currentKingdom = Kingdom.load(_newKingdom, _parent, _kingdom -> {
-            try {
-                ExcelWriter.writeKingdom(_kingdom);
-            } catch (IOException | NoClassDefFoundError e) {
-                Logs.warning("Unable to write excel kingdom file : " + _kingdom.getName());
-                Logs.exception(e);
+            if (_kingdom.getTotalOrganism() == 0) {
+                Logs.info("Delete kingdom : " + _kingdom, true);
+                _kingdom.unsave();
+                try {
+                    ExcelWriter.unwriteKingdom(_kingdom);
+                } catch (IOException | NoClassDefFoundError e) {
+                    Logs.warning("Unable to unwrite excel kingdom file : " + _kingdom.getName());
+                    Logs.exception(e);
+                }
+                MainFrame.getSingleton().removeTree(_kingdom.getSavedName() + Options.getSerializeExtension());
+            } else {
+                try {
+                    ExcelWriter.writeKingdom(_kingdom);
+                } catch (IOException | NoClassDefFoundError e) {
+                    Logs.warning("Unable to write excel kingdom file : " + _kingdom.getName());
+                    Logs.exception(e);
+                }
+                _kingdom.save();
+                MainFrame.getSingleton().updateTree(_kingdom.getSavedName() + Options.getSerializeExtension());
             }
-            _kingdom.save();
-            MainFrame.getSingleton().updateTree(_kingdom.getSavedName() + Options.getSerializeExtension());
         });
         _currentKingdom.start();
         return _currentKingdom;
@@ -616,14 +628,26 @@ final class GenomeActivity {
     private static Group switchGroup(Group _currentGroup, String _newGroup, Kingdom _parent) throws InvalidStateException, AddException {
         _currentGroup.stop();
         _currentGroup = Group.load(_newGroup, _parent, _group -> {
-            try {
-                ExcelWriter.writeGroup(_group);
-            } catch (IOException | NoClassDefFoundError e) {
-                Logs.warning("Unable to write excel group file : " + _group.getName());
-                Logs.exception(e);
+            if (_group.getTotalOrganism() == 0) {
+                Logs.info("Delete group : " + _group, true);
+                _group.unsave();
+                try {
+                    ExcelWriter.unwriteGroup(_group);
+                } catch (IOException | NoClassDefFoundError e) {
+                    Logs.warning("Unable to unwrite excel group file : " + _group.getName());
+                    Logs.exception(e);
+                }
+                MainFrame.getSingleton().removeTree(_group.getSavedName() + Options.getSerializeExtension());
+            } else {
+                try {
+                    ExcelWriter.writeGroup(_group);
+                } catch (IOException | NoClassDefFoundError e) {
+                    Logs.warning("Unable to write excel group file : " + _group.getName());
+                    Logs.exception(e);
+                }
+                _group.save();
+                MainFrame.getSingleton().updateTree(_group.getSavedName() + Options.getSerializeExtension());
             }
-            _group.save();
-            MainFrame.getSingleton().updateTree(_group.getSavedName() + Options.getSerializeExtension());
         });
         _currentGroup.start();
         return _currentGroup;
@@ -632,14 +656,26 @@ final class GenomeActivity {
     private static SubGroup switchSubGroup(SubGroup _currentSubGroup, String _newSubGroup, Group _parent) throws InvalidStateException, AddException {
         _currentSubGroup.stop();
         _currentSubGroup = SubGroup.load(_newSubGroup, _parent, _subGroup -> {
-            try {
-                ExcelWriter.writeSubGroup(_subGroup);
-            } catch (IOException | NoClassDefFoundError e) {
-                Logs.warning("Unable to write excel subGroup file : " + _subGroup.getName());
-                Logs.exception(e);
+            if (_subGroup.getTotalOrganism() == 0) {
+                Logs.info("Delete subGroup : " + _subGroup, true);
+                _subGroup.unsave();
+                try {
+                    ExcelWriter.unwriteSubGroup(_subGroup);
+                } catch (IOException | NoClassDefFoundError e) {
+                    Logs.warning("Unable to unwrite excel subGroup file : " + _subGroup.getName());
+                    Logs.exception(e);
+                }
+                MainFrame.getSingleton().removeTree(_subGroup.getSavedName() + Options.getSerializeExtension());
+            } else {
+                try {
+                    ExcelWriter.writeSubGroup(_subGroup);
+                } catch (IOException | NoClassDefFoundError e) {
+                    Logs.warning("Unable to write excel subGroup file : " + _subGroup.getName());
+                    Logs.exception(e);
+                }
+                _subGroup.save();
+                MainFrame.getSingleton().updateTree(_subGroup.getSavedName() + Options.getSerializeExtension());
             }
-            _subGroup.save();
-            MainFrame.getSingleton().updateTree(_subGroup.getSavedName() + Options.getSerializeExtension());
         });
         _currentSubGroup.start();
         return _currentSubGroup;
