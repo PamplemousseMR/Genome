@@ -7,7 +7,7 @@ import Utils.Options;
 import java.io.File;
 import java.io.IOException;
 
-final class GENOME_RMI_SERVER {
+final class GENOME_CONSOLE {
 
     /**
      * Main
@@ -28,11 +28,11 @@ final class GENOME_RMI_SERVER {
                     }
                 });
                 initializeProgram();
-                Runtime.getRuntime().addShutdownHook(new Thread(GENOME_RMI_SERVER::finalizeProgram));
-                Console.getSingleton().addStartListener(GenomeRMIServerActivity::genbank);
-                Console.getSingleton().addStopListener(GenomeRMIServerActivity::stop);
-                Console.getSingleton().addPauseListener(GenomeRMIServerActivity::pause);
-                Console.getSingleton().addResumeListener(GenomeRMIServerActivity::resume);
+                Runtime.getRuntime().addShutdownHook(new Thread(GENOME_CONSOLE::finalizeProgram));
+                Console.getSingleton().addStartListener(GenomeConsoleActivity::genbank);
+                Console.getSingleton().addStopListener(GenomeConsoleActivity::stop);
+                Console.getSingleton().addPauseListener(GenomeConsoleActivity::pause);
+                Console.getSingleton().addResumeListener(GenomeConsoleActivity::resume);
                 Console.getSingleton().run();
             } catch (Throwable e) {
                 Logs.exception(e);
@@ -55,7 +55,7 @@ final class GENOME_RMI_SERVER {
      * Function call at the end of the program
      */
     private static void finalizeProgram() {
-        GenomeRMIServerActivity.stopAndWait();
+        GenomeConsoleActivity.stopAndWait();
         Logs.info("End", true);
         Logs.info("Options finalized", true);
         Options.finalizeOptions();
