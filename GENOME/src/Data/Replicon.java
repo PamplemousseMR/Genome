@@ -100,8 +100,8 @@ public final class Replicon extends Statistics {
                     tuple.incr(Statistics.StatLong.PREF1, 1);
             }
             update(temp);
-            super.compute();
         }
+        super.compute();
     }
 
     /**
