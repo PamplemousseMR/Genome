@@ -363,7 +363,7 @@ public final class ExcelWriter {
         r.getCell(0).setCellStyle(m_stylePrimaryColorBorders);
         r.createCell(1).setCellValue(_data.getName());
         r.getCell(1).setCellStyle(m_styleAlternateColorABorders);
-        r.createCell(5).setCellValue("Genome");
+        r.createCell(5).setCellValue("Gene");
         r.getCell(5).setCellStyle(m_stylePrimaryColorBorders);
 
         r = _general_info_sheet.createRow(4);
@@ -435,7 +435,12 @@ public final class ExcelWriter {
      */
     private void createStatisticsSheets(IDataBase _data) {
         for (Statistics stat : _data.getStatistics().values()) {
-            final XSSFSheet s = m_workbook.createSheet(Options.getSumPrefix() + stat.getType());
+            XSSFSheet s;
+            if(stat.getValidCDSNumber() > 0) {
+                s = m_workbook.createSheet(Options.getSumPrefix() + stat.getType());
+            } else {
+                s = m_workbook.createSheet("ERR0R_" + Options.getSumPrefix() + stat.getType());
+            }
             createHeaderSheet(s);
             createTable(s, stat);
         }
@@ -448,7 +453,12 @@ public final class ExcelWriter {
      */
     private void createRepliconsSheets(Organism _organism) {
         for (Replicon replicon : _organism.getReplicons()) {
-            final XSSFSheet s = m_workbook.createSheet(replicon.getName());
+            final XSSFSheet s;
+            if(replicon.getValidCDSNumber() > 0) {
+                s = m_workbook.createSheet(replicon.getName());
+            } else {
+                s = m_workbook.createSheet("ERROR_" + replicon.getName());
+            }
             createHeaderSheet(s);
             createTable(s, replicon);
         }
