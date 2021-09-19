@@ -2,9 +2,9 @@
 
 Statistics computed from NCBI gene bank.
 
-## Travis
+## Circle-CI
 
-[![Build Status](https://travis-ci.com/PamplemousseMR/Genome.svg?branch=master)](https://travis-ci.com/PamplemousseMR/Genome)
+[![Build Status](https://circleci.com/gh/PamplemousseMR/Genome/tree/master.svg?style=svg)](https://circleci.com/gh/PamplemousseMR/Genome/tree/master)
 
 ## Getting Started
 
