@@ -1,0 +1,30 @@
+name: Build
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+
+    strategy:
+      matrix:
+        version: [adoptopenjdk-8-hotspot-amd64, adoptopenjdk-11-hotspot-amd64]
+        
+    steps:
+      - uses: actions/checkout@v2
+
+      - name: Build
+        run: |
+          mkdir build
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/Utils/*.java -d build -cp build
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/Manager/*.java -d build -cp build
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/Exception/*.java -d build -cp build
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/Json/*.java -d build -cp build
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/GUI/*.java -d build -cp build
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/Download/*.java -d build -cp build
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/Data/*.java -d build -cp build
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/Excel/*.java -d build -cp build:GENOME/lib/poi-3.17/poi-3.17.jar:GENOME/lib/poi-3.17/poi-examples-3.17.jar:GENOME/lib/poi-3.17/poi-excelant-3.17.jar:GENOME/lib/poi-3.17/poi-ooxml-3.17.jar:GENOME/lib/poi-3.17/poi-ooxml-schemas-3.17.jar:GENOME/lib/poi-3.17/poi-scratchpad-3.17.jar:GENOME/lib/poi-3.17/lib/commons-codec-1.10.jar:GENOME/lib/poi-3.17/lib/commons-collections4-4.1.jar:GENOME/lib/poi-3.17/lib/commons-logging-1.2.jar:GENOME/lib/poi-3.17/lib/junit-4.12.jar:GENOME/lib/poi-3.17/lib/log4j-1.2.17.jar:GENOME/lib/poi-3.17/ooxml-lib/ooxml-lib:GENOME/lib/poi-3.17/ooxml-lib/curvesapi-1.04.jar:GENOME/lib/poi-3.17/ooxml-lib/xmlbeans-2.6.0.jar
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/Console/*.java -d build -cp build
+          /usr/lib/jvm/${{ matrix.version }}/bin/javac GENOME/src/Main/*.java -d build -cp build

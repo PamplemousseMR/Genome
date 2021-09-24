@@ -2,9 +2,9 @@
 
 Statistics computed from NCBI gene bank.
 
-## Circle-CI
+## CI
 
-[![Build Status](https://circleci.com/gh/PamplemousseMR/Genome/tree/master.svg?style=svg)](https://circleci.com/gh/PamplemousseMR/Genome/tree/master)
+![Build Status](https://github.com/PamplemousseMR/Genome/actions/workflows/build.yml/badge.svg)
 
 ## Getting Started
 
